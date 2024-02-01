@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  color: #fff;
+  background-color: #000;
+}
+
+main {
+  width: 100dvw;
+  height: 100dvh;
+  padding: 1.5rem;
+}
+
+input {
+  color: #fff;
+  background-color: #222;
+}
