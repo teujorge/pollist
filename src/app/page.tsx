@@ -1,4 +1,5 @@
 import { db } from "@/server/db";
+import { PollCard } from "./components/PollCard";
 import { revalidateTag } from "next/cache";
 
 export default async function HomePage() {
@@ -20,36 +21,10 @@ export default async function HomePage() {
     revalidateTag("/");
   }
 
-  async function deletePost(formData: FormData) {
-    "use server";
-
-    const id = (formData.get("id") ?? "") as string;
-
-    if (id === "") return;
-
-    await db.post.delete({
-      where: {
-        id: parseInt(id),
-      },
-    });
-
-    revalidateTag("/");
-  }
-
   return (
     <main>
       {data.map((post) => (
-        <form
-          key={post.id}
-          action={deletePost}
-          className="flex flex-row gap-2 p-2"
-        >
-          <input type="hidden" name="id" value={post.id} />
-          <div>{post.name}</div>
-          <button type="submit" className="text-red-500">
-            del
-          </button>
-        </form>
+        <PollCard key={post.id} id={post.id} name={post.name} />
       ))}
 
       <form action={createPost}>
