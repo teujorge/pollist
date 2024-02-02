@@ -12,11 +12,48 @@ datasource db {
     relationMode = "prisma"
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
+model User {
+    id    String @id
+    votes Vote[]
+}
+
+model Poll {
+    id          String   @id @default(uuid())
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    title       String
+    description String
+    votes       Vote[]
+    options     Option[]
+
+    @@index([title])
+}
+
+model Option {
+    id        String   @id @default(uuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    text      String
+    pollId    String
+    Vote      Vote[]
+    poll      Poll     @relation(fields: [pollId], references: [id])
 
-    @@index([name])
+    @@index([pollId])
+}
+
+model Vote {
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    userId    String
+    pollId    String
+    optionId  String
+    User      User     @relation(fields: [userId], references: [id])
+    Poll      Poll     @relation(fields: [pollId], references: [id])
+    Option    Option   @relation(fields: [optionId], references: [id])
+
+    @@unique([userId, pollId, optionId])
+    @@index([userId])
+    @@index([pollId])
+    @@index([optionId])
 }
