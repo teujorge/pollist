@@ -1,7 +1,14 @@
-import { ClerkProvider } from "@clerk/nextjs";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 import "@/styles/globals.css";
-
 import { Inter } from "next/font/google";
+import Link from "next/link";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -15,15 +22,43 @@ export const metadata = {
 };
 
 export default function RootLayout({
+  crudPoll,
   children,
 }: {
+  crudPoll: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className={`font-sans ${inter.variable}`}>{children}</body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <ClerkProvider appearance={{ baseTheme: dark }}>
+        <body className={`pt-16 font-sans ${inter.variable}`}>
+          <Header />
+          {crudPoll}
+          {children}
+        </body>
+      </ClerkProvider>
+    </html>
+  );
+}
+
+function Header() {
+  return (
+    <header className="fixed left-0 top-0 flex w-full justify-between p-4">
+      <Link href="/">Poll</Link>
+
+      <SignedIn>
+        <div className="flex flex-row items-center gap-4">
+          <Link href="/">Home</Link>
+          <Link href="/create-poll">Create Poll</Link>
+          <div className="h-8 w-8">
+            <UserButton />
+          </div>
+        </div>
+      </SignedIn>
+
+      <SignedOut>
+        <SignInButton />
+      </SignedOut>
+    </header>
   );
 }
