@@ -30,13 +30,11 @@ model Poll {
 }
 
 model Option {
-    id        String   @id @default(uuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    text      String
-    pollId    String
-    Vote      Vote[]
-    poll      Poll     @relation(fields: [pollId], references: [id])
+    id     String @id @default(uuid())
+    text   String
+    pollId String
+    Vote   Vote[]
+    poll   Poll   @relation(fields: [pollId], references: [id])
 
     @@index([pollId])
 }
@@ -44,7 +42,6 @@ model Option {
 model Vote {
     id        String   @id @default(uuid())
     createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
     userId    String
     pollId    String
     optionId  String
