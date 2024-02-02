@@ -16,6 +16,13 @@ export function PollCard(poll: Poll & { options: Option[]; votes: Vote[] }) {
 
     if (id === "") return;
 
+    // parallel delete all votes and options
+    await Promise.all([
+      db.vote.deleteMany({ where: { pollId: id } }),
+      db.option.deleteMany({ where: { pollId: id } }),
+    ]);
+
+    // safely delete poll without relation errors
     await db.poll.delete({ where: { id: id } });
 
     revalidateTag("/");
