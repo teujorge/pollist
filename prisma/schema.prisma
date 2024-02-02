@@ -13,20 +13,26 @@ datasource db {
 }
 
 model User {
-    id    String @id
-    votes Vote[]
+    id       String  @id
+    username String?
+    imageUrl String?
+    votes    Vote[]
+    polls    Poll[]
 }
 
 model Poll {
     id          String   @id @default(uuid())
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
+    userId      String
     title       String
     description String
     votes       Vote[]
     options     Option[]
+    author      User     @relation(fields: [userId], references: [id])
 
     @@index([title])
+    @@index([userId])
 }
 
 model Option {
