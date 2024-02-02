@@ -1,0 +1,27 @@
+.bg-in {
+  animation: fade-in 150ms ease forwards;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-in {
+  animation: fade-n-slide-up 180ms ease-out forwards;
+}
+
+@keyframes fade-n-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
