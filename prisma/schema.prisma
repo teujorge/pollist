@@ -29,7 +29,7 @@ model Poll {
     description String
     votes       Vote[]
     options     Option[]
-    author      User     @relation(fields: [userId], references: [id])
+    author      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@index([title])
     @@index([userId])
@@ -39,8 +39,8 @@ model Option {
     id     String @id @default(uuid())
     text   String
     pollId String
-    Vote   Vote[]
-    poll   Poll   @relation(fields: [pollId], references: [id])
+    votes  Vote[]
+    poll   Poll   @relation(fields: [pollId], references: [id], onDelete: Cascade)
 
     @@index([pollId])
 }
@@ -51,9 +51,9 @@ model Vote {
     userId    String
     pollId    String
     optionId  String
-    User      User     @relation(fields: [userId], references: [id])
-    Poll      Poll     @relation(fields: [pollId], references: [id])
-    Option    Option   @relation(fields: [optionId], references: [id])
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    poll      Poll     @relation(fields: [pollId], references: [id], onDelete: Cascade)
+    option    Option   @relation(fields: [optionId], references: [id], onDelete: Cascade)
 
     @@unique([userId, pollId, optionId])
     @@index([userId])
