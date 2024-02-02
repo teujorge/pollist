@@ -3,17 +3,31 @@
 @tailwind utilities;
 
 body {
-  color: #fff;
-  background-color: #000;
+  color: #f1f1f1;
+  background-color: #010101;
+
+  width: 100dvw;
+  min-height: 100dvh;
 }
 
 main {
-  width: 100dvw;
-  height: 100dvh;
   padding: 1.5rem;
 }
 
 input {
-  color: #fff;
-  background-color: #222;
+  color: #f1f1f1;
+  background-color: rgb(25 25 25);
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  border-radius: 0.25rem;
+  border: none;
+  outline: none;
+}
+
+input:hover,
+input:focus,
+input:active {
+  background-color: rgb(32 32 32);
 }
