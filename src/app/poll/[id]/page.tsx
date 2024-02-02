@@ -13,27 +13,29 @@ export default function PollPage() {
           <h1>Poll Title</h1>
           <desc>Created by John Doe</desc>
         </div>
-        <div className="text-sm text-gray-400">Created on January 1, 2024</div>
+        <div className="text-sm text-neutral-400">
+          Created on January 1, 2024
+        </div>
       </div>
 
       {/* content */}
-      <ul className="divide-y divide-gray-800">
+      <ul className="divide-y divide-neutral-800">
         <li className="py-4">
           <div className="flex items-center justify-between">
             <div>Option 1</div>
-            <div className="text-sm text-gray-400">100 votes</div>
+            <div className="text-sm text-neutral-400">100 votes</div>
           </div>
         </li>
         <li className="py-4">
           <div className="flex items-center justify-between">
             <div>Option 2</div>
-            <div className="text-sm text-gray-400">50 votes</div>
+            <div className="text-sm text-neutral-400">50 votes</div>
           </div>
         </li>
         <li className="py-4">
           <div className="flex items-center justify-between">
             <div>Option 3</div>
-            <div className="text-sm text-gray-400">25 votes</div>
+            <div className="text-sm text-neutral-400">25 votes</div>
           </div>
         </li>
       </ul>
