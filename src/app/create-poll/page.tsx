@@ -1,5 +1,9 @@
-import { CreatePoll } from "@/app/components/CreatePoll";
+import { CreatePoll } from "@/app/components/CreatePoll/CreatePollForm";
 
 export default function CreatePollPage() {
-  return <CreatePoll />;
+  return (
+    <main className="flex justify-center">
+      <CreatePoll />
+    </main>
+  );
 }
