@@ -7,7 +7,7 @@ export default async function HomePage() {
   });
 
   return (
-    <main>
+    <main className="flex flex-wrap justify-center gap-4">
       {polls.map((poll) => (
         <PollCard key={poll.id} {...poll} />
       ))}
