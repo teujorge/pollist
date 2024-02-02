@@ -2,12 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  color-scheme: dark;
+  background: black;
+}
+
 body {
   color: #f1f1f1;
   background-color: #010101;
 
   width: 100dvw;
   min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable both-edges;
 }
 
 main {
@@ -16,18 +24,24 @@ main {
 
 input {
   color: #f1f1f1;
-  background-color: rgb(25 25 25);
+  background-color: #191919;
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
   border-radius: 0.25rem;
-  border: none;
+  border-width: 1px;
+  border-color: transparent;
   outline: none;
+  transition: border-color 0.15s ease background-color 0.1s ease;
 }
 
 input:hover,
 input:focus,
 input:active {
   background-color: rgb(32 32 32);
+}
+
+.cl-card {
+  border: 1px solid #262626;
 }
