@@ -1,9 +1,9 @@
 import { db } from "@/database/db";
-import { PollCard } from "./components/PollCard";
+import { PollCard } from "./components/PollCard/PollCard";
 
 export default async function HomePage() {
   const polls = await db.poll.findMany({
-    include: { votes: true, options: true },
+    include: { votes: true, options: true, author: true },
   });
 
   return (
