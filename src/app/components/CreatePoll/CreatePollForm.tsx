@@ -7,7 +7,6 @@ import { createPollSchema } from "./validation";
 import type { CreatePollFields } from "./validation";
 import { Input } from "../Input";
 import { toast } from "sonner";
-import { useEffect } from "react";
 
 export function CreatePoll() {
   const form = useForm<CreatePollFields>({
@@ -36,11 +35,6 @@ export function CreatePoll() {
     if (fields.length === 0) return;
     remove(fields.length - 1);
   }
-
-  useEffect(() => {
-    console.log(fields);
-    console.log(form.formState.errors);
-  });
 
   return (
     <form
