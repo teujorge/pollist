@@ -29,5 +29,5 @@ export async function createPoll(fields: CreatePollFields) {
     },
   });
 
-  if (createdPoll) redirect(`/post/${createdPoll.id}`);
+  if (createdPoll) redirect(`/poll/${createdPoll.id}`);
 }
