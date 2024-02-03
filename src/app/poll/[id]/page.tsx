@@ -4,41 +4,46 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 
-export default function PollPage() {
+import { db } from "@/database/db";
+import Link from "next/link";
+import { PollCardVoting } from "@/app/components/PollCard/PollCardVoting";
+
+export default async function PollPage({ params }: { params: { id: string } }) {
+  const poll = await db.poll.findUnique({
+    where: {
+      id: params.id,
+    },
+    include: {
+      options: true,
+      votes: true,
+      author: true,
+    },
+  });
+
+  if (!poll) return { notFound: true };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center">
+    <main className="flex min-h-full flex-col justify-center">
       {/* header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1>Poll Title</h1>
-          <desc>Created by John Doe</desc>
+          <h1 className="text-3xl">{poll.title}</h1>
+          <span>
+            Created by{" "}
+            <Link href={`/user/${poll.author.id}`}>{poll.author.username}</Link>
+          </span>
         </div>
         <div className="text-sm text-neutral-400">
-          Created on January 1, 2024
+          Created on{" "}
+          {new Date(poll.createdAt).toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
         </div>
       </div>
 
-      {/* content */}
-      <ul className="divide-y divide-neutral-800">
-        <li className="py-4">
-          <div className="flex items-center justify-between">
-            <div>Option 1</div>
-            <div className="text-sm text-neutral-400">100 votes</div>
-          </div>
-        </li>
-        <li className="py-4">
-          <div className="flex items-center justify-between">
-            <div>Option 2</div>
-            <div className="text-sm text-neutral-400">50 votes</div>
-          </div>
-        </li>
-        <li className="py-4">
-          <div className="flex items-center justify-between">
-            <div>Option 3</div>
-            <div className="text-sm text-neutral-400">25 votes</div>
-          </div>
-        </li>
-      </ul>
+      <PollCardVoting {...poll} />
 
       {/* <BarChart className="aspect-[16/9] w-full" /> */}
     </main>
