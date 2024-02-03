@@ -1,64 +1,52 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { createPoll } from "./actions";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createPollSchema } from "./validation";
 import type { CreatePollFields } from "./validation";
 import { Input } from "../Input";
-import { useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
+import { useEffect } from "react";
 
 export function CreatePoll() {
-  const { user } = useUser();
-
   const form = useForm<CreatePollFields>({
     resolver: zodResolver(createPollSchema),
-    defaultValues: {
-      userId: user?.id,
-    },
   });
 
-  const [numOfOptions, setNumOfOptions] = useState(2);
+  const { fields, append, remove } = useFieldArray({
+    name: "options",
+    control: form.control,
+  });
 
-  function deleteOption() {
-    if (numOfOptions <= 2) return;
-    setNumOfOptions(numOfOptions - 1);
+  async function onSubmit(data: CreatePollFields) {
+    if (fields.length < 2) {
+      toast.warning("You need at least 2 options to create a poll");
+      return;
+    }
+
+    await createPoll(data);
   }
 
   function addOption() {
-    setNumOfOptions(numOfOptions + 1);
+    append({ value: "" });
   }
 
-  const optionInputs: React.ReactNode[] = [];
-
-  for (let index = 1; index <= numOfOptions; index++) {
-    optionInputs.push(
-      <Input
-        key={index}
-        labelProps={{ text: `Option ${index}` }}
-        inputProps={{
-          ...form.register(`option${index}` as keyof CreatePollFields),
-        }}
-        error={
-          form.formState.errors[`option${index}` as keyof CreatePollFields]
-            ?.message
-        }
-      />,
-    );
+  function deleteOption() {
+    if (fields.length === 0) return;
+    remove(fields.length - 1);
   }
 
   useEffect(() => {
+    console.log(fields);
     console.log(form.formState.errors);
-  }, [form.formState.errors]);
+  });
 
   return (
     <form
       className="flex w-96 flex-col overflow-auto rounded-xl border border-neutral-800 bg-black p-4 shadow-md"
-      onSubmit={form.handleSubmit(async (data) => await createPoll(data))}
+      onSubmit={form.handleSubmit(onSubmit)}
     >
-      <input type="hidden" {...form.register("userId")} />
-
       <Input
         labelProps={{ text: "Title" }}
         inputProps={{ ...form.register("title") }}
@@ -71,8 +59,18 @@ export function CreatePoll() {
         error={form.formState.errors.description?.message}
       />
 
-      {optionInputs.map((option) => {
-        return option;
+      {fields.map((option, index) => {
+        return (
+          <Input
+            key={index}
+            labelProps={{ text: `Option ${index + 1}` }}
+            inputProps={{
+              // register the 'value' field of each option object
+              ...form.register(`options.${index}.value`, { required: true }),
+            }}
+            error={form.formState.errors.options?.[index]?.value?.message}
+          />
+        );
       })}
 
       <div className="flex flex-row items-center justify-between">
