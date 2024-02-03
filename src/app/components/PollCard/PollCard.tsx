@@ -8,7 +8,7 @@ import { db } from "@/database/db";
 import { revalidateTag } from "next/cache";
 import Link from "next/link";
 import { SignedIn } from "@clerk/nextjs";
-import { PollCardVoteForm } from "./PollCardVoteForm";
+import { PollCardVoting } from "@/app/components/PollCard/PollCardVoting";
 import Image from "next/image";
 
 export type PollCardProps = Poll & {
@@ -39,11 +39,13 @@ export function PollCard(poll: PollCardProps) {
 
   return (
     <div className="w-full max-w-md rounded-lg border border-neutral-800 bg-neutral-950 p-6 shadow-md">
-      <h2 className="text-2xl font-bold text-white">{poll.title}</h2>
+      <Link href={`/poll/${poll.id}`}>
+        <h2 className="text-2xl font-bold">{poll.title}</h2>
+      </Link>
 
       <p className="mt-2 text-sm text-neutral-200">
-        Created by{" "}
-        <Link className="underline" href="#">
+        By{" "}
+        <Link href={`/user/${poll.userId}`}>
           {poll.author.imageUrl && (
             <Image
               src={poll.author.imageUrl}
@@ -63,7 +65,7 @@ export function PollCard(poll: PollCardProps) {
         })}
       </p>
 
-      <PollCardVoteForm {...poll} />
+      <PollCardVoting {...poll} />
 
       {/* temporary for dev & debugging */}
       <form
