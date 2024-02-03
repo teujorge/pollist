@@ -41,10 +41,5 @@ export async function Welcome() {
   // if the user is not signed in, redirect them to the home page
   else redirect("/");
 
-  // timeout and in the end if we are still at "/welcome" redirect to home page
-  setTimeout(() => {
-    if (window.location.pathname === "/welcome") redirect("/");
-  }, 3000);
-
   return <h1>WELCOME!!</h1>;
 }
