@@ -75,7 +75,7 @@ function Header() {
       <SignedIn>
         <div className="flex flex-row items-center gap-4">
           <Link href="/">Home</Link>
-          <Link href="/create-poll">Create Poll</Link>
+          <Link href="/create-poll">Create</Link>
           <div className="h-8 w-8">
             <UserButton afterSignOutUrl="/" />
           </div>
