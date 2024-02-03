@@ -9,6 +9,7 @@ import { dark } from "@clerk/themes";
 import "@/styles/globals.css";
 import { Inter } from "next/font/google";
 import Link from "next/link";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -55,6 +56,7 @@ export default function RootLayout({
       >
         <body className={`pt-16 font-sans ${inter.variable}`}>
           <Header />
+          <Toaster />
 
           {children}
           {crudPoll}
