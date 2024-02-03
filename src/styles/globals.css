@@ -42,6 +42,13 @@ input:active {
   background-color: rgb(32 32 32);
 }
 
+a {
+  transition: color 0.15s ease;
+}
+a:hover {
+  color: #a855f7;
+}
+
 .cl-card {
   border: 1px solid #262626;
 }
