@@ -5,10 +5,10 @@ import { handleVote } from "./actions";
 import { toast } from "sonner";
 import type { PollCardProps } from "./PollCard";
 
-export function PollCardVoting(poll: PollCardProps & { userId: string }) {
+export function PollCardVoting(poll: PollCardProps & { authorId: string }) {
   const { user } = useUser();
 
-  const userVote = poll.votes.find((vote) => vote.userId === user?.id);
+  const userVote = poll.votes.find((vote) => vote.voterId === user?.id);
 
   async function onVote(optionId: string) {
     if (!user) {

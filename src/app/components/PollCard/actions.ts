@@ -19,7 +19,6 @@ export async function handleVote({
     throw new Error("You need to be logged in to vote");
   }
 
-  console.log("DELETE", voteId);
   // user has already voted, so we need to remove the vote
   if (voteId) {
     await db.vote.delete({
@@ -32,7 +31,7 @@ export async function handleVote({
   // now we need to add the vote
   await db.vote.create({
     data: {
-      user: {
+      voter: {
         connect: {
           id: userId,
         },

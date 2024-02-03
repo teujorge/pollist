@@ -20,7 +20,7 @@ export async function createPoll(fields: CreatePollFields) {
 
   const createdPoll = await db.poll.create({
     data: {
-      userId: userId,
+      authorId: userId,
       title: fields.title,
       description: fields.description ?? "",
       options: {
@@ -28,6 +28,8 @@ export async function createPoll(fields: CreatePollFields) {
       },
     },
   });
+
+  console.log("Created Poll:", createdPoll);
 
   if (createdPoll) redirect(`/poll/${createdPoll.id}`);
 }

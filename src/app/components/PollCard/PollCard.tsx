@@ -7,7 +7,7 @@ import type { Poll, Vote, Option, User } from "@prisma/client";
 import { db } from "@/database/db";
 import { revalidateTag } from "next/cache";
 import Link from "next/link";
-import { SignedIn } from "@clerk/nextjs";
+import { SignedIn, auth } from "@clerk/nextjs";
 import { PollCardVoting } from "@/app/components/PollCard/PollCardVoting";
 import Image from "next/image";
 
@@ -20,6 +20,12 @@ export type PollCardProps = Poll & {
 export function PollCard(poll: PollCardProps) {
   async function deletePoll(formData: FormData) {
     "use server";
+
+    const { userId } = auth();
+
+    if (!userId || userId !== poll.author.id) {
+      throw new Error("You are not authorized to delete this poll");
+    }
 
     const id = (formData.get("id") ?? "") as string;
 
@@ -45,7 +51,7 @@ export function PollCard(poll: PollCardProps) {
 
       <p className="mt-2 text-sm text-neutral-200">
         By{" "}
-        <Link href={`/user/${poll.userId}`}>
+        <Link href={`/user/${poll.authorId}`}>
           {poll.author.imageUrl && (
             <Image
               src={poll.author.imageUrl}
