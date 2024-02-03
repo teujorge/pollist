@@ -19,8 +19,17 @@ export function CreatePoll() {
   });
 
   async function onSubmit(data: CreatePollFields) {
-    if (fields.length < 2) {
+    console.log(data);
+
+    if (fields.length === 0) {
       toast.warning("You need at least 2 options to create a poll");
+      append({ value: "" });
+      append({ value: "" });
+
+      return;
+    } else if (fields.length === 1) {
+      toast.warning("Please add another option to create a poll");
+      append({ value: "" });
       return;
     }
 
