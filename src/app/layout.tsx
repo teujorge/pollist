@@ -7,11 +7,11 @@ import {
 } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import "@/styles/globals.css";
-import { Inter } from "next/font/google";
+import { Nunito_Sans } from "next/font/google";
 import Link from "next/link";
 import { Toaster } from "sonner";
 
-const inter = Inter({
+const nunito = Nunito_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
 });
@@ -54,7 +54,7 @@ export default function RootLayout({
           },
         }}
       >
-        <body className={`pt-16 font-sans ${inter.variable}`}>
+        <body className={`font-sans ${nunito.variable}`}>
           <Header />
           <Toaster />
 
@@ -69,7 +69,7 @@ export default function RootLayout({
 
 function Header() {
   return (
-    <header className="fixed left-0 top-0 flex w-full justify-between bg-gradient-to-b from-black from-60% p-4">
+    <header className="sticky left-0 right-0 top-0 flex w-full justify-between bg-gradient-to-b from-black from-60% p-4">
       <Link href="/">Poll</Link>
 
       <SignedIn>
