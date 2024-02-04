@@ -5,10 +5,13 @@ import type { UserWebhookEvent } from "@clerk/clerk-sdk-node";
 
 export async function POST(req: NextRequest) {
   try {
+    // Log all headers for debugging
+    console.log("DEBUG Headers:", req.headers);
+
     // Verify the request is from the correct source
     const secret = req.headers.get("X-Webhook-Secret");
-    if (secret !== "whsec_tUSB9UbFd2Gg10QqIbqRU9rBPfHugC8l") {
-      console.log("Invalid webhook secret:", secret);
+    if (secret !== process.env.CLERK_WEBHOOK_SECRET_KEY) {
+      console.log("Invalid webhook secret:", secret); // this was "null" when I tested it
       // return NextResponse.json({
       //   status: 401,
       //   body: { error: "Unauthorized" },
