@@ -4,10 +4,6 @@ import type { NextRequest } from "next/server";
 import type { UserWebhookEvent } from "@clerk/clerk-sdk-node";
 import { Webhook } from "svix";
 
-export const config = {
-  api: { bodyParser: false },
-};
-
 export async function POST(req: NextRequest) {
   try {
     const headersObject: Record<string, string> = {};
