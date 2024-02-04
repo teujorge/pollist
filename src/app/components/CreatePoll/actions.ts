@@ -31,5 +31,5 @@ export async function createPoll(fields: CreatePollFields) {
 
   console.log("Created Poll:", createdPoll);
 
-  if (createdPoll) redirect(`/poll/${createdPoll.id}`);
+  if (createdPoll) redirect(`/polls/${createdPoll.id}`);
 }

@@ -30,7 +30,9 @@ export default async function PollPage({ params }: { params: { id: string } }) {
           <h1 className="text-3xl">{poll.title}</h1>
           <span>
             Created by{" "}
-            <Link href={`/user/${poll.author.id}`}>{poll.author.username}</Link>
+            <Link href={`/users/${poll.author.id}`}>
+              {poll.author.username}
+            </Link>
           </span>
         </div>
         <div className="text-sm text-neutral-400">

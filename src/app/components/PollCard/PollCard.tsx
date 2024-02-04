@@ -45,13 +45,13 @@ export function PollCard(poll: PollCardProps) {
 
   return (
     <div className="w-full max-w-md rounded-lg border border-neutral-800 bg-neutral-950 p-6 shadow-md">
-      <Link href={`/poll/${poll.id}`}>
+      <Link href={`/polls/${poll.id}`}>
         <h2 className="text-2xl font-bold">{poll.title}</h2>
       </Link>
 
       <p className="mt-2 text-sm text-neutral-200">
         By{" "}
-        <Link href={`/user/${poll.authorId}`}>
+        <Link href={`/users/${poll.authorId}`}>
           {poll.author.imageUrl && (
             <Image
               src={poll.author.imageUrl}
