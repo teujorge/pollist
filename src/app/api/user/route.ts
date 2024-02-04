@@ -2,24 +2,36 @@ import { db } from "@/database/db";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import type { UserWebhookEvent } from "@clerk/clerk-sdk-node";
+import { Webhook } from "svix";
+
+export const config = {
+  api: { bodyParser: false },
+};
 
 export async function POST(req: NextRequest) {
   try {
-    // Log all headers for debugging
-    console.log("DEBUG Headers:", req.headers);
+    const headersObject: Record<string, string> = {};
+    for (const [key, value] of req.headers.entries()) {
+      headersObject[key] = value;
+    }
 
-    // Verify the request is from the correct source
-    const secret = req.headers.get("X-Webhook-Secret");
-    if (secret !== process.env.CLERK_WEBHOOK_SECRET_KEY) {
-      console.log("Invalid webhook secret:", secret); // this was "null" when I tested it
-      // return NextResponse.json({
-      //   status: 401,
-      //   body: { error: "Unauthorized" },
-      // });
+    const payloadBuffer = await streamToBuffer(req.body);
+
+    const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET_KEY ?? "");
+    let msg;
+    try {
+      msg = wh.verify(payloadBuffer, headersObject);
+    } catch (err) {
+      console.error("Error verifying webhook:", msg, "Error:", err);
+      return NextResponse.json({
+        status: 400,
+        body: { error: "Invalid Signature" },
+      });
     }
 
     // Parse the request body as JSON
     const event = (await req.json()) as UserWebhookEvent;
+    // const event = JSON.parse(payload) as UserWebhookEvent;
 
     console.log("Clerk User Event:", event);
 
@@ -91,4 +103,20 @@ export async function POST(req: NextRequest) {
       body: { error: "Internal Server Error" },
     });
   }
+}
+
+async function streamToBuffer(
+  stream: ReadableStream<Uint8Array> | null,
+): Promise<Buffer> {
+  if (!stream) {
+    throw new Error("No request body");
+  }
+  const reader = stream.getReader();
+  const chunks: Uint8Array[] = [];
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+  }
+  return Buffer.concat(chunks);
 }
