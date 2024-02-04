@@ -9,10 +9,10 @@ export async function POST(req: NextRequest) {
     const secret = req.headers.get("X-Webhook-Secret");
     if (secret !== "whsec_tUSB9UbFd2Gg10QqIbqRU9rBPfHugC8l") {
       console.log("Invalid webhook secret:", secret);
-      return NextResponse.json({
-        status: 401,
-        body: { error: "Unauthorized" },
-      });
+      // return NextResponse.json({
+      //   status: 401,
+      //   body: { error: "Unauthorized" },
+      // });
     }
 
     // Parse the request body as JSON
