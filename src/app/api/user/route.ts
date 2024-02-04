@@ -25,10 +25,8 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Parse the request body as JSON
-    const event = (await req.json()) as UserWebhookEvent;
-    // const event = JSON.parse(payload) as UserWebhookEvent;
-
+    // Convert buffer to JSON
+    const event = JSON.parse(payloadBuffer.toString()) as UserWebhookEvent;
     console.log("Clerk User Event:", event);
 
     // Ensure the request body is a valid event object
