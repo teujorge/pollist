@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
           data: {
             id: data.id,
             username: data.username ?? data.first_name ?? data.last_name,
-            imageUrl: data.image_url ?? data.profile_image_url,
+            imageUrl: data.image_url,
           },
         });
 
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
           where: { id: data.id },
           data: {
             username: data.username ?? data.first_name ?? data.last_name,
-            imageUrl: data.image_url ?? data.profile_image_url,
+            imageUrl: data.image_url,
           },
         });
 
