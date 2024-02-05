@@ -69,7 +69,7 @@ export default function RootLayout({
 
 function Header() {
   return (
-    <header className="sticky left-0 right-0 top-0 flex w-full justify-between bg-gradient-to-b from-black from-60% p-4">
+    <header className="sticky left-0 right-0 top-0 z-20 flex w-full justify-between bg-gradient-to-b from-black from-60% p-4">
       <Link href="/">Poll</Link>
 
       <SignedIn>
