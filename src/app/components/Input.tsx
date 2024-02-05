@@ -5,15 +5,17 @@ export function Input({
   error,
 }: {
   wrapperProps?: React.ComponentProps<"div">;
-  labelProps: React.ComponentProps<"label"> & { text?: string };
+  labelProps?: React.ComponentProps<"label"> & { text: string };
   inputProps: React.ComponentProps<"input">;
   error?: string;
 }) {
   return (
     <div className="flex flex-col p-0.5" {...wrapperProps}>
-      <label htmlFor={inputProps.name} {...labelProps}>
-        {labelProps.text}
-      </label>
+      {labelProps?.text && (
+        <label htmlFor={inputProps.name} {...labelProps}>
+          {labelProps.text}
+        </label>
+      )}
       <input
         id={inputProps.name}
         autoComplete="off"
