@@ -2,7 +2,7 @@ import { db } from "@/database/db";
 import { PollCard } from "./components/PollCard/PollCard";
 import { SearchBar } from "./index/components/SearchBar";
 
-const PAGE_SIZE = 1;
+const PAGE_SIZE = 10;
 
 export default async function HomePage({
   searchParams,
