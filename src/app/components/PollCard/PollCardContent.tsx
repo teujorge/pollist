@@ -51,32 +51,36 @@ export async function PollCardContent({ pollId }: { pollId: string }) {
   }
 
   return (
-    <div className="w-full rounded-lg border border-neutral-800 bg-neutral-950 p-6 shadow-md">
+    <div className="flex w-full flex-col gap-2 rounded-lg border border-neutral-800 bg-neutral-950 p-6 shadow-md">
       <Link href={`/polls/${poll.id}`}>
         <h2 className="text-2xl font-bold">{poll.title}</h2>
       </Link>
 
-      <p className="mt-2 text-sm text-neutral-200">
-        By{" "}
-        <Link href={`/users/${poll.authorId}`}>
-          {poll.author.imageUrl && (
-            <Image
-              src={poll.author.imageUrl}
-              alt={poll.author.username ?? "author's avatar"}
-              width={24}
-              height={24}
-              className="rounded-full"
-            />
-          )}{" "}
-          {poll.author.username}
-        </Link>{" "}
-        on{" "}
-        {new Date(poll.createdAt).toLocaleDateString(undefined, {
-          year: "2-digit",
-          month: "short",
-          day: "numeric",
-        })}
-      </p>
+      <Link
+        href={`/users/${poll.authorId}`}
+        className="flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 transition-colors hover:bg-purple-500"
+      >
+        {poll.author.imageUrl && (
+          <Image
+            src={poll.author.imageUrl}
+            alt={poll.author.username ?? "author's avatar"}
+            width={38}
+            height={38}
+            className="rounded-full"
+          />
+        )}
+
+        <div className="flex flex-col justify-center gap-1 [&>desc]:text-sm">
+          <desc className="text-neutral-200">{poll.author.username}</desc>
+          <desc className="text-neutral-400">
+            {new Date(poll.createdAt).toLocaleDateString(undefined, {
+              year: "2-digit",
+              month: "short",
+              day: "numeric",
+            })}
+          </desc>
+        </div>
+      </Link>
 
       <PollCardVoting {...poll} />
 

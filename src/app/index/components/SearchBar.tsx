@@ -19,6 +19,7 @@ export function SearchBar() {
 
   return (
     <Input
+      wrapperProps={{ className: "p-1" }}
       inputProps={{
         type: "text",
         placeholder: "Search for a poll",
