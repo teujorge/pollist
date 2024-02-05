@@ -1,7 +1,6 @@
 "use server";
 
 import { db } from "@/database/db";
-import { revalidateTag } from "next/cache";
 
 export async function handleVote({
   userId,
@@ -9,9 +8,9 @@ export async function handleVote({
   optionId,
   voteId,
 }: {
-  userId: string | undefined;
+  userId: string;
   pollId: string;
-  optionId: string;
+  optionId: string | undefined;
   voteId: string | undefined;
 }) {
   // user is not logged in, so we cannot vote
@@ -19,35 +18,53 @@ export async function handleVote({
     throw new Error("You need to be logged in to vote");
   }
 
-  // user has already voted, so we need to remove the vote
+  // user has already voted
   if (voteId) {
-    await db.vote.delete({
-      where: {
-        id: voteId,
+    // need to change the vote
+    if (optionId) {
+      await db.vote.update({
+        where: {
+          id: voteId,
+        },
+        data: {
+          option: {
+            connect: {
+              id: optionId,
+            },
+          },
+        },
+      });
+    }
+    // need to remove the vote
+    else {
+      await db.vote.delete({
+        where: {
+          id: voteId,
+        },
+      });
+    }
+  }
+
+  // user has not voted yet
+  else {
+    await db.vote.create({
+      data: {
+        voter: {
+          connect: {
+            id: userId,
+          },
+        },
+        option: {
+          connect: {
+            id: optionId,
+          },
+        },
+        poll: {
+          connect: {
+            id: pollId,
+          },
+        },
       },
     });
   }
-
-  // now we need to add the vote
-  await db.vote.create({
-    data: {
-      voter: {
-        connect: {
-          id: userId,
-        },
-      },
-      option: {
-        connect: {
-          id: optionId,
-        },
-      },
-      poll: {
-        connect: {
-          id: pollId,
-        },
-      },
-    },
-  });
-
-  revalidateTag("/");
 }
