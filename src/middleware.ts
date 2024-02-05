@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 export default authMiddleware({
   publicRoutes: ["/", "/welcome", "/api/user"],
 
-  afterAuth(auth) {
+  afterAuth(auth, req, evt) {
     // allow access to  public routes
     if (auth.isPublicRoute) {
       return NextResponse.next();
@@ -19,7 +19,9 @@ export default authMiddleware({
     }
 
     // redirect to login
-    return NextResponse.redirect("/");
+    const url = req.nextUrl.clone();
+    url.pathname = "/";
+    return NextResponse.redirect(url);
   },
 });
 
