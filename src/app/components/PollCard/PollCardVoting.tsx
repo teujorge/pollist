@@ -3,9 +3,9 @@
 import { useUser } from "@clerk/nextjs";
 import { handleVote } from "./actions";
 import { toast } from "sonner";
-import type { PollCardProps } from "./PollCard";
+import type { PollDetails } from "./types";
 
-export function PollCardVoting(poll: PollCardProps & { authorId: string }) {
+export function PollCardVoting(poll: PollDetails & { authorId: string }) {
   const { user } = useUser();
 
   const userVote = poll.votes.find((vote) => vote.voterId === user?.id);
