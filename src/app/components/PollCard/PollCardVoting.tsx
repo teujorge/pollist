@@ -18,7 +18,7 @@ export function PollCardVoting(poll: PollDetails & { authorId: string }) {
 
     await handleVote({
       pollId: poll.id,
-      optionId,
+      optionId: userVote?.optionId === optionId ? undefined : optionId,
       userId: user?.id,
       voteId: userVote?.id,
     });
