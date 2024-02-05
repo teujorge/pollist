@@ -19,8 +19,6 @@ export async function PollCard({ pollId }: { pollId: string }) {
     include: { votes: true, options: true, author: true },
   });
 
-  console.log("POLL CONTENT LOADED", pollId);
-
   if (poll === null) return null;
 
   async function deletePoll(formData: FormData) {
