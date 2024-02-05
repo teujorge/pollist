@@ -51,7 +51,7 @@ export async function PollCardContent({ pollId }: { pollId: string }) {
   }
 
   return (
-    <div className="w-full max-w-md rounded-lg border border-neutral-800 bg-neutral-950 p-6 shadow-md">
+    <div className="w-full rounded-lg border border-neutral-800 bg-neutral-950 p-6 shadow-md">
       <Link href={`/polls/${poll.id}`}>
         <h2 className="text-2xl font-bold">{poll.title}</h2>
       </Link>
