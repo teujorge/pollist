@@ -5,9 +5,12 @@ import { NextResponse } from "next/server";
 // Please edit this to allow other routes to be public as needed.
 // See https://clerk.com/docs/references/nextjs/auth-middleware for more information about configuring your Middleware
 export default authMiddleware({
-  publicRoutes: ["/", "/welcome", "/api/user"],
+  // publicRoutes: ["/", "/welcome", "/api/user"],
 
-  afterAuth(auth, req, evt) {
+  afterAuth(auth, req) {
+    // allow all users access
+    return NextResponse.next();
+
     // allow access to  public routes
     if (auth.isPublicRoute) {
       return NextResponse.next();
