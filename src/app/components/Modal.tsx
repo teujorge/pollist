@@ -1,9 +1,12 @@
 "use client";
 
 import styles from "@/styles/modal.module.css";
+import { useLockBodyScroll } from "@uidotdev/usehooks";
 import { useRouter } from "next/navigation";
 
 export function Modal({ children }: { children: React.ReactNode }) {
+  useLockBodyScroll();
+
   const router = useRouter();
 
   let bgMouseUp = false;
