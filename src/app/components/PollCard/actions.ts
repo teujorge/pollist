@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/database/db";
+import { revalidateTag } from "next/cache";
 
 export async function handleVote({
   userId,
@@ -67,4 +68,6 @@ export async function handleVote({
       },
     });
   }
+
+  revalidateTag(pollId);
 }
