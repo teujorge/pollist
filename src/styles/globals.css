@@ -38,7 +38,11 @@ input {
   border-width: 1px;
   border-color: transparent;
   outline: none;
-  transition: border-color 0.15s ease background-color 0.1s ease;
+  transition: border-color 0.15s ease background-color 0.15s ease;
+}
+
+input:focus {
+  border-color: #a855f7;
 }
 
 input:hover,
