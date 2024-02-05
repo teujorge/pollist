@@ -14,7 +14,11 @@ export const db =
   globalForPrisma.prisma ??
   new PrismaClient({
     log:
-      env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+      env.NODE_ENV === "test"
+        ? ["query", "warn", "error"]
+        : env.NODE_ENV === "development"
+          ? ["warn", "error"]
+          : ["error"],
     adapter: new PrismaPlanetScale(client),
   });
 
