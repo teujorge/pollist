@@ -40,11 +40,6 @@ export function CreatePoll() {
     append({ value: "" });
   }
 
-  function deleteOption() {
-    if (fields.length === 0) return;
-    remove(fields.length - 1);
-  }
-
   return (
     <form
       className="flex w-96 flex-col overflow-auto rounded-xl border border-neutral-800 bg-black p-4 shadow-md"
@@ -64,26 +59,47 @@ export function CreatePoll() {
 
       {fields.map((option, index) => {
         return (
-          <Input
-            key={index}
-            labelProps={{ text: `Option ${index + 1}` }}
-            inputProps={{
-              // register the 'value' field of each option object
-              ...form.register(`options.${index}.value`, { required: true }),
-            }}
-            error={form.formState.errors.options?.[index]?.value?.message}
-          />
+          <div className=" flex flex-row ">
+            <Input
+              key={index}
+              labelProps={{ text: `Option ${index + 1}` }}
+              inputProps={{
+                // register the 'value' field of each option object
+                ...form.register(`options.${index}.value`, {
+                  required: true,
+                }),
+              }}
+              error={form.formState.errors.options?.[index]?.value?.message}
+            />
+
+            {index === 0 || index === 1 ? (
+              ""
+            ) : (
+              <div className="flex  justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    remove(index);
+                  }}
+                >
+                  <svg
+                    className="h-8 w-8 fill-red-500 stroke-1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                  >
+                    <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
+                  </svg>
+                  {/* <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--> */}
+                </button>
+              </div>
+            )}
+          </div>
         );
       })}
 
-      <div className="flex flex-row items-center justify-between">
-        <button className="text-green-500" type="button" onClick={addOption}>
-          add
-        </button>
-        <button className="text-red-500" type="button" onClick={deleteOption}>
-          delete
-        </button>
-      </div>
+      <button className="my-4 text-green-500" type="button" onClick={addOption}>
+        + add option
+      </button>
 
       <button
         className="mx-auto w-fit rounded-lg bg-purple-500 px-4 py-2"
