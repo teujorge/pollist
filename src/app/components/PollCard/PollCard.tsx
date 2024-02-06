@@ -12,7 +12,7 @@ export function PollCard(poll: PollDetails) {
 
       <Link
         href={`/users/${poll.authorId}`}
-        className="flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 transition-colors hover:bg-purple-500"
+        className="hovact:bg-purple-500 flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 transition-colors"
       >
         {poll.author.imageUrl && (
           <Image

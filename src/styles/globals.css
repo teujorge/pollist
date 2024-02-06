@@ -54,7 +54,13 @@ input:active {
 a {
   transition: color 0.15s ease;
 }
-a:hover {
+
+@media (min-width: 640px) {
+  a:hover {
+    color: #a855f7;
+  }
+}
+a:active {
   color: #a855f7;
 }
 

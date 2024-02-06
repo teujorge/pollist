@@ -1,7 +1,8 @@
 import { type Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme";
+import plugin from "tailwindcss/plugin";
 
-export default {
+const tailwindConfig: Config = {
   content: ["./src/**/*.tsx"],
   theme: {
     extend: {
@@ -10,5 +11,14 @@ export default {
       },
     },
   },
-  plugins: [],
-} satisfies Config;
+  plugins: [
+    plugin(function ({ addVariant }) {
+      addVariant("hovact", [
+        "@media (min-width: 640px) { &:hover }",
+        "&:active",
+      ]);
+    }),
+  ],
+};
+
+export default tailwindConfig;

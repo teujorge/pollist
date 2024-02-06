@@ -114,7 +114,7 @@ export function PollCardVoting(props: PollCardVotingProps) {
       <ul className="divide-y divide-neutral-800">
         {poll.options.map((option) => (
           <li key={option.id} onClick={() => onVote(option.id)}>
-            <div className="flex cursor-pointer flex-row items-center gap-2 rounded-xl p-4 transition-colors hover:bg-neutral-900">
+            <div className="hovact:bg-neutral-900 flex cursor-pointer flex-row items-center gap-2 rounded-xl p-4 transition-colors">
               <div
                 className={`h-4 w-4 rounded-full transition-colors
               ${optimisticVoteOptionId === option.id ? "bg-purple-500" : "bg-neutral-700"}

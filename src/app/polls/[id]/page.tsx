@@ -48,7 +48,7 @@ export default async function PollPage({ params }: { params: { id: string } }) {
           {userId === poll.authorId && (
             <Link
               href={`/polls/delete?id=${poll.id}`}
-              className="text-red-500 hover:text-red-400"
+              className="hovact:text-red-400 text-red-500"
             >
               Delete
             </Link>
@@ -57,6 +57,8 @@ export default async function PollPage({ params }: { params: { id: string } }) {
       </div>
 
       <PollCardVoting poll={poll} usePolling={true} />
+
+      <div className="hovact:bg-red-500 h-10 w-10 bg-blue-500"></div>
 
       {/* <BarChart className="aspect-[16/9] w-full" /> */}
     </main>
