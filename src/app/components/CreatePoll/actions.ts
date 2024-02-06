@@ -24,7 +24,11 @@ export async function createPoll(fields: CreatePollFields) {
       title: fields.title,
       description: fields.description ?? "",
       options: {
-        create: fields.options.map((option) => ({ text: option.value })),
+        create: [
+          { text: fields.option1 },
+          { text: fields.option2 },
+          ...fields.options.map((option) => ({ text: option.value })),
+        ],
       },
     },
   });
