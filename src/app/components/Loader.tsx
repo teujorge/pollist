@@ -6,7 +6,14 @@ const Loader = React.forwardRef<
   React.HTMLProps<HTMLSpanElement>
 >((props, ref) => {
   return (
-    <span {...props} ref={ref} className={clsx("loader", props.className)} />
+    <span
+      {...props}
+      ref={ref}
+      className={clsx(
+        "loader h-10 w-10 border-4 border-neutral-300",
+        props.className,
+      )}
+    />
   );
 });
 
