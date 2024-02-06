@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createPollSchema } from "./validation";
 import { Input } from "../Input";
 import { CancelSvg } from "@/app/svgs/CancelSvg";
+import { Loader } from "../Loader";
 import type { CreatePollFields } from "./validation";
 
 export function CreatePoll() {
@@ -90,7 +91,7 @@ export function CreatePoll() {
 
       <div className="mx-auto h-10">
         {false ? (
-          <span className="loader" />
+          <Loader />
         ) : (
           <button className="rounded-lg bg-purple-500 px-4 py-2" type="submit">
             Submit
