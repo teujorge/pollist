@@ -1,8 +1,8 @@
 "use client";
 
 import styles from "@/styles/modal.module.css";
-import { useLockBodyScroll } from "@uidotdev/usehooks";
 import { useRouter } from "next/navigation";
+import { useLockBodyScroll } from "@uidotdev/usehooks";
 
 export function Modal({ children }: { children: React.ReactNode }) {
   useLockBodyScroll();
@@ -14,7 +14,7 @@ export function Modal({ children }: { children: React.ReactNode }) {
 
   return (
     <div
-      className={`fixed inset-0 z-40 flex justify-center bg-black bg-opacity-65 backdrop-blur-sm ${styles["bg-in"]}`}
+      className={`fixed inset-0 z-40 flex bg-black bg-opacity-65 backdrop-blur-sm ${styles["bg-in"]} overflow-hidden`}
       onMouseDown={() => {
         bgMouseUp = false;
         bgMouseDown = true;
