@@ -1,10 +1,10 @@
-import { CreatePoll } from "@/app/components/CreatePoll/CreatePollForm";
+import { CreatePollForm } from "@/app/components/CrudPoll/CreatePollForm";
 import { Modal } from "@/app/components/Modal";
 
 export default function CreatePollPage() {
   return (
     <Modal>
-      <CreatePoll />
+      <CreatePollForm />
     </Modal>
   );
 }

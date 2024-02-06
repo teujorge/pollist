@@ -9,7 +9,7 @@ import { CancelSvg } from "@/app/svgs/CancelSvg";
 import { Loader } from "../Loader";
 import type { CreatePollFields } from "./validation";
 
-export function CreatePoll() {
+export function CreatePollForm() {
   const form = useForm<CreatePollFields>({
     resolver: zodResolver(createPollSchema),
   });

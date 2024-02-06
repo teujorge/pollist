@@ -1,9 +1,7 @@
 import Link from "next/link";
-import { SignedIn } from "@clerk/nextjs";
 import { PollCardVoting } from "@/app/components/PollCard/PollCardVoting";
 import Image from "next/image";
 import type { PollDetails } from "./types";
-import { deletePoll } from "./actions";
 
 export function PollCard(poll: PollDetails) {
   return (
@@ -39,21 +37,6 @@ export function PollCard(poll: PollDetails) {
       </Link>
 
       <PollCardVoting {...poll} />
-
-      {/* temporary for dev & debugging */}
-      <form
-        key={poll.id}
-        action={deletePoll}
-        className="flex flex-row gap-2 p-2"
-      >
-        <input type="hidden" name="id" value={poll.id} />
-        <input type="hidden" name="authorId" value={poll.authorId} />
-        <SignedIn>
-          <button type="submit" className="text-red-500">
-            -delete-
-          </button>
-        </SignedIn>
-      </form>
     </div>
   );
 }

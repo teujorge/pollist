@@ -37,3 +37,15 @@ export async function createPoll(fields: CreatePollFields) {
 
   if (createdPoll) redirect(`/polls/${createdPoll.id}`);
 }
+
+export async function deletePoll(formData: FormData) {
+  const { userId } = auth();
+
+  const pollId = (formData.get("pollId") ?? "") as string;
+
+  if (pollId === "") return;
+
+  const deletedPoll = await db.poll.delete({ where: { id: pollId } });
+
+  if (deletedPoll) redirect(`/users/${userId}`);
+}

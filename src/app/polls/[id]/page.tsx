@@ -7,8 +7,11 @@
 import { db } from "@/database/db";
 import Link from "next/link";
 import { PollCardVoting } from "@/app/components/PollCard/PollCardVoting";
+import { auth } from "@clerk/nextjs";
 
 export default async function PollPage({ params }: { params: { id: string } }) {
+  const { userId } = auth();
+
   const poll = await db.poll.findUnique({
     where: {
       id: params.id,
@@ -35,13 +38,21 @@ export default async function PollPage({ params }: { params: { id: string } }) {
             </Link>
           </span>
         </div>
-        <div className="text-sm text-neutral-400">
+        <div className="flex flex-row gap-2 text-sm text-neutral-400">
           Created on{" "}
           {new Date(poll.createdAt).toLocaleDateString(undefined, {
             year: "numeric",
             month: "long",
             day: "numeric",
           })}
+          {userId === poll.authorId && (
+            <Link
+              href={`/polls/delete?pollId=${poll.id}`}
+              className="text-red-500 hover:text-red-400"
+            >
+              Delete
+            </Link>
+          )}
         </div>
       </div>
 

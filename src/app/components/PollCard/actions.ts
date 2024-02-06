@@ -1,8 +1,6 @@
 "use server";
 
 import { db } from "@/database/db";
-import { auth } from "@clerk/nextjs";
-import { revalidateTag } from "next/cache";
 
 export async function handleVote({
   userId,
@@ -69,31 +67,4 @@ export async function handleVote({
       },
     });
   }
-}
-
-export async function deletePoll(formData: FormData) {
-  "use server";
-
-  const { userId } = auth();
-
-  const authorId = (formData.get("authorId") ?? "") as string;
-
-  if (!userId || userId !== authorId) {
-    throw new Error("You are not authorized to delete this poll");
-  }
-
-  const id = (formData.get("id") ?? "") as string;
-
-  if (id === "") return;
-
-  // parallel delete all votes and options
-  await Promise.all([
-    db.vote.deleteMany({ where: { pollId: id } }),
-    db.option.deleteMany({ where: { pollId: id } }),
-  ]);
-
-  // safely delete poll without relation errors
-  await db.poll.delete({ where: { id: id } });
-
-  revalidateTag("/");
 }
