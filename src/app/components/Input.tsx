@@ -1,3 +1,5 @@
+import clsx from "clsx";
+
 export function Input({
   wrapperProps,
   labelProps,
@@ -6,21 +8,24 @@ export function Input({
 }: {
   wrapperProps?: React.ComponentProps<"div">;
   labelProps?: React.ComponentProps<"label"> & { text: string };
-  inputProps: React.ComponentProps<"input">;
+  inputProps?: React.ComponentProps<"input">;
   error?: string;
 }) {
   return (
-    <div className="flex w-full flex-col p-1" {...wrapperProps}>
+    <div
+      {...wrapperProps}
+      className={clsx("flex w-full flex-col p-1", wrapperProps?.className)}
+    >
       {labelProps?.text && (
-        <label htmlFor={inputProps.name} {...labelProps}>
+        <label htmlFor={inputProps?.name} {...labelProps}>
           {labelProps.text}
         </label>
       )}
       <input
-        id={inputProps.name}
+        id={inputProps?.name}
         autoComplete="off"
-        className={error && "border-red-500"}
         {...inputProps}
+        className={clsx(error && "border-red-500", inputProps?.className)}
       />
       <span
         role="alert"
