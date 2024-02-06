@@ -78,7 +78,7 @@ function Header() {
         <Link href="/polls/create">Create</Link>
 
         <SignedIn>
-          <div className="h-8 w-8">
+          <div className="h-8 w-8 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500">
             <UserButton afterSignOutUrl="/" />
           </div>
         </SignedIn>
