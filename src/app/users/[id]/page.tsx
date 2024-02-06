@@ -28,7 +28,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
         />
       )}
       <h1>{user.username}</h1>
-      <desc>{user.id}</desc>
+      <p>{user.id}</p>
     </Card>
   );
 }

@@ -1,5 +1,4 @@
 import { Input } from "./components/Input";
-import { ArrowSvg } from "./svgs/ArrowSvg";
 
 export default function HomePageLoading() {
   return (
@@ -15,15 +14,8 @@ export default function HomePageLoading() {
               placeholder: "Search for a poll",
             }}
           />
-          <button className="pointer-events-none h-8 w-8 rotate-180 cursor-default rounded-md p-2 opacity-50 transition-colors hover:bg-neutral-800">
-            <ArrowSvg className="h-full w-full fill-neutral-200" />
-          </button>
-          <button className="pointer-events-none h-8 w-8 cursor-default rounded-md p-2 opacity-50 transition-colors hover:bg-neutral-800">
-            <ArrowSvg className="h-full w-full fill-neutral-200" />
-          </button>
         </div>
       </div>
-      <>LOADING SPINNER HERE</>
     </main>
   );
 }

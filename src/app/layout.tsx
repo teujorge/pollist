@@ -72,19 +72,21 @@ function Header() {
     <header className="sticky left-0 right-0 top-0 z-20 flex w-full justify-between bg-gradient-to-b from-black from-60% p-4">
       <Link href="/">Poll</Link>
 
-      <SignedIn>
-        <div className="flex flex-row items-center gap-4">
-          <Link href="/">Home</Link>
-          <Link href="/polls/create">Create</Link>
+      <div className="flex flex-row items-center gap-4">
+        <Link href="/">Home</Link>
+
+        <Link href="/polls/create">Create</Link>
+
+        <SignedIn>
           <div className="h-8 w-8">
             <UserButton afterSignOutUrl="/" />
           </div>
-        </div>
-      </SignedIn>
+        </SignedIn>
 
-      <SignedOut>
-        <SignInButton mode="modal" />
-      </SignedOut>
+        <SignedOut>
+          <SignInButton mode="modal" />
+        </SignedOut>
+      </div>
     </header>
   );
 }
