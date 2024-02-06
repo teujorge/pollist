@@ -25,25 +25,33 @@ export function useInfinitePolls({ query }: { query: string }) {
   }, [query]);
 
   useEffect(() => {
-    if (isLoading) return;
-    if (!hasNext) return;
-    if (!entry?.isIntersecting) return;
+    const loadPolls = () => {
+      if (isLoading || !hasNext) return;
 
-    setIsLoading(true);
-    getPolls({ page: pageRef.current, search: query })
-      .then((newPolls) => {
-        pageRef.current++;
-        setPolls((prevPolls) => [...prevPolls, ...newPolls]);
-        if (newPolls.length < PAGE_SIZE) setHasNext(false);
-      })
-      .catch((e) => {
-        toast.error("Failed to load polls");
-        console.error(e);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, [entry?.isIntersecting, hasNext]);
+      setIsLoading(true);
+
+      getPolls({ page: pageRef.current, search: query })
+        .then((newPolls) => {
+          // Append new page
+          setPolls((prevPolls) => [...prevPolls, ...newPolls]);
+          pageRef.current++;
+
+          // Check if there are no more polls to load
+          if (newPolls.length < PAGE_SIZE) setHasNext(false);
+        })
+        .catch((e) => {
+          toast.error("Failed to load polls");
+          console.error(e);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    };
+
+    if (isLoading || !hasNext || !entry?.isIntersecting) return;
+
+    loadPolls();
+  }, [entry?.isIntersecting, hasNext, isLoading, query]);
 
   return {
     ref,
