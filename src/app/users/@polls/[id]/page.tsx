@@ -7,14 +7,18 @@ export default async function MyPolls({ params }: { params: { id: string } }) {
     where: {
       authorId: params.id,
     },
-    select: { id: true },
+    include: {
+      author: true,
+      votes: true,
+      options: true,
+    },
   });
 
   return (
     <Card>
       <h2>Polls</h2>
       {polls.map((poll) => (
-        <PollCard key={poll.id} pollId={poll.id} />
+        <PollCard key={poll.id} {...poll} />
       ))}
     </Card>
   );
