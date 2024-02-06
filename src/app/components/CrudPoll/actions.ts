@@ -41,9 +41,19 @@ export async function createPoll(fields: CreatePollFields) {
 export async function deletePoll(formData: FormData) {
   const { userId } = auth();
 
+  // Get the pollId from the form data (dangerous data)
+
   const pollId = (formData.get("pollId") ?? "") as string;
 
   if (pollId === "") return;
+
+  // Get authorId from db (safe data)
+
+  const poll = await db.poll.findUnique({ where: { id: pollId } });
+
+  if (!poll || poll.authorId !== userId) {
+    throw new Error("You are not authorized to delete this poll");
+  }
 
   const deletedPoll = await db.poll.delete({ where: { id: pollId } });
 

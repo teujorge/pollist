@@ -6,7 +6,7 @@ export default function DeletePollPage({
 }: {
   searchParams: Record<string, string | string[] | undefined>;
 }) {
-  const pollId = searchParams?.pollId?.toString() ?? "";
+  const pollId = searchParams?.id?.toString() ?? "";
 
   return (
     <Modal>

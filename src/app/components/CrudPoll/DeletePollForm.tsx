@@ -20,7 +20,13 @@ export function DeletePollForm({ pollId }: { pollId: string }) {
       await deletePoll(formData);
     } catch (error) {
       setIsLoading(false);
-      toast.error("Error deleting poll");
+
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unknown error occurred while deleting the poll");
+      }
+
       console.error("Error:", error);
     }
   }
