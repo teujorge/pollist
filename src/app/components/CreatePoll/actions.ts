@@ -2,8 +2,8 @@
 
 import { db } from "@/database/db";
 import { redirect } from "next/navigation";
-import type { CreatePollFields } from "./validation";
 import { auth } from "@clerk/nextjs";
+import type { CreatePollFields } from "./validation";
 
 export async function createPoll(fields: CreatePollFields) {
   const { userId } = auth();

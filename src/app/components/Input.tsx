@@ -10,7 +10,7 @@ export function Input({
   error?: string;
 }) {
   return (
-    <div className="flex flex-col p-0.5" {...wrapperProps}>
+    <div className="flex w-full flex-col p-1" {...wrapperProps}>
       {labelProps?.text && (
         <label htmlFor={inputProps.name} {...labelProps}>
           {labelProps.text}
