@@ -58,8 +58,6 @@ export default async function PollPage({ params }: { params: { id: string } }) {
 
       <PollCardVoting poll={poll} usePolling={true} />
 
-      <div className="hovact:bg-red-500 h-10 w-10 bg-blue-500"></div>
-
       {/* <BarChart className="aspect-[16/9] w-full" /> */}
     </main>
   );
