@@ -36,7 +36,7 @@ export function PollCard(poll: PollDetails) {
         </div>
       </Link>
 
-      <PollCardVoting {...poll} />
+      <PollCardVoting poll={poll} />
     </div>
   );
 }

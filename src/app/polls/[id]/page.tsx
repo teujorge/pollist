@@ -56,7 +56,7 @@ export default async function PollPage({ params }: { params: { id: string } }) {
         </div>
       </div>
 
-      <PollCardVoting {...poll} />
+      <PollCardVoting poll={poll} usePolling={true} />
 
       {/* <BarChart className="aspect-[16/9] w-full" /> */}
     </main>

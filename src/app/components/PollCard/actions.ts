@@ -68,3 +68,12 @@ export async function handleVote({
     });
   }
 }
+
+export async function getPoll(pollId: string) {
+  const poll = await db.poll.findUnique({
+    where: { id: pollId },
+    include: { votes: true },
+  });
+
+  return poll;
+}
