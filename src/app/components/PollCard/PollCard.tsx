@@ -6,13 +6,9 @@ import type { PollDetails } from "./types";
 export function PollCard(poll: PollDetails) {
   return (
     <div className="flex w-full flex-col gap-2 rounded-lg border border-neutral-800 bg-neutral-950 p-6 shadow-md">
-      <Link href={`/polls/${poll.id}`} className="w-fit">
-        <h2 className="text-2xl font-bold">{poll.title}</h2>
-      </Link>
-
       <Link
         href={`/users/${poll.authorId}`}
-        className="hovact:bg-purple-500 flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 transition-colors"
+        className="flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 pl-0 transition-colors hovact:bg-purple-500"
       >
         {poll.author.imageUrl && (
           <Image
@@ -34,6 +30,9 @@ export function PollCard(poll: PollDetails) {
             })}
           </p>
         </div>
+      </Link>
+      <Link href={`/polls/${poll.id}`} className="w-fit">
+        <h2 className="text-2xl font-bold">{poll.title}</h2>
       </Link>
 
       <PollCardVoting poll={poll} />
