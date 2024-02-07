@@ -23,7 +23,7 @@ const tailwindConfig: Config = {
     // scrollbar-gutter
     plugin(function ({ addUtilities }) {
       addUtilities({
-        ".scrollbar-gutter-stable": {
+        ".scrollbar-gutter": {
           "scrollbar-gutter": "stable both-edges",
         },
       });
