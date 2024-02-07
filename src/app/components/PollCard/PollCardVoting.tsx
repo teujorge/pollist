@@ -153,7 +153,7 @@ export function PollCardVoting(props: PollCardVotingProps) {
 
           return (
             <li key={option.id} onClick={() => onVote(option.id)}>
-              <div className="relative flex cursor-pointer flex-row items-center gap-2 rounded-xl p-4 transition-colors hovact:bg-neutral-900 [&>div]:z-10 [&>p]:z-10 [&>span]:hover:opacity-20">
+              <div className="relative flex cursor-pointer flex-row items-center gap-2 rounded-xl p-4 transition-colors hovact:bg-neutral-900 [&>div]:z-10 [&>p]:z-10 [&>span]:hovact:opacity-20">
                 <span
                   className="absolute left-0 top-0 my-auto h-full rounded-xl bg-purple-500 opacity-10 transition-all"
                   style={{ width: `${votePercentage}%` }}

@@ -20,15 +20,16 @@ model User {
 }
 
 model Poll {
-    id          String   @id @default(uuid())
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-    authorId    String
-    title       String
-    description String
-    votes       Vote[]
-    options     Option[]
-    author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+    id            String   @id @default(uuid())
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+    authorId      String
+    title         String
+    description   String
+    controversial Boolean  @default(false)
+    votes         Vote[]
+    options       Option[]
+    author        User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
     @@index([title])
     @@index([authorId])

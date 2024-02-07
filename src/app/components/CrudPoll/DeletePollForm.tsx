@@ -34,10 +34,7 @@ export function DeletePollForm({ pollId }: { pollId: string }) {
   }
 
   return (
-    <form
-      className="flex w-96 flex-col overflow-auto rounded-xl border border-neutral-800 bg-black p-4 shadow-md"
-      onSubmit={onSubmit}
-    >
+    <form className="flex max-w-full flex-col" onSubmit={onSubmit}>
       <input type="hidden" name="pollId" value={pollId} />
 
       <p className="p-2 text-lg">Are you sure you want to delete this Poll?</p>

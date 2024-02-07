@@ -4,10 +4,10 @@ import { useIntersectionObserver } from "@uidotdev/usehooks";
 import { useEffect, useRef, useState } from "react";
 import { getPolls } from "./actions";
 import { toast } from "sonner";
-import { PAGE_SIZE } from "@/constants";
+import { PAGE_SIZE, type PollQuery } from "@/constants";
 import type { PollDetails } from "../PollCard/types";
 
-export function useInfinitePolls({ query }: { query: string }) {
+export function useInfinitePolls(query: PollQuery) {
   const pageRef = useRef(1);
 
   const [ref, entry] = useIntersectionObserver();
@@ -30,7 +30,11 @@ export function useInfinitePolls({ query }: { query: string }) {
 
       setIsLoading(true);
 
-      getPolls({ page: pageRef.current, search: query })
+      getPolls({
+        page: pageRef.current,
+        search: query.search,
+        category: query.category,
+      })
         .then((newPolls) => {
           // Append new page
           setPolls((prevPolls) => [...prevPolls, ...newPolls]);

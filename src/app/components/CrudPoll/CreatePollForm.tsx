@@ -30,7 +30,7 @@ export function CreatePollForm() {
 
   return (
     <form
-      className="flex w-96 flex-col overflow-auto rounded-xl border border-neutral-800 bg-black p-4 shadow-md"
+      className="flex w-96 max-w-full flex-col overflow-y-auto"
       onSubmit={form.handleSubmit(onSubmit)}
     >
       <Input
@@ -74,7 +74,7 @@ export function CreatePollForm() {
           <button
             type="button"
             onClick={() => remove(index)}
-            className="hovact:bg-red-500 mb-6 flex h-fit w-fit items-center justify-center rounded-full !bg-opacity-25 transition-colors"
+            className="mb-6 flex h-fit w-fit items-center justify-center rounded-full !bg-opacity-25 transition-colors hovact:bg-red-500"
           >
             <CancelSvg className="h-8 w-8 fill-red-500" />
           </button>
@@ -82,7 +82,7 @@ export function CreatePollForm() {
       ))}
 
       <button
-        className="hovact:bg-green-500 mb-4 ml-auto flex h-fit w-fit flex-row items-center justify-center rounded-full !bg-opacity-25 px-3 py-1 text-green-500 transition-colors"
+        className="mb-4 ml-auto flex h-fit w-fit flex-row items-center justify-center rounded-full !bg-opacity-25 px-3 py-1 text-green-500 transition-colors hovact:bg-green-500"
         type="button"
         onClick={addOption}
       >
