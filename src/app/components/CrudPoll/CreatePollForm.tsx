@@ -90,7 +90,7 @@ export function CreatePollForm() {
       </button>
 
       <div className="mx-auto h-10">
-        {false ? (
+        {form.formState.isSubmitting ? (
           <Loader />
         ) : (
           <button className="rounded-lg bg-purple-500 px-4 py-2" type="submit">
