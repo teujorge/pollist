@@ -112,24 +112,40 @@ export function PollCardVoting(props: PollCardVotingProps) {
   return (
     <>
       <ul className="divide-y divide-neutral-800">
-        {poll.options.map((option) => (
-          <li key={option.id} onClick={() => onVote(option.id)}>
-            <div className="hovact:bg-neutral-900 flex cursor-pointer flex-row items-center gap-2 rounded-xl p-4 transition-colors">
-              <div
-                className={`h-4 w-4 rounded-full transition-colors
-              ${optimisticVoteOptionId === option.id ? "bg-purple-500" : "bg-neutral-700"}
-            `}
-              />
-              <p className="text-sm text-neutral-200">{option.text}</p>
-              <p className="ml-auto text-sm text-neutral-200">
-                {
-                  poll.votes.filter((vote) => vote.optionId === option.id)
-                    .length
-                }
-              </p>
-            </div>
-          </li>
-        ))}
+        {poll.options.map((option) => {
+          const votePercentage =
+            poll.votes.length === 0
+              ? 0
+              : Math.round(
+                  (poll.votes.filter((vote) => vote.optionId === option.id)
+                    .length /
+                    poll.votes.length) *
+                    100,
+                );
+
+          return (
+            <li key={option.id} onClick={() => onVote(option.id)}>
+              <div className="relative flex cursor-pointer flex-row items-center gap-2 rounded-xl p-4 transition-colors hovact:bg-neutral-900 [&>div]:z-10 [&>p]:z-10 [&>span]:hover:opacity-20">
+                <span
+                  className="absolute left-0 top-0 my-auto h-full rounded-xl bg-purple-500 opacity-10 transition-all"
+                  style={{ width: `${votePercentage}%` }}
+                />
+                <div
+                  className={`h-4 w-4 rounded-full transition-colors
+                    ${optimisticVoteOptionId === option.id ? "bg-purple-500" : "bg-neutral-700"}
+                  `}
+                />
+                <p className="text-sm text-neutral-200">{option.text}</p>
+                <p className="ml-auto text-sm text-neutral-200">
+                  {
+                    poll.votes.filter((vote) => vote.optionId === option.id)
+                      .length
+                  }
+                </p>
+              </div>
+            </li>
+          );
+        })}
       </ul>
       {props.usePolling && (
         <div
