@@ -15,14 +15,21 @@ export default async function MyVotes({ params }: { params: { id: string } }) {
   });
 
   return (
-    <Card>
-      <h2>Votes</h2>
+    <>
       {votes.map((vote) => (
         <Link key={vote.id} href={`/polls/${vote.pollId}`}>
-          <h2>{vote.poll.title}</h2>
-          <p>{vote.option.text}</p>
+          <div className=" rounded-lg border border-neutral-800 bg-neutral-950 p-6 shadow-md">
+            <h2>
+              <span className="font-extrabold text-purple-500">Title: </span>
+              {vote.poll.title}
+            </h2>
+            <p>
+              <span className="font-extrabold text-purple-500">Vote:</span>{" "}
+              {vote.option.text}
+            </p>
+          </div>
         </Link>
       ))}
-    </Card>
+    </>
   );
 }

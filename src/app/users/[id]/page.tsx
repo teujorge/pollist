@@ -18,17 +18,18 @@ export default async function UserPage({ params }: { params: { id: string } }) {
   if (!user) return { notFound: true };
 
   return (
-    <Card>
+    <Card className="flex flex-col">
       {user.imageUrl && (
         <Image
           src={user.imageUrl}
           alt={user.username ?? "Users's avatar"}
           width={100}
           height={100}
+          className="rounded-full"
         />
       )}
-      <h1>{user.username}</h1>
-      <p>{user.id}</p>
+      <h1 className=" flex items-center  justify-center">{user.username}</h1>
+      {/* <p>{user.id}</p> */}
     </Card>
   );
 }
