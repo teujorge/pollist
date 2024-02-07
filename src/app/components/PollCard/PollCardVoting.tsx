@@ -13,15 +13,13 @@ export function PollCardVoting(props: PollCardVotingProps) {
 
   const [ping, setPing] = useState(false);
 
-  const [poll, setPoll] = useState<PollDetails>(props.poll);
+  const [optimisticPoll, setOptimisticPoll] = useState<PollDetails>(props.poll);
 
-  const userVote = poll.votes.find((vote) => vote.voterId === user?.id);
+  const userVote = optimisticPoll.votes.find(
+    (vote) => vote.voterId === user?.id,
+  );
 
   const [isVotePending, setIsVotePending] = useState(false);
-
-  const [optimisticVoteOptionId, setOptimisticVoteOptionId] = useState<
-    string | undefined
-  >(userVote?.optionId);
 
   // Poll every second for updates
   useEffect(() => {
@@ -31,18 +29,14 @@ export function PollCardVoting(props: PollCardVotingProps) {
 
     const intervalId = setInterval(() => {
       // console.log("Polling for updates");
-      getPoll(poll.id)
+      getPoll(optimisticPoll.id)
         .then((updatedPoll) => {
           // console.log("Got updated poll:", updatedPoll);
           if (!updatedPoll) return;
-          setPoll((prev) => ({
+          setOptimisticPoll((prev) => ({
             ...prev,
             votes: updatedPoll.votes,
           }));
-          setOptimisticVoteOptionId(
-            updatedPoll.votes.find((vote) => vote.voterId === user?.id)
-              ?.optionId,
-          );
         })
         .catch((error) => {
           toast.warning("Poll may be out of date");
@@ -52,13 +46,13 @@ export function PollCardVoting(props: PollCardVotingProps) {
 
     // Clean up the interval on component unmount
     return () => clearInterval(intervalId);
-  }, [isVotePending, poll.id, props.usePolling, user?.id]);
+  }, [isVotePending, optimisticPoll.id, props.usePolling, user?.id]);
 
   useEffect(() => {
     setPing(true);
     const timer = setTimeout(() => setPing(false), 750);
     return () => clearTimeout(timer);
-  }, [poll]);
+  }, [optimisticPoll]);
 
   async function onVote(optionId: string) {
     if (!user) {
@@ -66,31 +60,45 @@ export function PollCardVoting(props: PollCardVotingProps) {
       return;
     }
 
+    if (isVotePending) {
+      toast.warning("Vote pending, please wait");
+      return;
+    }
+
+    // Save the current poll state to revert to if the vote fails
+    const prevPoll = optimisticPoll;
+
     try {
       setIsVotePending(true);
 
       const isUnVoting = userVote?.optionId === optionId;
       const idToSet = isUnVoting ? undefined : optionId;
-      setOptimisticVoteOptionId(idToSet);
 
-      const response = await handleVote({
-        pollId: poll.id,
-        optionId: idToSet,
-        userId: user?.id,
-        voteId: userVote?.id,
-      });
+      setOptimisticPoll((prev) => {
+        // Get users current vote
+        const prevVote = prev.votes.find((vote) => vote.voterId === user?.id);
 
-      // Determine the new optionId based on the API response
-      const newOptionId = isUnVoting ? undefined : response.optionId;
-
-      setPoll((prev) => {
+        // If unvoting, remove the vote from the array
         const updatedVotes = prev.votes.filter(
           (vote) => vote.voterId !== user?.id,
         );
 
-        // Add the new vote to the array if not unvoting
-        if (newOptionId) {
-          updatedVotes.push(response);
+        // If voting, add the updated vote to the array
+        if (idToSet) {
+          const newVote = prevVote
+            ? {
+                ...prevVote,
+                optionId: idToSet,
+              }
+            : {
+                id: "optimistic-vote-id",
+                createdAt: new Date(),
+                voterId: user.id,
+                pollId: optimisticPoll.id,
+                optionId: idToSet,
+              };
+
+          updatedVotes.push(newVote);
         }
 
         return {
@@ -99,11 +107,30 @@ export function PollCardVoting(props: PollCardVotingProps) {
         };
       });
 
-      setOptimisticVoteOptionId(newOptionId);
+      const dbVote = await handleVote({
+        pollId: optimisticPoll.id,
+        optionId: idToSet,
+        userId: user?.id,
+        voteId: userVote?.id,
+      });
+
+      if (isUnVoting) return;
+      setOptimisticPoll((prev) => {
+        const newVotes = prev.votes.filter((vote) => vote.voterId !== user?.id);
+        newVotes.push(dbVote);
+        return { ...prev, votes: newVotes };
+      });
     } catch (error) {
-      toast.error("Failed to vote");
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error(
+          "An unknown error occurred while voting. Please try again.",
+        );
+      }
+
       console.error(error);
-      setOptimisticVoteOptionId(userVote?.optionId);
+      setOptimisticPoll(prevPoll);
     } finally {
       setIsVotePending(false);
     }
@@ -112,14 +139,15 @@ export function PollCardVoting(props: PollCardVotingProps) {
   return (
     <>
       <ul className="divide-y divide-neutral-800">
-        {poll.options.map((option) => {
+        {optimisticPoll.options.map((option) => {
           const votePercentage =
-            poll.votes.length === 0
+            optimisticPoll.votes.length === 0
               ? 0
               : Math.round(
-                  (poll.votes.filter((vote) => vote.optionId === option.id)
-                    .length /
-                    poll.votes.length) *
+                  (optimisticPoll.votes.filter(
+                    (vote) => vote.optionId === option.id,
+                  ).length /
+                    optimisticPoll.votes.length) *
                     100,
                 );
 
@@ -132,14 +160,15 @@ export function PollCardVoting(props: PollCardVotingProps) {
                 />
                 <div
                   className={`h-4 w-4 rounded-full transition-colors
-                    ${optimisticVoteOptionId === option.id ? "bg-purple-500" : "bg-neutral-700"}
+                    ${userVote?.optionId === option.id ? "bg-purple-500" : "bg-neutral-700"}
                   `}
                 />
                 <p className="text-sm text-neutral-200">{option.text}</p>
                 <p className="ml-auto text-sm text-neutral-200">
                   {
-                    poll.votes.filter((vote) => vote.optionId === option.id)
-                      .length
+                    optimisticPoll.votes.filter(
+                      (vote) => vote.optionId === option.id,
+                    ).length
                   }
                 </p>
               </div>
