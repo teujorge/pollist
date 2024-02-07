@@ -15,11 +15,10 @@ export default async function MyPolls({ params }: { params: { id: string } }) {
   });
 
   return (
-    <Card>
-      <h2>Polls</h2>
+    <>
       {polls.map((poll) => (
         <PollCard key={poll.id} {...poll} />
       ))}
-    </Card>
+    </>
   );
 }
