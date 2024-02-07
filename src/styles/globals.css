@@ -27,7 +27,9 @@ main {
   padding: 1.5rem;
 }
 
-input {
+input,
+select,
+option {
   color: #f1f1f1;
   background-color: #191919;
   padding-top: 0.25rem;
@@ -41,13 +43,32 @@ input {
   transition: all 150ms ease;
 }
 
+select {
+  appearance: none;
+  background-image: url("/chevron.svg"); /* svg */
+  background-repeat: no-repeat;
+  background-position: right 4px center; /* svg position */
+  background-size: 24px; /* svg size */
+  padding-right: 34px; /* enough padding to make space svg */
+}
+
+option {
+  appearance: none;
+}
+
 input::placeholder {
   color: rgb(115 115 115);
 }
 
 input:hover,
 input:focus,
-input:active {
+input:active,
+select:hover,
+select:focus,
+select:active,
+option:hover,
+option:focus,
+option:active {
   background-color: rgb(32 32 32);
 }
 

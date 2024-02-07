@@ -3,9 +3,10 @@
 import { Loader } from "../Loader";
 import { PollCard } from "../PollCard/PollCard";
 import { useInfinitePolls } from "./useInfinitePolls";
+import type { PollQuery } from "@/constants";
 
-export function InfinitePolls({ query }: { query: string }) {
-  const { ref, polls, hasNext } = useInfinitePolls({ query });
+export function InfinitePolls(query: PollQuery) {
+  const { ref, polls, hasNext } = useInfinitePolls(query);
 
   return (
     <>
