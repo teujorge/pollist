@@ -3,7 +3,7 @@
 import { toast } from "sonner";
 import { deletePoll } from "./actions";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { Loader } from "../Loader";
 
 export function DeletePollForm({ pollId }: { pollId: string }) {
@@ -24,16 +24,14 @@ export function DeletePollForm({ pollId }: { pollId: string }) {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error("An unknown error occurred while deleting the poll");
+        toast.error(
+          "An unknown error occurred while deleting the poll. Please try again.",
+        );
       }
 
       console.error("Error:", error);
     }
   }
-
-  useEffect(() => {
-    console.log("isLoading", isLoading);
-  }, [isLoading]);
 
   return (
     <form

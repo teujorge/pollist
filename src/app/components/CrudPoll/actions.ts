@@ -33,8 +33,6 @@ export async function createPoll(fields: CreatePollFields) {
     },
   });
 
-  console.log("Created Poll:", createdPoll);
-
   if (createdPoll) redirect(`/polls/${createdPoll.id}`);
 }
 
