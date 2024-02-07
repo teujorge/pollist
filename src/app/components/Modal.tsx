@@ -14,7 +14,7 @@ export function Modal({ children }: { children: React.ReactNode }) {
 
   return (
     <div
-      className={`fixed inset-0 z-40 flex bg-black bg-opacity-65 backdrop-blur-sm ${styles["bg-in"]} overflow-hidden`}
+      className={`fixed inset-0 z-40 flex min-h-dvh w-dvw bg-black bg-opacity-65 backdrop-blur-sm ${styles["bg-in"]} scrollbar-gutter overflow-auto p-4`}
       onMouseDown={() => {
         bgMouseUp = false;
         bgMouseDown = true;
@@ -26,7 +26,7 @@ export function Modal({ children }: { children: React.ReactNode }) {
       }}
     >
       <div
-        className={`mx-auto my-auto h-fit max-h-full w-fit max-w-full ${styles["modal-in"]}`}
+        className={`mx-auto my-auto h-fit w-fit ${styles["modal-in"]}`}
         onMouseDown={(e) => {
           e.stopPropagation();
           bgMouseUp = false;

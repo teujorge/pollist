@@ -12,11 +12,21 @@ const tailwindConfig: Config = {
     },
   },
   plugins: [
+    // hovact
     plugin(function ({ addVariant }) {
       addVariant("hovact", [
         "@media (min-width: 640px) { &:hover }",
         "&:active",
       ]);
+    }),
+
+    // scrollbar-gutter
+    plugin(function ({ addUtilities }) {
+      addUtilities({
+        ".scrollbar-gutter-stable": {
+          "scrollbar-gutter": "stable both-edges",
+        },
+      });
     }),
   ],
 };
