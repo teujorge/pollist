@@ -69,8 +69,10 @@ export default function RootLayout({
 
 function Header() {
   return (
-    <header className="sticky left-0 right-0 top-0 z-20 flex w-full justify-between bg-gradient-to-b from-black from-60% p-4">
-      <Link href="/">Poll</Link>
+    <header className="sticky left-0 right-0 top-0 z-20 flex w-full justify-between bg-gradient-to-b from-black from-60% px-5 py-4">
+      <div className="flex flex-row items-center gap-4">
+        <Link href="/">Poll</Link>
+      </div>
 
       <div className="flex flex-row items-center gap-4">
         <Link href="/">Home</Link>
@@ -84,7 +86,9 @@ function Header() {
         </SignedIn>
 
         <SignedOut>
-          <SignInButton mode="modal" />
+          <div className="flex h-8 w-fit items-center">
+            <SignInButton mode="modal" />
+          </div>
         </SignedOut>
       </div>
     </header>
