@@ -1,4 +1,3 @@
-import { Card } from "@/app/components/Card";
 import { PollCard } from "@/app/components/PollCard/PollCard";
 import { db } from "@/database/db";
 

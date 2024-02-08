@@ -4,16 +4,18 @@ import { useUser } from "@clerk/nextjs";
 import { getPoll, handleVote } from "./actions";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
-import type { PollDetails } from "./types";
+import type { PollsDetails } from "../InfinitePolls/actions";
 
-type PollCardVotingProps = { poll: PollDetails; usePolling?: boolean };
+type PollCardVotingProps = { poll: PollsDetails[number]; usePolling?: boolean };
 
 export function PollCardVoting(props: PollCardVotingProps) {
   const { user } = useUser();
 
   const [ping, setPing] = useState(false);
 
-  const [optimisticPoll, setOptimisticPoll] = useState<PollDetails>(props.poll);
+  const [optimisticPoll, setOptimisticPoll] = useState<PollsDetails[number]>(
+    props.poll,
+  );
 
   const userVote = optimisticPoll.votes.find(
     (vote) => vote.voterId === user?.id,

@@ -1,7 +1,9 @@
 "use server";
 
-import { type Category, PAGE_SIZE } from "@/constants";
 import { db } from "@/database/db";
+import { type Category, PAGE_SIZE } from "@/constants";
+
+export type PollsDetails = NonNullable<Awaited<ReturnType<typeof getPolls>>>;
 
 export async function getPolls({
   page = 1,
