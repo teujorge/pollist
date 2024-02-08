@@ -11,8 +11,6 @@ type PollCardVotingProps = { poll: PollsDetails[number]; usePolling?: boolean };
 export function PollCardVoting(props: PollCardVotingProps) {
   const { user } = useUser();
 
-  const [ping, setPing] = useState(false);
-
   const [optimisticPoll, setOptimisticPoll] = useState<PollsDetails[number]>(
     props.poll,
   );
@@ -23,38 +21,34 @@ export function PollCardVoting(props: PollCardVotingProps) {
 
   const [isVotePending, setIsVotePending] = useState(false);
 
-  // Poll every second for updates
+  // Poll every few seconds for updates
   useEffect(() => {
-    return; // TODO: for now no polling
     if (isVotePending) return;
     if (!props.usePolling) return;
 
+    const intervalMs = user?.id ? 5000 : 10000;
+
     const intervalId = setInterval(() => {
-      // console.log("Polling for updates");
+      console.log("Polling for updates");
       getPoll(optimisticPoll.id)
         .then((updatedPoll) => {
-          // console.log("Got updated poll:", updatedPoll);
+          console.log("Got updated poll:", updatedPoll);
           if (!updatedPoll) return;
+          if (isVotePending) return;
           setOptimisticPoll((prev) => ({
             ...prev,
-            votes: updatedPoll.votes,
+            ...updatedPoll,
           }));
         })
         .catch((error) => {
           toast.warning("Poll may be out of date");
           console.error("Error fetching poll:", error);
         });
-    }, 4000);
+    }, intervalMs);
 
     // Clean up the interval on component unmount
     return () => clearInterval(intervalId);
   }, [isVotePending, optimisticPoll.id, props.usePolling, user?.id]);
-
-  useEffect(() => {
-    setPing(true);
-    const timer = setTimeout(() => setPing(false), 750);
-    return () => clearTimeout(timer);
-  }, [optimisticPoll]);
 
   async function onVote(optionId: string) {
     if (!user) {
@@ -178,11 +172,6 @@ export function PollCardVoting(props: PollCardVotingProps) {
           );
         })}
       </ul>
-      {props.usePolling && (
-        <div
-          className={`h-4 w-4 rounded-full bg-red-500 ${ping ? "animate-ping" : "opacity-0"}`}
-        />
-      )}
     </>
   );
 }

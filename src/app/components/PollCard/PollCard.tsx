@@ -8,7 +8,9 @@ export function PollCard(poll: PollsDetails[number]) {
     <div className="flex w-full flex-col gap-2 rounded-lg border border-neutral-800 bg-neutral-950 p-6 shadow-md">
       <Link
         href={`/users/${poll.authorId}`}
-        className="flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 pl-0 transition-colors hovact:bg-purple-500"
+        rel="noopener noreferrer"
+        target="_blank"
+        className="flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 pl-0 transition-all hovact:bg-purple-500 hovact:pl-2"
       >
         {poll.author.imageUrl && (
           <Image
@@ -31,7 +33,12 @@ export function PollCard(poll: PollsDetails[number]) {
           </p>
         </div>
       </Link>
-      <Link href={`/polls/${poll.id}`} className="w-fit">
+      <Link
+        href={`/polls/${poll.id}`}
+        rel="noopener noreferrer"
+        target="_blank"
+        className="w-fit"
+      >
         <h2 className="text-2xl font-bold">{poll.title}</h2>
       </Link>
 
