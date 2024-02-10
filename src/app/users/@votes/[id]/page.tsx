@@ -1,8 +1,14 @@
 import { db } from "@/database/db";
-import { Card } from "@/app/components/Card";
 import Link from "next/link";
+import { Tabs } from "../../components/Tabs";
 
-export default async function MyVotes({ params }: { params: { id: string } }) {
+export default async function MyVotes({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: Record<string, string | string[] | undefined>;
+}) {
   const votes = await db.vote.findMany({
     where: {
       voterId: params.id,
@@ -15,10 +21,15 @@ export default async function MyVotes({ params }: { params: { id: string } }) {
   });
 
   return (
-    <>
+    <div
+      className={`flex-col gap-2
+      ${searchParams.tab === "votes" ? "flex" : "hidden md:flex"}
+    `}
+    >
+      <Tabs id={params.id} tab="votes" />
       {votes.map((vote) => (
         <Link key={vote.id} href={`/polls/${vote.pollId}`}>
-          <div className=" rounded-lg border border-neutral-800 bg-neutral-950 p-6 shadow-md">
+          <div className="rounded-lg border border-neutral-800 bg-neutral-950 p-6 shadow-md">
             <h2>
               <span className="font-extrabold text-purple-500">Title: </span>
               {vote.poll.title}
@@ -30,6 +41,6 @@ export default async function MyVotes({ params }: { params: { id: string } }) {
           </div>
         </Link>
       ))}
-    </>
+    </div>
   );
 }
