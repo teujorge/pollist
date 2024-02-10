@@ -1,22 +1,28 @@
 "use server";
 
 import { db } from "@/database/db";
-import { type Category, PAGE_SIZE } from "@/constants";
+import { type Category, type PollQuery, PAGE_SIZE } from "@/constants";
 
-export type PollsDetails = NonNullable<Awaited<ReturnType<typeof getPolls>>>;
+export type PollsDetails = NonNullable<
+  Awaited<ReturnType<typeof getInfinitePolls>>
+>;
 
-export async function getPolls({
+export async function getInfinitePolls({
   page = 1,
-  search = "",
-  category = "",
-}: {
-  page?: number;
-  search?: string;
-  category?: Category;
-}) {
+  search,
+  category,
+  authorId,
+  voterId,
+}: PollQuery & { page: number }) {
   const polls = await db.poll.findMany({
     where: {
       title: { contains: search },
+      authorId: { contains: authorId },
+      votes: {
+        some: {
+          voterId: { contains: voterId },
+        },
+      },
       ...trendingConditions(category),
       ...controversialConditions(category),
     },
@@ -33,7 +39,7 @@ export async function getPolls({
   return polls;
 }
 
-function trendingConditions(category: Category) {
+function trendingConditions(category?: Category) {
   if (category !== "trending") return {};
 
   const currentDate = new Date();
@@ -50,7 +56,7 @@ function trendingConditions(category: Category) {
   };
 }
 
-function controversialConditions(category: Category) {
+function controversialConditions(category?: Category) {
   if (category !== "controversial") return {};
 
   return {

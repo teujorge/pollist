@@ -1,29 +1,33 @@
 "use client";
 
-import { Loader } from "../Loader";
+import InfiniteScroll from "react-infinite-scroller";
 import { PollCard } from "../PollCard/PollCard";
 import { useInfinitePolls } from "./useInfinitePolls";
+import { Loader } from "../Loader";
 import type { PollQuery } from "@/constants";
 
 export function InfinitePolls(query: PollQuery) {
-  const { ref, polls, hasNext } = useInfinitePolls(query);
+  const { data, loadMore } = useInfinitePolls(query);
 
   return (
-    <>
-      {polls.map((poll) => (
-        <PollCard key={poll.id} {...poll} />
+    <InfiniteScroll
+      key={`${query.search}-${query.category}`}
+      className="flex w-full flex-col items-center gap-2"
+      pageStart={0}
+      loadMore={loadMore}
+      hasMore={data.hasMore}
+      loader={<Loader />}
+    >
+      {data.polls.map((poll) => (
+        <PollCard key={`poll-card-${poll.id}`} {...poll} />
       ))}
-      <div className="flex h-12 w-full items-center justify-center">
-        {hasNext ? (
-          <Loader ref={ref} />
-        ) : (
-          <p className="border-b border-neutral-800 text-center text-sm text-neutral-600">
-            {polls.length > 0
-              ? "Nothing more to show..."
-              : "Nothing to show..."}
+      {!data.hasMore && (
+        <div className="flex h-10 w-full items-center justify-center">
+          <p className="text-sm text-neutral-400 underline decoration-neutral-400 underline-offset-4">
+            Nothing more to show...
           </p>
-        )}
-      </div>
-    </>
+        </div>
+      )}
+    </InfiniteScroll>
   );
 }
