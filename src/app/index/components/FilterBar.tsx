@@ -4,7 +4,7 @@ import { CATEGORIES } from "@/constants";
 import { useFilter } from "../hooks/useFilter";
 
 export function FilterBar() {
-  const { setSearch, setCategory } = useFilter();
+  const { setSearch } = useFilter();
 
   return (
     <>
@@ -14,7 +14,7 @@ export function FilterBar() {
         className="w-[calc(90%-90px)] max-w-fit"
         onChange={(event) => setSearch(event.target.value)}
       />
-      <select
+      {/* <select
         className="w-[calc(90%-90px)] max-w-fit"
         onChange={(event) => setCategory(event.target.value)}
       >
@@ -23,7 +23,7 @@ export function FilterBar() {
             {category}
           </option>
         ))}
-      </select>
+      </select> */}
     </>
   );
 }
