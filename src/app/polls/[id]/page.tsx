@@ -48,7 +48,7 @@ export default async function PollPage({ params }: { params: { id: string } }) {
           {userId === poll.authorId && (
             <Link
               href={`/polls/delete?id=${poll.id}`}
-              className="hovact:text-red-400 text-red-500"
+              className="text-red-500 hovact:text-red-400"
             >
               Delete
             </Link>
