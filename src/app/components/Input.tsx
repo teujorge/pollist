@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function Input({
   wrapperProps,
@@ -14,7 +14,7 @@ export function Input({
   return (
     <div
       {...wrapperProps}
-      className={clsx("flex w-full flex-col p-1", wrapperProps?.className)}
+      className={twMerge("flex w-full flex-col p-1", wrapperProps?.className)}
     >
       {labelProps?.text && (
         <label htmlFor={inputProps?.name} {...labelProps}>
@@ -25,7 +25,7 @@ export function Input({
         id={inputProps?.name}
         autoComplete="off"
         {...inputProps}
-        className={clsx(error && "border-red-500", inputProps?.className)}
+        className={twMerge(error && "border-red-500", inputProps?.className)}
       />
       <span
         role="alert"
