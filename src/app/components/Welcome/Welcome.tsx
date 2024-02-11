@@ -8,13 +8,9 @@ export async function Welcome() {
   return (
     <>
       <Confetti />
-
       <h1>WELCOME!!</h1>
-
       <Link href="/polls">Go to polls</Link>
-
       <Link href="/polls/create">Create a poll</Link>
-
       <Link href={`/users/${userId}`}>Go to your profile</Link>
     </>
   );
