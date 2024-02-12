@@ -3,7 +3,12 @@ import { PollCardVoting } from "@/app/components/PollCard/PollCardVoting";
 import Image from "next/image";
 import type { PollsDetails } from "../InfinitePolls/actions";
 
-export function PollCard(poll: PollsDetails[number]) {
+export type PollCardProps = {
+  poll: PollsDetails[number];
+  highlightOptionId?: string;
+};
+
+export function PollCard({ poll, highlightOptionId }: PollCardProps) {
   return (
     <div className="flex w-full flex-col gap-2 rounded-lg border border-neutral-800 bg-neutral-950 p-6 shadow-md">
       <Link

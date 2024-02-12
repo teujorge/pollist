@@ -1,6 +1,5 @@
-import { PollCard } from "@/app/components/PollCard/PollCard";
-import { db } from "@/database/db";
 import { Tabs } from "../../components/Tabs";
+import { InfinitePolls } from "@/app/components/InfinitePolls/InfinitePolls";
 
 export default async function MyPolls({
   params,
@@ -9,27 +8,16 @@ export default async function MyPolls({
   params: { id: string };
   searchParams: Record<string, string | string[] | undefined>;
 }) {
-  const polls = await db.poll.findMany({
-    where: {
-      authorId: params.id,
-    },
-    include: {
-      author: true,
-      votes: true,
-      options: true,
-    },
-  });
-
   return (
     <div
-      className={`flex-col gap-2
+      className={`w-1/2 flex-grow flex-col gap-2
         ${searchParams.tab !== "votes" ? "flex" : "hidden md:flex"}
       `}
     >
       <Tabs id={params.id} tab="polls" />
-      {polls.map((poll) => (
-        <PollCard key={poll.id} {...poll} />
-      ))}
+      <div className="flex flex-col gap-2 overflow-y-auto rounded-xl border border-neutral-800 p-2">
+        <InfinitePolls authorId={params.id} />
+      </div>
     </div>
   );
 }

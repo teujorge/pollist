@@ -12,6 +12,7 @@ export function InfinitePolls(query: PollQuery) {
   return (
     <InfiniteScroll
       key={`${query.search}-${query.category}`}
+      useWindow={false}
       className="flex w-full flex-col items-center gap-2"
       pageStart={0}
       loadMore={loadMore}
@@ -19,7 +20,7 @@ export function InfinitePolls(query: PollQuery) {
       loader={<Loader />}
     >
       {data.polls.map((poll) => (
-        <PollCard key={`poll-card-${poll.id}`} {...poll} />
+        <PollCard key={`poll-card-${poll.id}`} poll={poll} />
       ))}
       {!data.hasMore && (
         <div className="flex h-10 w-full items-center justify-center">
