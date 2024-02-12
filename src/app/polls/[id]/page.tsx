@@ -29,8 +29,9 @@ export default async function PollPage({ params }: { params: { id: string } }) {
     <main className="flex min-h-full flex-col justify-center">
       {/* header */}
       <div className="flex items-center justify-between">
-        <div>
+        <div className="flex flex-col gap-1">
           <h1 className="text-3xl">{poll.title}</h1>
+          <h2>{poll.description}</h2>
           <span>
             Created by{" "}
             <Link href={`/users/${poll.author.id}`}>
