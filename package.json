@@ -21,7 +21,6 @@
     "@prisma/client": "^5.9.1",
     "@t3-oss/env-nextjs": "^0.7.1",
     "@uidotdev/usehooks": "^2.4.1",
-    "clsx": "^2.1.0",
     "gsap": "^3.12.5",
     "next": "^14.0.4",
     "react": "18.2.0",
@@ -31,6 +30,7 @@
     "react-infinite-scroller": "^1.2.6",
     "sonner": "^1.4.0",
     "svix": "^1.16.0",
+    "tailwind-merge": "^2.2.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
