@@ -16,13 +16,15 @@ export async function getInfinitePolls({
 }: PollQuery & { page: number }) {
   const polls = await db.poll.findMany({
     where: {
-      title: { contains: search },
-      authorId: { contains: authorId },
-      votes: {
-        some: {
-          voterId: { contains: voterId },
-        },
-      },
+      title: search ? { contains: search } : undefined,
+      authorId: authorId ? { contains: authorId } : undefined,
+      votes: voterId
+        ? {
+            some: {
+              voterId: { contains: voterId },
+            },
+          }
+        : undefined,
       ...trendingConditions(category),
       ...controversialConditions(category),
     },
