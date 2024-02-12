@@ -5,10 +5,10 @@ import type { PollsDetails } from "../InfinitePolls/actions";
 
 export type PollCardProps = {
   poll: PollsDetails[number];
-  highlightOptionId?: string;
+  highlightedUserId?: string;
 };
 
-export function PollCard({ poll, highlightOptionId }: PollCardProps) {
+export function PollCard({ poll, highlightedUserId }: PollCardProps) {
   return (
     <div className="flex w-full flex-col gap-2 rounded-lg border border-neutral-800 bg-neutral-950 p-6 shadow-md">
       <Link
@@ -47,7 +47,7 @@ export function PollCard({ poll, highlightOptionId }: PollCardProps) {
         <h2 className="text-2xl font-bold">{poll.title}</h2>
       </Link>
 
-      <PollCardVoting poll={poll} />
+      <PollCardVoting poll={poll} highlightedUserId={highlightedUserId} />
     </div>
   );
 }

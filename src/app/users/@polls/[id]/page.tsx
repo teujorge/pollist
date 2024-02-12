@@ -1,7 +1,7 @@
 import { Tabs } from "../../components/Tabs";
 import { InfinitePolls } from "@/app/components/InfinitePolls/InfinitePolls";
 
-export default async function MyPolls({
+export default function MyPolls({
   params,
   searchParams,
 }: {
@@ -10,7 +10,7 @@ export default async function MyPolls({
 }) {
   return (
     <div
-      className={`w-1/2 flex-grow flex-col gap-2
+      className={`w-full flex-grow flex-col gap-2 md:w-1/2
         ${searchParams.tab !== "votes" ? "flex" : "hidden md:flex"}
       `}
     >

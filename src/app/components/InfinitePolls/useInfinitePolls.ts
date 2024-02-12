@@ -15,6 +15,8 @@ export function useInfinitePolls(query: PollQuery) {
       page: page,
       search: query.search,
       category: query.category,
+      authorId: query.authorId,
+      voterId: query.voterId,
     });
 
     const hasMore = newPolls.length > 0;
