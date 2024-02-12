@@ -16,7 +16,7 @@ export default function MyPolls({
     >
       <Tabs id={params.id} tab="polls" />
       <div className="flex flex-col gap-2 overflow-y-auto rounded-xl border border-neutral-800 p-2">
-        <InfinitePolls authorId={params.id} />
+        <InfinitePolls authorId={params.id} idPrefix="my-polls" />
       </div>
     </div>
   );

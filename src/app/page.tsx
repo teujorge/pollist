@@ -19,7 +19,11 @@ export default async function HomePage({
         <FilterBar />
       </div>
 
-      <InfinitePolls search={search} category={category} />
+      <InfinitePolls
+        search={search}
+        category={category}
+        idPrefix="home-page-polls"
+      />
     </main>
   );
 }
