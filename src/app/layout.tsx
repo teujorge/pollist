@@ -86,7 +86,7 @@ function Header() {
         </SignedIn>
 
         <SignedOut>
-          <div className="flex h-8 w-fit items-center">
+          <div className="flex h-8 w-fit items-center [&>button]:transition-colors [&>button]:hovact:text-purple-500">
             <SignInButton mode="modal" />
           </div>
         </SignedOut>
