@@ -15,7 +15,7 @@ export function PollCard({ poll, highlightedUserId }: PollCardProps) {
         href={`/users/${poll.authorId}`}
         // rel="noopener noreferrer"
         // target="_blank"
-        className="flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 pl-0 transition-all hovact:bg-purple-500 hovact:pl-2"
+        className="flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 pl-0 transition-all [&>div>p]:hovact:text-purple-500 [&>div>span]:hovact:text-purple-600 [&>img]:hovact:border-purple-500"
       >
         {poll.author.imageUrl && (
           <Image
@@ -23,19 +23,21 @@ export function PollCard({ poll, highlightedUserId }: PollCardProps) {
             alt={poll.author.username ?? "author's avatar"}
             width={38}
             height={38}
-            className="rounded-full"
+            className="rounded-full border-2 border-neutral-600 transition-colors"
           />
         )}
 
-        <div className="flex flex-col justify-center gap-1 [&>desc]:text-sm">
-          <p className="text-neutral-200">{poll.author.username}</p>
-          <p className="text-neutral-400">
+        <div className="flex flex-col justify-center gap-1">
+          <p className="text-neutral-200 transition-colors">
+            {poll.author.username}
+          </p>
+          <span className="text-xs text-neutral-400 transition-colors">
             {new Date(poll.createdAt).toLocaleDateString(undefined, {
               year: "2-digit",
               month: "short",
               day: "numeric",
             })}
-          </p>
+          </span>
         </div>
       </Link>
       <Link

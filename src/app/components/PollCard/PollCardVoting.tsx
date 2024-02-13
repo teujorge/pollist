@@ -236,7 +236,7 @@ export function PollCardVoting(props: PollCardVotingProps) {
   )?.optionId;
 
   return (
-    <div className="flex h-full w-full flex-grow flex-col gap-2">
+    <div className="flex h-full w-full flex-grow flex-col pt-2">
       <ul className="divide-y divide-neutral-800">
         {optimisticPoll.options.map((option) => {
           const votePercentage =
@@ -318,19 +318,21 @@ function VoteChart(poll: PollsDetails[number]) {
   >(() => [{ getValue: (datum) => datum.y }], []);
 
   return (
-    <div className="rounded-lg bg-neutral-900 p-2">
-      <div className="h-64 w-full">
-        <Chart
-          datatype="ordinal"
-          options={{
-            dark: true,
-            interactionMode: "closest",
-            data,
-            primaryAxis,
-            secondaryAxes,
-            tooltip: false,
-          }}
-        />
+    <div className="pt-2">
+      <div className="rounded-lg bg-neutral-900 p-2">
+        <div className="h-64 w-full">
+          <Chart
+            datatype="ordinal"
+            options={{
+              dark: true,
+              interactionMode: "closest",
+              data,
+              primaryAxis,
+              secondaryAxes,
+              tooltip: false,
+            }}
+          />
+        </div>
       </div>
     </div>
   );
