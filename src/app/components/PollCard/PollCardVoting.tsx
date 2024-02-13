@@ -298,7 +298,7 @@ function VoteChart(poll: PollsDetails[number]) {
         data: [
           {
             x: option.text,
-            y: 0,
+            y: poll.votes.filter((vote) => vote.optionId === option.id).length,
           },
           {
             x: option.text,
