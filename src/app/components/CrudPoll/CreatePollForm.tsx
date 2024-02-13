@@ -89,7 +89,7 @@ export function CreatePollForm() {
         + Add Option
       </button>
 
-      <div className="mx-auto h-10">
+      <div className="flex h-12 items-center justify-center">
         {form.formState.isSubmitting || form.formState.isSubmitSuccessful ? (
           <Loader />
         ) : (
