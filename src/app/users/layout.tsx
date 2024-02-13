@@ -8,12 +8,7 @@ export default function Layout({
   votes: React.ReactNode;
 }) {
   return (
-    <main
-      className="flex w-full flex-col gap-4 overflow-hidden md:flex-row"
-      style={{
-        maxHeight: "calc(100vh - 64px)",
-      }}
-    >
+    <main className="flex h-[calc(100dvh-64px)] w-full flex-col gap-4 overflow-hidden md:flex-row">
       {children}
       {polls}
       {votes}

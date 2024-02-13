@@ -13,8 +13,8 @@ export function PollCard({ poll, highlightedUserId }: PollCardProps) {
     <div className="flex w-full flex-col gap-2 rounded-lg border border-neutral-800 bg-neutral-950 p-6 shadow-md">
       <Link
         href={`/users/${poll.authorId}`}
-        rel="noopener noreferrer"
-        target="_blank"
+        // rel="noopener noreferrer"
+        // target="_blank"
         className="flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 pl-0 transition-all hovact:bg-purple-500 hovact:pl-2"
       >
         {poll.author.imageUrl && (
@@ -40,8 +40,8 @@ export function PollCard({ poll, highlightedUserId }: PollCardProps) {
       </Link>
       <Link
         href={`/polls/${poll.id}`}
-        rel="noopener noreferrer"
-        target="_blank"
+        // rel="noopener noreferrer"
+        // target="_blank"
         className="w-fit"
       >
         <h2 className="text-2xl font-bold">{poll.title}</h2>

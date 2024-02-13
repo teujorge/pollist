@@ -1,10 +1,10 @@
 import { Card } from "@/app/components/Card";
+import { Loader } from "@/app/components/Loader";
 
-export default function PollsLoading() {
+export default function MyVotesLoading() {
   return (
-    <Card>
-      <h2>Votes</h2>
-      <div>Loading...</div>
+    <Card className="items-center">
+      <Loader />
     </Card>
   );
 }

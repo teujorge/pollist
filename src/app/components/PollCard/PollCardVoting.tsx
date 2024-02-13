@@ -290,8 +290,6 @@ export function PollCardVoting(props: PollCardVotingProps) {
   );
 }
 
-////////
-
 function VoteChart(poll: PollsDetails[number]) {
   const data = useMemo(
     () =>

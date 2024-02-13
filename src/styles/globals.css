@@ -105,3 +105,22 @@ a:active {
     transform: rotate(360deg);
   }
 }
+
+.shimmer {
+  border-radius: 0.5rem;
+  background: linear-gradient(
+    120deg,
+    #eeeeee10 40%,
+    #fafafa18 50%,
+    #eeeeee10 60%
+  );
+  background-size: 300%;
+  background-position-x: 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+@keyframes shimmer {
+  to {
+    background-position-x: 0%;
+  }
+}

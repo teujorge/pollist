@@ -1,9 +1,3 @@
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/TcpY2hkdR17
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
-
 import { Card } from "@/app/components/Card";
 import { db } from "@/database/db";
 import Image from "next/image";
@@ -18,8 +12,8 @@ export default async function UserPage({ params }: { params: { id: string } }) {
   if (!user) return { notFound: true };
 
   return (
-    <Card className="flex flex-col">
-      {user.imageUrl && (
+    <Card className="flex w-36 max-w-36 flex-col items-center">
+      {user.imageUrl ? (
         <Image
           src={user.imageUrl}
           alt={user.username ?? "Users's avatar"}
@@ -27,9 +21,10 @@ export default async function UserPage({ params }: { params: { id: string } }) {
           height={100}
           className="rounded-full"
         />
+      ) : (
+        <div className="shimmer h-[100px] w-[100px] !rounded-full" />
       )}
-      <h1 className=" flex items-center  justify-center">{user.username}</h1>
-      {/* <p>{user.id}</p> */}
+      <h1 className="flex items-center justify-center">{user.username}</h1>
     </Card>
   );
 }

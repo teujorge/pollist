@@ -1,5 +1,5 @@
+import { InfinitePolls } from "@/app/components/InfinitePolls/InfinitePolls";
 import { Tabs } from "../../components/Tabs";
-import { InfiniteVotes } from "./InfiniteVotes";
 
 export default function MyVotes({
   params,
@@ -16,7 +16,11 @@ export default function MyVotes({
     >
       <Tabs id={params.id} tab="votes" />
       <div className="flex flex-col gap-2 overflow-y-auto rounded-xl border border-neutral-800 p-2">
-        <InfiniteVotes voterId={params.id} highlightedUserId={params.id} />
+        <InfinitePolls
+          voterId={params.id}
+          highlightedUserId={params.id}
+          idPrefix="my-votes"
+        />
       </div>
     </div>
   );

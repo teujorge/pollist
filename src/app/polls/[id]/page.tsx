@@ -4,8 +4,8 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 
-import { db } from "@/database/db";
 import Link from "next/link";
+import { db } from "@/database/db";
 import { PollCardVoting } from "@/app/components/PollCard/PollCardVoting";
 import { auth } from "@clerk/nextjs";
 
