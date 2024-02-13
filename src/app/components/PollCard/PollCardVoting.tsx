@@ -5,13 +5,21 @@ import { getPoll, handleVote } from "./actions";
 import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
 import { supabase } from "@/database/dbRealtime";
-import { type MutableRefObject, useEffect, useRef, useState } from "react";
+import {
+  type MutableRefObject,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+} from "react";
+import { type AxisOptions, Chart } from "react-charts";
 import type { PollCardProps } from "./PollCard";
 import type { PollsDetails } from "../InfinitePolls/actions";
 import type { RealtimeChannel } from "@supabase/realtime-js";
 import { type Vote } from "@prisma/client";
 
 type PollCardVotingProps = PollCardProps & {
+  useChart?: boolean;
   useRealtime?: boolean;
 };
 
@@ -79,6 +87,10 @@ export function PollCardVoting(props: PollCardVotingProps) {
             // old payload id doesn't exist, so it's an insert
             else {
               console.log("Vote inserted:", newVote);
+              // if the vote already exists, don't add it again
+              if (optimisticPoll.votes.some((vote) => vote.id === newVote.id)) {
+                return;
+              }
               setOptimisticPoll((prev) => ({
                 ...prev,
                 votes: [...prev.votes, newVote],
@@ -100,7 +112,13 @@ export function PollCardVoting(props: PollCardVotingProps) {
     return () =>
       supabaseChannelRef.current &&
       void supabase?.removeChannel(supabaseChannelRef.current);
-  }, [getToken, props.poll.id, props.useRealtime, isVotePending]);
+  }, [
+    getToken,
+    props.poll.id,
+    props.useRealtime,
+    isVotePending,
+    optimisticPoll.votes,
+  ]);
 
   // Poll every few seconds for updates (backup to subscription)
   useEffect(() => {
@@ -218,7 +236,7 @@ export function PollCardVoting(props: PollCardVotingProps) {
   )?.optionId;
 
   return (
-    <>
+    <div className="flex h-full w-full flex-grow flex-col gap-2">
       <ul className="divide-y divide-neutral-800">
         {optimisticPoll.options.map((option) => {
           const votePercentage =
@@ -264,6 +282,58 @@ export function PollCardVoting(props: PollCardVotingProps) {
           );
         })}
       </ul>
-    </>
+
+      <div className="flex-grow" />
+
+      {props.useChart && <VoteChart {...optimisticPoll} />}
+    </div>
+  );
+}
+
+////////
+
+function VoteChart(poll: PollsDetails[number]) {
+  const data = useMemo(
+    () =>
+      poll.options.map((option) => ({
+        option: option.text,
+        data: [
+          {
+            x: option.text,
+            y: 0,
+          },
+          {
+            x: option.text,
+            y: poll.votes.filter((vote) => vote.optionId === option.id).length,
+          },
+        ],
+      })),
+    [poll.options, poll.votes],
+  );
+
+  const primaryAxis = useMemo<
+    AxisOptions<(typeof data)[number]["data"][number]>
+  >(() => ({ getValue: (datum) => datum.x }), []);
+
+  const secondaryAxes = useMemo<
+    AxisOptions<(typeof data)[number]["data"][number]>[]
+  >(() => [{ getValue: (datum) => datum.y }], []);
+
+  return (
+    <div className="rounded-lg bg-neutral-900 p-2">
+      <div className="h-64 w-full">
+        <Chart
+          datatype="ordinal"
+          options={{
+            dark: true,
+            interactionMode: "closest",
+            data,
+            primaryAxis,
+            secondaryAxes,
+            tooltip: false,
+          }}
+        />
+      </div>
+    </div>
   );
 }
