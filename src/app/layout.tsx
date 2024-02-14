@@ -19,7 +19,7 @@ const nunito = Nunito_Sans({
 export const metadata = {
   title: "Poll",
   description: "Opinions exposed",
-  icons: [{ rel: "icon", url: "/icon.jpg" }],
+  icons: [{ rel: "icon", url: "/icon.png" }],
 };
 
 export default function RootLayout({
