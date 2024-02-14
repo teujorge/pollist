@@ -4,23 +4,30 @@ import { db } from "@/database/db";
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs";
 import type { CreatePollFields } from "./validation";
-
+import { checkAndCreateAnonUser } from "@/app/api/anon/actions";
 export async function createPoll(fields: CreatePollFields) {
   const { userId } = auth();
-
-  if (!userId || userId === "") {
-    console.warn("User is not authenticated");
-    return;
-  }
 
   if (fields.title === "") {
     console.warn("Title is required");
     return;
   }
 
+  const safeDuration =
+    Math.min(24, fields.duration > 0 ? fields.duration : 1) * 60 * 60 * 1000;
+
+  let anonId: string | undefined = undefined;
+  if (!userId) {
+    anonId = await checkAndCreateAnonUser();
+    if (!anonId) {
+      console.warn("Failed to create anon user");
+      return;
+    }
+  }
+
   const createdPoll = await db.poll.create({
     data: {
-      authorId: userId,
+      authorId: userId ?? anonId!,
       title: fields.title,
       description: fields.description ?? "",
       options: {
@@ -30,6 +37,15 @@ export async function createPoll(fields: CreatePollFields) {
           ...fields.options.map((option) => ({ text: option.value })),
         ],
       },
+      realtime: userId
+        ? fields.realtime // user poll can be realtime
+        : false, // anon poll cannot be realtime
+      expiresAt: userId
+        ? undefined // user has no expiration date
+        : new Date(Date.now() + safeDuration), // anon poll expires in duration hours
+      allowAnon: userId
+        ? fields.allowAnon // user poll can allow anon
+        : true, // anon poll always allows anon
     },
   });
 

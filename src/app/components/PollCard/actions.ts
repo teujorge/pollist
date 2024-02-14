@@ -13,11 +13,6 @@ export async function handleVote({
   optionId: string | undefined;
   voteId: string | undefined;
 }) {
-  // user is not logged in, so we cannot vote
-  if (!userId) {
-    throw new Error("You need to be logged in to vote");
-  }
-
   // user has already voted
   if (voteId) {
     // need to change the vote
