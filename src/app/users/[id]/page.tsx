@@ -1,6 +1,7 @@
+import Image from "next/image";
 import { Card } from "@/app/components/Card";
 import { db } from "@/database/db";
-import Image from "next/image";
+import { UserStatistics } from "./components/UserStatistics";
 
 export default async function UserPage({ params }: { params: { id: string } }) {
   const user = await db.user.findUnique({
@@ -24,7 +25,10 @@ export default async function UserPage({ params }: { params: { id: string } }) {
       ) : (
         <div className="shimmer h-[100px] w-[100px] !rounded-full" />
       )}
+
       <h1 className="flex items-center justify-center">{user.username}</h1>
+
+      <UserStatistics />
     </Card>
   );
 }
