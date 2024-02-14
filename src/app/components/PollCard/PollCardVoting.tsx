@@ -1,10 +1,10 @@
 "use client";
 
-import { useAuth, useUser } from "@clerk/nextjs";
 import { getPoll, handleVote } from "./actions";
 import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
 import { supabase } from "@/database/dbRealtime";
+import { useApp } from "@/app/app";
 import {
   type MutableRefObject,
   useEffect,
@@ -16,7 +16,8 @@ import { type AxisOptions, Chart } from "react-charts";
 import type { PollCardProps } from "./PollCard";
 import type { PollsDetails } from "../InfinitePolls/actions";
 import type { RealtimeChannel } from "@supabase/realtime-js";
-import { type Vote } from "@prisma/client";
+import type { Vote } from "@prisma/client";
+import { LockSvg } from "@/app/svgs/LockSvg";
 
 type PollCardVotingProps = PollCardProps & {
   useChart?: boolean;
@@ -24,8 +25,7 @@ type PollCardVotingProps = PollCardProps & {
 };
 
 export function PollCardVoting(props: PollCardVotingProps) {
-  const { getToken } = useAuth();
-  const { user } = useUser();
+  const { userId, isAnon } = useApp();
 
   const supabaseChannelRef: MutableRefObject<RealtimeChannel | undefined> =
     useRef();
@@ -34,15 +34,14 @@ export function PollCardVoting(props: PollCardVotingProps) {
     props.poll,
   );
 
-  const userVote = optimisticPoll.votes.find(
-    (vote) => vote.voterId === user?.id,
-  );
+  const userVote = optimisticPoll.votes.find((vote) => vote.voterId === userId);
 
   const [isVotePending, setIsVotePending] = useState(false);
 
   // Subscribe to changes in the database
   useEffect(() => {
     if (!props.useRealtime) return;
+    if (!optimisticPoll.realtime) return;
 
     // console.log("!!! Subscribing to db changes !!!");
     supabaseChannelRef.current = supabase
@@ -113,17 +112,18 @@ export function PollCardVoting(props: PollCardVotingProps) {
       supabaseChannelRef.current &&
       void supabase?.removeChannel(supabaseChannelRef.current);
   }, [
-    getToken,
     props.poll.id,
     props.useRealtime,
     isVotePending,
     optimisticPoll.votes,
+    optimisticPoll.realtime,
   ]);
 
   // Poll every few seconds for updates (backup to subscription)
   useEffect(() => {
     if (isVotePending) return;
     if (!props.useRealtime) return;
+    if (!optimisticPoll.realtime) return;
     if (supabaseChannelRef.current) return;
 
     const intervalId = setInterval(() => {
@@ -147,11 +147,17 @@ export function PollCardVoting(props: PollCardVotingProps) {
 
     // Clean up the interval on component unmount
     return () => clearInterval(intervalId);
-  }, [isVotePending, optimisticPoll.id, props.useRealtime, user?.id]);
+  }, [
+    isVotePending,
+    optimisticPoll.id,
+    optimisticPoll.realtime,
+    props.useRealtime,
+    userId,
+  ]);
 
   async function onVote(optionId: string) {
-    if (!user) {
-      toast.warning("You need to be signed in to vote");
+    if (isAnon && !props.poll.allowAnon) {
+      toast.warning("Sign in required to vote on this poll");
       return;
     }
 
@@ -171,16 +177,16 @@ export function PollCardVoting(props: PollCardVotingProps) {
 
       setOptimisticPoll((prev) => {
         // Get users current vote
-        const prevVote = prev.votes.find((vote) => vote.voterId === user?.id);
+        const prevVote = prev.votes.find((vote) => vote.voterId === userId);
 
         // If un-voting, remove the vote from the array
         const updatedVotes = prev.votes.filter(
-          (vote) => vote.voterId !== user?.id,
+          (vote) => vote.voterId !== userId,
         );
 
         // If voting, add the updated vote to the array
         if (idToSet) {
-          const newVote = prevVote
+          const newVote: typeof prevVote = prevVote
             ? {
                 ...prevVote,
                 optionId: idToSet,
@@ -188,7 +194,7 @@ export function PollCardVoting(props: PollCardVotingProps) {
             : {
                 id: "optimistic-vote-id",
                 createdAt: new Date(),
-                voterId: user.id,
+                voterId: userId ?? "anon",
                 pollId: optimisticPoll.id,
                 optionId: idToSet,
               };
@@ -205,13 +211,13 @@ export function PollCardVoting(props: PollCardVotingProps) {
       const dbVote = await handleVote({
         pollId: optimisticPoll.id,
         optionId: idToSet,
-        userId: user?.id,
+        userId: userId ?? "anon",
         voteId: userVote?.id,
       });
 
       if (isUnVoting) return;
       setOptimisticPoll((prev) => {
-        const newVotes = prev.votes.filter((vote) => vote.voterId !== user?.id);
+        const newVotes = prev.votes.filter((vote) => vote.voterId !== userId);
         newVotes.push(dbVote);
         return { ...prev, votes: newVotes };
       });
@@ -236,7 +242,16 @@ export function PollCardVoting(props: PollCardVotingProps) {
   )?.optionId;
 
   return (
-    <div className="flex h-full w-full flex-grow flex-col pt-2">
+    <div
+      className={`flex h-full w-full flex-grow flex-col pt-2 transition-opacity 
+        ${!userId && "pointer-events-none opacity-50"}
+      `}
+    >
+      {isAnon && !props.poll.allowAnon && (
+        <div title="Sign in required to vote on this poll" className="ml-auto">
+          <LockSvg className="fill-neutral-500" />
+        </div>
+      )}
       <ul className="divide-y divide-neutral-800">
         {optimisticPoll.options.map((option) => {
           const votePercentage =

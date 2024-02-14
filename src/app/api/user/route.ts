@@ -47,6 +47,7 @@ export async function POST(req: NextRequest) {
             id: data.id,
             username: data.username ?? data.first_name ?? data.last_name,
             imageUrl: data.image_url,
+            anon: false,
           },
         });
 
