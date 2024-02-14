@@ -1,62 +1,62 @@
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-    id       String  @id
-    username String?
-    imageUrl String?
-    votes    Vote[]
-    polls    Poll[]
-    anon     Boolean
+  id       String  @id
+  username String?
+  imageUrl String?
+  votes    Vote[]
+  polls    Poll[]
+  anon     Boolean
 }
 
 model Poll {
-    id            String    @id @default(uuid())
-    createdAt     DateTime  @default(now())
-    updatedAt     DateTime  @updatedAt
-    expiresAt     DateTime?
-    realtime      Boolean   @default(false)
-    allowAnon     Boolean   @default(false)
-    authorId      String
-    title         String
-    description   String
-    controversial Boolean   @default(false)
-    votes         Vote[]
-    options       Option[]
-    author        User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  id            String    @id @default(uuid())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  expiresAt     DateTime?
+  realtime      Boolean   @default(false)
+  allowAnon     Boolean   @default(false)
+  authorId      String
+  title         String
+  description   String
+  controversial Boolean   @default(false)
+  votes         Vote[]
+  options       Option[]
+  author        User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
-    @@index([title])
-    @@index([authorId])
+  @@index([title])
+  @@index([authorId])
 }
 
 model Option {
-    id     String @id @default(uuid())
-    text   String
-    pollId String
-    votes  Vote[]
-    poll   Poll   @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  id     String @id @default(uuid())
+  text   String
+  pollId String
+  votes  Vote[]
+  poll   Poll   @relation(fields: [pollId], references: [id], onDelete: Cascade)
 
-    @@index([pollId])
+  @@index([pollId])
 }
 
 model Vote {
-    id        String   @id @default(uuid())
-    createdAt DateTime @default(now())
-    voterId   String
-    pollId    String
-    optionId  String
-    voter     User     @relation(fields: [voterId], references: [id], onDelete: Cascade)
-    poll      Poll     @relation(fields: [pollId], references: [id], onDelete: Cascade)
-    option    Option   @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  voterId   String
+  pollId    String
+  optionId  String
+  voter     User     @relation(fields: [voterId], references: [id], onDelete: Cascade)
+  poll      Poll     @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  option    Option   @relation(fields: [optionId], references: [id], onDelete: Cascade)
 
-    @@unique([voterId, pollId, optionId])
-    @@index([voterId])
-    @@index([pollId])
-    @@index([optionId])
+  @@unique([voterId, pollId, optionId])
+  @@index([voterId])
+  @@index([pollId])
+  @@index([optionId])
 }
