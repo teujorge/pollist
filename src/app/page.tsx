@@ -10,11 +10,9 @@ export default async function HomePage({
   const category = searchParams?.category?.toString() ?? "";
 
   return (
-    <main className="flex flex-col items-center gap-4 pt-0">
-      <div className="h-4" />
-
-      <div className="sticky top-10 z-20 flex w-full flex-col items-start justify-center gap-2 border-b border-neutral-800 bg-black py-1 pt-6 sm:flex-row sm:items-center">
-        <h1 className="text-3xl font-bold sm:text-4xl">Polls</h1>
+    <main className="flex flex-col items-center gap-2">
+      <div className="sticky top-10 z-20 flex w-full flex-row items-end justify-center gap-2 bg-gradient-to-b from-black from-80% pt-6 sm:items-center">
+        <h1 className="text-4xl font-bold">Polls</h1>
         <div className="flex-grow" />
         <FilterBar />
       </div>

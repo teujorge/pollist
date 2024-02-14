@@ -7,15 +7,15 @@ export function FilterBar() {
   const { setSearch, setCategory } = useFilter();
 
   return (
-    <>
+    <div className="flex w-[calc(90%-90px)] max-w-fit flex-col gap-2 sm:flex-row">
       <input
         type="text"
         placeholder="Search"
-        className="w-[calc(90%-90px)] max-w-fit"
+        className="w-full sm:w-fit"
         onChange={(event) => setSearch(event.target.value)}
       />
       <select
-        className="w-[calc(90%-90px)] max-w-fit"
+        className="w-full sm:w-fit"
         onChange={(event) => setCategory(event.target.value)}
       >
         {CATEGORIES.map((category) => (
@@ -24,6 +24,6 @@ export function FilterBar() {
           </option>
         ))}
       </select>
-    </>
+    </div>
   );
 }
