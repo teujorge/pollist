@@ -1,3 +1,4 @@
+import "@/styles/globals.css";
 import {
   ClerkProvider,
   SignInButton,
@@ -6,10 +7,10 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
-import "@/styles/globals.css";
 import { Nunito_Sans } from "next/font/google";
 import Link from "next/link";
 import { Toaster } from "sonner";
+import { IconSvg } from "./svgs/IconSvg";
 
 const nunito = Nunito_Sans({
   subsets: ["latin"],
@@ -71,7 +72,12 @@ function Header() {
   return (
     <header className="sticky left-0 right-0 top-0 z-40 flex w-full justify-between bg-gradient-to-b from-black from-60% px-5 py-4">
       <div className="flex flex-row items-center gap-4">
-        <Link href="/">Poll</Link>
+        <Link
+          href="/"
+          className="[&>svg>path]:hovact:fill-purple-500 [&>svg>path]:hovact:stroke-purple-500 h-8 w-8 [&>svg>path]:transition-all"
+        >
+          <IconSvg className="h-full w-full" />
+        </Link>
       </div>
 
       <div className="flex flex-row items-center gap-4">
@@ -86,7 +92,7 @@ function Header() {
         </SignedIn>
 
         <SignedOut>
-          <div className="flex h-8 w-fit items-center [&>button]:transition-colors [&>button]:hovact:text-purple-500">
+          <div className="[&>button]:hovact:text-purple-500 flex h-8 w-fit items-center [&>button]:transition-colors">
             <SignInButton mode="modal" />
           </div>
         </SignedOut>
