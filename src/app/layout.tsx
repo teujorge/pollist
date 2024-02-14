@@ -11,6 +11,7 @@ import { Nunito_Sans } from "next/font/google";
 import Link from "next/link";
 import { Toaster } from "sonner";
 import { IconSvg } from "./svgs/IconSvg";
+import { App } from "./app";
 
 const nunito = Nunito_Sans({
   subsets: ["latin"],
@@ -56,12 +57,14 @@ export default function RootLayout({
         }}
       >
         <body className={`font-sans ${nunito.variable}`}>
-          <Header />
-          <Toaster richColors />
+          <App>
+            <Header />
+            <Toaster richColors />
 
-          {children}
-          {crudPoll}
-          {welcome}
+            {children}
+            {crudPoll}
+            {welcome}
+          </App>
         </body>
       </ClerkProvider>
     </html>
@@ -74,7 +77,7 @@ function Header() {
       <div className="flex flex-row items-center gap-4">
         <Link
           href="/"
-          className="[&>svg>path]:hovact:fill-purple-500 [&>svg>path]:hovact:stroke-purple-500 h-8 w-8 [&>svg>path]:transition-all"
+          className="h-8 w-8 [&>svg>path]:transition-all [&>svg>path]:hovact:fill-purple-500 [&>svg>path]:hovact:stroke-purple-500"
         >
           <IconSvg className="h-full w-full" />
         </Link>
@@ -92,7 +95,7 @@ function Header() {
         </SignedIn>
 
         <SignedOut>
-          <div className="[&>button]:hovact:text-purple-500 flex h-8 w-fit items-center [&>button]:transition-colors">
+          <div className="flex h-8 w-fit items-center [&>button]:transition-colors [&>button]:hovact:text-purple-500">
             <SignInButton mode="modal" />
           </div>
         </SignedOut>
