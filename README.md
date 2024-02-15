@@ -1,4 +1,4 @@
-# Poll: Opinions exposed
+# Pollist: Opinions exposed
 
 ## What is this project?
 
