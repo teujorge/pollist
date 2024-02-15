@@ -255,7 +255,7 @@ export function PollCardVoting(props: PollCardVotingProps) {
           voteBlocked ? "Sign in required to vote on this poll" : undefined
         }
         className={`divide-y divide-neutral-800
-          ${voteBlocked && "pointer-events-none opacity-50"}
+          ${voteBlocked && "opacity-50"}
         `}
       >
         {optimisticPoll.options.map((option) => {
