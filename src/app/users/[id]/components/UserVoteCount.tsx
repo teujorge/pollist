@@ -12,5 +12,10 @@ export async function UserVoteCount() {
     },
   });
 
-  return <p>Votes: {voteCount}</p>;
+  return (
+    <p>
+      <span className="font-semibold">Votes </span>{" "}
+      <span className="text-neutral-300">{voteCount}</span>
+    </p>
+  );
 }

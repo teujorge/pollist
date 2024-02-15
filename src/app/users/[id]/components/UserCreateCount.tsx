@@ -12,5 +12,10 @@ export async function UserCreateCount() {
     },
   });
 
-  return <p>Creations: {createCount}</p>;
+  return (
+    <p>
+      <span className="font-semibold">Creations </span>
+      <span className="text-neutral-300">{createCount}</span>
+    </p>
+  );
 }

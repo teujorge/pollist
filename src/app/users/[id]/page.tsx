@@ -13,8 +13,8 @@ export default async function UserPage({ params }: { params: { id: string } }) {
   if (!user) return { notFound: true };
 
   return (
-    <div className="flex w-full flex-row  items-center  justify-between gap-2 rounded-xl border border-neutral-800 px-3 py-2">
-      <div className="flex flex-col">
+    <div className="flex w-full flex-row   justify-between gap-2 rounded-xl border border-neutral-800 px-3 py-2">
+      <div className="flex flex-col gap-2">
         {user.imageUrl ? (
           <Image
             src={user.imageUrl}
@@ -29,7 +29,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 
         <h1 className="flex items-center justify-center">{user.username}</h1>
       </div>
-      <div className="flex w-full flex-col gap-4">
+      <div className="flex min-h-full  flex-col justify-between gap-4">
         <UserStatistics />
         <Tabs />
       </div>
