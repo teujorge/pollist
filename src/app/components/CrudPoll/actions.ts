@@ -1,20 +1,19 @@
 "use server";
 
 import { db } from "@/database/db";
-import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs";
-import type { CreatePollFields } from "./validation";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { checkAndCreateAnonUser } from "@/app/api/anon/actions";
+import type { CreatePollFields } from "./validation";
+
 export async function createPoll(fields: CreatePollFields) {
   const { userId } = auth();
 
-  if (fields.title === "") {
-    console.warn("Title is required");
-    return;
-  }
-
-  const safeDuration =
-    Math.min(24, fields.duration > 0 ? fields.duration : 1) * 60 * 60 * 1000;
+  const hourToMs = 60 * 60 * 1000;
+  const safeDuration = fields.duration
+    ? Math.min(24, fields.duration > 0 ? fields.duration : 1) * hourToMs
+    : hourToMs;
 
   let anonId: string | undefined = undefined;
   if (!userId) {
@@ -44,7 +43,7 @@ export async function createPoll(fields: CreatePollFields) {
         ? undefined // user has no expiration date
         : new Date(Date.now() + safeDuration), // anon poll expires in duration hours
       allowAnon: userId
-        ? fields.allowAnon // user poll can allow anon
+        ? fields.allowAnon // user poll can allow/disallow anon
         : true, // anon poll always allows anon
     },
   });
@@ -54,6 +53,14 @@ export async function createPoll(fields: CreatePollFields) {
 
 export async function deletePoll(formData: FormData) {
   const { userId } = auth();
+
+  // Use the IP address instead of user ID
+  let anonId: string | undefined = undefined;
+  if (process.env.NODE_ENV === "development") {
+    anonId = "localhost";
+  } else {
+    anonId = headers().get("x-real-ip") ?? undefined;
+  }
 
   // Get the pollId from the form data (dangerous data)
 
@@ -65,11 +72,15 @@ export async function deletePoll(formData: FormData) {
 
   const poll = await db.poll.findUnique({ where: { id: pollId } });
 
-  if (!poll || poll.authorId !== userId) {
+  if (!poll) {
+    throw new Error("Poll not found...");
+  }
+
+  if (userId !== poll.authorId && anonId !== poll.authorId) {
     throw new Error("You are not authorized to delete this poll");
   }
 
   const deletedPoll = await db.poll.delete({ where: { id: pollId } });
 
-  if (deletedPoll) redirect(`/users/${userId}`);
+  if (deletedPoll) redirect(`/users/${userId ?? anonId}`);
 }
