@@ -1,56 +1,61 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+import Link from "next/link";
+import {
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+  useUser,
+} from "@clerk/nextjs";
 import { createContext, useContext, useEffect, useState } from "react";
 import { checkAndCreateAnonUser } from "./api/anon/actions";
+import { IconSvg } from "./svgs/IconSvg";
 
 type UserStatus = {
   userId: string | undefined;
-  isAnon: boolean | undefined;
+  isAnon: boolean;
 };
 
 export function App({ children }: { children: React.ReactNode }) {
   useCustomScrollbar();
 
   const { user } = useUser();
+
+  const [userIp, setUserIp] = useState<string | undefined>();
+
   const [userStatus, setUserStatus] = useState<UserStatus>({
     userId: undefined,
-    isAnon: undefined,
+    isAnon: true,
   });
 
   useEffect(() => {
-    async function updateStatus() {
-      // If the user is logged in, set the userStatus
-      if (user?.id) {
-        setUserStatus({ userId: user.id, isAnon: false });
-      }
-
-      // If the user is not logged in, use IP Address
-      else {
-        if (
-          userStatus.userId === undefined &&
-          userStatus.isAnon === undefined
-        ) {
-          setUserStatus({ userId: undefined, isAnon: true });
-          return;
-        }
-
-        const id = await checkAndCreateAnonUser();
-        if (!user?.id) {
-          setUserStatus({ userId: id, isAnon: true });
-        }
-      }
+    async function initUserIp() {
+      const ip = await checkAndCreateAnonUser();
+      setUserIp(ip);
     }
+    void initUserIp();
+  }, []);
 
-    void updateStatus();
-  }, [user]);
+  useEffect(() => {
+    if (user) {
+      setUserStatus({ userId: user.id, isAnon: false });
+    } else {
+      setUserStatus({ userId: userIp, isAnon: true });
+    }
+  }, [user, userIp]);
 
   // log userStatus
   useEffect(() => {
     console.log("userStatus", userStatus);
   }, [userStatus]);
 
-  return <AppProvider value={userStatus}>{children}</AppProvider>;
+  return (
+    <AppProvider value={userStatus}>
+      <Header userId={userStatus.userId} />
+      {children}
+    </AppProvider>
+  );
 }
 
 const AppContext = createContext<UserStatus | undefined>(undefined);
@@ -116,4 +121,37 @@ function useCustomScrollbar() {
       document.head.removeChild(styleSheet);
     };
   }, []);
+}
+
+function Header({ userId }: { userId?: string }) {
+  return (
+    <header className="sticky left-0 right-0 top-0 z-40 flex w-full justify-between bg-gradient-to-b from-black from-60% px-5 py-4">
+      <div className="flex flex-row items-center gap-4">
+        <Link
+          href="/"
+          className="h-8 w-8 [&>svg>path]:transition-all [&>svg>path]:hovact:fill-purple-500 [&>svg>path]:hovact:stroke-purple-500"
+        >
+          <IconSvg className="h-full w-full" />
+        </Link>
+      </div>
+
+      <div className="flex flex-row items-center gap-4">
+        <Link href="/">Home</Link>
+        <Link href="/polls/create">Create</Link>
+        {userId && <Link href={`/users/${userId}`}>Me</Link>}
+
+        <SignedIn>
+          <div className="h-8 w-8 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500">
+            <UserButton afterSignOutUrl="/" />
+          </div>
+        </SignedIn>
+
+        <SignedOut>
+          <div className="flex h-8 w-fit items-center [&>button]:transition-colors [&>button]:hovact:text-purple-500">
+            <SignInButton mode="modal" />
+          </div>
+        </SignedOut>
+      </div>
+    </header>
+  );
 }
