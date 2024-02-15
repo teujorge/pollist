@@ -1,0 +1,56 @@
+.blob1 {
+  animation: float1 32s ease-in-out infinite;
+}
+
+.blob2 {
+  animation: float2 40s ease-in-out infinite;
+}
+
+.blob3 {
+  animation: float3 36s ease-in-out infinite;
+}
+
+@keyframes float1 {
+  0%,
+  100% {
+    transform: translate(-50%, -100%) scale(1);
+  }
+  33% {
+    transform: translate(0%, 0%) scale(1.1);
+  }
+  66% {
+    transform: translate(-100%, 0%) scale(1.5);
+  }
+}
+
+@keyframes float2 {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+  20% {
+    transform: translate(-63%, -37%) scale(1.25);
+  }
+  40% {
+    transform: translate(-37%, -63%) scale(0.85);
+  }
+  60% {
+    transform: translate(-63%, -37%) scale(1.05);
+  }
+  80% {
+    transform: translate(-37%, -63%) scale(0.95);
+  }
+}
+
+@keyframes float3 {
+  0%,
+  100% {
+    transform: translate(-50%, -100%) scale(1);
+  }
+  33% {
+    transform: translate(-100%, 0%) scale(0.8);
+  }
+  66% {
+    transform: translate(0%, 0%) scale(1.4);
+  }
+}

@@ -23,7 +23,7 @@ export default function Error({
         </p>
 
         <button
-          className="rounded-lg px-2 py-1 hovact:bg-neutral-800"
+          className="rounded-lg px-4 py-2 hovact:bg-neutral-800"
           onClick={() => reset()}
         >
           Try again

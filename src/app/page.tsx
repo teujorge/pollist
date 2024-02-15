@@ -17,6 +17,7 @@ export default async function HomePage({
         <FilterBar />
       </div>
 
+      <div className="h-4" />
       <InfinitePolls
         search={search}
         category={category}
