@@ -1,4 +1,6 @@
 import "@/styles/globals.css";
+import Head from "next/head";
+import Link from "next/link";
 import {
   ClerkProvider,
   SignInButton,
@@ -8,7 +10,6 @@ import {
 } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { Nunito_Sans } from "next/font/google";
-import Link from "next/link";
 import { Toaster } from "sonner";
 import { IconSvg } from "./svgs/IconSvg";
 import { App } from "./app";
@@ -35,6 +36,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <Head>
+        <meta name="google-adsense-account" content="ca-pub-6132246468312218" />
+      </Head>
+
       <ClerkProvider
         appearance={{
           baseTheme: dark,
