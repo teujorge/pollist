@@ -13,6 +13,7 @@ import { Nunito_Sans } from "next/font/google";
 import { Toaster } from "sonner";
 import { IconSvg } from "./svgs/IconSvg";
 import { App } from "./app";
+import Script from "next/script";
 
 const nunito = Nunito_Sans({
   subsets: ["latin"],
@@ -36,9 +37,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <Head>
-        <meta name="google-adsense-account" content="ca-pub-6132246468312218" />
-      </Head>
+      <Script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6132246468312218"
+        crossOrigin="anonymous"
+        strategy="lazyOnload"
+      />
 
       <ClerkProvider
         appearance={{
