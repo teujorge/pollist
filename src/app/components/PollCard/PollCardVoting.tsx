@@ -241,18 +241,23 @@ export function PollCardVoting(props: PollCardVotingProps) {
     (vote) => vote.voterId === props.highlightedUserId,
   )?.optionId;
 
+  const voteBlocked = isAnon && !props.poll.allowAnon;
+
   return (
-    <div
-      className={`flex h-full w-full flex-grow flex-col pt-2 transition-opacity 
-        ${!userId && "pointer-events-none opacity-50"}
-      `}
-    >
-      {isAnon && !props.poll.allowAnon && (
+    <div className="flex h-full w-full flex-grow flex-col pt-2 transition-opacity">
+      {voteBlocked && (
         <div title="Sign in required to vote on this poll" className="ml-auto">
           <LockSvg className="fill-neutral-500" />
         </div>
       )}
-      <ul className="divide-y divide-neutral-800">
+      <ul
+        title={
+          voteBlocked ? "Sign in required to vote on this poll" : undefined
+        }
+        className={`divide-y divide-neutral-800
+          ${voteBlocked && "pointer-events-none opacity-50"}
+        `}
+      >
         {optimisticPoll.options.map((option) => {
           const votePercentage =
             optimisticPoll.votes.length === 0
