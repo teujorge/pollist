@@ -27,7 +27,9 @@ export default async function UserPage({ params }: { params: { id: string } }) {
           <div className="shimmer h-[100px] w-[100px] !rounded-full" />
         )}
 
-        <h1 className="flex items-center justify-center">{user.username}</h1>
+        <h1 className="flex items-center justify-center">
+          {user.username ?? "Anon"}
+        </h1>
       </div>
       <div className="flex min-h-full  flex-col justify-between gap-4">
         <UserStatistics />

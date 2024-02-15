@@ -14,8 +14,9 @@ export const createPollSchema = z.object({
   duration: z
     .number()
     .min(1, "Duration must be at least 1 hour")
-    .max(24, "Duration must be at most 24 hours"),
-  allowAnon: z.boolean(),
+    .max(24, "Duration must be at most 24 hours")
+    .optional(),
+  allowAnon: z.boolean().optional(),
 });
 
 export type CreatePollFields = z.infer<typeof createPollSchema>;

@@ -1,17 +1,9 @@
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/TcpY2hkdR17
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
-
 import Link from "next/link";
 import { db } from "@/database/db";
 import { PollCardVoting } from "@/app/components/PollCard/PollCardVoting";
-import { auth } from "@clerk/nextjs";
+import { DeletePollButton } from "./components/DeletePollButton";
 
 export default async function PollPage({ params }: { params: { id: string } }) {
-  const { userId } = auth();
-
   const poll = await db.poll.findUnique({
     where: {
       id: params.id,
@@ -46,14 +38,7 @@ export default async function PollPage({ params }: { params: { id: string } }) {
             month: "long",
             day: "numeric",
           })}
-          {userId === poll.authorId && (
-            <Link
-              href={`/polls/delete?id=${poll.id}`}
-              className="text-red-500 hovact:text-red-400"
-            >
-              Delete
-            </Link>
-          )}
+          <DeletePollButton pollId={poll.id} pollAuthorId={poll.author.id} />
         </div>
       </div>
 
