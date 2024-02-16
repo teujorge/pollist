@@ -1,6 +1,6 @@
 import Link from "next/link";
+import { ProfileImage } from "../ProfileImage";
 import { PollCardVoting } from "@/app/components/PollCard/PollCardVoting";
-import Image from "next/image";
 import type { PollsDetails } from "../InfinitePolls/actions";
 
 export type PollCardProps = {
@@ -18,7 +18,7 @@ export function PollCard({ poll, highlightedUserId }: PollCardProps) {
         className="flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 pl-0 transition-all [&>div>p]:hovact:text-purple-500 [&>div>span]:hovact:text-purple-600 [&>img]:hovact:border-purple-500"
       >
         {poll.author.imageUrl && (
-          <Image
+          <ProfileImage
             src={poll.author.imageUrl}
             alt={poll.author.username ?? "author's avatar"}
             width={38}
