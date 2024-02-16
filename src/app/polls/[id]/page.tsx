@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { db } from "@/database/db";
+import { notFound } from "next/navigation";
 import { PollCardVoting } from "@/app/components/PollCard/PollCardVoting";
 import { DeletePollButton } from "./components/DeletePollButton";
 
@@ -7,6 +8,10 @@ export default async function PollPage({ params }: { params: { id: string } }) {
   const poll = await db.poll.findUnique({
     where: {
       id: params.id,
+      OR: [
+        { expiresAt: { gte: new Date() } }, // Polls that expire in the future
+        { expiresAt: null }, // Polls with no expiration date
+      ],
     },
     include: {
       options: true,
@@ -15,7 +20,7 @@ export default async function PollPage({ params }: { params: { id: string } }) {
     },
   });
 
-  if (!poll) return { notFound: true };
+  if (!poll) return notFound();
 
   return (
     <main className="flex min-h-[calc(100dvh-64px)] w-full flex-col">

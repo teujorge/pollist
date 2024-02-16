@@ -24,10 +24,15 @@ export async function getInfinitePolls({
     where: {
       title: search ? { contains: search } : undefined,
 
+      OR: [
+        { expiresAt: { gte: new Date() } }, // Polls that expire in the future
+        { expiresAt: null }, // Polls with no expiration date
+      ],
+
       authorId: authorId ? { contains: authorId } : undefined,
 
       votes: {
-        // filter by voterId
+        // Filter by voterId
         ...(voterId
           ? {
               some: {
@@ -36,7 +41,7 @@ export async function getInfinitePolls({
             }
           : {}),
 
-        // filter by date
+        // Filter by date
         ...(isTrending
           ? {
               some: {
