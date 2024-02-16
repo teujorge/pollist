@@ -241,3 +241,10 @@ export async function deleteAllPolls() {
 }
 
 export const adminId = async () => "user_2cPaAJQIPmK7XooVoIExRO7M2lF";
+
+// CRON JOBS TEST
+
+export async function testCron() {
+  await fetch("http://localhost:3000/api/purge-expired");
+  await fetch("http://localhost:3000/api/controversy-calculator");
+}

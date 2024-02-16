@@ -1,7 +1,14 @@
 import { db } from "@/database/db";
 import { Tabs } from "./components/Tabs";
+import { notFound } from "next/navigation";
 import { ProfileImage } from "@/app/components/ProfileImage";
 import { UserStatistics } from "./components/UserStatistics";
+// import {
+//   adminId,
+//   createPollsFromList,
+//   deleteAllPolls,
+//   testCron,
+// } from "@/database/defaultPolls";
 
 export default async function UserPage({ params }: { params: { id: string } }) {
   const user = await db.user.findUnique({
@@ -10,7 +17,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
     },
   });
 
-  if (!user) return { notFound: true };
+  if (!user) return notFound();
 
   return (
     <div className="flex w-full flex-row   justify-between gap-2 rounded-xl border border-neutral-800 px-3 py-2">
@@ -42,6 +49,9 @@ export default async function UserPage({ params }: { params: { id: string } }) {
           </form>
           <form className="italic text-red-500" action={deleteAllPolls}>
             <button>delete all polls</button>
+          </form>
+          <form className="italic text-purple-500" action={testCron}>
+            <button>test cron jobs</button>
           </form>
         </div>
       )} */}

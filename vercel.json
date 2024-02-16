@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/purge-expired",
+      "schedule": "0 1 * * 0"
+    },
+    {
+      "path": "/api/controversy-calculator",
+      "schedule": "0 1 * * 1"
+    }
+  ]
+}
