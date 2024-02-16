@@ -115,7 +115,7 @@ export function CreatePollForm() {
         ) : (
           <label className="flex w-fit items-center gap-1">
             <span className="text-sm">Duration</span>
-            <input type="number" {...form.register("duration")} />
+            <input {...form.register("duration")} type="number" />
             <span className="text-xs">Hrs</span>
           </label>
         )}
