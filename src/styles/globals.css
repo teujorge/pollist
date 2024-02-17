@@ -89,6 +89,24 @@ a:active {
   border: 1px solid #262626;
 }
 
+.cl-pageScrollBox::-webkit-scrollbar-track {
+  box-shadow: none;
+  background: #19191a;
+}
+
+.cl-pageScrollBox::-webkit-scrollbar-thumb {
+  box-shadow: none;
+  background: #666;
+  border: 3px solid #19191a;
+  transition: all 150ms ease;
+}
+
+.cl-pageScrollBox::-webkit-scrollbar-thumb:hover {
+  box-shadow: none;
+  background: #888;
+  border: 2px solid #19191a;
+}
+
 .loader {
   border-bottom-color: transparent !important;
   border-radius: 50%;
