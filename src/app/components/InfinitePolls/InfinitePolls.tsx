@@ -11,9 +11,9 @@ export function InfinitePolls(
 ) {
   const loaderRef = useRef<HTMLDivElement>(null);
 
-  const queryMemo = useMemo(() => {
-    return { search: props.search, category: props.category };
-  }, [props.search, props.category]);
+  const queryMemo: PollQuery = useMemo(() => {
+    return { ...props };
+  }, [props]);
 
   const data = useInfinitePolls({
     query: queryMemo,
