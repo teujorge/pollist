@@ -15,6 +15,7 @@ export function InfinitePolls(
     loaderRef: loaderRef,
   });
 
+  console.log("---rendering InfinitePolls---");
   return (
     <div className="flex w-full flex-col items-center gap-2">
       {data.polls.map((poll) => (
