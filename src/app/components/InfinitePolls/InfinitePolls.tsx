@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { useInfinitePolls } from "./useInfinitePolls";
 import { PollCard } from "../PollCard/PollCard";
 import { Loader } from "../Loader";
@@ -10,8 +10,13 @@ export function InfinitePolls(
   props: PollQuery & { highlightedUserId?: string; idPrefix: string },
 ) {
   const loaderRef = useRef<HTMLDivElement>(null);
+
+  const queryMemo = useMemo(() => {
+    return { search: props.search, category: props.category };
+  }, [props.search, props.category]);
+
   const data = useInfinitePolls({
-    query: props,
+    query: queryMemo,
     loaderRef: loaderRef,
   });
 
