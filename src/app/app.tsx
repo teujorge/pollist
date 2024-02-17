@@ -96,6 +96,7 @@ function useCustomScrollbar() {
       }
 
       ::-webkit-scrollbar-thumb {
+        min-height: 1.5rem;
         border-radius: 1.5rem;
         box-shadow: inset 0 0 10px 10px #444;
         border: 3px solid transparent;
