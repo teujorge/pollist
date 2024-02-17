@@ -9,10 +9,6 @@ export default async function HomePage({
   const search = searchParams?.search?.toString() ?? "";
   const category = searchParams?.category?.toString() ?? "";
 
-  console.log("---rendering HomePage---");
-  console.log("search", search);
-  console.log("category", category);
-
   return (
     <main className="flex flex-col items-center gap-2">
       <div className="sticky top-10 z-20 flex w-full flex-row items-end justify-center gap-2 bg-gradient-to-b from-black from-80% pt-6 sm:items-center">

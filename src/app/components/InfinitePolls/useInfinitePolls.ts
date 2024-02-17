@@ -30,7 +30,6 @@ export function useInfinitePolls(props: {
   // Reset data when query changes
   useEffect(() => {
     if (!initRef.current) return;
-    console.log("useEffect - query has changed");
     setData({
       polls: [],
       page: 1,
@@ -76,15 +75,12 @@ export function useInfinitePolls(props: {
 
     // console.log("useEffect - loaderRef is intersecting");
     function handleObserver(entities: IntersectionObserverEntry[]) {
-      console.log("handleObserver - entities", entities);
-
       if (!data.hasMore) return;
       if (data.isLoading) return;
 
       const target = entities[0];
       if (!target || !target.isIntersecting) return;
 
-      console.log("handleObserver - PASSED conditions");
       void loadMore();
     }
 
