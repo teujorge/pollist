@@ -1,5 +1,7 @@
 import { FilterBar } from "./index/components/FilterBar";
 import { InfinitePolls } from "./components/InfinitePolls/InfinitePolls";
+import { Suspense } from "react";
+import { Loader } from "./components/Loader";
 
 export default function HomePage({
   searchParams,
@@ -18,11 +20,13 @@ export default function HomePage({
       </div>
 
       <div className="h-4" />
-      <InfinitePolls
-        search={search}
-        category={category}
-        idPrefix="home-page-polls"
-      />
+      <Suspense fallback={<Loader />}>
+        <InfinitePolls
+          search={search}
+          category={category}
+          idPrefix="home-page-polls"
+        />
+      </Suspense>
     </main>
   );
 }
