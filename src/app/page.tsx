@@ -1,7 +1,7 @@
 import { FilterBar } from "./index/components/FilterBar";
 import { InfinitePolls } from "./components/InfinitePolls/InfinitePolls";
 
-export default async function HomePage({
+export default function HomePage({
   searchParams,
 }: {
   searchParams: Record<string, string | string[] | undefined>;
