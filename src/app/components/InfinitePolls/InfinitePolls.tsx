@@ -3,7 +3,7 @@ import { Loader } from "../Loader";
 import { FirstAndMorePolls } from "./FirstAndMorePolls";
 import type { PollQuery } from "@/constants";
 
-export function InfinitePolls(
+export async function InfinitePolls(
   props: PollQuery & { highlightedUserId?: string; idPrefix: string },
 ) {
   return (
