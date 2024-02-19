@@ -21,7 +21,7 @@ export default function HomePage({
 
       <div className="h-4" />
 
-      <Suspense fallback={<Loader />}>
+      <Suspense key={`${search}-${category}`} fallback={<Loader />}>
         <InfinitePolls
           search={search}
           category={category}
