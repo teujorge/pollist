@@ -8,12 +8,24 @@ datasource db {
 }
 
 model User {
-  id       String  @id
-  username String?
-  imageUrl String?
-  votes    Vote[]
-  polls    Poll[]
-  anon     Boolean
+  id        String   @id
+  username  String?
+  imageUrl  String?
+  votes     Vote[]
+  polls     Poll[]
+  following Follow[] @relation("Following")
+  followers Follow[] @relation("Followers")
+  bio       String?
+  anon      Boolean
+}
+
+model Follow {
+  followerId  String
+  followingId String
+  follower    User   @relation("Followers", fields: [followerId], references: [id])
+  following   User   @relation("Following", fields: [followingId], references: [id])
+
+  @@unique([followerId, followingId])
 }
 
 model Poll {
