@@ -1,11 +1,17 @@
 import Image from "next/image";
+import { twMerge } from "tailwind-merge";
 
 export function ProfileImage(props: React.ComponentProps<typeof Image>) {
   return (
     <div
-      className={`shimmer !rounded-full w-[${props.width}px] h-[${props.height}px]`}
+      className={`shimmer !rounded-full w-[${props.width}px] h-[${props.height}px] `}
     >
-      <Image {...props} alt={props.alt} />
+      <Image
+        {...props}
+        className={twMerge(props.className, "rounded-full  object-cover")}
+        style={{ width: props.width, height: props.height }}
+        alt={props.alt}
+      />
     </div>
   );
 }

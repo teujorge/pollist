@@ -24,14 +24,13 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 
   return (
     <div className="flex w-full flex-row   justify-between gap-2 rounded-xl border border-neutral-800 px-3 py-2">
-      <div className="flex flex-col gap-2">
+      <div className="flex  flex-col  gap-2">
         {user?.imageUrl ? (
           <ProfileImage
             src={user.imageUrl}
             alt={`${user.username ?? "Users's"} avatar`}
             width={100}
             height={100}
-            className="rounded-full"
           />
         ) : (
           <div className="flex h-[100px] w-[100px] items-center justify-center rounded-full border border-neutral-800">

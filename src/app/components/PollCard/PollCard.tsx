@@ -23,7 +23,7 @@ export function PollCard({ poll, highlightedUserId }: PollCardProps) {
             alt={poll.author.username ?? "author's avatar"}
             width={38}
             height={38}
-            className="rounded-full border-2 border-neutral-600 transition-colors"
+            className="border-2 border-neutral-600 transition-colors"
           />
         )}
 

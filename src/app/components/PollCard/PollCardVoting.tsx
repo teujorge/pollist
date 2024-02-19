@@ -285,7 +285,7 @@ export function PollCardVoting(props: PollCardVotingProps) {
                   style={{ width: `${votePercentage}%` }}
                 />
                 <div
-                  className={`h-4 w-4 rounded-full transition-colors
+                  className={`min-h-4 min-w-4 rounded-full transition-colors
                     ${userVote?.optionId === option.id ? "bg-purple-500" : "bg-neutral-700"}
                   `}
                 />
