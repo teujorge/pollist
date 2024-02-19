@@ -22,14 +22,23 @@ export async function Social({ userId }: { userId: string }) {
   const iAmFollowingUser = following.some((f) => f.followingId === userId);
 
   return (
-    <>
+    <div className="flex flex-col items-center justify-center gap-1">
+      <div className="flex flex-row gap-2">
+        <div className="flex flex-col items-center justify-center">
+          <p className="font-semibold"> followers </p>
+          <span className="text-neutral-300">{followers.length}</span>
+        </div>
+        <div className="flex flex-col items-center justify-center">
+          <p className="font-semibold"> following </p>
+          <span className="text-neutral-300">{following.length}</span>
+        </div>
+      </div>
+      <div className="flex-grow"></div>
       <FollowButton
         key={`follow-${userId}-${iAmFollowingUser}`}
         userId={userId}
         isFollowing={iAmFollowingUser}
       />
-      <>followers: {followers.length}</>
-      <>following: {following.length}</>
-    </>
+    </div>
   );
 }

@@ -26,6 +26,11 @@ export function FollowButton({
   if (isClicked) return <Loader />;
 
   return (
-    <button onClick={handleClick}>{isFollowing ? "unfollow" : "follow"}</button>
+    <button
+      className={`h-20px w-20 rounded-xl border border-neutral-800 p-2 ${isFollowing ? "bg-red-500" : "bg-purple-500"} `}
+      onClick={handleClick}
+    >
+      {isFollowing ? "unfollow" : "follow"}
+    </button>
   );
 }

@@ -13,8 +13,8 @@ export async function UserVoteCount() {
   });
 
   return (
-    <p>
-      <span className="font-semibold">Votes </span>{" "}
+    <p className="flex flex-col items-center ">
+      <span className="font-semibold">Votes </span>
       <span className="text-neutral-300">{voteCount}</span>
     </p>
   );
