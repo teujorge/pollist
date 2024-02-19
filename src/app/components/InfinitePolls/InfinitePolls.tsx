@@ -3,7 +3,9 @@ import { Loader } from "../Loader";
 import { FirstAndMorePolls } from "./FirstAndMorePolls";
 import type { PollQuery } from "@/constants";
 
-export async function InfinitePolls(
+export const dynamic = "force-dynamic";
+
+export function InfinitePolls(
   props: PollQuery & { highlightedUserId?: string; idPrefix: string },
 ) {
   return (
