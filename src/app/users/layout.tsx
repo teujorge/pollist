@@ -10,7 +10,7 @@ export default function Layout({
   votes: React.ReactNode;
 }) {
   return (
-    <main className="flex max-h-[calc(100dvh-64px)] w-full flex-col gap-4 overflow-hidden ">
+    <main className="flex max-h-[calc(100dvh-64px)] w-full flex-col gap-2 overflow-hidden md:gap-4 ">
       <UserPageProvider>
         {children}
         <div className="flex max-h-full flex-row gap-4 overflow-hidden">

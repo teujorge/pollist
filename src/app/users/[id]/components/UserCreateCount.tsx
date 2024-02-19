@@ -13,9 +13,9 @@ export async function UserCreateCount() {
   });
 
   return (
-    <p className="flex flex-col items-center ">
-      <span className="font-semibold">Creations </span>
-      <span className="text-neutral-300">{createCount}</span>
+    <p className="flex flex-row items-center ">
+      <span className="font-bold">{createCount}</span>
+      <span>Creations</span>
     </p>
   );
 }

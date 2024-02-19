@@ -24,8 +24,8 @@ export default async function UserPage({ params }: { params: { id: string } }) {
   if (!user && !anonId) return notFound();
 
   return (
-    <div className="flex w-full flex-row   justify-between gap-2 rounded-xl border border-neutral-800 px-3 py-2">
-      <div className="flex  flex-col  gap-2">
+    <>
+      <div className="flex w-full flex-row gap-8 rounded-xl border border-neutral-800 px-3 py-3">
         {user?.imageUrl ? (
           <ProfileImage
             src={user.imageUrl}
@@ -39,13 +39,18 @@ export default async function UserPage({ params }: { params: { id: string } }) {
           </div>
         )}
 
-        <h1 className="flex items-center justify-center">
-          {user?.username ?? "Anon"}
-        </h1>
-      </div>
+        <div className="flex min-h-full flex-col items-center justify-between">
+          <h1 className="flex items-center justify-center">
+            {user?.username ?? "Anon"}
+          </h1>
 
-      {/* !!! ADMIN USE ONLY !!! */}
-      {/* {params.id === (await adminId()) && (
+          <UserStatistics />
+        </div>
+
+        {user?.anon === false && <Social userId={params.id} />}
+
+        {/* !!! ADMIN USE ONLY !!! */}
+        {/* {params.id === (await adminId()) && (
         <div>
           <form className="italic text-green-500" action={createPollsFromList}>
             <button>create default polls</button>
@@ -58,13 +63,8 @@ export default async function UserPage({ params }: { params: { id: string } }) {
           </form>
         </div>
       )} */}
-
-      {user?.anon === false && <Social userId={params.id} />}
-
-      <div className="flex min-h-full  flex-col justify-between gap-4">
-        <UserStatistics />
-        <Tabs />
       </div>
-    </div>
+      <Tabs />
+    </>
   );
 }

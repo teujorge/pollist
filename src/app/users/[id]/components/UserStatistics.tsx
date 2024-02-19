@@ -4,7 +4,7 @@ import { UserVoteCount } from "./UserVoteCount";
 
 export function UserStatistics() {
   return (
-    <div className="flex flex-row gap-2">
+    <div className="flex flex-row gap-8">
       <Suspense
         fallback={
           <p className="shimmer text-transparent">
