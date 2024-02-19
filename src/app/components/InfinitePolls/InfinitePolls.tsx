@@ -10,10 +10,12 @@ export function InfinitePolls(
     <div className="flex w-full flex-col items-center gap-2">
       <Suspense
         key={
+          props.idPrefix +
           (props.authorId ?? "") +
           (props.category ?? "") +
           (props.search ?? "") +
-          (props.voterId ?? "")
+          (props.voterId ?? "") +
+          (props.highlightedUserId ?? "")
         }
         fallback={<Loader />}
       >
