@@ -8,7 +8,7 @@ import {
   useContext,
 } from "react";
 
-type Tab = "polls" | "votes";
+export type Tab = "polls" | "votes";
 
 export function UserPageProvider({ children }: { children: React.ReactNode }) {
   const [tab, setTab] = useState<Tab>("polls");

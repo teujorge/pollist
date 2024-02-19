@@ -1,26 +1,29 @@
-import { Suspense } from "react";
-import { Loader } from "../Loader";
-import { FirstAndMorePolls } from "./FirstAndMorePolls";
+import { PollCard } from "../PollCard/PollCard";
+import { getInfinitePolls } from "./actions";
+import { InfinitelyMorePolls } from "./InfinitelyMorePolls";
 import type { PollQuery } from "@/constants";
 
-export function InfinitePolls(
+export async function InfinitePolls(
   props: PollQuery & { highlightedUserId?: string; idPrefix: string },
 ) {
+  const firstPolls = await getInfinitePolls({
+    page: 1,
+    search: props.search,
+    category: props.category,
+    authorId: props.authorId,
+    voterId: props.voterId,
+  });
+
   return (
     <div className="flex w-full flex-col items-center gap-2">
-      <Suspense
-        key={
-          props.idPrefix +
-          (props.authorId ?? "") +
-          (props.category ?? "") +
-          (props.search ?? "") +
-          (props.voterId ?? "") +
-          (props.highlightedUserId ?? "")
-        }
-        fallback={<Loader />}
-      >
-        <FirstAndMorePolls {...props} />
-      </Suspense>
+      {firstPolls.map((poll) => (
+        <PollCard
+          key={`${props.idPrefix}-poll-card-${poll.id}`}
+          poll={poll}
+          highlightedUserId={props.highlightedUserId}
+        />
+      ))}
+      <InfinitelyMorePolls {...props} />
     </div>
   );
 }

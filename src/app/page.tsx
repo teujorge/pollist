@@ -1,7 +1,7 @@
+import { Loader } from "./components/Loader";
+import { Suspense } from "react";
 import { FilterBar } from "./index/components/FilterBar";
 import { InfinitePolls } from "./components/InfinitePolls/InfinitePolls";
-import { Suspense } from "react";
-import { Loader } from "./components/Loader";
 
 export default function HomePage({
   searchParams,
@@ -20,6 +20,7 @@ export default function HomePage({
       </div>
 
       <div className="h-4" />
+
       <Suspense fallback={<Loader />}>
         <InfinitePolls
           search={search}
