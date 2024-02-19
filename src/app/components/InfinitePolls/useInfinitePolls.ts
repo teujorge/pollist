@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-
+import { useEffect, useState } from "react";
 import { type PollsDetails, getInfinitePolls } from "./actions";
 import type { PollQuery } from "@/constants";
 
@@ -14,7 +13,7 @@ type Data = {
 
 const initialData: Data = {
   polls: [],
-  page: 1,
+  page: 2,
   hasMore: true,
   isLoading: false,
 };
@@ -23,20 +22,7 @@ export function useInfinitePolls(props: {
   query: PollQuery;
   loaderRef: React.RefObject<HTMLElement>;
 }) {
-  const initRef = useRef(false);
-
   const [data, setData] = useState(initialData);
-
-  // Reset data when query changes
-  useEffect(() => {
-    if (!initRef.current) return;
-    setData({
-      polls: [],
-      page: 1,
-      hasMore: true,
-      isLoading: false,
-    });
-  }, [props.query]);
 
   // Change page when loaderRef is intersecting
   useEffect(() => {
@@ -65,8 +51,6 @@ export function useInfinitePolls(props: {
           isLoading: false,
           polls: [...prev.polls, ...newPolls],
         }));
-
-        initRef.current = true;
       } catch (e) {
         console.error(e);
         setData(initialData);
