@@ -22,7 +22,7 @@ export function App({ children }: { children: React.ReactNode }) {
 
   const { user } = useUser();
 
-  const [userIp, setUserIp] = useState<string | undefined>();
+  const [userId, setUserId] = useState<string | undefined>();
 
   const [userStatus, setUserStatus] = useState<UserStatus>({
     userId: undefined,
@@ -30,20 +30,20 @@ export function App({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
-    async function initUserIp() {
-      const ip = await checkAndCreateAnonUser();
-      setUserIp(ip);
+    async function initUserId() {
+      const id = await checkAndCreateAnonUser();
+      setUserId(id);
     }
-    void initUserIp();
+    void initUserId();
   }, []);
 
   useEffect(() => {
     if (user) {
       setUserStatus({ userId: user.id, isAnon: false });
     } else {
-      setUserStatus({ userId: userIp, isAnon: true });
+      setUserStatus({ userId: userId, isAnon: true });
     }
-  }, [user, userIp]);
+  }, [user, userId]);
 
   // log userStatus
   useEffect(() => {

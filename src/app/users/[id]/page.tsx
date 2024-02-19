@@ -3,6 +3,7 @@ import { Tabs } from "./components/Tabs";
 import { notFound } from "next/navigation";
 import { ProfileImage } from "@/app/components/ProfileImage";
 import { UserStatistics } from "./components/UserStatistics";
+import { checkAndCreateAnonUser } from "@/app/api/anon/actions";
 // import {
 //   adminId,
 //   createPollsFromList,
@@ -17,12 +18,14 @@ export default async function UserPage({ params }: { params: { id: string } }) {
     },
   });
 
-  if (!user) return notFound();
+  let anonId: string | undefined = undefined;
+  if (!user) anonId = await checkAndCreateAnonUser();
+  if (!user && !anonId) return notFound();
 
   return (
     <div className="flex w-full flex-row   justify-between gap-2 rounded-xl border border-neutral-800 px-3 py-2">
       <div className="flex flex-col gap-2">
-        {user.imageUrl ? (
+        {user?.imageUrl ? (
           <ProfileImage
             src={user.imageUrl}
             alt={`${user.username ?? "Users's"} avatar`}
@@ -37,7 +40,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
         )}
 
         <h1 className="flex items-center justify-center">
-          {user.username ?? "Anon"}
+          {user?.username ?? "Anon"}
         </h1>
       </div>
 
