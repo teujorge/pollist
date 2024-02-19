@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ProfileImage } from "@/app/components/ProfileImage";
 import { UserStatistics } from "./components/UserStatistics";
 import { checkAndCreateAnonUser } from "@/app/api/anon/actions";
+import { Social } from "./components/Social";
 // import {
 //   adminId,
 //   createPollsFromList,
@@ -57,6 +58,8 @@ export default async function UserPage({ params }: { params: { id: string } }) {
           </form>
         </div>
       )} */}
+
+      {user?.anon === false && <Social userId={params.id} />}
 
       <div className="flex min-h-full  flex-col justify-between gap-4">
         <UserStatistics />
