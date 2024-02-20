@@ -8,9 +8,9 @@ export async function FollowButton({ userId }: { userId: string }) {
 
   const following = await db.follow.findUnique({
     where: {
-      followerId_followingId: {
+      followerId_followedId: {
         followerId: myId,
-        followingId: userId,
+        followedId: userId,
       },
     },
   });

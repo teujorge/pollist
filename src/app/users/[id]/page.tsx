@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { db } from "@/database/db";
 import { Tabs } from "./components/Tabs";
 import { Stat } from "./components/Stat";
@@ -5,6 +6,7 @@ import { notFound } from "next/navigation";
 import { ProfileImage } from "@/app/components/ProfileImage";
 import { FollowButton } from "./components/FollowButton";
 import { checkAndCreateAnonUser } from "@/app/api/anon/actions";
+
 // import {
 //   adminId,
 //   createPollsFromList,
@@ -59,9 +61,16 @@ export default async function UserPage({ params }: { params: { id: string } }) {
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-4">
             <Stat label="polls" count={user?._count?.polls ?? 0} />
+
             <Stat label="votes" count={user?._count?.votes ?? 0} />
-            <Stat label="following" count={user?._count?.following ?? 0} />
-            <Stat label="followers" count={user?._count?.followers ?? 0} />
+
+            <Link href={`/users/${params.id}/following`}>
+              <Stat label="following" count={user?._count?.followers ?? 0} />
+            </Link>
+
+            <Link href={`/users/${params.id}/followers`}>
+              <Stat label="followers" count={user?._count?.following ?? 0} />
+            </Link>
           </div>
         </div>
 

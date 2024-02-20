@@ -10,8 +10,8 @@ export async function follow(userId: string) {
 
   const newFollow = await db.follow.create({
     data: {
-      followerId: myId, // user who is following
-      followingId: userId, // user being followed
+      followerId: myId,
+      followedId: userId,
     },
   });
 
@@ -28,9 +28,9 @@ export async function unfollow(userId: string) {
 
   const deletedFollow = await db.follow.delete({
     where: {
-      followerId_followingId: {
+      followerId_followedId: {
         followerId: myId,
-        followingId: userId,
+        followedId: userId,
       },
     },
   });
@@ -59,7 +59,7 @@ export async function getFollowers() {
 
   const followers = await db.follow.findMany({
     where: {
-      followingId: myId,
+      followedId: myId,
     },
   });
 
