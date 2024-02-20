@@ -20,12 +20,13 @@ model User {
 }
 
 model Follow {
-  followerId  String
-  followingId String
-  follower    User   @relation("Followers", fields: [followerId], references: [id])
-  following   User   @relation("Following", fields: [followingId], references: [id])
+  id         String @id @default(uuid())
+  followerId String
+  followedId String
+  follower   User   @relation("Followers", fields: [followerId], references: [id])
+  followed   User   @relation("Following", fields: [followedId], references: [id])
 
-  @@unique([followerId, followingId])
+  @@unique([followerId, followedId])
 }
 
 model Poll {
