@@ -3,7 +3,7 @@ import { Loader } from "@/app/components/Loader";
 
 export default function MyVotesLoading() {
   return (
-    <Card className="hidden items-center md:flex">
+    <Card className="hidden h-fit w-full items-center md:flex md:w-1/2">
       <Loader />
     </Card>
   );

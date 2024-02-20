@@ -3,7 +3,7 @@ import { Loader } from "@/app/components/Loader";
 
 export default function MyPollsLoading() {
   return (
-    <Card className="items-center">
+    <Card className="h-fit w-full items-center md:w-1/2">
       <Loader />
     </Card>
   );
