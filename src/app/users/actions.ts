@@ -5,15 +5,8 @@ import { auth } from "@clerk/nextjs";
 import { revalidatePath } from "next/cache";
 
 export async function follow(userId: string) {
-  console.log("userId", userId);
-
   const { userId: myId } = auth();
-
-  console.log("myId", myId);
-
   if (!myId) return;
-
-  console.log("start follow");
 
   const newFollow = await db.follow.create({
     data: {

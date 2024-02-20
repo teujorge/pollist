@@ -1,36 +1,27 @@
-"use client";
+import { db } from "@/database/db";
+import { auth } from "@clerk/nextjs";
+import { FollowButtonClient } from "./FollowButtonClient";
 
-import { useState } from "react";
-import { follow, unfollow } from "../../actions";
-import { Loader } from "@/app/components/Loader";
+export async function FollowButton({ userId }: { userId: string }) {
+  const { userId: myId } = auth();
+  if (!myId) return null;
 
-export function FollowButton({
-  userId,
-  isFollowing,
-}: {
-  userId: string;
-  isFollowing: boolean;
-}) {
-  const [isClicked, setIsClicked] = useState(false);
+  const following = await db.follow.findUnique({
+    where: {
+      followerId_followingId: {
+        followerId: myId,
+        followingId: userId,
+      },
+    },
+  });
 
-  async function handleClick() {
-    setIsClicked(true);
-
-    if (isFollowing) {
-      await unfollow(userId);
-    } else {
-      await follow(userId);
-    }
-  }
-
-  if (isClicked) return <Loader />;
+  const iAmFollowingUser = following !== null;
 
   return (
-    <button
-      className={`h-20px w-20 rounded-xl border border-neutral-800 p-2 ${isFollowing ? "bg-red-500" : "bg-purple-500"} `}
-      onClick={handleClick}
-    >
-      {isFollowing ? "unfollow" : "follow"}
-    </button>
+    <FollowButtonClient
+      key={`${myId}-follows-${userId}-${iAmFollowingUser}`}
+      userId={userId}
+      isFollowing={iAmFollowingUser}
+    />
   );
 }

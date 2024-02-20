@@ -1,10 +1,10 @@
 import { db } from "@/database/db";
 import { Tabs } from "./components/Tabs";
+import { Stat } from "./components/Stat";
 import { notFound } from "next/navigation";
 import { ProfileImage } from "@/app/components/ProfileImage";
-import { UserStatistics } from "./components/UserStatistics";
+import { FollowButton } from "./components/FollowButton";
 import { checkAndCreateAnonUser } from "@/app/api/anon/actions";
-import { Social } from "./components/Social";
 // import {
 //   adminId,
 //   createPollsFromList,
@@ -16,6 +16,19 @@ export default async function UserPage({ params }: { params: { id: string } }) {
   const user = await db.user.findUnique({
     where: {
       id: params.id,
+    },
+    select: {
+      imageUrl: true,
+      username: true,
+      anon: true,
+      _count: {
+        select: {
+          polls: true,
+          votes: true,
+          following: true,
+          followers: true,
+        },
+      },
     },
   });
 
@@ -44,25 +57,31 @@ export default async function UserPage({ params }: { params: { id: string } }) {
             {user?.username ?? "Anon"}
           </h1>
 
-          <UserStatistics />
+          <Stat label="polls" count={user?._count?.polls ?? 0} />
+
+          <Stat label="votes" count={user?._count?.votes ?? 0} />
         </div>
 
-        {user?.anon === false && <Social userId={params.id} />}
+        {user?.anon === false && <FollowButton userId={params.id} />}
+
+        <Stat label="following" count={user?._count?.following ?? 0} />
+
+        <Stat label="followers" count={user?._count?.followers ?? 0} />
 
         {/* !!! ADMIN USE ONLY !!! */}
         {/* {params.id === (await adminId()) && (
-        <div>
-          <form className="italic text-green-500" action={createPollsFromList}>
-            <button>create default polls</button>
-          </form>
-          <form className="italic text-red-500" action={deleteAllPolls}>
-            <button>delete all polls</button>
-          </form>
-          <form className="italic text-purple-500" action={testCron}>
-            <button>test cron jobs</button>
-          </form>
-        </div>
-      )} */}
+          <div>
+            <form className="italic text-green-500" action={createPollsFromList}>
+              <button>create default polls</button>
+            </form>
+            <form className="italic text-red-500" action={deleteAllPolls}>
+              <button>delete all polls</button>
+            </form>
+            <form className="italic text-purple-500" action={testCron}>
+              <button>test cron jobs</button>
+            </form>
+          </div>
+        )} */}
       </div>
       <Tabs />
     </>
