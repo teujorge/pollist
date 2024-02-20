@@ -1,8 +1,16 @@
-export function Stat({ count, label }: { count: number; label: string }) {
+export function Stat({
+  label,
+  count,
+  isShimmer = false,
+}: {
+  label: string;
+  count: number;
+  isShimmer?: boolean;
+}) {
   return (
-    <p>
+    <p className={isShimmer ? "shimmer text-transparent" : undefined}>
       <span className="font-bold">{count} </span>
-      <span>{label}</span>
+      <span> {label}</span>
     </p>
   );
 }

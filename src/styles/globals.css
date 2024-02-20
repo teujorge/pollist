@@ -125,6 +125,7 @@ a:active {
 }
 
 .shimmer {
+  user-select: none;
   border-radius: 0.5rem;
   background: linear-gradient(
     120deg,

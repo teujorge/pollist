@@ -8,8 +8,13 @@ export function ProfileImage(props: React.ComponentProps<typeof Image>) {
     >
       <Image
         {...props}
-        className={twMerge(props.className, "rounded-full  object-cover")}
-        style={{ width: props.width, height: props.height }}
+        className={twMerge(props.className, "rounded-full object-cover")}
+        style={{
+          width: props.width,
+          minWidth: props.width,
+          height: props.height,
+          minHeight: props.height,
+        }}
         alt={props.alt}
       />
     </div>

@@ -8,7 +8,7 @@ export function Tabs() {
   return (
     <div className="relative flex w-full flex-row justify-end rounded-xl border border-neutral-800 md:hidden">
       <button
-        className={`z-10 w-full rounded-xl  p-2 transition-colors ${tab === "polls" ? " font-bold text-black " : "text-white"}`}
+        className={`z-10 w-full rounded-xl p-2 transition-colors ${tab === "polls" ? " font-bold text-black " : "text-white"}`}
         onClick={() => {
           setTab("polls");
         }}

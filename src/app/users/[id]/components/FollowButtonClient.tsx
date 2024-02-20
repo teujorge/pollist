@@ -23,11 +23,11 @@ export function FollowButtonClient({
     }
   }
 
-  if (isClicked) return <Loader />;
+  if (isClicked) return <Loader className="h-7 w-7" />;
 
   return (
     <button
-      className={`h-20px w-20 rounded-xl border border-neutral-800 p-2 ${isFollowing ? "bg-red-500" : "bg-purple-500"} `}
+      className="h-fit w-fit rounded-lg bg-neutral-900 px-1.5 py-0.5 transition-colors hovact:bg-neutral-800"
       onClick={handleClick}
     >
       {isFollowing ? "unfollow" : "follow"}

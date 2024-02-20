@@ -52,21 +52,18 @@ export default async function UserPage({ params }: { params: { id: string } }) {
           </div>
         )}
 
-        <div className="flex min-h-full flex-col items-center justify-between">
-          <h1 className="flex items-center justify-center">
-            {user?.username ?? "Anon"}
-          </h1>
-
-          <Stat label="polls" count={user?._count?.polls ?? 0} />
-
-          <Stat label="votes" count={user?._count?.votes ?? 0} />
+        <div className="flex flex-col justify-around">
+          <div className="flex items-center gap-2">
+            <h1>{user?.username ?? "Anon"}</h1>
+            {user?.anon === false && <FollowButton userId={params.id} />}
+          </div>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+            <Stat label="polls" count={user?._count?.polls ?? 0} />
+            <Stat label="votes" count={user?._count?.votes ?? 0} />
+            <Stat label="following" count={user?._count?.following ?? 0} />
+            <Stat label="followers" count={user?._count?.followers ?? 0} />
+          </div>
         </div>
-
-        {user?.anon === false && <FollowButton userId={params.id} />}
-
-        <Stat label="following" count={user?._count?.following ?? 0} />
-
-        <Stat label="followers" count={user?._count?.followers ?? 0} />
 
         {/* !!! ADMIN USE ONLY !!! */}
         {/* {params.id === (await adminId()) && (
