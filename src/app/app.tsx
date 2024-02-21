@@ -16,6 +16,7 @@ import { IconSvg } from "./svgs/IconSvg";
 type UserStatus = {
   userId: string | undefined;
   isAnon: boolean;
+  loading: boolean;
 };
 
 export function App({ children }: { children: React.ReactNode }) {
@@ -28,6 +29,7 @@ export function App({ children }: { children: React.ReactNode }) {
   const [userStatus, setUserStatus] = useState<UserStatus>({
     userId: undefined,
     isAnon: true,
+    loading: true,
   });
 
   useEffect(() => {
@@ -40,9 +42,9 @@ export function App({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (user) {
-      setUserStatus({ userId: user.id, isAnon: false });
+      setUserStatus({ userId: user.id, isAnon: false, loading: false });
     } else {
-      setUserStatus({ userId: userId, isAnon: true });
+      setUserStatus({ userId: userId, isAnon: true, loading: false });
     }
   }, [user, userId]);
 
@@ -53,7 +55,7 @@ export function App({ children }: { children: React.ReactNode }) {
   return (
     <AppProvider value={userStatus}>
       <Header userId={userStatus.userId} />
-      {userStatus.userId ? children : <GlobalLoading />}
+      {userStatus.loading ? <GlobalLoading /> : children}
     </AppProvider>
   );
 }
