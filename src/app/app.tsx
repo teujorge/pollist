@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import GlobalLoading from "./loading";
 import {
   SignInButton,
   SignedIn,
@@ -53,7 +54,7 @@ export function App({ children }: { children: React.ReactNode }) {
   return (
     <AppProvider value={userStatus}>
       <Header userId={userStatus.userId} />
-      {children}
+      {userStatus.userId ? children : <GlobalLoading />}
     </AppProvider>
   );
 }
