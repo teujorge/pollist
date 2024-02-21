@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { db } from "@/database/db";
-import { Tabs } from "./components/Tabs";
-import { Stat } from "./components/Stat";
+import { Tabs } from "@/app/users/components/Tabs";
+import { Stat } from "@/app/users/components/Stat";
 import { notFound } from "next/navigation";
+import { getAnonUser } from "@/app/api/anon/actions";
 import { ProfileImage } from "@/app/components/ProfileImage";
-import { FollowButton } from "./components/FollowButton";
-import { checkAndCreateAnonUser } from "@/app/api/anon/actions";
+import { FollowButton } from "@/app/users/components/FollowButton";
 
 // import {
 //   adminId,
@@ -35,7 +35,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
   });
 
   let anonId: string | undefined = undefined;
-  if (!user) anonId = await checkAndCreateAnonUser();
+  if (!user) anonId = (await getAnonUser())?.id;
   if (!user && !anonId) return notFound();
 
   return (

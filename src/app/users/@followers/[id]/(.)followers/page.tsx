@@ -1,10 +1,10 @@
 import { Modal } from "@/app/components/Modal";
-import { Following } from "../../../[id]/components/Following";
+import { Followers } from "@/app/users/components/Followers";
 
 export default function UserFollowers({ params }: { params: { id: string } }) {
   return (
     <Modal>
-      <Following userId={params.id} />
+      <Followers userId={params.id} />
     </Modal>
   );
 }

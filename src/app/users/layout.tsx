@@ -4,12 +4,14 @@ export default function Layout({
   children,
   polls,
   votes,
-  follows,
+  followers,
+  following,
 }: {
   children: React.ReactNode;
   polls: React.ReactNode;
   votes: React.ReactNode;
-  follows: React.ReactNode;
+  followers: React.ReactNode;
+  following: React.ReactNode;
 }) {
   return (
     <>
@@ -22,7 +24,8 @@ export default function Layout({
           </div>
         </UserPageProvider>
       </main>
-      {follows}
+      {followers}
+      {following}
     </>
   );
 }

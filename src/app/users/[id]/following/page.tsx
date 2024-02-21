@@ -1,4 +1,4 @@
-import { Following } from "../components/Following";
+import { Following } from "@/app/users/components/Following";
 
 export default function FollowingPage({ params }: { params: { id: string } }) {
   return (

@@ -10,12 +10,13 @@ import {
   useUser,
 } from "@clerk/nextjs";
 import { createContext, useContext, useEffect, useState } from "react";
-import { checkAndCreateAnonUser } from "./api/anon/actions";
+import { getAnonUser } from "./api/anon/actions";
 import { IconSvg } from "./svgs/IconSvg";
 
 type UserStatus = {
   userId: string | undefined;
   isAnon: boolean;
+  loading: boolean;
 };
 
 export function App({ children }: { children: React.ReactNode }) {
@@ -28,33 +29,33 @@ export function App({ children }: { children: React.ReactNode }) {
   const [userStatus, setUserStatus] = useState<UserStatus>({
     userId: undefined,
     isAnon: true,
+    loading: true,
   });
 
   useEffect(() => {
     async function initUserId() {
-      const id = await checkAndCreateAnonUser();
-      setUserId(id);
+      const id = (await getAnonUser())?.id;
+      if (id) setUserId(id);
     }
     void initUserId();
   }, []);
 
   useEffect(() => {
     if (user) {
-      setUserStatus({ userId: user.id, isAnon: false });
+      setUserStatus({ userId: user.id, isAnon: false, loading: false });
     } else {
-      setUserStatus({ userId: userId, isAnon: true });
+      setUserStatus({ userId: userId, isAnon: true, loading: false });
     }
   }, [user, userId]);
 
-  // log userStatus
-  useEffect(() => {
-    console.log("userStatus", userStatus);
-  }, [userStatus]);
+  // useEffect(() => {
+  //   console.log("userStatus", userStatus);
+  // }, [userStatus]);
 
   return (
     <AppProvider value={userStatus}>
       <Header userId={userStatus.userId} />
-      {userStatus.userId ? children : <GlobalLoading />}
+      {userStatus.loading ? <GlobalLoading /> : children}
     </AppProvider>
   );
 }
