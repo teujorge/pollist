@@ -4,19 +4,26 @@ import { v4 } from "uuid";
 import { db } from "@/database/db";
 import { cookies } from "next/headers";
 
-export async function checkAndCreateAnonUser() {
-  let anonId = cookies().get("anonId")?.value;
-  if (!anonId) {
-    anonId = "anon_" + v4();
-    cookies().set("anonId", anonId);
-  }
+export async function getAnonUser() {
+  const anonId = cookies().get("anonId")?.value;
 
-  // Create anon user if it doesn't exist
-  let anonUser = await db.user.findUnique({ where: { id: anonId } });
+  if (!anonId) return null;
 
-  if (!anonUser) {
-    anonUser = await db.user.create({ data: { id: anonId, anon: true } });
-  }
+  return db.user.findUnique({ where: { id: anonId } });
+}
 
-  return anonUser.id;
+export async function createAnonUser() {
+  const anonId = "anon_" + v4();
+
+  cookies().set("anonId", anonId);
+
+  return db.user.create({ data: { id: anonId, anon: true } });
+}
+
+export async function validateAnonUser() {
+  const anonUser = await getAnonUser();
+
+  if (!anonUser) return createAnonUser();
+
+  return anonUser;
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { follow, unfollow } from "../../actions";
 import { Loader } from "@/app/components/Loader";
+import { follow, unfollow } from "@/app/users/actions";
 
 export function FollowButtonClient({
   userId,
@@ -27,7 +27,7 @@ export function FollowButtonClient({
 
   return (
     <button
-      className="h-fit w-fit rounded-lg bg-neutral-900 px-1.5 py-0.5 transition-colors hovact:bg-neutral-800"
+      className="hovact:bg-neutral-800 h-fit w-fit rounded-lg bg-neutral-900 px-1.5 py-0.5 transition-colors"
       onClick={handleClick}
     >
       {isFollowing ? "unfollow" : "follow"}

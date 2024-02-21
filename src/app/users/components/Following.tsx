@@ -1,6 +1,8 @@
 import { db } from "@/database/db";
 
 export async function Following({ userId }: { userId: string }) {
+  console.log("following -> userId", userId);
+
   const following = await db.follow.findMany({
     where: {
       followerId: userId,
@@ -9,6 +11,8 @@ export async function Following({ userId }: { userId: string }) {
       followed: true,
     },
   });
+
+  console.log("following -> following", following.length);
 
   return (
     <div>

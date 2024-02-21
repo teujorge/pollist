@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 export async function follow(userId: string) {
   const { userId: myId } = auth();
   if (!myId) return;
+  if (myId === userId) return;
 
   const newFollow = await db.follow.create({
     data: {
@@ -25,6 +26,7 @@ export async function follow(userId: string) {
 export async function unfollow(userId: string) {
   const { userId: myId } = auth();
   if (!myId) return;
+  if (myId === userId) return;
 
   const deletedFollow = await db.follow.delete({
     where: {

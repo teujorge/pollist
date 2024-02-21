@@ -1,4 +1,4 @@
-import { Followers } from "../components/Followers";
+import { Followers } from "@/app/users/components/Followers";
 
 export default function FollowersPage({ params }: { params: { id: string } }) {
   return (

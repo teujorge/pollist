@@ -4,7 +4,7 @@ import { db } from "@/database/db";
 import { auth } from "@clerk/nextjs";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { checkAndCreateAnonUser } from "@/app/api/anon/actions";
+import { validateAnonUser } from "@/app/api/anon/actions";
 import type { CreatePollFields } from "./validation";
 
 export async function createPoll(fields: CreatePollFields) {
@@ -17,11 +17,7 @@ export async function createPoll(fields: CreatePollFields) {
 
   let anonId: string | undefined = undefined;
   if (!userId) {
-    anonId = await checkAndCreateAnonUser();
-    if (!anonId) {
-      console.warn("Failed to create anon user");
-      return;
-    }
+    anonId = (await validateAnonUser()).id;
   }
 
   const createdPoll = await db.poll.create({

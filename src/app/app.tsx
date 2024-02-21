@@ -10,7 +10,7 @@ import {
   useUser,
 } from "@clerk/nextjs";
 import { createContext, useContext, useEffect, useState } from "react";
-import { checkAndCreateAnonUser } from "./api/anon/actions";
+import { getAnonUser } from "./api/anon/actions";
 import { IconSvg } from "./svgs/IconSvg";
 
 type UserStatus = {
@@ -32,8 +32,8 @@ export function App({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     async function initUserId() {
-      const id = await checkAndCreateAnonUser();
-      setUserId(id);
+      const id = (await getAnonUser())?.id;
+      if (id) setUserId(id);
     }
     void initUserId();
   }, []);
@@ -46,10 +46,9 @@ export function App({ children }: { children: React.ReactNode }) {
     }
   }, [user, userId]);
 
-  // log userStatus
-  useEffect(() => {
-    console.log("userStatus", userStatus);
-  }, [userStatus]);
+  // useEffect(() => {
+  //   console.log("userStatus", userStatus);
+  // }, [userStatus]);
 
   return (
     <AppProvider value={userStatus}>

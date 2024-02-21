@@ -1,4 +1,4 @@
-import { Stat } from "./components/Stat";
+import { Stat } from "@/app/users/components/Stat";
 
 export default function UserPageLoading() {
   return (
