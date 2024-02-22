@@ -7,6 +7,7 @@ export async function USerFollowersList({ userId }: { userId: string }) {
   const followers = await db.follow.findMany({
     where: {
       followedId: userId,
+      accepted: true,
     },
     select: {
       follower: true,
