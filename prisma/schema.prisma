@@ -21,11 +21,12 @@ model User {
 }
 
 model Follow {
-  id         String @id @default(uuid())
+  id         String  @id @default(uuid())
   followerId String
   followedId String
-  follower   User   @relation("Followers", fields: [followerId], references: [id])
-  followed   User   @relation("Following", fields: [followedId], references: [id])
+  follower   User    @relation("Followers", fields: [followerId], references: [id])
+  followed   User    @relation("Following", fields: [followedId], references: [id])
+  accepted   Boolean @default(false)
 
   @@unique([followerId, followedId])
 }

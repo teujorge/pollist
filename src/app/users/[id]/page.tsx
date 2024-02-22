@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { db } from "@/database/db";
+import { auth } from "@clerk/nextjs";
 import { Tabs } from "@/app/users/components/Tabs";
 import { Stat } from "@/app/users/components/Stat";
 import { notFound } from "next/navigation";
@@ -15,24 +16,61 @@ import { FollowButton } from "@/app/users/components/FollowButton";
 // } from "@/database/defaultPolls";
 
 export default async function UserPage({ params }: { params: { id: string } }) {
-  const user = await db.user.findUnique({
-    where: {
-      id: params.id,
-    },
-    select: {
-      imageUrl: true,
-      username: true,
-      anon: true,
-      _count: {
-        select: {
-          polls: true,
-          votes: true,
-          following: true,
-          followers: true,
+  const { userId: myId } = auth();
+
+  const [
+    user,
+    acceptedFollowingCount,
+    acceptedFollowersCount,
+    totalPendingCount,
+  ] = await Promise.all([
+    // User data
+    db.user.findUnique({
+      where: {
+        id: params.id,
+      },
+      select: {
+        imageUrl: true,
+        username: true,
+        anon: true,
+        _count: {
+          select: {
+            polls: true,
+            votes: true,
+          },
         },
       },
-    },
-  });
+    }),
+    // Accepted Following Count
+    db.follow.count({
+      where: {
+        followerId: params.id,
+        accepted: true,
+      },
+    }),
+    // Accepted Followers Count
+    db.follow.count({
+      where: {
+        followedId: params.id,
+        accepted: true,
+      },
+    }),
+    // Total Pending Count (where the current user is either the follower or the followed, and the request is not accepted)
+    db.follow.count({
+      where: {
+        OR: [
+          {
+            followerId: params.id,
+            accepted: false,
+          },
+          {
+            followedId: params.id,
+            accepted: false,
+          },
+        ],
+      },
+    }),
+  ]);
 
   let anonId: string | undefined = undefined;
   if (!user) anonId = (await getAnonUser())?.id;
@@ -65,12 +103,18 @@ export default async function UserPage({ params }: { params: { id: string } }) {
             <Stat label="votes" count={user?._count?.votes ?? 0} />
 
             <Link href={`/users/${params.id}/following`}>
-              <Stat label="following" count={user?._count?.followers ?? 0} />
+              <Stat label="following" count={acceptedFollowingCount ?? 0} />
             </Link>
 
             <Link href={`/users/${params.id}/followers`}>
-              <Stat label="followers" count={user?._count?.following ?? 0} />
+              <Stat label="followers" count={acceptedFollowersCount ?? 0} />
             </Link>
+
+            {myId === params.id && (
+              <Link href={`/users/${params.id}/pending`}>
+                <Stat label="pending" count={totalPendingCount} />
+              </Link>
+            )}
           </div>
         </div>
 

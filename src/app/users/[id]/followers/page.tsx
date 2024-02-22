@@ -1,9 +1,9 @@
-import { Followers } from "@/app/users/components/Followers";
+import { USerFollowersList } from "@/app/users/components/UserFollowersList";
 
 export default function FollowersPage({ params }: { params: { id: string } }) {
   return (
     <main>
-      <Followers userId={params.id} />
+      <USerFollowersList userId={params.id} />
     </main>
   );
 }
