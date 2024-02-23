@@ -28,6 +28,7 @@ main {
 }
 
 input,
+textarea,
 select,
 option {
   color: #f1f1f1;
@@ -56,13 +57,16 @@ option {
   appearance: none;
 }
 
-input::placeholder {
+input::placeholder,
+textarea::placeholder {
   color: rgb(115 115 115);
 }
 
 input:hover,
 input:focus,
 input:active,
+textarea:focus,
+textarea:active,
 select:hover,
 select:focus,
 select:active,

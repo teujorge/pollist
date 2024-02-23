@@ -2,7 +2,7 @@ import Link from "next/link";
 import { db } from "@/database/db";
 import { notFound } from "next/navigation";
 import { PollCardVoting } from "@/app/components/PollCard/PollCardVoting";
-import { DeletePollButton } from "./components/DeletePollButton";
+import { DeletePollButton } from "@/app/polls/components/DeletePollButton";
 
 export default async function PollPage({ params }: { params: { id: string } }) {
   const poll = await db.poll.findUnique({
@@ -46,6 +46,8 @@ export default async function PollPage({ params }: { params: { id: string } }) {
           <DeletePollButton pollId={poll.id} pollAuthorId={poll.author.id} />
         </div>
       </div>
+
+      <Link href={`/polls/${params.id}/comments`}>Comments</Link>
 
       <PollCardVoting poll={poll} useRealtime useChart />
     </main>

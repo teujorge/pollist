@@ -9,15 +9,17 @@ datasource db {
 }
 
 model User {
-  id        String   @id
-  username  String?
-  imageUrl  String?
-  votes     Vote[]
-  polls     Poll[]
-  following Follow[] @relation("Following")
-  followers Follow[] @relation("Followers")
-  bio       String?
-  anon      Boolean
+  id           String        @id
+  username     String?
+  imageUrl     String?
+  votes        Vote[]
+  polls        Poll[]
+  comments     Comment[]
+  commentLikes CommentLike[]
+  following    Follow[]      @relation("Following")
+  followers    Follow[]      @relation("Followers")
+  bio          String?
+  anon         Boolean
 }
 
 model Follow {
@@ -44,6 +46,7 @@ model Poll {
   controversial Boolean   @default(false)
   votes         Vote[]
   options       Option[]
+  comments      Comment[]
   author        User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([title])
@@ -74,4 +77,35 @@ model Vote {
   @@index([voterId])
   @@index([pollId])
   @@index([optionId])
+}
+
+model Comment {
+  id        String        @id @default(uuid())
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  text      String
+  authorId  String
+  pollId    String
+  parentId  String? // Reference to the parent comment ID, if any
+  author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  poll      Poll          @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  parent    Comment?      @relation(name: "CommentToComment", fields: [parentId], references: [id])
+  replies   Comment[]     @relation("CommentToComment")
+  likes     CommentLike[]
+
+  @@index([authorId])
+  @@index([pollId])
+  @@index([parentId])
+}
+
+model CommentLike {
+  id        String  @id @default(uuid())
+  authorId  String
+  commentId String
+  author    User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([authorId, commentId])
+  @@index([authorId])
+  @@index([commentId])
 }
