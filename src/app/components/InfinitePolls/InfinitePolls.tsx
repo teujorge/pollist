@@ -1,15 +1,14 @@
 import { PollCard } from "../PollCard/PollCard";
-import { getInfinitePolls } from "./actions";
-
-import type { PollQuery } from "@/constants";
+import { getInfinitePolls as getPaginatedPolls } from "./actions";
 import { InfinitelyMorePolls } from "./InfinitelyMorePolls";
+import type { PollQuery } from "@/constants";
 
 export async function InfinitePolls(props: {
   query: PollQuery;
   highlightedUserId?: string;
   idPrefix: string;
 }) {
-  const firstPolls = await getInfinitePolls({
+  const firstPolls = await getPaginatedPolls({
     page: 1,
     ...props.query,
   });

@@ -1,10 +1,17 @@
 "use client";
 
 import styles from "@/styles/modal.module.css";
+import { twMerge } from "tailwind-merge";
 import { useRouter } from "next/navigation";
 import { useLockBodyScroll } from "@uidotdev/usehooks";
 
-export function Modal({ children }: { children: React.ReactNode }) {
+export function Modal({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   useLockBodyScroll();
 
   const router = useRouter();
@@ -26,7 +33,10 @@ export function Modal({ children }: { children: React.ReactNode }) {
       }}
     >
       <div
-        className={`m-auto h-fit w-fit overflow-y-auto overflow-x-hidden rounded-xl border border-neutral-800 bg-black p-4 ${styles["modal-in"]}`}
+        className={twMerge(
+          `m-auto h-fit w-fit overflow-y-auto overflow-x-hidden rounded-xl border border-neutral-800 bg-black p-4 ${styles["modal-in"]}`,
+          className,
+        )}
         onMouseDown={(e) => {
           e.stopPropagation();
           bgMouseUp = false;

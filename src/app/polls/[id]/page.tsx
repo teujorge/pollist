@@ -38,7 +38,7 @@ export default async function PollPage({ params }: { params: { id: string } }) {
         </div>
         <div className="flex flex-row gap-2 text-sm text-neutral-400">
           Created on{" "}
-          {new Date(poll.createdAt).toLocaleDateString(undefined, {
+          {poll.createdAt.toLocaleDateString(undefined, {
             year: "numeric",
             month: "long",
             day: "numeric",

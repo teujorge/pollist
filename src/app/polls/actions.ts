@@ -6,9 +6,11 @@ import { revalidatePath } from "next/cache";
 
 export async function createComment({
   pollId,
+  parentId,
   text,
 }: {
   pollId: string;
+  parentId: string | undefined;
   text: string | undefined;
 }) {
   if (!text) {
@@ -24,6 +26,7 @@ export async function createComment({
   const newComment = await db.comment.create({
     data: {
       pollId,
+      parentId,
       text,
       authorId: userId,
     },

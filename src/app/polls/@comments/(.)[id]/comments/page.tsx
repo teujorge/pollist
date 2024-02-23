@@ -1,10 +1,10 @@
 import { Modal } from "@/app/components/Modal";
-import { Comments } from "@/app/polls/components/Comments";
+import { PollComments } from "@/app/components/Comments/PollComments";
 
 export default function CommentsModal({ params }: { params: { id: string } }) {
   return (
-    <Modal>
-      <Comments pollId={params.id} />
+    <Modal className="w-full !max-w-[1000px]">
+      <PollComments pollId={params.id} />
     </Modal>
   );
 }
