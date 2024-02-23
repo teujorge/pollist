@@ -31,7 +31,7 @@ export function CommentCard(comment: Comment) {
           </p>
         </div>
       </Link>
-      <p>{comment.text}</p>
+      <p className="break-words">{comment.text}</p>
       <CommentCardActions {...comment} />
     </div>
   );

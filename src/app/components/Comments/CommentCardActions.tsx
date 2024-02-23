@@ -10,26 +10,41 @@ import {
 import { PAGE_SIZE } from "@/constants";
 import { Loader } from "../Loader";
 import { CommentCard } from "./CommentCard";
+import { useUser } from "@clerk/nextjs";
 
 export function CommentCardActions(comment: Comment) {
+  const { user } = useUser();
+
   const [isReplying, setIsReplying] = useState(false);
   const [isViewingReplies, setIsViewingReplies] = useState(false);
 
   return (
     <>
-      <div className="flex-warp flex flex-row items-center gap-4">
-        <button
-          className="font-bold [&>span]:hovact:text-neutral-400"
-          onClick={() => setIsReplying(!isReplying)}
-        >
-          <span className="text-neutral-500 transition-colors">Reply</span>
-        </button>
-        <button className="flex flex-row items-center justify-center gap-1 font-bold [&>span]:hovact:text-neutral-400 [&>svg]:hovact:fill-neutral-400">
-          <ThumbUpSvg className="h-6 w-6 fill-neutral-500 transition-colors" />
-          <span className="text-neutral-500 transition-colors">
-            {comment._count.likes}
-          </span>
-        </button>
+      <div className="flex-warp flex items-center justify-between gap-4">
+        <div className="flex-warp flex items-center gap-4">
+          {/* reply button */}
+          <button
+            className="font-bold [&>span]:hovact:text-neutral-400"
+            onClick={() => setIsReplying(!isReplying)}
+          >
+            <span className="text-neutral-500 transition-colors">Reply</span>
+          </button>
+
+          {/* like button */}
+          <button className="flex flex-row items-center justify-center gap-1 font-bold [&>span]:hovact:text-neutral-400 [&>svg]:hovact:fill-neutral-400">
+            <ThumbUpSvg className="h-6 w-6 fill-neutral-500 transition-colors" />
+            <span className="text-neutral-500 transition-colors">
+              {comment._count.likes}
+            </span>
+          </button>
+        </div>
+
+        {/* delete button */}
+        {user?.id === comment.authorId && (
+          <button className="flex flex-row items-center justify-center gap-1 font-bold [&>span]:hovact:text-red-500">
+            <span className="text-neutral-500 transition-colors">Delete</span>
+          </button>
+        )}
       </div>
 
       {isReplying && (

@@ -2,7 +2,6 @@
 
 import { db } from "@/database/db";
 import { auth } from "@clerk/nextjs";
-import { revalidatePath } from "next/cache";
 
 export async function createComment({
   pollId,
@@ -31,8 +30,6 @@ export async function createComment({
       authorId: userId,
     },
   });
-
-  revalidatePath(`/polls/${pollId}/comments`);
 
   return newComment;
 }
