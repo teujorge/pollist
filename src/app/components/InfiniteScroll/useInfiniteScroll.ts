@@ -67,8 +67,8 @@ export function useInfiniteScroll<TItem, TQuery>(props: {
 
     const option = {
       root: null,
-      rootMargin: "200px",
-      threshold: 1.0,
+      rootMargin: "400px",
+      threshold: 0,
     };
 
     const observer = new IntersectionObserver(handleObserver, option);
