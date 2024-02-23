@@ -1,27 +1,27 @@
 "use client";
 
+import { PAGE_SIZE } from "@/constants";
 import { useEffect, useState } from "react";
-import { type PollsDetails, getInfinitePolls } from "./actions";
-import type { PollQuery } from "@/constants";
 
-type Data = {
-  polls: PollsDetails;
-  page: number;
-  hasMore: boolean;
-  isLoading: boolean;
-};
-
-const initialData: Data = {
-  polls: [],
-  page: 2,
-  hasMore: true,
-  isLoading: false,
-};
-
-export function useInfinitePolls(props: {
-  query: PollQuery;
+export function useInfiniteScroll<TItem, TQuery>(props: {
+  query: TQuery;
+  getter: (params: TQuery & { page: number }) => Promise<TItem[]>;
   loaderRef: React.RefObject<HTMLElement>;
 }) {
+  type Data = {
+    items: TItem[];
+    page: number;
+    hasMore: boolean;
+    isLoading: boolean;
+  };
+
+  const initialData: Data = {
+    items: [],
+    page: 2,
+    hasMore: true,
+    isLoading: false,
+  };
+
   const [data, setData] = useState(initialData);
 
   // Change page when loaderRef is intersecting
@@ -32,24 +32,21 @@ export function useInfinitePolls(props: {
       try {
         setData((prev) => ({ ...prev, page: prev.page + 1, isLoading: true }));
 
-        const newPolls = await getInfinitePolls({
+        const newItems = await props.getter({
           page: data.page,
-          search: props.query.search,
-          category: props.query.category,
-          authorId: props.query.authorId,
-          voterId: props.query.voterId,
+          ...props.query,
         });
 
         // another query change happened
         if (initialData.page !== data.page) return;
 
-        const hasMore = newPolls.length > 0;
+        const hasMore = newItems.length === PAGE_SIZE;
 
         setData((prev) => ({
           ...prev,
           hasMore: hasMore,
           isLoading: false,
-          polls: [...prev.polls, ...newPolls],
+          items: [...prev.items, ...newItems],
         }));
       } catch (e) {
         console.error(e);
@@ -78,7 +75,7 @@ export function useInfinitePolls(props: {
     if (props.loaderRef.current) observer.observe(props.loaderRef.current);
 
     return () => observer.disconnect();
-  }, [data, props.loaderRef, props.query]);
+  }, [data, props]);
 
   return data;
 }

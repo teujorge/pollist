@@ -35,8 +35,7 @@ export default function HomePage({
         className="flex h-fit w-full flex-col items-center"
       >
         <InfinitePolls
-          search={search}
-          category={category}
+          query={{ search, category }}
           idPrefix="home-page-polls"
         />
       </div>

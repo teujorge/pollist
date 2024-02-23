@@ -1,17 +1,17 @@
 import { PollCard } from "../PollCard/PollCard";
 import { getInfinitePolls } from "./actions";
-import { InfinitelyMorePolls } from "./InfinitelyMorePolls";
-import type { PollQuery } from "@/constants";
 
-export async function InfinitePolls(
-  props: PollQuery & { highlightedUserId?: string; idPrefix: string },
-) {
+import type { PollQuery } from "@/constants";
+import { InfinitelyMorePolls } from "./InfinitelyMorePolls";
+
+export async function InfinitePolls(props: {
+  query: PollQuery;
+  highlightedUserId?: string;
+  idPrefix: string;
+}) {
   const firstPolls = await getInfinitePolls({
     page: 1,
-    search: props.search,
-    category: props.category,
-    authorId: props.authorId,
-    voterId: props.voterId,
+    ...props.query,
   });
 
   return (
@@ -23,7 +23,11 @@ export async function InfinitePolls(
           highlightedUserId={props.highlightedUserId}
         />
       ))}
-      <InfinitelyMorePolls {...props} />
+      <InfinitelyMorePolls
+        idPrefix={props.idPrefix}
+        query={props.query}
+        highlightedUserId={props.highlightedUserId}
+      />
     </div>
   );
 }
