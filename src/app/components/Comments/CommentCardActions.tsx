@@ -11,12 +11,31 @@ import { PAGE_SIZE } from "@/constants";
 import { Loader } from "../Loader";
 import { CommentCard } from "./CommentCard";
 import { useUser } from "@clerk/nextjs";
+import { deleteComment, likeComment, unlikeComment } from "./actions";
 
 export function CommentCardActions(comment: Comment) {
   const { user } = useUser();
 
   const [isReplying, setIsReplying] = useState(false);
   const [isViewingReplies, setIsViewingReplies] = useState(false);
+
+  async function handleLike() {
+    if (!user?.id) return;
+
+    if (comment.likes.length > 0) {
+      await unlikeComment({ commentId: comment.id, userId: user?.id });
+    } else {
+      await likeComment({ commentId: comment.id, userId: user?.id });
+    }
+  }
+
+  async function handleDeleteComment() {
+    if (!user?.id) return;
+
+    if (confirm("Are you sure you want to delete this comment?")) {
+      await deleteComment({ commentId: comment.id });
+    }
+  }
 
   return (
     <>
@@ -31,17 +50,24 @@ export function CommentCardActions(comment: Comment) {
           </button>
 
           {/* like button */}
-          <button className="flex flex-row items-center justify-center gap-1 font-bold [&>span]:hovact:text-neutral-400 [&>svg]:hovact:fill-neutral-400">
-            <ThumbUpSvg className="h-6 w-6 fill-neutral-500 transition-colors" />
-            <span className="text-neutral-500 transition-colors">
-              {comment._count.likes}
-            </span>
+          <button
+            className={`flex flex-row items-center justify-center gap-1 font-bold
+              ${comment.likes.length > 0 ? "[&>span]:text-purple-500 [&>span]:hovact:text-purple-400 [&>svg]:fill-purple-500 [&>svg]:hovact:fill-purple-400" : "[&>span]:text-neutral-500 [&>span]:hovact:text-neutral-400 [&>svg]:fill-neutral-500 [&>svg]:hovact:fill-neutral-400"}
+              ${user?.id ? "cursor-pointer" : "pointer-events-none cursor-not-allowed"}
+            `}
+            onClick={handleLike}
+          >
+            <ThumbUpSvg className="h-6 w-6 transition-colors" />
+            <span className="transition-colors">{comment._count.likes}</span>
           </button>
         </div>
 
         {/* delete button */}
         {user?.id === comment.authorId && (
-          <button className="flex flex-row items-center justify-center gap-1 font-bold [&>span]:hovact:text-red-500">
+          <button
+            className="flex flex-row items-center justify-center gap-1 font-bold [&>span]:hovact:text-red-500"
+            onClick={handleDeleteComment}
+          >
             <span className="text-neutral-500 transition-colors">Delete</span>
           </button>
         )}

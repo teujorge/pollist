@@ -3,7 +3,7 @@
 import { toast } from "sonner";
 import { Loader } from "../Loader";
 import { useState } from "react";
-import { createComment } from "@/app/polls/actions";
+import { createComment } from "@/app/components/Comments/actions";
 
 export function CommentForm({
   pollId,

@@ -2,6 +2,7 @@
 
 import { db } from "@/database/db";
 import { PAGE_SIZE } from "@/constants";
+import { auth } from "@clerk/nextjs";
 
 export type Comment = NonNullable<
   Awaited<ReturnType<typeof getPaginatedComments>>[number]
@@ -18,6 +19,8 @@ export async function getPaginatedComments({
   pollId,
   parentId,
 }: GetPaginatedCommentsParams) {
+  const { userId } = auth();
+
   const polls = await db.comment.findMany({
     where: {
       pollId: pollId,
@@ -37,6 +40,11 @@ export async function getPaginatedComments({
     take: PAGE_SIZE,
     include: {
       author: true,
+      likes: {
+        where: {
+          authorId: userId ?? undefined,
+        },
+      },
       _count: {
         select: { likes: true, replies: true },
       },
