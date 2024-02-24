@@ -21,7 +21,7 @@ export async function getPaginatedComments({
 }: GetPaginatedCommentsParams) {
   const { userId } = auth();
 
-  const polls = await db.comment.findMany({
+  const comments = await db.comment.findMany({
     where: {
       pollId: pollId,
       parentId: parentId ?? null,
@@ -51,5 +51,5 @@ export async function getPaginatedComments({
     },
   });
 
-  return polls;
+  return comments;
 }
