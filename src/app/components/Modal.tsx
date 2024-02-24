@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "@/styles/modal.module.css";
-import { twMerge } from "tailwind-merge";
+import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useLockBodyScroll } from "@uidotdev/usehooks";
 
@@ -33,7 +33,7 @@ export function Modal({
       }}
     >
       <div
-        className={twMerge(
+        className={cn(
           `m-auto h-fit w-fit overflow-y-auto overflow-x-hidden rounded-xl border border-neutral-800 bg-black p-4 ${styles["modal-in"]}`,
           className,
         )}

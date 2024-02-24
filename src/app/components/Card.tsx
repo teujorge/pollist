@@ -1,4 +1,4 @@
-import { twMerge } from "tailwind-merge";
+import { cn } from "@/lib/utils";
 
 export function Card({
   children,
@@ -9,7 +9,7 @@ export function Card({
 }) {
   return (
     <div
-      className={twMerge(
+      className={cn(
         "flex w-fit flex-grow flex-col gap-2 rounded-xl border border-neutral-800 px-3 py-2",
         className,
       )}

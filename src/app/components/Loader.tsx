@@ -1,5 +1,5 @@
+import { cn } from "@/lib/utils";
 import React from "react";
-import { twMerge } from "tailwind-merge";
 
 const Loader = React.forwardRef<
   HTMLSpanElement,
@@ -9,7 +9,7 @@ const Loader = React.forwardRef<
     <span
       {...props}
       ref={ref}
-      className={twMerge(
+      className={cn(
         "loader h-10 w-10 border-4 border-neutral-300",
         props.className,
       )}

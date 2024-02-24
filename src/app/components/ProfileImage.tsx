@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { twMerge } from "tailwind-merge";
+import { cn } from "@/lib/utils";
 
 export function ProfileImage(props: React.ComponentProps<typeof Image>) {
   return (
@@ -8,7 +8,7 @@ export function ProfileImage(props: React.ComponentProps<typeof Image>) {
     >
       <Image
         {...props}
-        className={twMerge(props.className, "rounded-full object-cover")}
+        className={cn(props.className, "rounded-full object-cover")}
         style={{
           width: props.width,
           minWidth: props.width,

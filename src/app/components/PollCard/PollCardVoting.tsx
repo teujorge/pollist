@@ -1,8 +1,8 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { getPoll, handleVote } from "./actions";
 import { toast } from "sonner";
-import { twMerge } from "tailwind-merge";
 import { supabase } from "@/database/dbRealtime";
 import { useApp } from "@/app/app";
 import {
@@ -273,7 +273,7 @@ export function PollCardVoting(props: PollCardVotingProps) {
           return (
             <li key={option.id} onClick={() => onVote(option.id)}>
               <div
-                className={twMerge(
+                className={cn(
                   "relative flex cursor-pointer flex-row items-center gap-2 rounded-xl border p-4 transition-colors hovact:bg-neutral-900 [&>div]:z-10 [&>p]:z-10 [&>span]:hovact:opacity-20",
                   option.id === optionIdToHighlight
                     ? "border-purple-500"
