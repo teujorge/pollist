@@ -40,6 +40,11 @@ export async function getPaginatedComments({
     take: PAGE_SIZE,
     include: {
       author: true,
+      parent: {
+        select: {
+          authorId: true,
+        },
+      },
       likes: {
         where: {
           authorId: userId ?? undefined,

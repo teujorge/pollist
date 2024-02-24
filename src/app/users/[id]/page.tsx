@@ -7,6 +7,11 @@ import { notFound } from "next/navigation";
 import { getAnonUser } from "@/app/api/anon/actions";
 import { ProfileImage } from "@/app/components/ProfileImage";
 import { FollowButton } from "@/app/users/components/FollowButton";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 // import {
 //   adminId,
@@ -23,6 +28,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
     acceptedFollowingCount,
     acceptedFollowersCount,
     totalPendingCount,
+    unreadReplies,
   ] = await Promise.all([
     // User data
     db.user.findUnique({
@@ -70,6 +76,30 @@ export default async function UserPage({ params }: { params: { id: string } }) {
         ],
       },
     }),
+    myId && myId === params.id
+      ? db.comment.findMany({
+          where: {
+            parent: {
+              authorId: myId,
+            },
+            acknowledgedByParent: false,
+          },
+          select: {
+            id: true,
+            pollId: true,
+            parent: {
+              select: {
+                id: true,
+                author: {
+                  select: {
+                    username: true,
+                  },
+                },
+              },
+            },
+          },
+        })
+      : undefined,
   ]);
 
   let anonId: string | undefined = undefined;
@@ -111,9 +141,32 @@ export default async function UserPage({ params }: { params: { id: string } }) {
             </Link>
 
             {myId === params.id && (
-              <Link href={`/users/${params.id}/pending`}>
-                <Stat label="pending" count={totalPendingCount} />
-              </Link>
+              <>
+                <Link href={`/users/${params.id}/pending`}>
+                  <Stat label="pending" count={totalPendingCount} />
+                </Link>
+                {unreadReplies && unreadReplies.length > 0 && (
+                  <Popover>
+                    <PopoverTrigger
+                      asChild
+                      className="cursor-pointer transition-colors hovact:text-neutral-400"
+                    >
+                      <span>replies ({unreadReplies.length})</span>
+                    </PopoverTrigger>
+                    <PopoverContent className="flex flex-col bg-black p-4">
+                      {unreadReplies.map((comment) => (
+                        <Link
+                          key={`unread-reply-link-${comment.id}`}
+                          href={`/polls/${comment.pollId}/comments?parentId=${comment.parent?.id}`}
+                        >
+                          {comment.parent?.author?.username ?? "Someone"} has
+                          replied to your comment
+                        </Link>
+                      ))}
+                    </PopoverContent>
+                  </Popover>
+                )}
+              </>
             )}
           </div>
         </div>

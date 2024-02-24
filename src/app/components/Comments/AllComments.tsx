@@ -24,6 +24,11 @@ export async function AllComments({
             authorId: userId ?? undefined,
           },
         },
+        parent: {
+          select: {
+            authorId: true,
+          },
+        },
         _count: {
           select: { likes: true, replies: true },
         },

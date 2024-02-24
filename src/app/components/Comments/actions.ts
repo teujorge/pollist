@@ -28,10 +28,33 @@ export async function createComment({
       parentId,
       text,
       authorId: userId,
+      acknowledgedByParent: parentId ? false : true,
     },
   });
 
   return newComment;
+}
+
+export async function acknowledgeReply({ commentId }: { commentId: string }) {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("You must be logged in to acknowledge a reply");
+  }
+
+  console.log("acknowledgeReply", commentId);
+
+  await db.comment.update({
+    where: {
+      id: commentId,
+      authorId: userId,
+    },
+    data: {
+      acknowledgedByParent: true,
+    },
+  });
+
+  console.log("DONE acknowledgeReply", commentId);
 }
 
 export async function likeComment({
