@@ -1,10 +1,9 @@
 import "@/styles/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import { dark } from "@clerk/themes";
 import { Nunito_Sans } from "next/font/google";
 import { Toaster } from "sonner";
+import { dark } from "@clerk/themes";
 import { App } from "./app";
-import Script from "next/script";
 
 const nunito = Nunito_Sans({
   subsets: ["latin"],
@@ -28,12 +27,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <Script
+      {/* <Script
         async
         src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6132246468312218"
         crossOrigin="anonymous"
         strategy="lazyOnload"
-      />
+      /> */}
 
       <ClerkProvider
         appearance={{
