@@ -1,10 +1,16 @@
 import { Modal } from "@/app/components/Modal";
-import { PollComments } from "@/app/components/Comments/PollComments";
+import { AllComments } from "@/app/components/Comments/AllComments";
 
-export default function CommentsModal({ params }: { params: { id: string } }) {
+export default function CommentsModal({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: Record<string, string | undefined>;
+}) {
   return (
     <Modal className="w-full !max-w-[1000px]">
-      <PollComments pollId={params.id} />
+      <AllComments pollId={params.id} parentId={searchParams.parentId} />
     </Modal>
   );
 }

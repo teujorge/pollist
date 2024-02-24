@@ -1,11 +1,17 @@
 import Link from "next/link";
-import { PollComments } from "@/app/components/Comments/PollComments";
+import { AllComments } from "@/app/components/Comments/AllComments";
 
-export default function CommentsPage({ params }: { params: { id: string } }) {
+export default function CommentsPage({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: Record<string, string | undefined>;
+}) {
   return (
     <main>
       <Link href={`/polls/${params.id}`}>{"<-"}Back to poll</Link>
-      <PollComments pollId={params.id} />
+      <AllComments pollId={params.id} parentId={searchParams.parentId} />
     </main>
   );
 }
