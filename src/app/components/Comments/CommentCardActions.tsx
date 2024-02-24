@@ -1,17 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { useUser } from "@clerk/nextjs";
 import { ThumbUpSvg } from "@/app/svgs/ThumbUpSvg";
 import { CommentForm } from "./CommentForm";
+import { Loader } from "../Loader";
+import { PAGE_SIZE } from "@/constants";
+import { CommentCard } from "./CommentCard";
+import { useEffect, useState } from "react";
+import { deleteComment, likeComment, unlikeComment } from "./actions";
 import {
   getPaginatedComments,
   type Comment,
 } from "../InfiniteComments/actions";
-import { PAGE_SIZE } from "@/constants";
-import { Loader } from "../Loader";
-import { CommentCard } from "./CommentCard";
-import { useUser } from "@clerk/nextjs";
-import { deleteComment, likeComment, unlikeComment } from "./actions";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import Link from "next/link";
 
 export function CommentCardActions(comment: Comment) {
   const { user } = useUser();
@@ -35,6 +42,13 @@ export function CommentCardActions(comment: Comment) {
     if (confirm("Are you sure you want to delete this comment?")) {
       await deleteComment({ commentId: comment.id });
     }
+  }
+
+  async function handleCopyThreadLink() {
+    await navigator.clipboard.writeText(
+      window.location.href + "?parentId=" + comment.id,
+    );
+    toast("Link copied to clipboard");
   }
 
   return (
@@ -62,15 +76,41 @@ export function CommentCardActions(comment: Comment) {
           </button>
         </div>
 
-        {/* delete button */}
-        {user?.id === comment.authorId && (
-          <button
-            className="flex flex-row items-center justify-center gap-1 font-bold [&>span]:hovact:text-red-500"
-            onClick={handleDeleteComment}
-          >
-            <span className="text-neutral-500 transition-colors">Delete</span>
-          </button>
-        )}
+        {/* options popover */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="rounded-full px-3 pb-2 text-lg font-bold transition-colors hovact:bg-neutral-800">
+              ...
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="flex flex-col bg-black p-4">
+            {/* copy link button */}
+            <button
+              className="w-fit font-bold [&>span]:hovact:text-neutral-400"
+              onClick={handleCopyThreadLink}
+            >
+              <span className="transition-colors">Copy Link</span>
+            </button>
+
+            {/* go to thread link */}
+            <Link
+              href={`/polls/${comment.pollId}/comments?parentId=${comment.id}`}
+              className="w-fit font-bold"
+            >
+              Go to thread
+            </Link>
+
+            {/* delete button */}
+            {user?.id === comment.authorId && (
+              <button
+                className="w-fit font-bold [&>span]:hovact:text-red-500"
+                onClick={handleDeleteComment}
+              >
+                <span className="transition-colors">Delete</span>
+              </button>
+            )}
+          </PopoverContent>
+        </Popover>
       </div>
 
       {isReplying && (
