@@ -4,7 +4,7 @@ import { CommentCard } from "../Comments/CommentCard";
 import { InfinitelyMoreItems } from "../InfiniteScroll/InfinitelyMoreItems";
 import { type Comment, getPaginatedComments } from "./actions";
 
-export async function InfinitelyMoreComments(props: {
+export function InfinitelyMoreComments(props: {
   pollId: string;
   parentId: string | undefined;
   highlightedUserId?: string;

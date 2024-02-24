@@ -5,7 +5,7 @@ import { InfinitelyMoreItems } from "../InfiniteScroll/InfinitelyMoreItems";
 import { getInfinitePolls, type PollsDetails } from "./actions";
 import type { PollQuery } from "@/constants";
 
-export async function InfinitelyMorePolls(props: {
+export function InfinitelyMorePolls(props: {
   query: PollQuery;
   highlightedUserId?: string;
   idPrefix: string;

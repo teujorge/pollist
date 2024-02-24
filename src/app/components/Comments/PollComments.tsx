@@ -1,7 +1,7 @@
 import { CommentForm } from "./CommentForm";
 import { InfiniteComments } from "@/app/components/InfiniteComments/InfiniteComments";
 
-export async function PollComments({ pollId }: { pollId: string }) {
+export function PollComments({ pollId }: { pollId: string }) {
   return (
     <>
       <h1 className="p-2 text-4xl">Comments</h1>
