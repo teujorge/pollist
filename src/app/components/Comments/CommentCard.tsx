@@ -13,7 +13,7 @@ export function CommentCard(comment: Comment) {
   return (
     <div
       className={`flex w-full flex-col gap-2 rounded-lg border p-4
-        ${comment.acknowledgedByParent ? "border-neutral-800" : "border-purple-500"}
+        ${user && user.id === comment.parent?.authorId && !comment.acknowledgedByParent ? "border-purple-500" : "border-neutral-800"}
       `}
     >
       <Link
