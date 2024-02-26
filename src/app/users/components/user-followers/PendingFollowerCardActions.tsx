@@ -1,7 +1,8 @@
 "use client";
 
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { Loader } from "@/app/components/Loader";
+import { useState } from "react";
 import { acceptFollow, declineFollow } from "../../actions";
 import type { User } from "@prisma/client";
 
@@ -10,30 +11,36 @@ export async function PendingFollowerCardActions({
 }: {
   follower: User;
 }) {
-  const router = useRouter();
+  const [status, setStatus] = useState({ loading: false, complete: false });
 
   async function _acceptFollow() {
     try {
+      setStatus({ loading: true, complete: false });
       await acceptFollow(follower.id);
-      router.back();
+      setStatus({ loading: false, complete: true });
     } catch (error) {
       console.error(error);
       toast.error("Failed to accept follow");
+      setStatus({ loading: false, complete: false });
     }
   }
 
   async function _declineFollow() {
     try {
+      setStatus({ loading: true, complete: false });
       await declineFollow(follower.id);
-      router.back();
+      setStatus({ loading: false, complete: true });
     } catch (error) {
       console.error(error);
       toast.error("Failed to decline follow");
+      setStatus({ loading: false, complete: false });
     }
   }
 
-  return (
-    <div>
+  return status.complete ? null : status.loading ? (
+    <Loader className="h-4 w-4 border-2" />
+  ) : (
+    <>
       <button onClick={_acceptFollow}>
         <span className="text-green-500 underline decoration-transparent transition-colors hovact:decoration-green-500">
           Accept
@@ -44,6 +51,6 @@ export async function PendingFollowerCardActions({
           Decline
         </span>
       </button>
-    </div>
+    </>
   );
 }

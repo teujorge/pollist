@@ -12,9 +12,9 @@ export async function ActiveFollowerCard({
   const { userId: myId } = auth();
 
   return (
-    <p>
-      {follower.username}
+    <div className="flex flex-row items-center gap-2">
+      <p>{follower.username}</p>
       {myId === userId && <ActiveFollowerCardActions follower={follower} />}
-    </p>
+    </div>
   );
 }
