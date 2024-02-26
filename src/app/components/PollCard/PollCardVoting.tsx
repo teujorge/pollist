@@ -5,14 +5,8 @@ import { getPoll, handleVote } from "./actions";
 import { toast } from "sonner";
 import { supabase } from "@/database/dbRealtime";
 import { useApp } from "@/app/app";
-import {
-  type MutableRefObject,
-  useEffect,
-  useRef,
-  useState,
-  useMemo,
-} from "react";
-import { type AxisOptions, Chart } from "react-charts";
+import { type MutableRefObject, useEffect, useRef, useState } from "react";
+
 import type { PollCardProps } from "./PollCard";
 import type { PollsDetails } from "../InfinitePolls/actions";
 import type { RealtimeChannel } from "@supabase/realtime-js";
@@ -20,7 +14,6 @@ import type { Vote } from "@prisma/client";
 import { LockSvg } from "@/app/svgs/LockSvg";
 
 type PollCardVotingProps = PollCardProps & {
-  useChart?: boolean;
   useRealtime?: boolean;
 };
 
@@ -304,56 +297,6 @@ export function PollCardVoting(props: PollCardVotingProps) {
       </ul>
 
       <div className="flex-grow" />
-
-      {props.useChart && <VoteChart {...optimisticPoll} />}
-    </div>
-  );
-}
-
-function VoteChart(poll: PollsDetails[number]) {
-  const data = useMemo(
-    () =>
-      poll.options.map((option) => ({
-        option: option.text,
-        data: [
-          {
-            x: option.text,
-            y: poll.votes.filter((vote) => vote.optionId === option.id).length,
-          },
-          {
-            x: option.text,
-            y: poll.votes.filter((vote) => vote.optionId === option.id).length,
-          },
-        ],
-      })),
-    [poll.options, poll.votes],
-  );
-
-  const primaryAxis = useMemo<
-    AxisOptions<(typeof data)[number]["data"][number]>
-  >(() => ({ getValue: (datum) => datum.x }), []);
-
-  const secondaryAxes = useMemo<
-    AxisOptions<(typeof data)[number]["data"][number]>[]
-  >(() => [{ getValue: (datum) => datum.y }], []);
-
-  return (
-    <div className="pt-2">
-      <div className="rounded-lg bg-neutral-900 p-2">
-        <div className="h-64 w-full">
-          <Chart
-            datatype="ordinal"
-            options={{
-              dark: true,
-              interactionMode: "closest",
-              data,
-              primaryAxis,
-              secondaryAxes,
-              tooltip: false,
-            }}
-          />
-        </div>
-      </div>
     </div>
   );
 }

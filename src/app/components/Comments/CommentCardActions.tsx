@@ -92,14 +92,6 @@ export function CommentCardActions(comment: Comment) {
               <span className="transition-colors">Copy Link</span>
             </button>
 
-            {/* go to thread link */}
-            <Link
-              href={`/polls/${comment.pollId}/comments?parentId=${comment.id}`}
-              className="w-fit font-bold"
-            >
-              Go to thread
-            </Link>
-
             {/* delete button */}
             {user?.id === comment.authorId && (
               <button

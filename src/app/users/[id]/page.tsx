@@ -157,7 +157,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                       {unreadReplies.map((comment) => (
                         <Link
                           key={`unread-reply-link-${comment.id}`}
-                          href={`/polls/${comment.pollId}/comments?parentId=${comment.parent?.id}`}
+                          href={`/polls/${comment.pollId}?parentId=${comment.parent?.id}`}
                         >
                           {comment.parent?.author?.username ?? "Someone"} has
                           replied to your comment
