@@ -30,7 +30,7 @@ export default async function PollPage({
   if (!poll) return notFound();
 
   return (
-    <main className="flex min-h-[calc(100dvh-64px)] w-full flex-col">
+    <main className=" relative flex min-h-[calc(100dvh-64px)] w-full flex-col">
       {/* header */}
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">

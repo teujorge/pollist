@@ -49,14 +49,17 @@ export async function AllComments({
 
   return (
     <>
-      <h1 className="p-2 text-4xl">Comments</h1>
-      <CommentForm
-        pollId={pollId}
-        parentId={parentId}
-        label="New comment"
-        placeholder="Write your comment here..."
-      />
+      <p className="py-4 pt-16 text-2xl ">Comments</p>
+
       <InfiniteComments pollId={pollId} parentId={parentId} />
+      <div className="sticky bottom-0 bg-gradient-to-t from-black from-80% ">
+        <CommentForm
+          pollId={pollId}
+          parentId={parentId}
+          label={undefined}
+          placeholder="Write your comment here..."
+        />
+      </div>
     </>
   );
 }
