@@ -12,6 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { getPendingFollows, getUnreadReplies } from "./actions";
 
 // import {
 //   adminId,
@@ -23,13 +24,7 @@ import {
 export default async function UserPage({ params }: { params: { id: string } }) {
   const { userId: myId } = auth();
 
-  const [
-    user,
-    acceptedFollowingCount,
-    acceptedFollowersCount,
-    totalPendingCount,
-    unreadReplies,
-  ] = await Promise.all([
+  const [user, totalPendingCount, unreadReplies] = await Promise.all([
     // User data
     db.user.findUnique({
       where: {
@@ -43,63 +38,14 @@ export default async function UserPage({ params }: { params: { id: string } }) {
           select: {
             polls: true,
             votes: true,
+            followers: { where: { accepted: true } },
+            following: { where: { accepted: true } },
           },
         },
       },
     }),
-    // Accepted Following Count
-    db.follow.count({
-      where: {
-        followerId: params.id,
-        accepted: true,
-      },
-    }),
-    // Accepted Followers Count
-    db.follow.count({
-      where: {
-        followedId: params.id,
-        accepted: true,
-      },
-    }),
-    // Total Pending Count (where the current user is either the follower or the followed, and the request is not accepted)
-    db.follow.count({
-      where: {
-        OR: [
-          {
-            followerId: params.id,
-            accepted: false,
-          },
-          {
-            followedId: params.id,
-            accepted: false,
-          },
-        ],
-      },
-    }),
-    myId && myId === params.id
-      ? db.comment.findMany({
-          where: {
-            parent: {
-              authorId: myId,
-            },
-            acknowledgedByParent: false,
-          },
-          select: {
-            id: true,
-            pollId: true,
-            parent: {
-              select: {
-                id: true,
-                author: {
-                  select: {
-                    username: true,
-                  },
-                },
-              },
-            },
-          },
-        })
-      : undefined,
+    getPendingFollows(params.id),
+    myId && myId === params.id ? getUnreadReplies(params.id) : undefined,
   ]);
 
   let anonId: string | undefined = undefined;
@@ -133,17 +79,17 @@ export default async function UserPage({ params }: { params: { id: string } }) {
             <Stat label="votes" count={user?._count?.votes ?? 0} />
 
             <Link href={`/users/${params.id}/following`}>
-              <Stat label="following" count={acceptedFollowingCount ?? 0} />
+              <Stat label="following" count={user?._count?.following ?? 0} />
             </Link>
 
             <Link href={`/users/${params.id}/followers`}>
-              <Stat label="followers" count={acceptedFollowersCount ?? 0} />
+              <Stat label="followers" count={user?._count?.followers ?? 0} />
             </Link>
 
             {myId === params.id && (
               <>
                 <Link href={`/users/${params.id}/pending`}>
-                  <Stat label="pending" count={totalPendingCount} />
+                  <Stat label="pending" count={totalPendingCount.length} />
                 </Link>
                 {unreadReplies && unreadReplies.length > 0 && (
                   <Popover>
@@ -159,8 +105,8 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                           key={`unread-reply-link-${comment.id}`}
                           href={`/polls/${comment.pollId}?parentId=${comment.parent?.id}`}
                         >
-                          {comment.parent?.author?.username ?? "Someone"} has
-                          replied to your comment
+                          {comment?.author?.username ?? "Someone"} has replied
+                          to your comment
                         </Link>
                       ))}
                     </PopoverContent>

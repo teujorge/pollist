@@ -9,15 +9,20 @@ import {
   UserButton,
   useUser,
 } from "@clerk/nextjs";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { getAnonUser } from "./api/anon/actions";
 import { IconSvg } from "./svgs/IconSvg";
-import { NotificationSvg } from "./svgs/NotificaitonSvg";
+import { getPendingFollows, getUnreadReplies } from "./users/[id]/actions";
 
 type UserStatus = {
   userId: string | undefined;
   isAnon: boolean;
   loading: boolean;
+  hasNotifications: boolean;
+};
+
+type AppProviderValue = UserStatus & {
+  setHasNotifications: (hasNotification: boolean) => void;
 };
 
 export function App({ children }: { children: React.ReactNode }) {
@@ -31,6 +36,7 @@ export function App({ children }: { children: React.ReactNode }) {
     userId: undefined,
     isAnon: true,
     loading: true,
+    hasNotifications: false,
   });
 
   useEffect(() => {
@@ -43,35 +49,71 @@ export function App({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (user) {
-      setUserStatus({ userId: user.id, isAnon: false, loading: false });
+      setUserStatus({
+        userId: user.id,
+        isAnon: false,
+        loading: false,
+        hasNotifications: false,
+      });
     } else {
-      setUserStatus({ userId: userId, isAnon: true, loading: false });
+      setUserStatus({
+        userId: userId,
+        isAnon: true,
+        loading: false,
+        hasNotifications: false,
+      });
     }
   }, [user, userId]);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      if (!user?.id) return;
+
+      const [pendingFollows, unreadReplies] = await Promise.all([
+        await getPendingFollows(user.id),
+        await getUnreadReplies(user.id),
+      ]);
+
+      const hasNotifications =
+        pendingFollows.length > 0 || unreadReplies.length > 0;
+
+      setUserStatus((prev) => ({
+        ...prev,
+        hasNotifications,
+      }));
+    };
+
+    void fetchNotifications();
+  }, [user]);
 
   // useEffect(() => {
   //   console.log("userStatus", userStatus);
   // }, [userStatus]);
 
+  const memoizedChildren = useMemo(() => children, [children]);
+
   return (
-    <AppProvider value={userStatus}>
+    <AppProvider
+      value={{
+        ...userStatus,
+        setHasNotifications: (hasNotifications: boolean) =>
+          setUserStatus((prev) => ({ ...prev, hasNotifications })),
+      }}
+    >
       <Header userId={userStatus.userId} />
-      {userStatus.loading ? <GlobalLoading /> : children}
+      {userStatus.loading ? <GlobalLoading /> : memoizedChildren}
     </AppProvider>
   );
 }
 
-const AppContext = createContext<UserStatus | undefined>(undefined);
+const AppContext = createContext<AppProviderValue | undefined>(undefined);
 
 type AppProviderProps = {
-  value: UserStatus;
+  value: AppProviderValue;
   children: React.ReactNode;
 };
 
-function AppProvider({
-  value,
-  children,
-}: AppProviderProps & { children: React.ReactNode }) {
+function AppProvider({ value, children }: AppProviderProps) {
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
 
@@ -128,6 +170,8 @@ function useCustomScrollbar() {
 }
 
 function Header({ userId }: { userId?: string }) {
+  const { hasNotifications } = useApp();
+
   return (
     <header className="sticky left-0 right-0 top-0 z-40 flex w-full justify-between bg-gradient-to-b from-black from-60% px-5 py-4">
       <div className="flex flex-row items-center gap-4">
@@ -141,11 +185,17 @@ function Header({ userId }: { userId?: string }) {
 
       <div className="flex flex-row items-center gap-4">
         <Link href="/">Home</Link>
+
         <Link href="/polls/create">Create</Link>
-        {userId && <Link href={`/users/${userId}`}>Me</Link>}
-        <Link href="/polls/create">
-          <NotificationSvg width={20} height={20} fill="white" />
-        </Link>
+
+        {userId && (
+          <Link href={`/users/${userId}`} className="relative">
+            Me
+            {hasNotifications && (
+              <div className="absolute -right-1 top-0 h-2 w-2 rounded-full bg-red-500" />
+            )}
+          </Link>
+        )}
 
         <SignedIn>
           <div className="h-8 w-8 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500">
