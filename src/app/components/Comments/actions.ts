@@ -30,7 +30,29 @@ export async function createComment({
       authorId: userId,
       acknowledgedByParent: parentId ? false : true,
     },
+    include: {
+      parent: {
+        select: {
+          authorId: true,
+        },
+      },
+      poll: {
+        select: {
+          authorId: true,
+        },
+      },
+    },
   });
+
+  if (newComment?.parent) {
+    void db.notification.create({
+      data: {
+        type: "COMMENT_REPLY",
+        referenceId: newComment.id,
+        userId: newComment.parent.authorId,
+      },
+    });
+  }
 
   return newComment;
 }

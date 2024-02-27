@@ -9,17 +9,38 @@ datasource db {
 }
 
 model User {
-  id           String        @id
-  username     String?
-  imageUrl     String?
-  votes        Vote[]
-  polls        Poll[]
-  comments     Comment[]
-  commentLikes CommentLike[]
-  following    Follow[]      @relation("Following")
-  followers    Follow[]      @relation("Followers")
-  bio          String?
-  anon         Boolean
+  id            String         @id
+  username      String?
+  imageUrl      String?
+  votes         Vote[]
+  polls         Poll[]
+  comments      Comment[]
+  commentLikes  CommentLike[]
+  following     Follow[]       @relation("Following")
+  followers     Follow[]       @relation("Followers")
+  bio           String?
+  anon          Boolean
+  notifications Notification[]
+}
+
+enum NotificationType {
+  FOLLOW_PENDING
+  FOLLOW_ACCEPTED
+  COMMENT_REPLY
+  COMMENT_LIKE
+}
+
+model Notification {
+  id          String           @id @default(uuid())
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  userId      String
+  type        NotificationType
+  referenceId String // Generic reference ID to point to the source of the notification (could be Follow ID, Comment ID, etc.)
+  seen        Boolean          @default(false)
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, seen])
 }
 
 model Follow {

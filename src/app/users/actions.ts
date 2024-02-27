@@ -4,6 +4,7 @@ import { db } from "@/database/db";
 import { auth } from "@clerk/nextjs";
 import { revalidatePath } from "next/cache";
 
+// myId asks to follow userId
 export async function follow(userId: string) {
   const { userId: myId } = auth();
   if (!myId) return;
@@ -16,6 +17,16 @@ export async function follow(userId: string) {
     },
   });
 
+  if (newFollow) {
+    void db.notification.create({
+      data: {
+        type: "FOLLOW_PENDING",
+        referenceId: newFollow.id,
+        userId,
+      },
+    });
+  }
+
   console.log("newFollow", newFollow);
 
   revalidatePath(`/users/${userId}`);
@@ -23,6 +34,7 @@ export async function follow(userId: string) {
   return newFollow;
 }
 
+// myId unfollows userId
 export async function unfollow(userId: string) {
   const { userId: myId } = auth();
   if (!myId) return;
@@ -106,6 +118,16 @@ export async function acceptFollow(followerId: string) {
     },
   });
 
+  if (updatedFollow) {
+    void db.notification.create({
+      data: {
+        type: "FOLLOW_ACCEPTED",
+        referenceId: updatedFollow.id,
+        userId: followerId,
+      },
+    });
+  }
+
   console.log("updatedFollow", updatedFollow);
   revalidatePath(`/users/${myId}`);
   return updatedFollow;
@@ -129,4 +151,50 @@ export async function cancelFollow(followedId: string) {
   console.log("deletedFollow", deletedFollow);
   revalidatePath(`/users/${myId}`);
   return deletedFollow;
+}
+
+export async function getPendingFollows(userId: string) {
+  const pendingFollows = await db.follow.findMany({
+    where: {
+      OR: [
+        {
+          followerId: userId,
+          accepted: false,
+        },
+        {
+          followedId: userId,
+          accepted: false,
+        },
+      ],
+    },
+  });
+
+  return pendingFollows;
+}
+
+export async function getUnreadReplies(userId: string) {
+  const unreadReplies = await db.comment.findMany({
+    where: {
+      parent: {
+        authorId: userId,
+      },
+      acknowledgedByParent: false,
+    },
+    select: {
+      id: true,
+      pollId: true,
+      author: {
+        select: {
+          username: true,
+        },
+      },
+      parent: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+
+  return unreadReplies;
 }

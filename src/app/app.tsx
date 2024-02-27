@@ -12,13 +12,13 @@ import {
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { getAnonUser } from "./api/anon/actions";
 import { IconSvg } from "./svgs/IconSvg";
-import { getPendingFollows, getUnreadReplies } from "./users/[id]/actions";
+import { supabase } from "@/database/dbRealtime";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 
 type UserStatus = {
   userId: string | undefined;
   isAnon: boolean;
   loading: boolean;
-  hasNotifications: boolean;
 };
 
 type AppProviderValue = UserStatus & {
@@ -36,7 +36,6 @@ export function App({ children }: { children: React.ReactNode }) {
     userId: undefined,
     isAnon: true,
     loading: true,
-    hasNotifications: false,
   });
 
   useEffect(() => {
@@ -48,47 +47,42 @@ export function App({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    let notificationsSubscription: RealtimeChannel | undefined = undefined;
+
     if (user) {
       setUserStatus({
         userId: user.id,
         isAnon: false,
         loading: false,
-        hasNotifications: false,
       });
+
+      // notification subscription
+      notificationsSubscription = supabase
+        ?.channel(`notifications-${user.id}-db-changes`)
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "Notification",
+            // filter: `userId=eq.${user.id}`,
+          },
+          (payload) => {
+            console.log("Notification received:", payload);
+            // Update UI based on the notification
+          },
+        )
+        .subscribe();
     } else {
       setUserStatus({
         userId: userId,
         isAnon: true,
         loading: false,
-        hasNotifications: false,
       });
     }
+
+    return () => void notificationsSubscription?.unsubscribe();
   }, [user, userId]);
-
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      if (!user?.id) return;
-
-      const [pendingFollows, unreadReplies] = await Promise.all([
-        await getPendingFollows(user.id),
-        await getUnreadReplies(user.id),
-      ]);
-
-      const hasNotifications =
-        pendingFollows.length > 0 || unreadReplies.length > 0;
-
-      setUserStatus((prev) => ({
-        ...prev,
-        hasNotifications,
-      }));
-    };
-
-    void fetchNotifications();
-  }, [user]);
-
-  // useEffect(() => {
-  //   console.log("userStatus", userStatus);
-  // }, [userStatus]);
 
   const memoizedChildren = useMemo(() => children, [children]);
 
@@ -170,8 +164,6 @@ function useCustomScrollbar() {
 }
 
 function Header({ userId }: { userId?: string }) {
-  const { hasNotifications } = useApp();
-
   return (
     <header className="sticky left-0 right-0 top-0 z-40 flex w-full justify-between bg-gradient-to-b from-black from-60% px-5 py-4">
       <div className="flex flex-row items-center gap-4">
@@ -191,7 +183,7 @@ function Header({ userId }: { userId?: string }) {
         {userId && (
           <Link href={`/users/${userId}`} className="relative">
             Me
-            {hasNotifications && (
+            {false && (
               <div className="absolute -right-1 top-0 h-2 w-2 rounded-full bg-red-500" />
             )}
           </Link>

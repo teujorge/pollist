@@ -12,7 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { getPendingFollows, getUnreadReplies } from "./actions";
+import { getPendingFollows, getUnreadReplies } from "../actions";
 
 // import {
 //   adminId,
@@ -79,11 +79,11 @@ export default async function UserPage({ params }: { params: { id: string } }) {
             <Stat label="votes" count={user?._count?.votes ?? 0} />
 
             <Link href={`/users/${params.id}/following`}>
-              <Stat label="following" count={user?._count?.following ?? 0} />
+              <Stat label="following" count={user?._count?.followers ?? 0} />
             </Link>
 
             <Link href={`/users/${params.id}/followers`}>
-              <Stat label="followers" count={user?._count?.followers ?? 0} />
+              <Stat label="followers" count={user?._count?.following ?? 0} />
             </Link>
 
             {myId === params.id && (
