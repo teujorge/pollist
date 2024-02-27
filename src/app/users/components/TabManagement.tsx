@@ -14,7 +14,7 @@ export function TabManagement({
   return (
     <div
       className={`w-full flex-grow flex-col gap-2 md:w-1/2
-        ${tab === tabKey ? "flex" : "hidden md:flex"}
+        ${tab === tabKey ? "flex" : "hidden"}
       `}
     >
       <div className="flex flex-col gap-2 overflow-y-auto rounded-xl border border-neutral-800 p-2">
