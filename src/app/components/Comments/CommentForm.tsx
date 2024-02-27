@@ -44,7 +44,7 @@ export function CommentForm({
   }
 
   return (
-    <form className="flex w-full flex-col gap-2 p-4" onSubmit={handleSubmit}>
+    <form className="  flex w-full flex-col gap-2 p-4" onSubmit={handleSubmit}>
       {label && <label>{label}</label>}
       <div className="flex flex-row items-end gap-2">
         <textarea
