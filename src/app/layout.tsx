@@ -1,6 +1,8 @@
 import "@/styles/globals.css";
+import GlobalLoading from "./loading";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Nunito_Sans } from "next/font/google";
+import { Suspense } from "react";
 import { Toaster } from "sonner";
 import { dark } from "@clerk/themes";
 import { App } from "./app";
@@ -58,8 +60,7 @@ export default function RootLayout({
         <body className={`font-sans ${nunito.variable}`}>
           <App>
             <Toaster richColors />
-
-            {children}
+            <Suspense fallback={<GlobalLoading />}>{children}</Suspense>
             {crudPoll}
             {welcome}
           </App>
