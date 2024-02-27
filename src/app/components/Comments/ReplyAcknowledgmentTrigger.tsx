@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { acknowledgeReply } from "./actions";
 
 export function ReplyAcknowledgmentTrigger({
@@ -8,13 +8,16 @@ export function ReplyAcknowledgmentTrigger({
 }: {
   commentId: string;
 }) {
-  const triggerRef = useRef(null);
+  const triggerElementRef = useRef(null);
+  const [hasBeenTriggered, setHasBeenTriggered] = useState(false);
 
   useEffect(() => {
-    if (!triggerRef.current) return;
+    if (hasBeenTriggered) return;
+    if (!triggerElementRef.current) return;
 
     async function handleAcknowledgment() {
       await acknowledgeReply({ commentId });
+      setHasBeenTriggered(true);
     }
 
     const observer = new IntersectionObserver(
@@ -30,11 +33,11 @@ export function ReplyAcknowledgmentTrigger({
       },
     );
 
-    observer.observe(triggerRef.current);
+    observer.observe(triggerElementRef.current);
 
     // Cleanup observer on component unmount
     return () => observer.disconnect();
-  }, [commentId]);
+  }, [commentId, hasBeenTriggered]);
 
-  return <div ref={triggerRef} />;
+  return <div ref={triggerElementRef} />;
 }

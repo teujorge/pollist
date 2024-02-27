@@ -6,7 +6,7 @@ export function Tabs() {
   const { tab, setTab } = useUserPage();
 
   return (
-    <div className="relative flex w-full flex-row justify-end rounded-xl border border-neutral-800 md:hidden">
+    <div className="relative flex w-full flex-row justify-end rounded-xl border border-neutral-800">
       <button
         className={`z-10 w-full rounded-xl p-2 transition-colors
           ${tab === "polls" ? "cursor-default font-bold text-white" : "text-neutral-400"}
