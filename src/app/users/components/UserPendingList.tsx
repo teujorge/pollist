@@ -33,8 +33,8 @@ export async function UserPendingList({ userId }: { userId: string }) {
 
   return (
     <div>
-      <h1>Pending</h1>
-      <div>
+      <h1 className="py-2">Pending</h1>
+      <div className="flex flex-col gap-2">
         {pending.map((p) =>
           p.followed.id === userId ? (
             <PendingFollowerCard

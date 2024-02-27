@@ -25,7 +25,7 @@ export async function PendingFollowedCardActions({
   return (
     <button onClick={_cancelFollow}>
       <span className="text-red-500 underline decoration-transparent hovact:decoration-red-500">
-        Cancel?
+        Cancel
       </span>
     </button>
   );
