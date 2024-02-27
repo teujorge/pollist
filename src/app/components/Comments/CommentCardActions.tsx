@@ -18,7 +18,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import Link from "next/link";
 
 export function CommentCardActions(comment: Comment) {
   const { user } = useUser();

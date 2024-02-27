@@ -12,6 +12,7 @@ import {
 import { createContext, useContext, useEffect, useState } from "react";
 import { getAnonUser } from "./api/anon/actions";
 import { IconSvg } from "./svgs/IconSvg";
+import { NotificationSvg } from "./svgs/NotificaitonSvg";
 
 type UserStatus = {
   userId: string | undefined;
@@ -142,6 +143,9 @@ function Header({ userId }: { userId?: string }) {
         <Link href="/">Home</Link>
         <Link href="/polls/create">Create</Link>
         {userId && <Link href={`/users/${userId}`}>Me</Link>}
+        <Link href="/polls/create">
+          <NotificationSvg width={20} height={20} fill="white" />
+        </Link>
 
         <SignedIn>
           <div className="h-8 w-8 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500">
