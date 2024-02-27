@@ -47,7 +47,7 @@ export async function acknowledgeReply({ commentId }: { commentId: string }) {
   await db.comment.update({
     where: {
       id: commentId,
-      authorId: userId,
+      parent: { authorId: userId },
     },
     data: {
       acknowledgedByParent: true,

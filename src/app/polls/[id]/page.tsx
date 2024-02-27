@@ -3,8 +3,15 @@ import { db } from "@/database/db";
 import { notFound } from "next/navigation";
 import { PollCardVoting } from "@/app/components/PollCard/PollCardVoting";
 import { DeletePollButton } from "@/app/polls/components/DeletePollButton";
+import { AllComments } from "@/app/components/Comments/AllComments";
 
-export default async function PollPage({ params }: { params: { id: string } }) {
+export default async function PollPage({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: Record<string, string | undefined>;
+}) {
   const poll = await db.poll.findUnique({
     where: {
       id: params.id,
@@ -47,9 +54,9 @@ export default async function PollPage({ params }: { params: { id: string } }) {
         </div>
       </div>
 
-      <Link href={`/polls/${params.id}/comments`}>Comments</Link>
+      <PollCardVoting poll={poll} useRealtime />
 
-      <PollCardVoting poll={poll} useRealtime useChart />
+      <AllComments pollId={params.id} parentId={searchParams.parentId} />
     </main>
   );
 }
