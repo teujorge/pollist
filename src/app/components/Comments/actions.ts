@@ -2,6 +2,7 @@
 
 import { db } from "@/database/db";
 import { auth } from "@clerk/nextjs";
+import type { Comment } from "../InfiniteComments/actions";
 
 export async function createComment({
   pollId,
@@ -11,7 +12,7 @@ export async function createComment({
   pollId: string;
   parentId: string | undefined;
   text: string | undefined;
-}) {
+}): Promise<Comment> {
   if (!text) {
     throw new Error("You must provide a comment");
   }
@@ -22,6 +23,31 @@ export async function createComment({
     throw new Error("You must be logged in to comment");
   }
 
+  // {
+  //   id: tempId,
+  //   pollId,
+  //   parentId: parentId ?? null,
+  //   text,
+  //   authorId: user?.id ?? "optimistic",
+  //   author: {
+  //     id: user?.id ?? "optimistic",
+  //     username: user?.username ?? "optimistic",
+  //     imageUrl: user?.imageUrl ?? null,
+  //     bio: null,
+  //     anon: false,
+  //   },
+  //   parent: {
+  //     authorId: "optimistic",
+  //   },
+  //   poll: {
+  //     authorId: "optimistic",
+  //   },
+  //   _count: { likes: 0, replies: 0 },
+  //   likes: [],
+  //   createdAt: new Date(),
+  //   updatedAt: new Date(),
+  // },
+
   const newComment = await db.comment.create({
     data: {
       pollId,
@@ -29,7 +55,15 @@ export async function createComment({
       text,
       authorId: userId,
     },
-    include: {
+    select: {
+      id: true,
+      pollId: true,
+      parentId: true,
+      text: true,
+      authorId: true,
+      createdAt: true,
+      updatedAt: true,
+
       author: true,
       parent: {
         select: {
@@ -53,7 +87,9 @@ export async function createComment({
   });
 
   if (newComment?.parent?.authorId) {
-    if (userId === newComment.parent.authorId) return;
+    if (userId === newComment.parent.authorId) {
+      return newComment;
+    }
     db.notification
       .create({
         data: {
@@ -99,7 +135,7 @@ export async function likeComment({
   commentId: string;
   userId: string;
 }) {
-  await db.commentLike.create({
+  return await db.commentLike.create({
     data: {
       author: {
         connect: {
@@ -122,7 +158,7 @@ export async function unlikeComment({
   commentId: string;
   userId: string;
 }) {
-  await db.commentLike.delete({
+  return await db.commentLike.delete({
     where: {
       authorId_commentId: {
         authorId: userId,
@@ -139,7 +175,7 @@ export async function deleteComment({ commentId }: { commentId: string }) {
     throw new Error("You must be logged in to delete a comment");
   }
 
-  await db.comment.delete({
+  return await db.comment.delete({
     where: {
       id: commentId,
       authorId: userId,

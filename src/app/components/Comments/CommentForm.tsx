@@ -5,6 +5,7 @@ import { Loader } from "../Loader";
 import { useRef, useState } from "react";
 import { createComment } from "@/app/components/Comments/actions";
 import { useNewComments } from "./NewCommentsProvider";
+import { useUser } from "@clerk/nextjs";
 
 export function CommentForm({
   pollId,
@@ -17,6 +18,8 @@ export function CommentForm({
   label: string | undefined;
   placeholder: string | undefined;
 }) {
+  const { user } = useUser();
+
   const formRef = useRef<HTMLFormElement>(null);
 
   const { setNewReplies } = useNewComments();
@@ -25,25 +28,65 @@ export function CommentForm({
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     setIsLoading(true);
 
-    try {
-      const text = (
-        e.currentTarget.elements.namedItem("comment") as HTMLInputElement
-      )?.value;
+    const text = (
+      e.currentTarget.elements.namedItem("comment") as HTMLInputElement
+    )?.value;
 
+    // Generate a temporary ID for optimistic updates
+    const tempId = Date.now().toString();
+
+    // Add the optimistic comment to the state
+    setNewReplies((replies) => [
+      {
+        id: tempId,
+        pollId,
+        parentId: parentId ?? null,
+        text,
+        authorId: user?.id ?? "optimistic",
+        author: {
+          id: user?.id ?? "optimistic",
+          username: user?.username ?? "optimistic",
+          imageUrl: user?.imageUrl ?? null,
+          bio: null,
+          anon: false,
+        },
+        parent: {
+          authorId: "optimistic",
+        },
+        poll: {
+          authorId: "optimistic",
+        },
+        _count: { likes: 0, replies: 0 },
+        likes: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      ...replies,
+    ]);
+
+    try {
       const newComment = await createComment({ pollId, parentId, text });
-      console.log(newComment);
-      if (newComment) {
-        setNewReplies((replies) => [newComment, ...replies]);
-        formRef.current?.reset();
-      }
+
+      // Replace the optimistic comment with the real one
+      setNewReplies((replies) =>
+        replies.map((reply) => (reply.id === tempId ? newComment : reply)),
+      );
+      formRef.current?.reset();
     } catch (e) {
       console.error(e);
+
+      // Remove the optimistic comment
+      setNewReplies((replies) =>
+        replies.filter((reply) => reply.id !== tempId),
+      );
+
       if (e instanceof Error) {
-        toast(e.message);
+        toast.error(e.message);
       } else {
-        toast(
+        toast.error(
           "An error occurred while submitting your comment, please try again",
         );
       }

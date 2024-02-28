@@ -7,7 +7,7 @@ import { PAGE_SIZE } from "@/constants";
 import { ThumbUpSvg } from "@/app/svgs/ThumbUpSvg";
 import { NewComments } from "./NewComments";
 import { CommentForm } from "./CommentForm";
-import { CommentCard } from "./CommentCard";
+import { CommentCard, useCommentCard } from "./CommentCard";
 import { useEffect, useState } from "react";
 import { getPaginatedComments } from "../InfiniteComments/actions";
 import { deleteComment, likeComment, unlikeComment } from "./actions";
@@ -18,28 +18,143 @@ import {
 } from "@/components/ui/popover";
 import type { Comment } from "../InfiniteComments/actions";
 
-export function CommentCardActions(comment: Comment) {
+export function CommentCardActions() {
   const { user } = useUser();
 
-  const [isReplying, setIsReplying] = useState(false);
-  const [isViewingReplies, setIsViewingReplies] = useState(false);
+  const {
+    comment,
+    setComment,
+    isReplying,
+    setIsReplying,
+    isViewingReplies,
+    setIsViewingReplies,
+    setIsCommentDeleted,
+    isChangeProcessing,
+    setIsChangeProcessing,
+  } = useCommentCard();
 
   async function handleLike() {
     if (!user?.id) return;
 
-    if (comment.likes.length > 0) {
-      await unlikeComment({ commentId: comment.id, userId: user?.id });
-    } else {
-      await likeComment({ commentId: comment.id, userId: user?.id });
+    if (isChangeProcessing) {
+      toast.warning("Please wait... we processing your previous request");
+      return;
     }
+    setIsChangeProcessing(true);
+
+    // this comment has likes from this user
+    if (comment.likes.length > 0) {
+      // get the original like object
+      const userLike = comment.likes.find((like) => like.authorId === user?.id);
+      if (!userLike) return;
+
+      // optimistic update
+      setComment((prev) => ({
+        ...prev,
+        likes: prev.likes.filter((like) => like.id !== userLike.id),
+        _count: {
+          ...prev._count,
+          likes: prev._count.likes - 1,
+        },
+      }));
+
+      try {
+        // db update
+        await unlikeComment({
+          commentId: comment.id,
+          userId: user?.id,
+        });
+      } catch (error) {
+        // put back original if the request fails
+        setComment((prev) => ({
+          ...prev,
+          likes: [...prev.likes, userLike],
+          _count: {
+            ...prev._count,
+            likes: prev._count.likes + 1,
+          },
+        }));
+
+        toast.error("Failed to unlike comment");
+      }
+    }
+
+    // this comment does not have likes from this user
+    else {
+      // optimistic update
+      setComment((prev) => ({
+        ...prev,
+        likes: [
+          ...prev.likes,
+          {
+            id: "optimistic",
+            authorId: user.id,
+            commentId: prev.id,
+          },
+        ],
+        _count: {
+          ...prev._count,
+          likes: prev._count.likes + 1,
+        },
+      }));
+
+      try {
+        // db update
+        const newLike = await likeComment({
+          commentId: comment.id,
+          userId: user?.id,
+        });
+
+        // replace the optimistic like with the real one
+        setComment((prev) => ({
+          ...prev,
+          likes: [
+            ...prev.likes.filter((like) => like.id !== "optimistic"),
+            newLike,
+          ],
+        }));
+      } catch (error) {
+        // remove the optimistic like if the request fails
+        setComment((prev) => ({
+          ...prev,
+          likes: prev.likes.filter((like) => like.id !== "optimistic"),
+          _count: {
+            ...prev._count,
+            likes: prev._count.likes - 1,
+          },
+        }));
+
+        toast.error("Failed to like comment");
+      }
+    }
+
+    setIsChangeProcessing(false);
   }
 
   async function handleDeleteComment() {
     if (!user?.id) return;
 
-    if (confirm("Are you sure you want to delete this comment?")) {
-      await deleteComment({ commentId: comment.id });
+    if (isChangeProcessing) {
+      toast.warning("Please wait... we processing your previous request");
+      return;
     }
+    setIsChangeProcessing(true);
+
+    if (confirm("Are you sure you want to delete this comment?")) {
+      // optimistic update
+      setIsCommentDeleted(true);
+
+      try {
+        // db request
+        await deleteComment({ commentId: comment.id });
+      } catch (error) {
+        // put back original if the request fails
+        setIsCommentDeleted(false);
+        toast.error("Failed to delete comment, please try again");
+      }
+    }
+
+    setIsChangeProcessing(false);
   }
 
   async function handleCopyThreadLink() {
@@ -112,18 +227,16 @@ export function CommentCardActions(comment: Comment) {
         />
       )}
 
-      {comment._count.replies > 0 && (
-        <button
-          className="w-fit font-bold [&>span]:hovact:text-neutral-400"
-          onClick={() => setIsViewingReplies(!isViewingReplies)}
-        >
-          <span className="text-neutral-500 transition-colors">
-            View replies ({comment._count.replies})
-          </span>
-        </button>
-      )}
+      <button
+        className="w-fit font-bold [&>span]:hovact:text-neutral-400"
+        onClick={() => setIsViewingReplies(!isViewingReplies)}
+      >
+        <span className="text-neutral-500 transition-colors">
+          View replies ({comment._count.replies})
+        </span>
+      </button>
 
-      {isViewingReplies && (
+      {(isReplying || isViewingReplies) && (
         <CommentReplies pollId={comment.pollId} parentId={comment.id} />
       )}
     </>
