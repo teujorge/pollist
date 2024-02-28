@@ -28,7 +28,6 @@ export async function createComment({
       parentId,
       text,
       authorId: userId,
-      acknowledgedByParent: parentId ? false : true,
     },
     include: {
       parent: {
@@ -45,13 +44,17 @@ export async function createComment({
   });
 
   if (newComment?.parent?.authorId) {
-    void db.notification.create({
-      data: {
-        type: "COMMENT_REPLY",
-        referenceId: newComment.id,
-        userId: newComment.parent.authorId,
-      },
-    });
+    db.notification
+      .create({
+        data: {
+          type: "COMMENT_REPLY",
+          referenceId: newComment.id,
+          userId: newComment.parent.authorId,
+        },
+      })
+      .catch((error) => {
+        console.error("Error creating notification", error);
+      });
   }
 
   return newComment;
@@ -66,17 +69,7 @@ export async function acknowledgeReply({ commentId }: { commentId: string }) {
 
   console.log("acknowledgeReply", commentId);
 
-  await db.comment.update({
-    where: {
-      id: commentId,
-      parent: { authorId: userId },
-    },
-    data: {
-      acknowledgedByParent: true,
-    },
-  });
-
-  void db.notification.deleteMany({
+  const notification = await db.notification.deleteMany({
     where: {
       type: "COMMENT_REPLY",
       referenceId: commentId,
@@ -85,6 +78,8 @@ export async function acknowledgeReply({ commentId }: { commentId: string }) {
   });
 
   console.log("DONE acknowledgeReply", commentId);
+
+  return notification;
 }
 
 export async function likeComment({

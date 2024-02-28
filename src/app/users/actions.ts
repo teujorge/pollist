@@ -18,13 +18,17 @@ export async function follow(userId: string) {
   });
 
   if (newFollow) {
-    void db.notification.create({
-      data: {
-        type: "FOLLOW_PENDING",
-        referenceId: newFollow.id,
-        userId,
-      },
-    });
+    db.notification
+      .create({
+        data: {
+          type: "FOLLOW_PENDING",
+          referenceId: newFollow.id,
+          userId,
+        },
+      })
+      .catch((error) => {
+        console.error("Error creating notification", error);
+      });
   }
 
   console.log("newFollow", newFollow);
@@ -119,13 +123,17 @@ export async function acceptFollow(followerId: string) {
   });
 
   if (updatedFollow) {
-    void db.notification.create({
-      data: {
-        type: "FOLLOW_ACCEPTED",
-        referenceId: updatedFollow.id,
-        userId: followerId,
-      },
-    });
+    db.notification
+      .create({
+        data: {
+          type: "FOLLOW_ACCEPTED",
+          referenceId: updatedFollow.id,
+          userId: followerId,
+        },
+      })
+      .catch((error) => {
+        console.error("Error creating notification", error);
+      });
   }
 
   console.log("updatedFollow", updatedFollow);
@@ -178,7 +186,6 @@ export async function getUnreadReplies(userId: string) {
       parent: {
         authorId: userId,
       },
-      acknowledgedByParent: false,
     },
     select: {
       id: true,

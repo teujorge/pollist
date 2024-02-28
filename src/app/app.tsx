@@ -79,7 +79,7 @@ export function App({ children }: { children: React.ReactNode }) {
             event: "*",
             schema: "public",
             table: "Notification",
-            // filter: `userId=eq.${user.id}`,
+            filter: `userId=eq.${user.id}`,
           },
           (payload) => {
             console.log("Notification received:", payload);

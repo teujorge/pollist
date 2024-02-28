@@ -101,19 +101,18 @@ model Vote {
 }
 
 model Comment {
-  id                   String        @id @default(uuid())
-  createdAt            DateTime      @default(now())
-  updatedAt            DateTime      @updatedAt
-  text                 String
-  authorId             String
-  pollId               String
-  parentId             String? // Reference to the parent comment ID, if any
-  author               User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  poll                 Poll          @relation(fields: [pollId], references: [id], onDelete: Cascade)
-  parent               Comment?      @relation(name: "CommentToComment", fields: [parentId], references: [id])
-  replies              Comment[]     @relation("CommentToComment")
-  acknowledgedByParent Boolean
-  likes                CommentLike[]
+  id        String        @id @default(uuid())
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  text      String
+  authorId  String
+  pollId    String
+  parentId  String?
+  author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  poll      Poll          @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  parent    Comment?      @relation(name: "CommentToComment", fields: [parentId], references: [id])
+  replies   Comment[]     @relation("CommentToComment")
+  likes     CommentLike[]
 
   @@index([authorId])
   @@index([pollId])

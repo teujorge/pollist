@@ -6,14 +6,20 @@ import { ProfileImage } from "../ProfileImage";
 import { CommentCardActions } from "./CommentCardActions";
 import { ReplyAcknowledgmentTrigger } from "./ReplyAcknowledgmentTrigger";
 import type { Comment } from "../InfiniteComments/actions";
+import { useApp } from "@/app/app";
 
 export function CommentCard(comment: Comment) {
   const { user } = useUser();
+  const { notifications } = useApp();
+
+  const unreadComment = notifications.some(
+    (n) => n.type === "COMMENT_REPLY" && n.referenceId === comment.id,
+  );
 
   return (
     <div
       className={`flex w-full flex-col gap-2 rounded-lg border p-4
-        ${user && user.id === comment.parent?.authorId && !comment.acknowledgedByParent ? "border-purple-500" : "border-neutral-800"}
+        ${user && user.id === comment.parent?.authorId && unreadComment ? "border-purple-500" : "border-neutral-800"}
       `}
     >
       <Link
@@ -46,11 +52,9 @@ export function CommentCard(comment: Comment) {
 
       <CommentCardActions {...comment} />
 
-      {user?.id &&
-        user.id === comment.parent?.authorId &&
-        !comment.acknowledgedByParent && (
-          <ReplyAcknowledgmentTrigger commentId={comment.id} />
-        )}
+      {user?.id && user.id === comment.parent?.authorId && unreadComment && (
+        <ReplyAcknowledgmentTrigger commentId={comment.id} />
+      )}
     </div>
   );
 }
