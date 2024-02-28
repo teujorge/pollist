@@ -198,3 +198,20 @@ export async function getUnreadReplies(userId: string) {
 
   return unreadReplies;
 }
+
+export async function getNotifications() {
+  const { userId } = auth();
+
+  if (!userId) return;
+
+  const notifications = await db.notification.findMany({
+    where: {
+      userId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return notifications;
+}
