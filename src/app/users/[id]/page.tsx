@@ -12,7 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { getPendingFollows, getUnreadReplies } from "../actions";
+import { getPendingFollows, getUnreadComments } from "../actions";
 
 // import {
 //   adminId,
@@ -24,7 +24,7 @@ import { getPendingFollows, getUnreadReplies } from "../actions";
 export default async function UserPage({ params }: { params: { id: string } }) {
   const { userId: myId } = auth();
 
-  const [user, totalPendingCount, unreadReplies] = await Promise.all([
+  const [user, totalPendingCount, unreadComments] = await Promise.all([
     // User data
     db.user.findUnique({
       where: {
@@ -45,7 +45,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
       },
     }),
     getPendingFollows(params.id),
-    myId && myId === params.id ? getUnreadReplies(params.id) : undefined,
+    myId && myId === params.id ? getUnreadComments(params.id) : undefined,
   ]);
 
   let anonId: string | undefined = undefined;
@@ -91,16 +91,16 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                 <Link href={`/users/${params.id}/pending`}>
                   <Stat label="pending" count={totalPendingCount.length} />
                 </Link>
-                {unreadReplies && unreadReplies.length > 0 && (
+                {unreadComments && unreadComments.length > 0 && (
                   <Popover>
                     <PopoverTrigger
                       asChild
                       className="cursor-pointer transition-colors hovact:text-neutral-400"
                     >
-                      <span>replies ({unreadReplies.length})</span>
+                      <span>replies ({unreadComments.length})</span>
                     </PopoverTrigger>
                     <PopoverContent className="flex flex-col bg-black p-4">
-                      {unreadReplies.map((comment) => (
+                      {unreadComments.map((comment) => (
                         <Link
                           key={`unread-reply-link-${comment.id}`}
                           href={`/polls/${comment.pollId}?parentId=${comment.parent?.id}`}

@@ -180,11 +180,25 @@ export async function getPendingFollows(userId: string) {
   return pendingFollows;
 }
 
-export async function getUnreadReplies(userId: string) {
-  const unreadReplies = await db.comment.findMany({
+export async function getUnreadComments(userId: string) {
+  const replyNotifications = await db.notification.findMany({
     where: {
-      parent: {
-        authorId: userId,
+      userId,
+      type: "COMMENT_REPLY",
+      seen: false,
+    },
+    select: {
+      referenceId: true,
+    },
+  });
+
+  const unreadComments = await db.comment.findMany({
+    where: {
+      id: {
+        in: replyNotifications.map((notification) => notification.referenceId),
+      },
+      authorId: {
+        not: userId,
       },
     },
     select: {
@@ -203,7 +217,7 @@ export async function getUnreadReplies(userId: string) {
     },
   });
 
-  return unreadReplies;
+  return unreadComments;
 }
 
 export async function getNotifications() {

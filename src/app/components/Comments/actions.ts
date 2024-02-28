@@ -44,6 +44,7 @@ export async function createComment({
   });
 
   if (newComment?.parent?.authorId) {
+    if (userId === newComment.parent.authorId) return;
     db.notification
       .create({
         data: {
