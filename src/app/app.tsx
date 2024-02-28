@@ -73,7 +73,7 @@ export function App({ children }: { children: React.ReactNode }) {
 
       // notification subscription for subsequent changes
       notificationsSubscriptionRef.current = supabase
-        ?.channel(`notifications-db-changes`)
+        ?.channel(`${user.id}-notifications`)
         .on(
           "postgres_changes",
           {

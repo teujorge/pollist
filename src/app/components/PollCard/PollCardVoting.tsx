@@ -38,7 +38,7 @@ export function PollCardVoting(props: PollCardVotingProps) {
 
     // console.log("!!! Subscribing to db changes !!!");
     supabaseChannelRef.current = supabase
-      ?.channel("votes-db-changes")
+      ?.channel(`${userId}-votes`)
       .on(
         "postgres_changes",
         {
@@ -103,6 +103,7 @@ export function PollCardVoting(props: PollCardVotingProps) {
 
     return () => void supabaseChannelRef.current?.unsubscribe();
   }, [
+    userId,
     props.poll.id,
     props.useRealtime,
     isVotePending,
