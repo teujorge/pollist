@@ -15,10 +15,9 @@ export async function ActiveFollowerCard({
   return (
     <div className="flex flex-row items-center justify-center gap-1">
       <ProfileImage
-        src={follower.imageUrl ?? "public/profilleIcon.jpg"}
-        alt={""}
-        width={20}
-        height={20}
+        src={follower.imageUrl}
+        username={follower.username}
+        size={20}
       />
       <p className="flex gap-1">
         {follower.username}

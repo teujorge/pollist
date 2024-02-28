@@ -58,9 +58,8 @@ export default async function UserPage({ params }: { params: { id: string } }) {
         {user?.imageUrl ? (
           <ProfileImage
             src={user.imageUrl}
-            alt={`${user.username ?? "Users's"} avatar`}
-            width={100}
-            height={100}
+            username={user.username}
+            size={100}
           />
         ) : (
           <div className="flex h-[100px] w-[100px] items-center justify-center rounded-full border border-neutral-800">

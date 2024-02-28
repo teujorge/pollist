@@ -17,15 +17,12 @@ export function PollCard({ poll, highlightedUserId }: PollCardProps) {
         // target="_blank"
         className="flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 pl-0 transition-all [&>div>p]:hovact:text-purple-500 [&>div>span]:hovact:text-purple-600 [&>img]:hovact:border-purple-500"
       >
-        {poll.author.imageUrl && (
-          <ProfileImage
-            src={poll.author.imageUrl}
-            alt={poll.author.username ?? "author's avatar"}
-            width={38}
-            height={38}
-            className="border-2 border-neutral-600 transition-colors"
-          />
-        )}
+        <ProfileImage
+          src={poll.author.imageUrl}
+          username={poll.author.username}
+          size={38}
+          className="border-2 border-neutral-600 transition-colors"
+        />
 
         <div className="flex flex-col justify-center gap-1">
           <p className="text-neutral-200 transition-colors">

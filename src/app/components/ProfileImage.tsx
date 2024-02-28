@@ -1,21 +1,31 @@
 import Image from "next/image";
+import DefaultImage from "public/default-profile-icon.jpg";
 import { cn } from "@/lib/utils";
 
-export function ProfileImage(props: React.ComponentProps<typeof Image>) {
+type ProfileImageProps = {
+  src: string | undefined | null;
+  username: string | undefined | null;
+  size: number;
+  className?: string;
+};
+
+export function ProfileImage(props: ProfileImageProps) {
   return (
     <div
-      className={`shimmer !rounded-full w-[${props.width}px] h-[${props.height}px] `}
+      className={`shimmer !rounded-full w-[${props.size}px] h-[${props.size}px] `}
     >
       <Image
-        {...props}
+        src={props.src ?? DefaultImage}
+        alt={`${props.username} profile image`}
+        width={props.size}
+        height={props.size}
         className={cn(props.className, "rounded-full object-cover")}
         style={{
-          width: props.width,
-          minWidth: props.width,
-          height: props.height,
-          minHeight: props.height,
+          width: props.size,
+          minWidth: props.size,
+          height: props.size,
+          minHeight: props.size,
         }}
-        alt={props.alt}
       />
     </div>
   );

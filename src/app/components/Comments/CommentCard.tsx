@@ -48,16 +48,12 @@ export function CommentCard(_comment: Comment) {
             href={`/users/${comment.author.id}`}
             className="flex w-fit flex-row items-center gap-2"
           >
-            {comment.author.imageUrl ? (
-              <ProfileImage
-                src={comment.author.imageUrl}
-                alt={`${comment.author.username} profile image`}
-                width={40}
-                height={40}
-              />
-            ) : (
-              <>noimg</>
-            )}
+            <ProfileImage
+              src={comment.author.imageUrl}
+              username={comment.author.username}
+              size={40}
+            />
+
             <div>
               <p className="text-sm font-bold">{comment.author.username}</p>
               <p className="text-sm font-light">
