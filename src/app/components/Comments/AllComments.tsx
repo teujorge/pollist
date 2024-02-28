@@ -39,10 +39,10 @@ export async function AllComments({
 
     if (parentComment) {
       return (
-        <>
+        <NewCommentsProvider>
           <h1 className="p-2 text-4xl">Comment Thread</h1>
           <CommentCard {...parentComment} />
-        </>
+        </NewCommentsProvider>
       );
     } else {
       return notFound();
