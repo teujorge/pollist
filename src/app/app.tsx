@@ -77,60 +77,71 @@ export function App({ children }: { children: React.ReactNode }) {
         .on(
           "postgres_changes",
           {
-            event: "*",
+            event: "INSERT",
             schema: "public",
             table: "Notification",
             filter: `userId=eq.${user.id}`,
           },
           (payload) => {
-            console.log("Notification received:", payload);
-
-            const oldPayload: Record<string, string> = payload.old;
             const newPayload: Record<string, string> = payload.new;
 
-            const notificationId = oldPayload.id ?? newPayload.id;
+            const newNotification = {
+              ...newPayload,
+              createdAt: new Date(newPayload.createdAt ?? ""),
+            } as Notification;
+
+            console.log("Notification inserted:", newNotification);
+            setUserStatus((prev) => ({
+              ...prev,
+              notifications: [...prev.notifications, newNotification],
+            }));
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "Notification",
+            filter: `userId=eq.${user.id}`,
+          },
+          (payload) => {
+            const newPayload: Record<string, string> = payload.new;
+
+            const newNotification = {
+              ...newPayload,
+              createdAt: new Date(newPayload.createdAt ?? ""),
+            } as Notification;
+
+            setUserStatus((prev) => ({
+              ...prev,
+              notifications: prev.notifications.map((n) =>
+                n.id === newNotification.id ? newNotification : n,
+              ),
+            }));
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "Notification",
+            filter: `userId=eq.${user.id}`,
+          },
+          (payload) => {
+            const oldPayload: Record<string, string> = payload.old;
+
+            const notificationId = oldPayload.id;
             if (!notificationId) return;
 
-            const newNotification =
-              Object.keys(newPayload).length > 0
-                ? ({
-                    ...newPayload,
-                    createdAt: new Date(newPayload.createdAt ?? ""),
-                  } as Notification)
-                : undefined;
-
-            // new payload exists, so inserted or updated row
-            if (newNotification) {
-              // old payload id exists, so it's an update
-              if (oldPayload.id) {
-                console.log("Notification updated:", newNotification);
-                setUserStatus((prev) => ({
-                  ...prev,
-                  notifications: prev.notifications.map((n) =>
-                    n.id === notificationId ? newNotification : n,
-                  ),
-                }));
-              }
-              // old payload id doesn't exist, so it's an insert
-              else {
-                console.log("Notification inserted:", newNotification);
-                setUserStatus((prev) => ({
-                  ...prev,
-                  notifications: [...prev.notifications, newNotification],
-                }));
-              }
-            }
-
-            // no new payload, so it's a delete
-            else {
-              console.log("Notification deleted:", oldPayload);
-              setUserStatus((prev) => ({
-                ...prev,
-                notifications: prev.notifications.filter(
-                  (n) => n.id !== notificationId,
-                ),
-              }));
-            }
+            console.log("Notification deleted:", oldPayload);
+            setUserStatus((prev) => ({
+              ...prev,
+              notifications: prev.notifications.filter(
+                (n) => n.id !== notificationId,
+              ),
+            }));
           },
         )
         .subscribe();

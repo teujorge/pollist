@@ -1,17 +1,16 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { getPoll, handleVote } from "./actions";
 import { toast } from "sonner";
-import { supabase } from "@/database/dbRealtime";
 import { useApp } from "@/app/app";
-import { type MutableRefObject, useEffect, useRef, useState } from "react";
-
+import { LockSvg } from "@/app/svgs/LockSvg";
+import { supabase } from "@/database/dbRealtime";
+import { handleVote } from "./actions";
 import type { PollCardProps } from "./PollCard";
 import type { PollsDetails } from "../InfinitePolls/actions";
 import type { RealtimeChannel } from "@supabase/realtime-js";
 import type { Vote } from "@prisma/client";
-import { LockSvg } from "@/app/svgs/LockSvg";
+import { type MutableRefObject, useEffect, useRef, useState } from "react";
 
 type PollCardVotingProps = PollCardProps & {
   useRealtime?: boolean;
@@ -36,13 +35,68 @@ export function PollCardVoting(props: PollCardVotingProps) {
     if (!props.useRealtime) return;
     if (!optimisticPoll.realtime) return;
 
-    // console.log("!!! Subscribing to db changes !!!");
     supabaseChannelRef.current = supabase
       ?.channel(`${userId}-votes`)
       .on(
         "postgres_changes",
         {
-          event: "*",
+          event: "INSERT",
+          schema: "public",
+          table: "Vote",
+          filter: `pollId=eq.${props.poll.id}`,
+        },
+        (payload) => {
+          if (isVotePending) return;
+
+          const newPayload: Record<string, string> = payload.new;
+
+          const newVote = {
+            ...newPayload,
+            createdAt: new Date(newPayload.createdAt ?? ""),
+          } as Vote;
+
+          console.log("Vote inserted:", newVote);
+          if (optimisticPoll.votes.some((vote) => vote.id === newVote.id)) {
+            return;
+          }
+          setOptimisticPoll((prev) => ({
+            ...prev,
+            votes: [...prev.votes, newVote],
+          }));
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "Vote",
+          filter: `pollId=eq.${props.poll.id}`,
+        },
+        (payload) => {
+          if (isVotePending) return;
+
+          const newPayload: Record<string, string> = payload.new;
+
+          const newVote = {
+            ...newPayload,
+            createdAt: new Date(newPayload.createdAt ?? ""),
+          } as Vote;
+          if (!newVote) return;
+
+          console.log("Vote updated:", newVote);
+          setOptimisticPoll((prev) => ({
+            ...prev,
+            votes: prev.votes.map((vote) =>
+              vote.id === newVote.id ? newVote : vote,
+            ),
+          }));
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
           schema: "public",
           table: "Vote",
           filter: `pollId=eq.${props.poll.id}`,
@@ -51,52 +105,17 @@ export function PollCardVoting(props: PollCardVotingProps) {
           if (isVotePending) return;
 
           const oldPayload: Record<string, string> = payload.old;
-          const newPayload: Record<string, string> = payload.new;
 
-          const voteId = oldPayload.id ?? newPayload.id;
-          if (!voteId) return;
+          const oldVote = {
+            ...oldPayload,
+            createdAt: new Date(oldPayload.createdAt ?? ""),
+          } as Vote;
 
-          const newVote =
-            Object.keys(newPayload).length > 0
-              ? ({
-                  ...newPayload,
-                  createdAt: new Date(newPayload.createdAt ?? ""),
-                } as Vote)
-              : undefined;
-
-          // new payload exists, so inserted or updated row
-          if (newVote) {
-            // old payload id exists, so it's an update
-            if (oldPayload.id) {
-              console.log("Vote updated:", newVote);
-              setOptimisticPoll((prev) => ({
-                ...prev,
-                votes: prev.votes.map((vote) =>
-                  vote.id === voteId ? newVote : vote,
-                ),
-              }));
-            }
-            // old payload id doesn't exist, so it's an insert
-            else {
-              console.log("Vote inserted:", newVote);
-              // if the vote already exists, don't add it again
-              if (optimisticPoll.votes.some((vote) => vote.id === newVote.id)) {
-                return;
-              }
-              setOptimisticPoll((prev) => ({
-                ...prev,
-                votes: [...prev.votes, newVote],
-              }));
-            }
-          }
-          // no new payload, so it's a delete
-          else {
-            console.log("Vote deleted:", oldPayload);
-            setOptimisticPoll((prev) => ({
-              ...prev,
-              votes: prev.votes.filter((vote) => vote.id !== voteId),
-            }));
-          }
+          console.log("Vote deleted:", oldVote);
+          setOptimisticPoll((prev) => ({
+            ...prev,
+            votes: prev.votes.filter((vote) => vote.id !== oldVote.id),
+          }));
         },
       )
       .subscribe();
@@ -109,42 +128,6 @@ export function PollCardVoting(props: PollCardVotingProps) {
     isVotePending,
     optimisticPoll.votes,
     optimisticPoll.realtime,
-  ]);
-
-  // Poll every few seconds for updates (backup to subscription)
-  useEffect(() => {
-    if (isVotePending) return;
-    if (!props.useRealtime) return;
-    if (!optimisticPoll.realtime) return;
-    if (supabaseChannelRef.current) return;
-
-    const intervalId = setInterval(() => {
-      // console.log("!!! Polling for updates !!!");
-      getPoll(optimisticPoll.id)
-        .then((updatedPoll) => {
-          console.log("Got updated poll:", updatedPoll);
-          if (!updatedPoll) return;
-          if (isVotePending) return;
-          if (supabaseChannelRef.current) return;
-          setOptimisticPoll((prev) => ({
-            ...prev,
-            ...updatedPoll,
-          }));
-        })
-        .catch((error) => {
-          toast.warning("Poll may be out of date");
-          console.error("Error fetching poll:", error);
-        });
-    }, 10000);
-
-    // Clean up the interval on component unmount
-    return () => clearInterval(intervalId);
-  }, [
-    isVotePending,
-    optimisticPoll.id,
-    optimisticPoll.realtime,
-    props.useRealtime,
-    userId,
   ]);
 
   async function onVote(optionId: string) {
@@ -294,8 +277,6 @@ export function PollCardVoting(props: PollCardVotingProps) {
           );
         })}
       </ul>
-
-      <div className="flex-grow" />
     </div>
   );
 }
