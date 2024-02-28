@@ -46,7 +46,7 @@ export async function PendingFollowerCardActions({
           Accept
         </span>
       </button>
-      <button onClick={_declineFollow}>
+      <button onClick={_declineFollow} className="pl-1">
         <span className="text-red-500 underline decoration-transparent transition-colors hovact:decoration-red-500">
           Decline
         </span>

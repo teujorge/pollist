@@ -18,7 +18,8 @@ export async function USerFollowersList({ userId }: { userId: string }) {
 
   return (
     <div>
-      <h1>Followers</h1>
+      <h1 className="font-bold">Followers</h1>
+
       <div>
         {followers.map((f) => (
           <ActiveFollowerCard

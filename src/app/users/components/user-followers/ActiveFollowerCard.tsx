@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs";
 import { ActiveFollowerCardActions } from "./ActiveFollowerCardActions";
+import { ProfileImage } from "@/app/components/ProfileImage";
 import type { User } from "@prisma/client";
 
 export async function ActiveFollowerCard({
@@ -12,9 +13,17 @@ export async function ActiveFollowerCard({
   const { userId: myId } = auth();
 
   return (
-    <div className="flex flex-row items-center gap-2">
-      <p>{follower.username}</p>
-      {myId === userId && <ActiveFollowerCardActions follower={follower} />}
+    <div className="flex flex-row items-center justify-center gap-1">
+      <ProfileImage
+        src={follower.imageUrl ?? "public/profilleIcon.jpg"}
+        alt={""}
+        width={20}
+        height={20}
+      />
+      <p>
+        {follower.username}
+        {myId === userId && <ActiveFollowerCardActions follower={follower} />}
+      </p>
     </div>
   );
 }

@@ -23,9 +23,12 @@ export async function ActiveFollowedCardAction({
   }
 
   return (
-    <button onClick={_unfollow}>
-      <span className="text-red-500 underline decoration-transparent hovact:decoration-red-500">
-        Unfollow?
+    <button
+      onClick={_unfollow}
+      className="rounded-lg border border-transparent bg-neutral-900 px-1.5"
+    >
+      <span className=" text-red-500 underline decoration-transparent hovact:decoration-red-500">
+        Unfollow
       </span>
     </button>
   );

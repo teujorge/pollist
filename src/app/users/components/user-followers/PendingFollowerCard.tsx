@@ -12,9 +12,12 @@ export async function PendingFollowerCard({
   const { userId: myId } = auth();
 
   return (
-    <div className="flex flex-row items-center gap-2">
-      <p>{follower.username} wants to follow you...</p>
-      {myId === userId && <PendingFollowerCardActions follower={follower} />}
+    <div className="flex flex-col justify-center rounded-lg border border-transparent bg-neutral-900 p-2">
+      <p>
+        <span className="font-extrabold">{follower.username}</span> wants to
+        follow you
+        {myId === userId && <PendingFollowerCardActions follower={follower} />}
+      </p>
     </div>
   );
 }
