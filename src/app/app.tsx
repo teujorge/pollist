@@ -65,6 +65,7 @@ export function App({ children }: { children: React.ReactNode }) {
 
       // get initial notifications
       const notifications = await getNotifications();
+      console.log("Initial notifications:", notifications);
 
       if (notifications) {
         setUserStatus((prev) => ({ ...prev, notifications }));
@@ -83,7 +84,53 @@ export function App({ children }: { children: React.ReactNode }) {
           },
           (payload) => {
             console.log("Notification received:", payload);
-            // Update UI based on the notification
+
+            const oldPayload: Record<string, string> = payload.old;
+            const newPayload: Record<string, string> = payload.new;
+
+            const notificationId = oldPayload.id ?? newPayload.id;
+            if (!notificationId) return;
+
+            const newNotification =
+              Object.keys(newPayload).length > 0
+                ? ({
+                    ...newPayload,
+                    createdAt: new Date(newPayload.createdAt ?? ""),
+                  } as Notification)
+                : undefined;
+
+            // new payload exists, so inserted or updated row
+            if (newNotification) {
+              // old payload id exists, so it's an update
+              if (oldPayload.id) {
+                console.log("Notification updated:", newNotification);
+                setUserStatus((prev) => ({
+                  ...prev,
+                  notifications: prev.notifications.map((n) =>
+                    n.id === notificationId ? newNotification : n,
+                  ),
+                }));
+              }
+              // old payload id doesn't exist, so it's an insert
+              else {
+                console.log("Notification inserted:", newNotification);
+                setUserStatus((prev) => ({
+                  ...prev,
+                  notifications: [...prev.notifications, newNotification],
+                }));
+              }
+            }
+
+            // no new payload, so it's a delete
+            else {
+              console.log("Notification deleted:", oldPayload);
+              setUserStatus((prev) => ({
+                ...prev,
+                notifications: prev.notifications.filter(
+                  (n) => n.id !== notificationId,
+                ),
+              }));
+            }
           },
         )
         .subscribe();
