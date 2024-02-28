@@ -1,9 +1,13 @@
 import Link from "next/link";
 import { db } from "@/database/db";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { PollCardVoting } from "@/app/components/PollCard/PollCardVoting";
 import { DeletePollButton } from "@/app/polls/components/DeletePollButton";
-import { AllComments } from "@/app/components/Comments/AllComments";
+import {
+  AllComments,
+  AllCommentsFallback,
+} from "@/app/components/Comments/AllComments";
 
 export default async function PollPage({
   params,
@@ -56,7 +60,9 @@ export default async function PollPage({
 
       <PollCardVoting poll={poll} useRealtime />
 
-      <AllComments pollId={params.id} parentId={searchParams.parentId} />
+      <Suspense fallback={<AllCommentsFallback />}>
+        <AllComments pollId={params.id} parentId={searchParams.parentId} />
+      </Suspense>
     </main>
   );
 }
