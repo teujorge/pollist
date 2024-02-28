@@ -40,7 +40,7 @@ export async function AllComments({
     if (parentComment) {
       return (
         <NewCommentsProvider>
-          <h1 className="p-2 text-4xl">Comment Thread</h1>
+          <h2 className="pb-2 pt-16 text-2xl">Comment Thread</h2>
           <CommentCard {...parentComment} />
         </NewCommentsProvider>
       );
@@ -51,7 +51,7 @@ export async function AllComments({
 
   return (
     <NewCommentsProvider>
-      <p className="py-4 pt-16 text-2xl">Comments</p>
+      <h2 className="pb-2 pt-16 text-2xl">Comments</h2>
       <InfiniteComments pollId={pollId} parentId={parentId} />
       <div className="sticky bottom-0 bg-gradient-to-t from-black from-80% ">
         <CommentForm
