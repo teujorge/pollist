@@ -2,6 +2,10 @@
 
 import Link from "next/link";
 import GlobalLoading from "./loading";
+import { IconSvg } from "./svgs/IconSvg";
+import { supabase } from "@/database/dbRealtime";
+import { getAnonUser } from "./api/anon/actions";
+import { getNotifications } from "./users/actions";
 import {
   SignInButton,
   SignedIn,
@@ -17,12 +21,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { getAnonUser } from "./api/anon/actions";
-import { IconSvg } from "./svgs/IconSvg";
-import { supabase } from "@/database/dbRealtime";
-import type { RealtimeChannel } from "@supabase/supabase-js";
 import type { Notification } from "@prisma/client";
-import { getNotifications } from "./users/actions";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 
 type UserData = {
   userId: string | undefined;
