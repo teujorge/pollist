@@ -101,9 +101,7 @@ export function PollCardVoting(props: PollCardVotingProps) {
       )
       .subscribe();
 
-    return () =>
-      supabaseChannelRef.current &&
-      void supabase?.removeChannel(supabaseChannelRef.current);
+    return () => void supabaseChannelRef.current?.unsubscribe();
   }, [
     props.poll.id,
     props.useRealtime,

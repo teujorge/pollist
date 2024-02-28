@@ -9,33 +9,46 @@ import {
   UserButton,
   useUser,
 } from "@clerk/nextjs";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { getAnonUser } from "./api/anon/actions";
 import { IconSvg } from "./svgs/IconSvg";
 import { supabase } from "@/database/dbRealtime";
 import type { RealtimeChannel } from "@supabase/supabase-js";
+import type { Notification } from "@prisma/client";
+import { getNotifications } from "./users/actions";
 
-type UserStatus = {
+type UserData = {
   userId: string | undefined;
   isAnon: boolean;
   loading: boolean;
+  notifications: Notification[];
 };
 
-type AppProviderValue = UserStatus & {
+type AppProviderValue = UserData & {
   setHasNotifications: (hasNotification: boolean) => void;
 };
 
 export function App({ children }: { children: React.ReactNode }) {
   useCustomScrollbar();
 
+  const notificationsSubscriptionRef = useRef<RealtimeChannel>();
+
   const { user } = useUser();
 
   const [userId, setUserId] = useState<string | undefined>();
 
-  const [userStatus, setUserStatus] = useState<UserStatus>({
+  const [userData, setUserStatus] = useState<UserData>({
     userId: undefined,
     isAnon: true,
     loading: true,
+    notifications: [],
   });
 
   useEffect(() => {
@@ -47,18 +60,19 @@ export function App({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    let notificationsSubscription: RealtimeChannel | undefined = undefined;
+    async function handleInitNotifications() {
+      if (!user) return;
 
-    if (user) {
-      setUserStatus({
-        userId: user.id,
-        isAnon: false,
-        loading: false,
-      });
+      // get initial notifications
+      const notifications = await getNotifications();
 
-      // notification subscription
-      notificationsSubscription = supabase
-        ?.channel(`notifications-${user.id}-db-changes`)
+      if (notifications) {
+        setUserStatus((prev) => ({ ...prev, notifications }));
+      }
+
+      // notification subscription for subsequent changes
+      notificationsSubscriptionRef.current = supabase
+        ?.channel(`notifications-db-changes`)
         .on(
           "postgres_changes",
           {
@@ -73,29 +87,46 @@ export function App({ children }: { children: React.ReactNode }) {
           },
         )
         .subscribe();
+    }
+
+    if (user) {
+      // Set the user status
+      setUserStatus({
+        userId: user.id,
+        isAnon: false,
+        loading: false,
+        notifications: [],
+      });
     } else {
       setUserStatus({
         userId: userId,
         isAnon: true,
         loading: false,
+        notifications: [],
       });
     }
 
-    return () => void notificationsSubscription?.unsubscribe();
+    void handleInitNotifications();
+
+    return () => void notificationsSubscriptionRef.current?.unsubscribe();
   }, [user, userId]);
+
+  useEffect(() => {
+    console.log("notifications changed", userData.notifications);
+  }, [userData.notifications]);
 
   const memoizedChildren = useMemo(() => children, [children]);
 
   return (
     <AppProvider
       value={{
-        ...userStatus,
+        ...userData,
         setHasNotifications: (hasNotifications: boolean) =>
           setUserStatus((prev) => ({ ...prev, hasNotifications })),
       }}
     >
-      <Header userId={userStatus.userId} />
-      {userStatus.loading ? <GlobalLoading /> : memoizedChildren}
+      <Header userId={userData.userId} />
+      {userData.loading ? <GlobalLoading /> : memoizedChildren}
     </AppProvider>
   );
 }
@@ -164,6 +195,8 @@ function useCustomScrollbar() {
 }
 
 function Header({ userId }: { userId?: string }) {
+  const { notifications } = useApp();
+
   return (
     <header className="sticky left-0 right-0 top-0 z-40 flex w-full justify-between bg-gradient-to-b from-black from-60% px-5 py-4">
       <div className="flex flex-row items-center gap-4">
@@ -183,8 +216,10 @@ function Header({ userId }: { userId?: string }) {
         {userId && (
           <Link href={`/users/${userId}`} className="relative">
             Me
-            {false && (
-              <div className="absolute -right-1 top-0 h-2 w-2 rounded-full bg-red-500" />
+            {notifications.length > 0 && (
+              <div className="absolute -right-1 top-0 h-3 w-3 rounded-full bg-red-500 text-xs">
+                {notifications.length}
+              </div>
             )}
           </Link>
         )}
