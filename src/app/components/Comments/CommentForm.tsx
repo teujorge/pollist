@@ -2,10 +2,10 @@
 
 import { toast } from "sonner";
 import { Loader } from "../Loader";
-import { useRef, useState } from "react";
+import { useUser } from "@clerk/nextjs";
 import { createComment } from "@/app/components/Comments/actions";
 import { useNewComments } from "./NewCommentsProvider";
-import { useUser } from "@clerk/nextjs";
+import { useRef, useState } from "react";
 
 export function CommentForm({
   pollId,

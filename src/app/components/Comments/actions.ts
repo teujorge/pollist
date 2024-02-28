@@ -23,31 +23,6 @@ export async function createComment({
     throw new Error("You must be logged in to comment");
   }
 
-  // {
-  //   id: tempId,
-  //   pollId,
-  //   parentId: parentId ?? null,
-  //   text,
-  //   authorId: user?.id ?? "optimistic",
-  //   author: {
-  //     id: user?.id ?? "optimistic",
-  //     username: user?.username ?? "optimistic",
-  //     imageUrl: user?.imageUrl ?? null,
-  //     bio: null,
-  //     anon: false,
-  //   },
-  //   parent: {
-  //     authorId: "optimistic",
-  //   },
-  //   poll: {
-  //     authorId: "optimistic",
-  //   },
-  //   _count: { likes: 0, replies: 0 },
-  //   likes: [],
-  //   createdAt: new Date(),
-  //   updatedAt: new Date(),
-  // },
-
   const newComment = await db.comment.create({
     data: {
       pollId,

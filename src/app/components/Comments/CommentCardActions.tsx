@@ -7,9 +7,9 @@ import { PAGE_SIZE } from "@/constants";
 import { ThumbUpSvg } from "@/app/svgs/ThumbUpSvg";
 import { NewComments } from "./NewComments";
 import { CommentForm } from "./CommentForm";
-import { CommentCard, useCommentCard } from "./CommentCard";
 import { useEffect, useState } from "react";
 import { getPaginatedComments } from "../InfiniteComments/actions";
+import { CommentCard, useCommentCard } from "./CommentCard";
 import { deleteComment, likeComment, unlikeComment } from "./actions";
 import {
   Popover,
