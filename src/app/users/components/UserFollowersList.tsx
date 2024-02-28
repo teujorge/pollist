@@ -17,8 +17,9 @@ export async function USerFollowersList({ userId }: { userId: string }) {
   console.log("followers -> followers", followers.length);
 
   return (
-    <div>
+    <div className="flex flex-col items-center justify-center gap-4">
       <h1 className="font-bold">Followers</h1>
+      <div className="w-full border"></div>
 
       <div>
         {followers.map((f) => (

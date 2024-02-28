@@ -20,7 +20,7 @@ export async function ActiveFollowedCard({
         width={20}
         height={20}
       ></ProfileImage>
-      <p>
+      <p className="flex gap-1">
         {followed.username}
         {myId === userId && <ActiveFollowedCardAction followed={followed} />}
       </p>

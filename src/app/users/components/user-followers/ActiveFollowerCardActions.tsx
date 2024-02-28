@@ -28,9 +28,12 @@ export async function ActiveFollowerCardActions({
   return status.complete ? null : status.loading ? (
     <Loader className="h-4 w-4 border-2" />
   ) : (
-    <button onClick={_declineFollow}>
+    <button
+      onClick={_declineFollow}
+      className="rounded-lg border border-transparent bg-neutral-900 px-1.5"
+    >
       <span className="text-red-500 underline decoration-transparent hovact:decoration-red-500">
-        Remove follower?
+        Remove
       </span>
     </button>
   );
