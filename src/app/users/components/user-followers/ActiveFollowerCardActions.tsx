@@ -6,11 +6,7 @@ import { useState } from "react";
 import { declineFollow } from "../../actions";
 import type { User } from "@prisma/client";
 
-export async function ActiveFollowerCardActions({
-  follower,
-}: {
-  follower: User;
-}) {
+export function ActiveFollowerCardActions({ follower }: { follower: User }) {
   const [status, setStatus] = useState({ loading: false, complete: false });
 
   async function _declineFollow() {
