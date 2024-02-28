@@ -2,8 +2,9 @@
 
 import { toast } from "sonner";
 import { Loader } from "../Loader";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { createComment } from "@/app/components/Comments/actions";
+import { useNewComments } from "./NewCommentsProvider";
 
 export function CommentForm({
   pollId,
@@ -16,6 +17,10 @@ export function CommentForm({
   label: string | undefined;
   placeholder: string | undefined;
 }) {
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const { setNewReplies } = useNewComments();
+
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -29,6 +34,10 @@ export function CommentForm({
 
       const newComment = await createComment({ pollId, parentId, text });
       console.log(newComment);
+      if (newComment) {
+        setNewReplies((replies) => [newComment, ...replies]);
+        formRef.current?.reset();
+      }
     } catch (e) {
       console.error(e);
       if (e instanceof Error) {
@@ -44,7 +53,11 @@ export function CommentForm({
   }
 
   return (
-    <form className="  flex w-full flex-col gap-2 p-4" onSubmit={handleSubmit}>
+    <form
+      ref={formRef}
+      className="  flex w-full flex-col gap-2 p-4"
+      onSubmit={handleSubmit}
+    >
       {label && <label>{label}</label>}
       <div className="flex flex-row items-end gap-2">
         <textarea

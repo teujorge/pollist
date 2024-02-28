@@ -30,6 +30,7 @@ export async function createComment({
       authorId: userId,
     },
     include: {
+      author: true,
       parent: {
         select: {
           authorId: true,
@@ -39,6 +40,14 @@ export async function createComment({
         select: {
           authorId: true,
         },
+      },
+      likes: {
+        where: {
+          authorId: userId ?? undefined,
+        },
+      },
+      _count: {
+        select: { likes: true, replies: true },
       },
     },
   });

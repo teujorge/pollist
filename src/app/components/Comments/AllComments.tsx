@@ -4,6 +4,7 @@ import { Loader } from "../Loader";
 import { notFound } from "next/navigation";
 import { CommentForm } from "./CommentForm";
 import { CommentCard } from "./CommentCard";
+import { NewCommentsProvider } from "./NewCommentsProvider";
 import { InfiniteComments } from "@/app/components/InfiniteComments/InfiniteComments";
 
 export async function AllComments({
@@ -49,9 +50,8 @@ export async function AllComments({
   }
 
   return (
-    <>
+    <NewCommentsProvider>
       <p className="py-4 pt-16 text-2xl">Comments</p>
-
       <InfiniteComments pollId={pollId} parentId={parentId} />
       <div className="sticky bottom-0 bg-gradient-to-t from-black from-80% ">
         <CommentForm
@@ -61,7 +61,7 @@ export async function AllComments({
           placeholder="Write your comment here..."
         />
       </div>
-    </>
+    </NewCommentsProvider>
   );
 }
 

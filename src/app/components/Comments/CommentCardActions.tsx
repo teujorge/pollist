@@ -1,23 +1,22 @@
 "use client";
 
 import { toast } from "sonner";
-import { useUser } from "@clerk/nextjs";
-import { ThumbUpSvg } from "@/app/svgs/ThumbUpSvg";
-import { CommentForm } from "./CommentForm";
 import { Loader } from "../Loader";
+import { useUser } from "@clerk/nextjs";
 import { PAGE_SIZE } from "@/constants";
+import { ThumbUpSvg } from "@/app/svgs/ThumbUpSvg";
+import { NewComments } from "./NewComments";
+import { CommentForm } from "./CommentForm";
 import { CommentCard } from "./CommentCard";
 import { useEffect, useState } from "react";
+import { getPaginatedComments } from "../InfiniteComments/actions";
 import { deleteComment, likeComment, unlikeComment } from "./actions";
-import {
-  getPaginatedComments,
-  type Comment,
-} from "../InfiniteComments/actions";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import type { Comment } from "../InfiniteComments/actions";
 
 export function CommentCardActions(comment: Comment) {
   const { user } = useUser();
@@ -160,6 +159,7 @@ function CommentReplies({
 
       setData((prev) => ({
         ...prev,
+        page: 2,
         replies: initialReplies,
         hasMore: initialReplies.length === PAGE_SIZE,
         isLoading: false,
@@ -189,6 +189,7 @@ function CommentReplies({
 
   return (
     <div className="flex w-full flex-col gap-2 p-2 pl-4">
+      <NewComments parentId={parentId} />
       {data.replies.map((reply) => (
         <CommentCard
           key={`${pollId}-${parentId}-reply-${reply.id}`}
