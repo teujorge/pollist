@@ -44,7 +44,7 @@ export async function createComment({
     },
   });
 
-  if (newComment?.parent) {
+  if (newComment?.parent?.authorId) {
     void db.notification.create({
       data: {
         type: "COMMENT_REPLY",
@@ -73,6 +73,14 @@ export async function acknowledgeReply({ commentId }: { commentId: string }) {
     },
     data: {
       acknowledgedByParent: true,
+    },
+  });
+
+  void db.notification.deleteMany({
+    where: {
+      type: "COMMENT_REPLY",
+      referenceId: commentId,
+      userId,
     },
   });
 
