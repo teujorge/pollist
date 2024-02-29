@@ -147,7 +147,7 @@ export async function cancelFollow(followedId: string) {
   if (!myId) return;
   console.log("myId", myId);
 
-  const deletedFollow = await db.follow.delete({
+  const cancelledFollow = await db.follow.delete({
     where: {
       followerId_followedId: {
         followerId: myId,
@@ -156,9 +156,22 @@ export async function cancelFollow(followedId: string) {
     },
   });
 
-  console.log("deletedFollow", deletedFollow);
+  if (cancelledFollow) {
+    db.notification
+      .deleteMany({
+        where: {
+          type: "FOLLOW_PENDING",
+          referenceId: cancelledFollow.id,
+        },
+      })
+      .catch((error) => {
+        console.error("Error deleting notification", error);
+      });
+  }
+
+  console.log("deletedFollow", cancelledFollow);
   revalidatePath(`/users/${myId}`);
-  return deletedFollow;
+  return cancelledFollow;
 }
 
 export async function getPendingFollows(userId: string) {
