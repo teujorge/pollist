@@ -16,7 +16,7 @@ export function ActiveFollowerCardActions({ follower }: { follower: User }) {
       setStatus({ loading: false, complete: true });
     } catch (error) {
       console.error(error);
-      toast.error("Failed to cancel follow");
+      toast.error("Failed to decline follow");
       setStatus({ loading: false, complete: false });
     }
   }
