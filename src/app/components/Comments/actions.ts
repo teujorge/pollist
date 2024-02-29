@@ -110,7 +110,7 @@ export async function likeComment({
   commentId: string;
   userId: string;
 }) {
-  return await db.commentLike.create({
+  const like = await db.commentLike.create({
     data: {
       author: {
         connect: {
@@ -123,7 +123,28 @@ export async function likeComment({
         },
       },
     },
+    include: {
+      comment: {
+        select: { authorId: true },
+      },
+    },
   });
+
+  if (like) {
+    await db.notification
+      .create({
+        data: {
+          type: "COMMENT_LIKE",
+          referenceId: like.id,
+          userId: like.comment.authorId,
+        },
+      })
+      .catch((error) => {
+        console.error("Error creating notification", error);
+      });
+  }
+
+  return like;
 }
 
 export async function unlikeComment({
@@ -133,7 +154,7 @@ export async function unlikeComment({
   commentId: string;
   userId: string;
 }) {
-  return await db.commentLike.delete({
+  const unlike = await db.commentLike.delete({
     where: {
       authorId_commentId: {
         authorId: userId,
@@ -141,6 +162,21 @@ export async function unlikeComment({
       },
     },
   });
+
+  if (unlike) {
+    await db.notification
+      .deleteMany({
+        where: {
+          type: "COMMENT_LIKE",
+          referenceId: unlike.id,
+        },
+      })
+      .catch((error) => {
+        console.error("Error deleting notification", error);
+      });
+  }
+
+  return unlike;
 }
 
 export async function deleteComment({ commentId }: { commentId: string }) {
