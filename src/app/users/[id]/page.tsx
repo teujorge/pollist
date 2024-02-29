@@ -7,12 +7,7 @@ import { notFound } from "next/navigation";
 import { getAnonUser } from "@/app/api/anon/actions";
 import { ProfileImage } from "@/app/components/ProfileImage";
 import { FollowButton } from "@/app/users/components/FollowButton";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { getPendingFollows, getUnreadComments } from "../actions";
+import { getPendingFollows } from "../actions";
 
 // import {
 //   adminId,
@@ -24,7 +19,7 @@ import { getPendingFollows, getUnreadComments } from "../actions";
 export default async function UserPage({ params }: { params: { id: string } }) {
   const { userId: myId } = auth();
 
-  const [user, totalPendingCount, unreadComments] = await Promise.all([
+  const [user, totalPendingCount] = await Promise.all([
     // User data
     db.user.findUnique({
       where: {
@@ -45,7 +40,6 @@ export default async function UserPage({ params }: { params: { id: string } }) {
       },
     }),
     getPendingFollows(params.id),
-    myId && myId === params.id ? getUnreadComments(params.id) : undefined,
   ]);
 
   let anonId: string | undefined = undefined;
@@ -90,27 +84,6 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                 <Link href={`/users/${params.id}/pending`}>
                   <Stat label="pending" count={totalPendingCount.length} />
                 </Link>
-                {unreadComments && unreadComments.length > 0 && (
-                  <Popover>
-                    <PopoverTrigger
-                      asChild
-                      className="cursor-pointer transition-colors hovact:text-neutral-400"
-                    >
-                      <span>replies ({unreadComments.length})</span>
-                    </PopoverTrigger>
-                    <PopoverContent className="flex flex-col bg-black p-4">
-                      {unreadComments.map((comment) => (
-                        <Link
-                          key={`unread-reply-link-${comment.id}`}
-                          href={`/polls/${comment.pollId}?parentId=${comment.parent?.id}`}
-                        >
-                          {comment?.author?.username ?? "Someone"} has replied
-                          to your comment
-                        </Link>
-                      ))}
-                    </PopoverContent>
-                  </Popover>
-                )}
               </>
             )}
           </div>

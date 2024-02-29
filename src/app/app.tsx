@@ -1,18 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import GlobalLoading from "./loading";
-import { IconSvg } from "./svgs/IconSvg";
+import { Header } from "./components/Header/Header";
 import { supabase } from "@/database/dbRealtime";
 import { getAnonUser } from "./api/anon/actions";
 import { getNotifications } from "./users/actions";
-import {
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-  useUser,
-} from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import {
   createContext,
   useContext,
@@ -250,50 +243,4 @@ function useCustomScrollbar() {
       document.head.removeChild(styleSheet);
     };
   }, []);
-}
-
-function Header({ userId }: { userId?: string }) {
-  const { notifications } = useApp();
-
-  return (
-    <header className="sticky left-0 right-0 top-0 z-40 flex w-full justify-between bg-gradient-to-b from-black from-60% px-5 py-4">
-      <div className="flex flex-row items-center gap-4">
-        <Link
-          href="/"
-          className="h-8 w-8 [&>svg>path]:transition-all [&>svg>path]:hovact:fill-purple-500 [&>svg>path]:hovact:stroke-purple-500"
-        >
-          <IconSvg className="h-full w-full" />
-        </Link>
-      </div>
-
-      <div className="flex flex-row items-center gap-4">
-        <Link href="/">Home</Link>
-
-        <Link href="/polls/create">Create</Link>
-
-        {userId && (
-          <Link href={`/users/${userId}`} className="relative">
-            Me
-            {notifications.length > 0 && (
-              <div className="absolute -right-1 top-0 h-3 w-3 rounded-full bg-red-500 text-xs">
-                {notifications.length}
-              </div>
-            )}
-          </Link>
-        )}
-
-        <SignedIn>
-          <div className="h-8 w-8 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500">
-            <UserButton afterSignOutUrl="/" />
-          </div>
-        </SignedIn>
-
-        <SignedOut>
-          <div className="flex h-8 w-fit items-center [&>button]:transition-colors [&>button]:hovact:text-purple-500">
-            <SignInButton mode="modal" />
-          </div>
-        </SignedOut>
-      </div>
-    </header>
-  );
 }
