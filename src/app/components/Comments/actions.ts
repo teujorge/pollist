@@ -65,7 +65,7 @@ export async function createComment({
     if (userId === newComment.parent.authorId) {
       return newComment;
     }
-    db.notification
+    await db.notification
       .create({
         data: {
           type: "COMMENT_REPLY",
@@ -158,7 +158,7 @@ export async function deleteComment({ commentId }: { commentId: string }) {
   });
 
   if (deletedComment) {
-    db.notification
+    await db.notification
       .deleteMany({
         where: {
           type: "COMMENT_REPLY",

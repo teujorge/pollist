@@ -18,7 +18,7 @@ export async function follow(userId: string) {
   });
 
   if (newFollow) {
-    db.notification
+    await db.notification
       .create({
         data: {
           type: "FOLLOW_PENDING",
@@ -123,7 +123,7 @@ export async function acceptFollow(followerId: string) {
   });
 
   if (updatedFollow) {
-    db.notification
+    await db.notification
       .create({
         data: {
           type: "FOLLOW_ACCEPTED",
@@ -157,7 +157,7 @@ export async function cancelFollow(followedId: string) {
   });
 
   if (cancelledFollow) {
-    db.notification
+    await db.notification
       .deleteMany({
         where: {
           type: "FOLLOW_PENDING",
