@@ -13,7 +13,7 @@ export async function ActiveFollowedCard({
   const { userId: myId } = auth();
 
   return (
-    <div className="flex flex-row items-center justify-center gap-1">
+    <div className="gap- flex flex-row items-center justify-center gap-1">
       <ProfileImage
         src={followed.imageUrl}
         username={followed.username}

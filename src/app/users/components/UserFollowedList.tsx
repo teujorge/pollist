@@ -20,7 +20,7 @@ export async function UserFollowedList({ userId }: { userId: string }) {
     <div className="flex flex-col items-center justify-center gap-4">
       <h1>Following</h1>
       <div className="w-full border"></div>
-      <div>
+      <div className="flex flex-col gap-1">
         {following.map((f) => (
           <ActiveFollowedCard
             key={f.followed.id}
