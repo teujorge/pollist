@@ -90,6 +90,7 @@ export function CommentCardActions() {
             id: "optimistic",
             authorId: user.id,
             commentId: prev.id,
+            createdAt: new Date(),
           },
         ],
         _count: {
