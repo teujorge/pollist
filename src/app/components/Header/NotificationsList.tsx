@@ -48,7 +48,7 @@ export function NotificationList() {
       {data.items.map((item) => (
         <div
           key={item.data.id}
-          className="flex flex-row gap-2 rounded-md border border-neutral-800 p-2"
+          className="flex flex-row gap-2 rounded-md border border-neutral-800 bg-neutral-900 p-2"
         >
           {item.type === "COMMENT_REPLY" && (
             <CommentNotificationCard {...(item.data as CommentNotification)} />
@@ -77,89 +77,103 @@ export function NotificationList() {
 
 function CommentNotificationCard(comment: CommentNotification) {
   return (
-    <>
+    <div className="flex flex-col items-start justify-start gap-1">
       <Link
         href={`/users/${comment.authorId}`}
-        className="flex flex-col items-center justify-center"
+        className="flex flex-row items-center justify-center gap-1"
       >
         <ProfileImage
           src={comment.author.imageUrl}
           username={comment.author.username}
           size={30}
         />
-        {comment.author.username}
+        <p className="font-bold">{comment.author.username}</p>
       </Link>
       <p>
         {comment.parentId ? (
-          <>
-            replied to your comment:{" "}
-            <Link
-              href={`/polls/${comment.pollId}?parentId=${comment.parentId}`}
-            >
-              View Reply
-            </Link>
-          </>
+          <Link href={`/polls/${comment.pollId}?parentId=${comment.parentId}`}>
+            replied to your comment
+          </Link>
         ) : (
-          <>
-            commented on your on your poll:{" "}
-            <Link href={`/polls/${comment.pollId}`}>View Comment</Link>
-          </>
+          <Link href={`/polls/${comment.pollId}`}>
+            commented on your on your poll
+          </Link>
         )}
       </p>
-    </>
+    </div>
   );
 }
 
 function CommentLikeNotificationCard(like: CommentLikeNotification) {
   return (
-    <>
-      <Link href={`/users/${like.authorId}`}>
+    <div className="flex flex-col items-start justify-start gap-1">
+      <Link
+        href={`/users/${like.authorId}`}
+        className="flex flex-row items-center justify-center gap-1"
+      >
         <ProfileImage
           src={like.author.imageUrl}
           username={like.author.username}
-          size={20}
+          size={30}
         />
-        <p>{like.author.username}</p>
+        <p className="font-bold">{like.author.username}</p>
       </Link>
 
-      <p>
-        liked your comment:{" "}
-        <Link href={`/polls/${like.comment.pollId}`}>View Comment</Link>
-      </p>
-    </>
+      <Link href={`/polls/${like.comment.pollId}`}>
+        <p>liked your comment</p>
+      </Link>
+    </div>
   );
 }
 
 function FollowPendingNotificationCard(follow: FollowPendingNotification) {
   return (
-    <>
-      <Link href={`/users/${follow.followerId}`}>
+    <div className="flex flex-col items-start justify-start">
+      <Link
+        href={`/users/${follow.followerId}`}
+        className="flex flex-row items-center justify-center gap-1"
+      >
         <ProfileImage
           src={follow.follower.imageUrl}
           username={follow.follower.username}
-          size={20}
+          size={30}
         />
-        <p>{follow.follower.username}</p>
+        <p className="font-bold">{follow.follower.username}</p>
       </Link>
       <p>requested to follow you</p>
-      <button onClick={() => acceptFollow(follow.followerId)}>Accept</button>
-      <button onClick={() => declineFollow(follow.followerId)}>Decline</button>
-    </>
+      <div className="flex flex-row gap-1">
+        <button
+          onClick={() => acceptFollow(follow.followerId)}
+          className="text-green-500 underline decoration-transparent hovact:decoration-green-500"
+        >
+          Accept
+        </button>
+        <button
+          onClick={() => declineFollow(follow.followerId)}
+          className=" text-red-500 underline decoration-transparent hovact:decoration-red-500"
+        >
+          Decline
+        </button>
+      </div>
+    </div>
   );
 }
 
 function FollowAcceptedNotificationCard(follow: FollowAcceptedNotification) {
   return (
-    <>
-      <Link href={`/users/${follow.followedId}`}>
+    <div className="flex flex-col items-start justify-start gap-1">
+      <Link
+        href={`/users/${follow.followedId}`}
+        className="flex flex-row items-center justify-center gap-1"
+      >
         <ProfileImage
           src={follow.followed.imageUrl}
           username={follow.followed.username}
-          size={20}
+          size={30}
         />
-        <p>{follow.followed.username}</p>
+        <p className="font-bold">{follow.followed.username}</p>
       </Link>
       <p>accepted your follow request</p>
-    </>
+    </div>
   );
 }
