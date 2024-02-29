@@ -90,7 +90,7 @@ export async function declineFollow(followerId: string) {
   if (!myId) return;
   console.log("myId", myId);
 
-  const deletedFollow = await db.follow.delete({
+  const declinedFollow = await db.follow.delete({
     where: {
       followerId_followedId: {
         followerId,
@@ -99,9 +99,22 @@ export async function declineFollow(followerId: string) {
     },
   });
 
-  console.log("deletedFollow", deletedFollow);
+  if (declinedFollow) {
+    await db.notification
+      .deleteMany({
+        where: {
+          type: "FOLLOW_PENDING",
+          referenceId: declinedFollow.id,
+        },
+      })
+      .catch((error) => {
+        console.error("Error deleting notification", error);
+      });
+  }
+
+  console.log("deletedFollow", declinedFollow);
   revalidatePath(`/users/${myId}`);
-  return deletedFollow;
+  return declinedFollow;
 }
 
 export async function acceptFollow(followerId: string) {
@@ -123,6 +136,17 @@ export async function acceptFollow(followerId: string) {
   });
 
   if (updatedFollow) {
+    await db.notification
+      .deleteMany({
+        where: {
+          type: "FOLLOW_PENDING",
+          referenceId: updatedFollow.id,
+        },
+      })
+      .catch((error) => {
+        console.error("Error deleting notification", error);
+      });
+
     await db.notification
       .create({
         data: {
