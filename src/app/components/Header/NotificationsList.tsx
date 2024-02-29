@@ -7,6 +7,7 @@ import { ProfileImage } from "../ProfileImage";
 import { useEffect, useState } from "react";
 import { getNotificationsItems } from "./actions";
 import { acceptFollow, declineFollow } from "@/app/users/actions";
+
 import type {
   CommentLikeNotification,
   CommentNotification,
@@ -14,6 +15,7 @@ import type {
   FollowAcceptedNotification,
   NotificationItem,
 } from "./actions";
+import { CloseSvg } from "@/app/svgs/CloseSvg";
 
 export function NotificationList() {
   const { notifications } = useApp();
@@ -48,7 +50,7 @@ export function NotificationList() {
       {data.items.map((item) => (
         <div
           key={item.data.id}
-          className="flex flex-row gap-2 rounded-md border border-neutral-800 bg-neutral-900 p-2"
+          className="relative flex flex-row gap-2 rounded-md border border-neutral-800 bg-neutral-900 p-2"
         >
           {item.type === "COMMENT_REPLY" && (
             <CommentNotificationCard {...(item.data as CommentNotification)} />
@@ -68,6 +70,10 @@ export function NotificationList() {
               {...(item.data as FollowAcceptedNotification)}
             />
           )}
+
+          <div className="absolute right-0 top-0 hover:cursor-pointer">
+            <CloseSvg fill="red" />
+          </div>
         </div>
       ))}
       {data.loading && <Loader />}
