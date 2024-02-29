@@ -36,7 +36,7 @@ model Notification {
   updatedAt   DateTime         @updatedAt
   userId      String
   type        NotificationType
-  referenceId String // Generic reference ID to point to the source of the notification (could be Follow ID, Comment ID, etc.)
+  referenceId String
   seen        Boolean          @default(false)
   user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -44,12 +44,14 @@ model Notification {
 }
 
 model Follow {
-  id         String  @id @default(uuid())
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   followerId String
   followedId String
-  follower   User    @relation("Followers", fields: [followerId], references: [id])
-  followed   User    @relation("Following", fields: [followedId], references: [id])
-  accepted   Boolean @default(false)
+  follower   User     @relation("Followers", fields: [followerId], references: [id])
+  followed   User     @relation("Following", fields: [followedId], references: [id])
+  accepted   Boolean  @default(false)
 
   @@unique([followerId, followedId])
 }
@@ -120,11 +122,12 @@ model Comment {
 }
 
 model CommentLike {
-  id        String  @id @default(uuid())
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
   authorId  String
   commentId String
-  author    User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
 
   @@unique([authorId, commentId])
   @@index([authorId])
