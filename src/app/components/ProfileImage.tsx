@@ -12,7 +12,15 @@ type ProfileImageProps = {
 export function ProfileImage(props: ProfileImageProps) {
   return (
     <div
-      className={`shimmer !rounded-full w-[${props.size}px] h-[${props.size}px] `}
+      className="shimmer !rounded-full"
+      style={{
+        width: props.size,
+        minWidth: props.size,
+        maxWidth: props.size,
+        height: props.size,
+        minHeight: props.size,
+        maxHeight: props.size,
+      }}
     >
       <Image
         src={props.src ?? DefaultImage}
