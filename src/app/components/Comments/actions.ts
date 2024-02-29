@@ -150,10 +150,25 @@ export async function deleteComment({ commentId }: { commentId: string }) {
     throw new Error("You must be logged in to delete a comment");
   }
 
-  return await db.comment.delete({
+  const deletedComment = await db.comment.delete({
     where: {
       id: commentId,
       authorId: userId,
     },
   });
+
+  if (deletedComment) {
+    db.notification
+      .deleteMany({
+        where: {
+          type: "COMMENT_REPLY",
+          referenceId: commentId,
+        },
+      })
+      .catch((error) => {
+        console.error("Error deleting COMMENT_REPLY notifications", error);
+      });
+  }
+
+  return deletedComment;
 }
