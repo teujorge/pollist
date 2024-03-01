@@ -23,7 +23,7 @@ export function NotificationsBell() {
             </div>
           </button>
         </PopoverTrigger>
-        <PopoverContent className="flex flex-col border border-neutral-800 bg-black p-4">
+        <PopoverContent>
           <NotificationList />
         </PopoverContent>
       </Popover>

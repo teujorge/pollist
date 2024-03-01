@@ -46,7 +46,10 @@ export function NotificationList() {
   }, [notifications]);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div
+      className="flex min-w-fit flex-col items-center gap-2 overflow-y-auto overflow-x-hidden p-2"
+      style={{ maxHeight: "calc(100dvh - 100px)" }}
+    >
       {data.items.map((item) => (
         <NotificationCard key={`${item.type}-${item.data.id}`} item={item} />
       ))}
@@ -141,7 +144,7 @@ function NotificationCard({ item }: { item: NotificationItem }) {
   return (
     <div
       key={item.data.id}
-      className={`relative flex select-none flex-row gap-2 rounded-md border border-neutral-800 bg-neutral-900 p-2 transition-all duration-200
+      className={`relative flex w-full select-none flex-row gap-2 rounded-md border border-neutral-800 bg-neutral-900 p-2 transition-all duration-200
         ${isRemoving && "translate-x-full opacity-0"}
         ${hasBeenRemoved && "hidden"}
       `}
@@ -174,10 +177,10 @@ function NotificationCard({ item }: { item: NotificationItem }) {
       )}
 
       <button
-        className="absolute right-0 top-0 -translate-y-1/3 translate-x-1/3 rounded-full border border-transparent bg-neutral-800 transition-colors hover:cursor-pointer hovact:bg-neutral-600"
+        className="absolute right-0 top-0 -translate-y-1/3 translate-x-1/3 rounded-full border border-neutral-600 bg-neutral-950 p-0.5 transition-colors hover:cursor-pointer hovact:bg-neutral-600"
         onClick={handleRemove}
       >
-        <CloseSvg fill="white" height={20} width={20} />
+        <CloseSvg fill="white" height={16} width={16} />
       </button>
     </div>
   );
