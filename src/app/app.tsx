@@ -5,6 +5,7 @@ import GlobalLoading from "./loading";
 import { Header } from "./components/Header/Header";
 import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/database/dbRealtime";
+import { Analytics } from "@vercel/analytics/react";
 import { getAnonUser } from "./api/anon/actions";
 import { getNotifications } from "./users/actions";
 import {
@@ -186,7 +187,7 @@ export function App({ children }: { children: React.ReactNode }) {
           strategy="lazyOnload"
         />
       )}
-
+      <Analytics />
       <Header userId={userData.userId} />
       {userData.loading ? <GlobalLoading /> : memoizedChildren}
     </AppProvider>
