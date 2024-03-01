@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { db } from "@/database/db";
 import { auth } from "@clerk/nextjs";
 import { Loader } from "../Loader";
@@ -40,7 +41,10 @@ export async function AllComments({
     if (parentComment) {
       return (
         <NewCommentsProvider>
-          <h2 className="pb-2 pt-16 text-2xl">Comment Thread</h2>
+          <div className="flex flex-row flex-wrap items-center gap-2 pb-2 pt-16">
+            <h2 className="text-2xl">Comment Thread</h2>
+            <Link href={`/polls/${pollId}`}>Back to Main Poll Discussion</Link>
+          </div>
           <CommentCard comment={parentComment} isViewingReplies={true} />
         </NewCommentsProvider>
       );
