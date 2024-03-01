@@ -128,3 +128,18 @@ const findManyCommentLike = (ids: string[]) =>
       },
     },
   });
+
+export async function removeNotification({
+  id,
+  type,
+}: {
+  id: string;
+  type: NotificationType;
+}) {
+  return await db.notification.deleteMany({
+    where: {
+      referenceId: id,
+      type,
+    },
+  });
+}
