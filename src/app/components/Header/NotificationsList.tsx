@@ -71,8 +71,8 @@ export function NotificationList() {
             />
           )}
 
-          <div className="absolute right-0 top-0 hover:cursor-pointer">
-            <CloseSvg fill="red" />
+          <div className="absolute right-0 top-0 -translate-y-1/3 translate-x-1/3 rounded-full border border-transparent bg-neutral-800 transition-colors hover:cursor-pointer hovact:bg-neutral-600 ">
+            <CloseSvg fill="white" height={20} width={20} />
           </div>
         </div>
       ))}
