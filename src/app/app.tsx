@@ -1,18 +1,19 @@
 "use client";
 
+import Script from "next/script";
 import GlobalLoading from "./loading";
 import { Header } from "./components/Header/Header";
+import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/database/dbRealtime";
 import { getAnonUser } from "./api/anon/actions";
 import { getNotifications } from "./users/actions";
-import { useUser } from "@clerk/nextjs";
 import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
   useRef,
+  useMemo,
   useState,
+  useEffect,
+  useContext,
+  createContext,
 } from "react";
 import type { Notification } from "@prisma/client";
 import type { RealtimeChannel } from "@supabase/supabase-js";
@@ -141,7 +142,7 @@ export function App({ children }: { children: React.ReactNode }) {
     }
 
     if (user) {
-      // Set the user status
+      console.log("setting user:", user);
       setUserStatus({
         userId: user.id,
         isAnon: false,
@@ -149,6 +150,7 @@ export function App({ children }: { children: React.ReactNode }) {
         notifications: [],
       });
     } else {
+      console.log("setting anon user");
       setUserStatus({
         userId: userId,
         isAnon: true,
@@ -176,6 +178,15 @@ export function App({ children }: { children: React.ReactNode }) {
           setUserStatus((prev) => ({ ...prev, hasNotifications })),
       }}
     >
+      {(user?.id !== undefined || true) && (
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6132246468312218"
+          crossOrigin="anonymous"
+          strategy="lazyOnload"
+        />
+      )}
+
       <Header userId={userData.userId} />
       {userData.loading ? <GlobalLoading /> : memoizedChildren}
     </AppProvider>

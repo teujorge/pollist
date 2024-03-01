@@ -1,12 +1,11 @@
 import "@/styles/globals.css";
-import Script from "next/script";
 import GlobalLoading from "./loading";
 import { App } from "./app";
 import { dark } from "@clerk/themes";
 import { Toaster } from "sonner";
 import { Suspense } from "react";
 import { Nunito_Sans } from "next/font/google";
-import { ClerkProvider, auth } from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const nunito = Nunito_Sans({
   subsets: ["latin"],
@@ -28,20 +27,9 @@ export default function RootLayout({
   crudPoll: React.ReactNode;
   welcome: React.ReactNode;
 }) {
-  const { userId } = auth();
-
   return (
     <html lang="en">
       <Suspense fallback={<GlobalLoading />}>
-        {(userId !== undefined || true) && (
-          <Script
-            async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6132246468312218"
-            crossOrigin="anonymous"
-            strategy="lazyOnload"
-          />
-        )}
-
         <ClerkProvider
           appearance={{
             baseTheme: dark,
