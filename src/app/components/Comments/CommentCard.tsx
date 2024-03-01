@@ -21,7 +21,7 @@ export function CommentCard({
 
   const [comment, setComment] = useState(_comment);
   const [isReplying, setIsReplying] = useState(_isViewingReplies);
-  const [isViewingReplies, setIsViewingReplies] = useState(false);
+  const [isViewingReplies, setIsViewingReplies] = useState(_isViewingReplies);
   const [isCommentDeleted, setIsCommentDeleted] = useState(false);
   const [isChangeProcessing, setIsChangeProcessing] = useState(false);
 
