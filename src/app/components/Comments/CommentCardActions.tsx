@@ -307,7 +307,7 @@ function CommentReplies({
       {data.replies.map((reply) => (
         <CommentCard
           key={`${pollId}-${parentId}-reply-${reply.id}`}
-          {...reply}
+          comment={reply}
         />
       ))}
 

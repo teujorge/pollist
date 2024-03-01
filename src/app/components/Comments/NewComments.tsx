@@ -11,7 +11,7 @@ export function NewComments({ parentId }: { parentId: string | undefined }) {
       {newReplies
         .filter((reply) => reply.parentId === (parentId ?? null))
         .map((reply) => (
-          <CommentCard key={reply.id} {...reply} />
+          <CommentCard key={reply.id} comment={reply} />
         ))}
     </div>
   );

@@ -41,7 +41,7 @@ export async function AllComments({
       return (
         <NewCommentsProvider>
           <h2 className="pb-2 pt-16 text-2xl">Comment Thread</h2>
-          <CommentCard {...parentComment} />
+          <CommentCard comment={parentComment} isViewingReplies={true} />
         </NewCommentsProvider>
       );
     } else {

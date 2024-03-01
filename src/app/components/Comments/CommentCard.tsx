@@ -9,12 +9,18 @@ import { ReplyAcknowledgmentTrigger } from "./ReplyAcknowledgmentTrigger";
 import { createContext, useContext, useState } from "react";
 import type { Comment } from "../InfiniteComments/actions";
 
-export function CommentCard(_comment: Comment) {
+export function CommentCard({
+  comment: _comment,
+  isViewingReplies: _isViewingReplies = false,
+}: {
+  comment: Comment;
+  isViewingReplies?: boolean;
+}) {
   const { user } = useUser();
   const { notifications } = useApp();
 
   const [comment, setComment] = useState(_comment);
-  const [isReplying, setIsReplying] = useState(false);
+  const [isReplying, setIsReplying] = useState(_isViewingReplies);
   const [isViewingReplies, setIsViewingReplies] = useState(false);
   const [isCommentDeleted, setIsCommentDeleted] = useState(false);
   const [isChangeProcessing, setIsChangeProcessing] = useState(false);

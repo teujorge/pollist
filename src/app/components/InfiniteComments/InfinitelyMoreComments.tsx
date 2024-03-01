@@ -17,7 +17,7 @@ export function InfinitelyMoreComments(props: {
       idPrefix="comment"
       query={{ pollId: props.pollId, parentId: props.parentId }}
       getter={getPaginatedComments}
-      ItemComponent={(comment) => <CommentCard {...comment} />}
+      ItemComponent={(comment) => <CommentCard comment={comment} />}
     />
   );
 }

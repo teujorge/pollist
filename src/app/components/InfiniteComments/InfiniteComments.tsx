@@ -19,7 +19,7 @@ export async function InfiniteComments(props: {
       {firstComments.map((comment) => (
         <CommentCard
           key={`${props.pollId}-comment-${comment.id}`}
-          {...comment}
+          comment={comment}
         />
       ))}
       <InfinitelyMoreComments pollId={props.pollId} parentId={props.parentId} />
