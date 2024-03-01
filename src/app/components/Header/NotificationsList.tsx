@@ -6,7 +6,7 @@ import { useApp } from "@/app/app";
 import { Loader } from "../Loader";
 import { CloseSvg } from "@/app/svgs/CloseSvg";
 import { ProfileImage } from "../ProfileImage";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getNotificationsItems, removeNotification } from "./actions";
 import { acceptFollow, declineFollow } from "@/app/users/actions";
 import type {
@@ -16,6 +16,7 @@ import type {
   FollowAcceptedNotification,
   NotificationItem,
 } from "./actions";
+import { useNotifications } from "./NotificationsBell";
 
 export function NotificationList() {
   const { notifications } = useApp();
@@ -47,7 +48,7 @@ export function NotificationList() {
 
   return (
     <div
-      className="flex min-w-fit flex-col items-center gap-2 overflow-y-auto overflow-x-hidden p-2"
+      className="flex min-w-fit flex-col items-center gap-2 overflow-y-auto overflow-x-hidden overscroll-y-contain p-2"
       style={{ maxHeight: "calc(100dvh - 100px)" }}
     >
       {data.items.map((item) => (
@@ -187,11 +188,14 @@ function NotificationCard({ item }: { item: NotificationItem }) {
 }
 
 function CommentNotificationCard(comment: CommentNotification) {
+  const popover = useNotifications();
+
   return (
     <div className="flex flex-col items-start justify-start gap-1">
       <Link
         href={`/users/${comment.authorId}`}
         className="flex flex-row items-center justify-center gap-1"
+        onClick={() => popover.setIsNotificationsOpen(false)}
       >
         <ProfileImage
           src={comment.author.imageUrl}
@@ -202,11 +206,17 @@ function CommentNotificationCard(comment: CommentNotification) {
       </Link>
       <p>
         {comment.parentId ? (
-          <Link href={`/polls/${comment.pollId}?parentId=${comment.parentId}`}>
+          <Link
+            href={`/polls/${comment.pollId}?parentId=${comment.parentId}`}
+            onClick={() => popover.setIsNotificationsOpen(false)}
+          >
             replied to your comment
           </Link>
         ) : (
-          <Link href={`/polls/${comment.pollId}`}>
+          <Link
+            href={`/polls/${comment.pollId}`}
+            onClick={() => popover.setIsNotificationsOpen(false)}
+          >
             commented on your on your poll
           </Link>
         )}
@@ -216,11 +226,14 @@ function CommentNotificationCard(comment: CommentNotification) {
 }
 
 function CommentLikeNotificationCard(like: CommentLikeNotification) {
+  const popover = useNotifications();
+
   return (
     <div className="flex flex-col items-start justify-start gap-1">
       <Link
         href={`/users/${like.authorId}`}
         className="flex flex-row items-center justify-center gap-1"
+        onClick={() => popover.setIsNotificationsOpen(false)}
       >
         <ProfileImage
           src={like.author.imageUrl}
@@ -230,7 +243,10 @@ function CommentLikeNotificationCard(like: CommentLikeNotification) {
         <p className="font-bold">{like.author.username}</p>
       </Link>
 
-      <Link href={`/polls/${like.comment.pollId}`}>
+      <Link
+        href={`/polls/${like.comment.pollId}`}
+        onClick={() => popover.setIsNotificationsOpen(false)}
+      >
         <p>liked your comment</p>
       </Link>
     </div>
@@ -238,11 +254,14 @@ function CommentLikeNotificationCard(like: CommentLikeNotification) {
 }
 
 function FollowPendingNotificationCard(follow: FollowPendingNotification) {
+  const popover = useNotifications();
+
   return (
     <div className="flex flex-col items-start justify-start">
       <Link
         href={`/users/${follow.followerId}`}
         className="flex flex-row items-center justify-center gap-1"
+        onClick={() => popover.setIsNotificationsOpen(false)}
       >
         <ProfileImage
           src={follow.follower.imageUrl}
@@ -271,11 +290,14 @@ function FollowPendingNotificationCard(follow: FollowPendingNotification) {
 }
 
 function FollowAcceptedNotificationCard(follow: FollowAcceptedNotification) {
+  const popover = useNotifications();
+
   return (
     <div className="flex flex-col items-start justify-start gap-1">
       <Link
         href={`/users/${follow.followedId}`}
         className="flex flex-row items-center justify-center gap-1"
+        onClick={() => popover.setIsNotificationsOpen(false)}
       >
         <ProfileImage
           src={follow.followed.imageUrl}
