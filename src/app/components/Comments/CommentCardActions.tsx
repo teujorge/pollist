@@ -17,6 +17,21 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import type { Comment } from "../InfiniteComments/actions";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@radix-ui/react-alert-dialog";
+import {
+  AlertDialogHeader,
+  AlertDialogFooter,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { DeleteAlertDialog } from "./AlertDialog";
 
 export function CommentCardActions() {
   const { user } = useUser();
@@ -141,18 +156,16 @@ export function CommentCardActions() {
     }
     setIsChangeProcessing(true);
 
-    if (confirm("Are you sure you want to delete this comment?")) {
-      // optimistic update
-      setIsCommentDeleted(true);
+    // optimistic update
+    setIsCommentDeleted(true);
 
-      try {
-        // db request
-        await deleteComment({ commentId: comment.id });
-      } catch (error) {
-        // put back original if the request fails
-        setIsCommentDeleted(false);
-        toast.error("Failed to delete comment, please try again");
-      }
+    try {
+      // db request
+      await deleteComment({ commentId: comment.id });
+    } catch (error) {
+      // put back original if the request fails
+      setIsCommentDeleted(false);
+      toast.error("Failed to delete comment, please try again");
     }
 
     setIsChangeProcessing(false);
@@ -208,12 +221,7 @@ export function CommentCardActions() {
 
             {/* delete button */}
             {user?.id === comment.authorId && (
-              <button
-                className="w-fit font-bold [&>span]:hovact:text-red-500"
-                onClick={handleDeleteComment}
-              >
-                <span className="transition-colors">Delete</span>
-              </button>
+              <DeleteAlertDialog onDelete={handleDeleteComment} />
             )}
           </PopoverContent>
         </Popover>
