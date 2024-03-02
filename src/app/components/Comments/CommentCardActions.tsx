@@ -17,20 +17,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import type { Comment } from "../InfiniteComments/actions";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@radix-ui/react-alert-dialog";
-import {
-  AlertDialogHeader,
-  AlertDialogFooter,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 import { DeleteAlertDialog } from "./AlertDialog";
 
 export function CommentCardActions() {
