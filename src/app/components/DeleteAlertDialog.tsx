@@ -10,11 +10,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-export function DeleteAlertDialog(props: {
+type DeleteAlertDialogProps = {
   title?: string;
   description?: string;
-  onDelete: () => void;
-}) {
+  await?: boolean;
+  onDelete: () => void | Promise<void>;
+};
+
+export function DeleteAlertDialog(props: DeleteAlertDialogProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger className="w-fit font-bold transition-colors hovact:text-red-500">
@@ -22,10 +25,12 @@ export function DeleteAlertDialog(props: {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle>
+            {props.title ?? "Are you absolutely sure?"}
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete and
-            remove your data from our servers.
+            {props.description ??
+              "This action cannot be undone. This will permanently delete and remove your data from our servers."}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
