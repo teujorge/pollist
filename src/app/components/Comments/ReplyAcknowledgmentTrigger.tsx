@@ -16,8 +16,14 @@ export function ReplyAcknowledgmentTrigger({
     if (!triggerElementRef.current) return;
 
     async function handleAcknowledgment() {
-      await acknowledgeReply({ commentId });
       setHasBeenTriggered(true);
+
+      try {
+        await acknowledgeReply({ commentId });
+      } catch (error) {
+        console.error(error);
+        setHasBeenTriggered(false);
+      }
     }
 
     const observer = new IntersectionObserver(
