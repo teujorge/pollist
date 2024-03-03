@@ -7,7 +7,13 @@ import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/database/dbRealtime";
 import { Analytics } from "@vercel/analytics/react";
 import { getAnonUser } from "./api/anon/actions";
-import { getNotificationsItems } from "./components/Header/actions";
+import {
+  getNotificationsItems,
+  getNotificationsCommentRelation,
+  getNotificationsCommentLikeRelation,
+  getNotificationsFollowAcceptedRelation,
+  getNotificationsFollowPendingRelation,
+} from "./components/Header/actions";
 import {
   useRef,
   useMemo,
@@ -83,10 +89,7 @@ export function App({ children }: { children: React.ReactNode }) {
           ...prev,
           notifications: {
             ...prev.notifications,
-            [type]: [
-              ...(prev.notifications[type] ?? []),
-              { ...payload, createdAt: new Date() },
-            ],
+            [type]: [...prev.notifications[type], { ...payload }],
           },
         };
       });
@@ -174,10 +177,24 @@ export function App({ children }: { children: React.ReactNode }) {
             console.log("NotificationComment inserted:", payload);
             const newPayload: Record<string, string> = payload.new;
 
-            handleOnNotificationInsert({
-              type: "comments",
-              payload: newPayload,
-            });
+            if (!newPayload.id) return;
+
+            getNotificationsCommentRelation(newPayload.id)
+              .then((payloadRelations) => {
+                handleOnNotificationInsert({
+                  type: "comments",
+                  payload: {
+                    ...newPayload,
+                    ...(payloadRelations as unknown as Record<string, string>),
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting NotificationComment relations:",
+                  error,
+                );
+              });
           },
         )
         .on(
@@ -191,10 +208,24 @@ export function App({ children }: { children: React.ReactNode }) {
           (payload) => {
             const newPayload: Record<string, string> = payload.new;
 
-            handleOnNotificationUpdate({
-              type: "comments",
-              payload: newPayload,
-            });
+            if (!newPayload.id) return;
+
+            getNotificationsCommentRelation(newPayload.id)
+              .then((payloadRelations) => {
+                handleOnNotificationUpdate({
+                  type: "comments",
+                  payload: {
+                    ...newPayload,
+                    ...(payloadRelations as unknown as Record<string, string>),
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting NotificationComment relations:",
+                  error,
+                );
+              });
           },
         )
         .on(
@@ -227,10 +258,24 @@ export function App({ children }: { children: React.ReactNode }) {
           (payload) => {
             const newPayload: Record<string, string> = payload.new;
 
-            handleOnNotificationInsert({
-              type: "commentLikes",
-              payload: newPayload,
-            });
+            if (!newPayload.id) return;
+
+            getNotificationsCommentLikeRelation(newPayload.id)
+              .then((payloadRelations) => {
+                handleOnNotificationInsert({
+                  type: "commentLikes",
+                  payload: {
+                    ...newPayload,
+                    ...(payloadRelations as unknown as Record<string, string>),
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting NotificationCommentLike relations:",
+                  error,
+                );
+              });
           },
         )
         .on(
@@ -244,10 +289,24 @@ export function App({ children }: { children: React.ReactNode }) {
           (payload) => {
             const newPayload: Record<string, string> = payload.new;
 
-            handleOnNotificationUpdate({
-              type: "commentLikes",
-              payload: newPayload,
-            });
+            if (!newPayload.id) return;
+
+            getNotificationsCommentLikeRelation(newPayload.id)
+              .then((payloadRelations) => {
+                handleOnNotificationUpdate({
+                  type: "commentLikes",
+                  payload: {
+                    ...newPayload,
+                    ...(payloadRelations as unknown as Record<string, string>),
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting NotificationCommentLike relations:",
+                  error,
+                );
+              });
           },
         )
         .on(
@@ -280,10 +339,24 @@ export function App({ children }: { children: React.ReactNode }) {
           (payload) => {
             const newPayload: Record<string, string> = payload.new;
 
-            handleOnNotificationInsert({
-              type: "followsPending",
-              payload: newPayload,
-            });
+            if (!newPayload.id) return;
+
+            getNotificationsFollowPendingRelation(newPayload.id)
+              .then((payloadRelations) => {
+                handleOnNotificationInsert({
+                  type: "followsPending",
+                  payload: {
+                    ...newPayload,
+                    ...(payloadRelations as unknown as Record<string, string>),
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting NotificationFollowPending relations:",
+                  error,
+                );
+              });
           },
         )
         .on(
@@ -297,10 +370,24 @@ export function App({ children }: { children: React.ReactNode }) {
           (payload) => {
             const newPayload: Record<string, string> = payload.new;
 
-            handleOnNotificationUpdate({
-              type: "followsPending",
-              payload: newPayload,
-            });
+            if (!newPayload.id) return;
+
+            getNotificationsFollowPendingRelation(newPayload.id)
+              .then((payloadRelations) => {
+                handleOnNotificationUpdate({
+                  type: "followsPending",
+                  payload: {
+                    ...newPayload,
+                    ...(payloadRelations as unknown as Record<string, string>),
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting NotificationFollowPending relations:",
+                  error,
+                );
+              });
           },
         )
         .on(
@@ -333,10 +420,24 @@ export function App({ children }: { children: React.ReactNode }) {
           (payload) => {
             const newPayload: Record<string, string> = payload.new;
 
-            handleOnNotificationInsert({
-              type: "followsAccepted",
-              payload: newPayload,
-            });
+            if (!newPayload.id) return;
+
+            getNotificationsFollowAcceptedRelation(newPayload.id)
+              .then((payloadRelations) => {
+                handleOnNotificationInsert({
+                  type: "followsAccepted",
+                  payload: {
+                    ...newPayload,
+                    ...(payloadRelations as unknown as Record<string, string>),
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting NotificationFollowAccepted relations:",
+                  error,
+                );
+              });
           },
         )
         .on(
@@ -350,10 +451,24 @@ export function App({ children }: { children: React.ReactNode }) {
           (payload) => {
             const newPayload: Record<string, string> = payload.new;
 
-            handleOnNotificationUpdate({
-              type: "followsAccepted",
-              payload: newPayload,
-            });
+            if (!newPayload.id) return;
+
+            getNotificationsFollowAcceptedRelation(newPayload.id)
+              .then((payloadRelations) => {
+                handleOnNotificationUpdate({
+                  type: "followsAccepted",
+                  payload: {
+                    ...newPayload,
+                    ...(payloadRelations as unknown as Record<string, string>),
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting NotificationFollowAccepted relations:",
+                  error,
+                );
+              });
           },
         )
         .on(
