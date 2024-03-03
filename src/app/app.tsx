@@ -7,7 +7,7 @@ import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/database/dbRealtime";
 import { Analytics } from "@vercel/analytics/react";
 import { getAnonUser } from "./api/anon/actions";
-import { getNotifications } from "./users/actions";
+import { getNotificationsItems } from "./components/Header/actions";
 import {
   useRef,
   useMemo,
@@ -16,14 +16,25 @@ import {
   useContext,
   createContext,
 } from "react";
-import type { Notification } from "@prisma/client";
 import type { RealtimeChannel } from "@supabase/supabase-js";
+import type {
+  NotificationCommentItem,
+  NotificationCommentLikeItem,
+  NotificationFollowAcceptedItem,
+  NotificationFollowPendingItem,
+  NotificationType,
+} from "./components/Header/actions";
 
 type UserData = {
   userId: string | undefined;
   isAnon: boolean;
   loading: boolean;
-  notifications: Notification[];
+  notifications: {
+    comments: NotificationCommentItem[];
+    commentLikes: NotificationCommentLikeItem[];
+    followsPending: NotificationFollowPendingItem[];
+    followsAccepted: NotificationFollowAcceptedItem[];
+  };
 };
 
 type AppProviderValue = UserData & {
@@ -43,7 +54,12 @@ export function App({ children }: { children: React.ReactNode }) {
     userId: undefined,
     isAnon: true,
     loading: true,
-    notifications: [],
+    notifications: {
+      comments: [],
+      commentLikes: [],
+      followsPending: [],
+      followsAccepted: [],
+    },
   });
 
   useEffect(() => {
@@ -55,41 +71,125 @@ export function App({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    function handleOnNotificationInsert({
+      type,
+      payload,
+    }: {
+      type: NotificationType;
+      payload: Record<string, string>;
+    }) {
+      console.log("Notification inserted:", type, payload);
+      setUserStatus((prev) => {
+        // Determine the key in the state based on the notification type
+        const key = getKeyFromType(type);
+
+        // Clone the existing state for the key to prevent direct mutation
+        const updatedNotifications = [...prev.notifications[key]];
+
+        // Add the new notification
+        updatedNotifications.push(
+          ...(payload as unknown as UserData["notifications"][typeof key]),
+        );
+
+        return {
+          ...prev,
+          notifications: {
+            ...prev.notifications,
+            [key]: updatedNotifications,
+          },
+        };
+      });
+    }
+
+    function handleOnNotificationUpdate({
+      type,
+      payload,
+    }: {
+      type: NotificationType;
+      payload: Record<string, string>;
+    }) {
+      console.log("Notification updated:", type, payload);
+      setUserStatus((prev) => {
+        const key = getKeyFromType(type);
+        const updatedNotifications = prev.notifications[key].map(
+          (notification) =>
+            notification.id === payload.id
+              ? { ...notification, ...payload }
+              : notification,
+        );
+
+        return {
+          ...prev,
+          notifications: {
+            ...prev.notifications,
+            [key]: updatedNotifications,
+          },
+        };
+      });
+    }
+
+    function handleOnNotificationDelete({
+      type,
+      payload,
+    }: {
+      type: NotificationType;
+      payload: Record<string, string>;
+    }) {
+      console.log("Notification deleted:", type, payload);
+      setUserStatus((prev) => {
+        const key = getKeyFromType(type);
+        const updatedNotifications = prev.notifications[key].filter(
+          (notification) => notification.id !== payload.id,
+        );
+
+        return {
+          ...prev,
+          notifications: {
+            ...prev.notifications,
+            [key]: updatedNotifications,
+          },
+        };
+      });
+    }
+
     async function handleInitNotifications() {
       if (!user) return;
 
       // get initial notifications
-      const notifications = await getNotifications();
+      const notifications = await getNotificationsItems();
       console.log("Initial notifications:", notifications);
 
       if (notifications) {
-        setUserStatus((prev) => ({ ...prev, notifications }));
+        setUserStatus((prev) => ({
+          ...prev,
+          notifications: {
+            comments: notifications.notificationsComment,
+            commentLikes: notifications.notificationsCommentLike,
+            followsPending: notifications.notificationsFollowPending,
+            followsAccepted: notifications.notificationsFollowAccepted,
+          },
+        }));
       }
 
       // notification subscription for subsequent changes
       notificationsSubscriptionRef.current = supabase
         ?.channel(`${user.id}-notifications`)
+        // === NotificationComment ===
         .on(
           "postgres_changes",
           {
             event: "INSERT",
             schema: "public",
-            table: "Notification",
-            filter: `userId=eq.${user.id}`,
+            table: "NotificationComment",
+            filter: `notifyee=eq.${user.id}`,
           },
           (payload) => {
             const newPayload: Record<string, string> = payload.new;
 
-            const newNotification = {
-              ...newPayload,
-              createdAt: new Date(newPayload.createdAt ?? ""),
-            } as Notification;
-
-            console.log("Notification inserted:", newNotification);
-            setUserStatus((prev) => ({
-              ...prev,
-              notifications: [...prev.notifications, newNotification],
-            }));
+            handleOnNotificationInsert({
+              type: newPayload.type as NotificationType,
+              payload: newPayload,
+            });
           },
         )
         .on(
@@ -97,23 +197,16 @@ export function App({ children }: { children: React.ReactNode }) {
           {
             event: "UPDATE",
             schema: "public",
-            table: "Notification",
-            filter: `userId=eq.${user.id}`,
+            table: "NotificationComment",
+            filter: `notifyee=eq.${user.id}`,
           },
           (payload) => {
             const newPayload: Record<string, string> = payload.new;
 
-            const newNotification = {
-              ...newPayload,
-              createdAt: new Date(newPayload.createdAt ?? ""),
-            } as Notification;
-
-            setUserStatus((prev) => ({
-              ...prev,
-              notifications: prev.notifications.map((n) =>
-                n.id === newNotification.id ? newNotification : n,
-              ),
-            }));
+            handleOnNotificationUpdate({
+              type: newPayload.type as NotificationType,
+              payload: newPayload,
+            });
           },
         )
         .on(
@@ -121,24 +214,178 @@ export function App({ children }: { children: React.ReactNode }) {
           {
             event: "DELETE",
             schema: "public",
-            table: "Notification",
-            filter: `userId=eq.${user.id}`,
+            table: "NotificationComment",
+            filter: `notifyee=eq.${user.id}`,
           },
           (payload) => {
             const oldPayload: Record<string, string> = payload.old;
 
-            const notificationId = oldPayload.id;
-            if (!notificationId) return;
-
-            console.log("Notification deleted:", oldPayload);
-            setUserStatus((prev) => ({
-              ...prev,
-              notifications: prev.notifications.filter(
-                (n) => n.id !== notificationId,
-              ),
-            }));
+            handleOnNotificationDelete({
+              type: oldPayload.type as NotificationType,
+              payload: oldPayload,
+            });
           },
         )
+
+        // === NotificationCommentLike ===
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "NotificationCommentLike",
+            filter: `notifyee=eq.${user.id}`,
+          },
+          (payload) => {
+            const newPayload: Record<string, string> = payload.new;
+
+            handleOnNotificationInsert({
+              type: newPayload.type as NotificationType,
+              payload: newPayload,
+            });
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "NotificationCommentLike",
+            filter: `notifyee=eq.${user.id}`,
+          },
+          (payload) => {
+            const newPayload: Record<string, string> = payload.new;
+
+            handleOnNotificationUpdate({
+              type: newPayload.type as NotificationType,
+              payload: newPayload,
+            });
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "NotificationCommentLike",
+            filter: `notifyee=eq.${user.id}`,
+          },
+          (payload) => {
+            const oldPayload: Record<string, string> = payload.old;
+
+            handleOnNotificationDelete({
+              type: oldPayload.type as NotificationType,
+              payload: oldPayload,
+            });
+          },
+        )
+
+        // === NotificationFollowPending ===
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "NotificationFollowPending",
+            filter: `notifyee=eq.${user.id}`,
+          },
+          (payload) => {
+            const newPayload: Record<string, string> = payload.new;
+
+            handleOnNotificationInsert({
+              type: newPayload.type as NotificationType,
+              payload: newPayload,
+            });
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "NotificationFollowPending",
+            filter: `notifyee=eq.${user.id}`,
+          },
+          (payload) => {
+            const newPayload: Record<string, string> = payload.new;
+
+            handleOnNotificationUpdate({
+              type: newPayload.type as NotificationType,
+              payload: newPayload,
+            });
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "NotificationFollowPending",
+            filter: `notifyee=eq.${user.id}`,
+          },
+          (payload) => {
+            const oldPayload: Record<string, string> = payload.old;
+
+            handleOnNotificationDelete({
+              type: oldPayload.type as NotificationType,
+              payload: oldPayload,
+            });
+          },
+        )
+
+        // === NotificationFollowAccepted ===
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "NotificationFollowAccepted",
+            filter: `notifyee=eq.${user.id}`,
+          },
+          (payload) => {
+            const newPayload: Record<string, string> = payload.new;
+
+            handleOnNotificationInsert({
+              type: newPayload.type as NotificationType,
+              payload: newPayload,
+            });
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "NotificationFollowAccepted",
+            filter: `notifyee=eq.${user.id}`,
+          },
+          (payload) => {
+            const newPayload: Record<string, string> = payload.new;
+
+            handleOnNotificationUpdate({
+              type: newPayload.type as NotificationType,
+              payload: newPayload,
+            });
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "NotificationFollowAccepted",
+            filter: `notifyee=eq.${user.id}`,
+          },
+          (payload) => {
+            const oldPayload: Record<string, string> = payload.old;
+
+            handleOnNotificationDelete({
+              type: oldPayload.type as NotificationType,
+              payload: oldPayload,
+            });
+          },
+        )
+
         .subscribe();
     }
 
@@ -148,7 +395,12 @@ export function App({ children }: { children: React.ReactNode }) {
         userId: user.id,
         isAnon: false,
         loading: false,
-        notifications: [],
+        notifications: {
+          comments: [],
+          commentLikes: [],
+          followsPending: [],
+          followsAccepted: [],
+        },
       });
     } else {
       console.log("setting anon user");
@@ -156,7 +408,12 @@ export function App({ children }: { children: React.ReactNode }) {
         userId: userId,
         isAnon: true,
         loading: false,
-        notifications: [],
+        notifications: {
+          comments: [],
+          commentLikes: [],
+          followsPending: [],
+          followsAccepted: [],
+        },
       });
     }
 
@@ -255,4 +512,17 @@ function useCustomScrollbar() {
       document.head.removeChild(styleSheet);
     };
   }, []);
+}
+
+function getKeyFromType(type: NotificationType) {
+  switch (type) {
+    case "CommentNotification":
+      return "comments";
+    case "CommentLikeNotification":
+      return "commentLikes";
+    case "FollowPendingNotification":
+      return "followsPending";
+    case "FollowAcceptedNotification":
+      return "followsAccepted";
+  }
 }

@@ -1,133 +1,73 @@
 "use server";
 
 import { db } from "@/database/db";
-import type { Notification, NotificationType } from "@prisma/client";
+import { auth } from "@clerk/nextjs";
 
-export type NotificationItem = {
-  type: NotificationType;
-  data:
-    | FollowPendingNotification
-    | FollowAcceptedNotification
-    | CommentNotification
-    | CommentLikeNotification;
-};
+export type NotificationType =
+  | "CommentNotification"
+  | "CommentLikeNotification"
+  | "FollowPendingNotification"
+  | "FollowAcceptedNotification";
 
-export async function getNotificationsItems(
-  notifications: Notification[],
-): Promise<NotificationItem[]> {
-  const groupedNotifications = notifications.reduce<{
-    [key in NotificationType]?: string[];
-  }>((acc, notification) => {
-    const { type, referenceId } = notification;
-    if (!acc[type]) acc[type] = [];
-    acc[type]?.push(referenceId);
-    return acc;
-  }, {});
-  console.log("Grouped notifications:", groupedNotifications);
+type NotificationItems = NonNullable<
+  Awaited<ReturnType<typeof getNotificationsItems>>
+>;
 
-  // Construct an array of promises for each notification type and its IDs
-  const promises = Object.entries(groupedNotifications).flatMap(([type, ids]) =>
-    fetchContentForType(type as NotificationType, ids),
-  );
+export type NotificationCommentItem =
+  NotificationItems["notificationsComment"][number];
+export type NotificationCommentLikeItem =
+  NotificationItems["notificationsCommentLike"][number];
+export type NotificationFollowPendingItem =
+  NotificationItems["notificationsFollowPending"][number];
+export type NotificationFollowAcceptedItem =
+  NotificationItems["notificationsFollowAccepted"][number];
 
-  const content = await Promise.all(promises);
-  console.log("Content:", content);
+export async function getNotificationsItems() {
+  const { userId } = auth();
 
-  return content
-    .flat()
-    .sort(
-      (a, b) =>
-        new Date(a.data.createdAt).getTime() -
-        new Date(b.data.createdAt).getTime(),
-    );
-}
+  if (!userId) return null;
 
-function fetchContentForType(type: NotificationType, ids: string[]) {
-  console.log("Fetching content for type:", type, "with IDs:", ids);
-
-  switch (type) {
-    case "FOLLOW_PENDING":
-      return wrapWithType(type, findManyFollowPending(ids));
-
-    case "FOLLOW_ACCEPTED":
-      return wrapWithType(type, findManyFollowAccepted(ids));
-
-    case "COMMENT_REPLY":
-      return wrapWithType(type, findManyCommentReply(ids));
-
-    case "COMMENT_LIKE":
-      return wrapWithType(type, findManyCommentLike(ids));
-  }
-}
-
-async function wrapWithType(
-  type: NotificationType,
-  promise: Promise<NotificationItem["data"][]>,
-): Promise<NotificationItem[]> {
-  const data = await promise;
-  return data.map((item) => ({
-    type,
-    data: item,
-  }));
-}
-
-export type FollowPendingNotification = Awaited<
-  ReturnType<typeof findManyFollowPending>
->[number];
-
-export type FollowAcceptedNotification = Awaited<
-  ReturnType<typeof findManyFollowAccepted>
->[number];
-
-export type CommentNotification = Awaited<
-  ReturnType<typeof findManyCommentReply>
->[number];
-
-export type CommentLikeNotification = Awaited<
-  ReturnType<typeof findManyCommentLike>
->[number];
-
-const findManyFollowPending = (ids: string[]) =>
-  db.follow.findMany({
-    where: { id: { in: ids } },
+  const userNotifications = await db.user.findUnique({
+    where: { id: userId },
     include: {
-      follower: true,
-    },
-  });
-
-const findManyFollowAccepted = (ids: string[]) =>
-  db.follow.findMany({
-    where: { id: { in: ids } },
-    include: {
-      followed: true,
-    },
-  });
-
-const findManyCommentReply = (ids: string[]) =>
-  db.comment.findMany({
-    where: { id: { in: ids } },
-    include: {
-      author: true,
-    },
-  });
-
-const findManyCommentLike = (ids: string[]) =>
-  db.commentLike.findMany({
-    where: { id: { in: ids } },
-    include: {
-      author: {
-        select: {
-          imageUrl: true,
-          username: true,
+      notificationsComment: {
+        include: {
+          comment: {
+            include: { author: true },
+          },
         },
       },
-      comment: {
-        select: {
-          pollId: true,
+      notificationsCommentLike: {
+        include: {
+          commentLike: {
+            include: {
+              author: true,
+              comment: { select: { pollId: true } },
+            },
+          },
+        },
+      },
+      notificationsFollowPending: {
+        include: {
+          follow: {
+            include: { follower: true },
+          },
+        },
+      },
+      notificationsFollowAccepted: {
+        include: {
+          follow: {
+            include: { followed: true },
+          },
         },
       },
     },
   });
+
+  if (!userNotifications) return null;
+
+  return userNotifications;
+}
 
 export async function removeNotification({
   id,
@@ -136,10 +76,24 @@ export async function removeNotification({
   id: string;
   type: NotificationType;
 }) {
-  return await db.notification.deleteMany({
-    where: {
-      referenceId: id,
-      type,
-    },
-  });
+  switch (type) {
+    case "FollowPendingNotification":
+      return await db.notificationFollowPending.deleteMany({
+        where: { id },
+      });
+    case "FollowAcceptedNotification":
+      return await db.notificationFollowAccepted.deleteMany({
+        where: { id },
+      });
+    case "CommentNotification":
+      return await db.notificationComment.deleteMany({
+        where: { id },
+      });
+    case "CommentLikeNotification":
+      return await db.notificationCommentLike.deleteMany({
+        where: { id },
+      });
+    default:
+      throw new Error("Unknown notification type");
+  }
 }

@@ -65,17 +65,18 @@ export async function createComment({
     if (userId === newComment.parent.authorId) {
       return newComment;
     }
-    await db.notification
+    const notification = await db.notificationComment
       .create({
         data: {
-          type: "COMMENT_REPLY",
-          referenceId: newComment.id,
-          userId: newComment.parent.authorId,
+          notifyeeId: newComment.parent.authorId,
+          commentId: newComment.id,
         },
       })
       .catch((error) => {
         console.error("Error creating notification", error);
       });
+
+    console.log("notification", notification);
   }
 
   return newComment;
@@ -90,11 +91,10 @@ export async function acknowledgeReply({ commentId }: { commentId: string }) {
 
   console.log("acknowledgeReply", commentId);
 
-  const notification = await db.notification.deleteMany({
+  const notification = await db.notificationComment.deleteMany({
     where: {
-      type: "COMMENT_REPLY",
-      referenceId: commentId,
-      userId,
+      commentId: commentId,
+      notifyeeId: userId,
     },
   });
 
@@ -131,17 +131,18 @@ export async function likeComment({
   });
 
   if (like) {
-    await db.notification
+    const notification = await db.notificationCommentLike
       .create({
         data: {
-          type: "COMMENT_LIKE",
-          referenceId: like.id,
-          userId: like.comment.authorId,
+          commentLikeId: like.id,
+          notifyeeId: like.comment.authorId,
         },
       })
       .catch((error) => {
         console.error("Error creating notification", error);
       });
+
+    console.log("notification", notification);
   }
 
   return like;
@@ -164,12 +165,9 @@ export async function unlikeComment({
   });
 
   if (unlike) {
-    await db.notification
+    await db.notificationCommentLike
       .deleteMany({
-        where: {
-          type: "COMMENT_LIKE",
-          referenceId: unlike.id,
-        },
+        where: { commentLikeId: unlike.id },
       })
       .catch((error) => {
         console.error("Error deleting notification", error);
@@ -194,12 +192,9 @@ export async function deleteComment({ commentId }: { commentId: string }) {
   });
 
   if (deletedComment) {
-    await db.notification
+    await db.notificationComment
       .deleteMany({
-        where: {
-          type: "COMMENT_REPLY",
-          referenceId: commentId,
-        },
+        where: { commentId: commentId },
       })
       .catch((error) => {
         console.error("Error deleting COMMENT_REPLY notifications", error);
