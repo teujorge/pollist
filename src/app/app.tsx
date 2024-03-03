@@ -20,9 +20,8 @@ import type { RealtimeChannel } from "@supabase/supabase-js";
 import type {
   NotificationCommentItem,
   NotificationCommentLikeItem,
-  NotificationFollowAcceptedItem,
   NotificationFollowPendingItem,
-  NotificationType,
+  NotificationFollowAcceptedItem,
 } from "./components/Header/actions";
 
 type UserData = {
@@ -75,27 +74,19 @@ export function App({ children }: { children: React.ReactNode }) {
       type,
       payload,
     }: {
-      type: NotificationType;
+      type: keyof UserData["notifications"];
       payload: Record<string, string>;
     }) {
       console.log("Notification inserted:", type, payload);
       setUserStatus((prev) => {
-        // Determine the key in the state based on the notification type
-        const key = getKeyFromType(type);
-
-        // Clone the existing state for the key to prevent direct mutation
-        const updatedNotifications = [...prev.notifications[key]];
-
-        // Add the new notification
-        updatedNotifications.push(
-          ...(payload as unknown as UserData["notifications"][typeof key]),
-        );
-
         return {
           ...prev,
           notifications: {
             ...prev.notifications,
-            [key]: updatedNotifications,
+            [type]: [
+              ...(prev.notifications[type] ?? []),
+              { ...payload, createdAt: new Date() },
+            ],
           },
         };
       });
@@ -105,24 +96,22 @@ export function App({ children }: { children: React.ReactNode }) {
       type,
       payload,
     }: {
-      type: NotificationType;
+      type: keyof UserData["notifications"];
       payload: Record<string, string>;
     }) {
       console.log("Notification updated:", type, payload);
       setUserStatus((prev) => {
-        const key = getKeyFromType(type);
-        const updatedNotifications = prev.notifications[key].map(
+        const updatedNotifications = prev.notifications[type].map(
           (notification) =>
             notification.id === payload.id
               ? { ...notification, ...payload }
               : notification,
         );
-
         return {
           ...prev,
           notifications: {
             ...prev.notifications,
-            [key]: updatedNotifications,
+            [type]: updatedNotifications,
           },
         };
       });
@@ -132,21 +121,19 @@ export function App({ children }: { children: React.ReactNode }) {
       type,
       payload,
     }: {
-      type: NotificationType;
+      type: keyof UserData["notifications"];
       payload: Record<string, string>;
     }) {
       console.log("Notification deleted:", type, payload);
       setUserStatus((prev) => {
-        const key = getKeyFromType(type);
-        const updatedNotifications = prev.notifications[key].filter(
+        const updatedNotifications = prev.notifications[type].filter(
           (notification) => notification.id !== payload.id,
         );
-
         return {
           ...prev,
           notifications: {
             ...prev.notifications,
-            [key]: updatedNotifications,
+            [type]: updatedNotifications,
           },
         };
       });
@@ -181,13 +168,14 @@ export function App({ children }: { children: React.ReactNode }) {
             event: "INSERT",
             schema: "public",
             table: "NotificationComment",
-            filter: `notifyee=eq.${user.id}`,
+            filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
+            console.log("NotificationComment inserted:", payload);
             const newPayload: Record<string, string> = payload.new;
 
             handleOnNotificationInsert({
-              type: newPayload.type as NotificationType,
+              type: "comments",
               payload: newPayload,
             });
           },
@@ -198,13 +186,13 @@ export function App({ children }: { children: React.ReactNode }) {
             event: "UPDATE",
             schema: "public",
             table: "NotificationComment",
-            filter: `notifyee=eq.${user.id}`,
+            filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
             const newPayload: Record<string, string> = payload.new;
 
             handleOnNotificationUpdate({
-              type: newPayload.type as NotificationType,
+              type: "comments",
               payload: newPayload,
             });
           },
@@ -215,13 +203,13 @@ export function App({ children }: { children: React.ReactNode }) {
             event: "DELETE",
             schema: "public",
             table: "NotificationComment",
-            filter: `notifyee=eq.${user.id}`,
+            filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
             const oldPayload: Record<string, string> = payload.old;
 
             handleOnNotificationDelete({
-              type: oldPayload.type as NotificationType,
+              type: "comments",
               payload: oldPayload,
             });
           },
@@ -234,13 +222,13 @@ export function App({ children }: { children: React.ReactNode }) {
             event: "INSERT",
             schema: "public",
             table: "NotificationCommentLike",
-            filter: `notifyee=eq.${user.id}`,
+            filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
             const newPayload: Record<string, string> = payload.new;
 
             handleOnNotificationInsert({
-              type: newPayload.type as NotificationType,
+              type: "commentLikes",
               payload: newPayload,
             });
           },
@@ -251,13 +239,13 @@ export function App({ children }: { children: React.ReactNode }) {
             event: "UPDATE",
             schema: "public",
             table: "NotificationCommentLike",
-            filter: `notifyee=eq.${user.id}`,
+            filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
             const newPayload: Record<string, string> = payload.new;
 
             handleOnNotificationUpdate({
-              type: newPayload.type as NotificationType,
+              type: "commentLikes",
               payload: newPayload,
             });
           },
@@ -268,13 +256,13 @@ export function App({ children }: { children: React.ReactNode }) {
             event: "DELETE",
             schema: "public",
             table: "NotificationCommentLike",
-            filter: `notifyee=eq.${user.id}`,
+            filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
             const oldPayload: Record<string, string> = payload.old;
 
             handleOnNotificationDelete({
-              type: oldPayload.type as NotificationType,
+              type: "commentLikes",
               payload: oldPayload,
             });
           },
@@ -287,13 +275,13 @@ export function App({ children }: { children: React.ReactNode }) {
             event: "INSERT",
             schema: "public",
             table: "NotificationFollowPending",
-            filter: `notifyee=eq.${user.id}`,
+            filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
             const newPayload: Record<string, string> = payload.new;
 
             handleOnNotificationInsert({
-              type: newPayload.type as NotificationType,
+              type: "followsPending",
               payload: newPayload,
             });
           },
@@ -304,13 +292,13 @@ export function App({ children }: { children: React.ReactNode }) {
             event: "UPDATE",
             schema: "public",
             table: "NotificationFollowPending",
-            filter: `notifyee=eq.${user.id}`,
+            filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
             const newPayload: Record<string, string> = payload.new;
 
             handleOnNotificationUpdate({
-              type: newPayload.type as NotificationType,
+              type: "followsPending",
               payload: newPayload,
             });
           },
@@ -321,13 +309,13 @@ export function App({ children }: { children: React.ReactNode }) {
             event: "DELETE",
             schema: "public",
             table: "NotificationFollowPending",
-            filter: `notifyee=eq.${user.id}`,
+            filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
             const oldPayload: Record<string, string> = payload.old;
 
             handleOnNotificationDelete({
-              type: oldPayload.type as NotificationType,
+              type: "followsPending",
               payload: oldPayload,
             });
           },
@@ -340,13 +328,13 @@ export function App({ children }: { children: React.ReactNode }) {
             event: "INSERT",
             schema: "public",
             table: "NotificationFollowAccepted",
-            filter: `notifyee=eq.${user.id}`,
+            filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
             const newPayload: Record<string, string> = payload.new;
 
             handleOnNotificationInsert({
-              type: newPayload.type as NotificationType,
+              type: "followsAccepted",
               payload: newPayload,
             });
           },
@@ -357,13 +345,13 @@ export function App({ children }: { children: React.ReactNode }) {
             event: "UPDATE",
             schema: "public",
             table: "NotificationFollowAccepted",
-            filter: `notifyee=eq.${user.id}`,
+            filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
             const newPayload: Record<string, string> = payload.new;
 
             handleOnNotificationUpdate({
-              type: newPayload.type as NotificationType,
+              type: "followsAccepted",
               payload: newPayload,
             });
           },
@@ -374,19 +362,21 @@ export function App({ children }: { children: React.ReactNode }) {
             event: "DELETE",
             schema: "public",
             table: "NotificationFollowAccepted",
-            filter: `notifyee=eq.${user.id}`,
+            filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
             const oldPayload: Record<string, string> = payload.old;
 
             handleOnNotificationDelete({
-              type: oldPayload.type as NotificationType,
+              type: "followsAccepted",
               payload: oldPayload,
             });
           },
         )
 
-        .subscribe();
+        .subscribe((status, error) => {
+          console.log("notifications subscription status:", status, error);
+        });
     }
 
     if (user) {
@@ -512,17 +502,4 @@ function useCustomScrollbar() {
       document.head.removeChild(styleSheet);
     };
   }, []);
-}
-
-function getKeyFromType(type: NotificationType) {
-  switch (type) {
-    case "CommentNotification":
-      return "comments";
-    case "CommentLikeNotification":
-      return "commentLikes";
-    case "FollowPendingNotification":
-      return "followsPending";
-    case "FollowAcceptedNotification":
-      return "followsAccepted";
-  }
 }
