@@ -9,71 +9,110 @@ datasource db {
 }
 
 model User {
-  id            String         @id
-  username      String?
-  imageUrl      String?
-  votes         Vote[]
-  polls         Poll[]
-  comments      Comment[]
-  commentLikes  CommentLike[]
-  following     Follow[]       @relation("Following")
-  followers     Follow[]       @relation("Followers")
-  bio           String?
-  anon          Boolean
-  notifications Notification[]
-}
-
-enum NotificationType {
-  FOLLOW_PENDING
-  FOLLOW_ACCEPTED
-  COMMENT_REPLY
-  COMMENT_LIKE
-}
-
-model Notification {
-  id          String           @id @default(uuid())
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  userId      String
-  type        NotificationType
-  referenceId String
-  seen        Boolean          @default(false)
-  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, seen])
+  id                          String                       @id
+  username                    String?
+  imageUrl                    String?
+  votes                       Vote[]
+  polls                       Poll[]
+  pollLikes                   PollLike[]
+  comments                    Comment[]
+  commentLikes                CommentLike[]
+  following                   Follow[]                     @relation("Following")
+  followers                   Follow[]                     @relation("Followers")
+  bio                         String?
+  anon                        Boolean
+  notificationsComment        NotificationComment[]
+  notificationsCommentLike    NotificationCommentLike[]
+  notificationsFollowPending  NotificationFollowPending[]  @relation("NotifyeeRelation")
+  notificationsFollowAccepted NotificationFollowAccepted[] @relation("NotifyeeRelation")
+  notificationsPollLike       NotificationPollLike[]
 }
 
 model Follow {
-  id         String   @id @default(uuid())
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  followerId String
-  followedId String
-  follower   User     @relation("Followers", fields: [followerId], references: [id])
-  followed   User     @relation("Following", fields: [followedId], references: [id])
-  accepted   Boolean  @default(false)
+  id                           String                      @id @default(uuid())
+  createdAt                    DateTime                    @default(now())
+  updatedAt                    DateTime                    @updatedAt
+  followerId                   String
+  followedId                   String
+  follower                     User                        @relation("Followers", fields: [followerId], references: [id])
+  followed                     User                        @relation("Following", fields: [followedId], references: [id])
+  accepted                     Boolean                     @default(false)
+  notificationFollowAcceptedId String?                     @unique
+  notificationFollowPendingId  String?                     @unique
+  notificationFollowAccepted   NotificationFollowAccepted?
+  notificationFollowPending    NotificationFollowPending?
 
   @@unique([followerId, followedId])
 }
 
+model NotificationFollowAccepted {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  notifyeeId String
+  followId   String   @unique
+  notifyee   User     @relation("NotifyeeRelation", fields: [notifyeeId], references: [id], onDelete: Cascade)
+  follow     Follow   @relation(fields: [followId], references: [id], onDelete: Cascade)
+
+  @@index([notifyeeId])
+}
+
+model NotificationFollowPending {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  notifyeeId String
+  followId   String   @unique
+  notifyee   User     @relation("NotifyeeRelation", fields: [notifyeeId], references: [id], onDelete: Cascade)
+  follow     Follow   @relation(fields: [followId], references: [id], onDelete: Cascade)
+
+  @@index([notifyeeId])
+}
+
 model Poll {
-  id            String    @id @default(uuid())
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id            String     @id @default(uuid())
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
   expiresAt     DateTime?
-  realtime      Boolean   @default(false)
-  allowAnon     Boolean   @default(false)
+  realtime      Boolean    @default(false)
+  allowAnon     Boolean    @default(false)
   authorId      String
   title         String
   description   String
-  controversial Boolean   @default(false)
+  controversial Boolean    @default(false)
+  author        User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   votes         Vote[]
   options       Option[]
   comments      Comment[]
-  author        User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  pollLike      PollLike[]
 
   @@index([title])
   @@index([authorId])
+}
+
+model PollLike {
+  id                    String                @id @default(uuid())
+  createdAt             DateTime              @default(now())
+  authorId              String
+  pollId                String
+  author                User                  @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  poll                  Poll                  @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  notificationsPollLike NotificationPollLike?
+
+  @@unique([authorId, pollId])
+  @@index([authorId])
+  @@index([pollId])
+}
+
+model NotificationPollLike {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  notifyeeId String
+  pollLikeId String   @unique
+  notifyee   User     @relation(fields: [notifyeeId], references: [id], onDelete: Cascade)
+  pollLike   PollLike @relation(fields: [pollLikeId], references: [id], onDelete: Cascade)
+
+  @@index([notifyeeId])
 }
 
 model Option {
@@ -103,33 +142,58 @@ model Vote {
 }
 
 model Comment {
-  id        String        @id @default(uuid())
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-  text      String
-  authorId  String
-  pollId    String
-  parentId  String?
-  author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  poll      Poll          @relation(fields: [pollId], references: [id], onDelete: Cascade)
-  parent    Comment?      @relation(name: "CommentToComment", fields: [parentId], references: [id])
-  replies   Comment[]     @relation("CommentToComment")
-  likes     CommentLike[]
+  id                  String                @id @default(uuid())
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  text                String
+  authorId            String
+  pollId              String
+  parentId            String?
+  author              User                  @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  poll                Poll                  @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  parent              Comment?              @relation(name: "CommentToComment", fields: [parentId], references: [id])
+  replies             Comment[]             @relation("CommentToComment")
+  likes               CommentLike[]
+  notificationComment NotificationComment[]
 
   @@index([authorId])
   @@index([pollId])
   @@index([parentId])
 }
 
+model NotificationComment {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  notifyeeId String
+  commentId  String
+  user       User     @relation(fields: [notifyeeId], references: [id], onDelete: Cascade)
+  comment    Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@index([notifyeeId])
+}
+
 model CommentLike {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  authorId  String
-  commentId String
-  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  id                      String                   @id @default(uuid())
+  createdAt               DateTime                 @default(now())
+  authorId                String
+  commentId               String
+  author                  User                     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comment                 Comment                  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  notificationCommentLike NotificationCommentLike?
 
   @@unique([authorId, commentId])
   @@index([authorId])
   @@index([commentId])
+}
+
+model NotificationCommentLike {
+  id            String      @id @default(uuid())
+  createdAt     DateTime    @default(now())
+  notifyeeId    String
+  commentLikeId String      @unique
+  notifyee      User        @relation(fields: [notifyeeId], references: [id], onDelete: Cascade)
+  commentLike   CommentLike @relation(fields: [commentLikeId], references: [id], onDelete: Cascade)
+
+  @@index([notifyeeId])
 }

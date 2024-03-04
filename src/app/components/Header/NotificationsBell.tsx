@@ -13,10 +13,17 @@ import {
 export function NotificationsBell() {
   const { notifications } = useApp();
 
+  const notificationList = [
+    ...notifications.comments,
+    ...notifications.commentLikes,
+    ...notifications.followsPending,
+    ...notifications.followsAccepted,
+  ].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   return (
-    notifications.length > 0 && (
+    notificationList.length > 0 && (
       <NotificationsProvider
         value={{ isNotificationsOpen, setIsNotificationsOpen }}
       >
@@ -28,7 +35,7 @@ export function NotificationsBell() {
             <button className="relative select-none outline-none">
               <NotificationSvg className="fill-white transition-colors hovact:fill-purple-500" />
               <div className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs">
-                {notifications.length}
+                {notificationList.length}
               </div>
             </button>
           </PopoverTrigger>

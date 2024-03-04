@@ -25,8 +25,8 @@ export function CommentCard({
   const [isCommentDeleted, setIsCommentDeleted] = useState(false);
   const [isChangeProcessing, setIsChangeProcessing] = useState(false);
 
-  const unreadComment = notifications.some(
-    (n) => n.type === "COMMENT_REPLY" && n.referenceId === comment.id,
+  const unreadComment = notifications.comments.some(
+    (n) => n.commentId === comment.id,
   );
 
   return (

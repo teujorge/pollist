@@ -7,6 +7,7 @@ import { PAGE_SIZE } from "@/constants";
 import { ThumbUpSvg } from "@/app/svgs/ThumbUpSvg";
 import { NewComments } from "./NewComments";
 import { CommentForm } from "./CommentForm";
+import { DeleteAlertDialog } from "../DeleteAlertDialog";
 import { useEffect, useState } from "react";
 import { getPaginatedComments } from "../InfiniteComments/actions";
 import { CommentCard, useCommentCard } from "./CommentCard";
@@ -17,7 +18,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import type { Comment } from "../InfiniteComments/actions";
-import { DeleteAlertDialog } from "./AlertDialog";
 
 export function CommentCardActions() {
   const { user } = useUser();
@@ -207,7 +207,7 @@ export function CommentCardActions() {
 
             {/* delete button */}
             {user?.id === comment.authorId && (
-              <DeleteAlertDialog onDelete={handleDeleteComment} />
+              <DeleteAlertDialog await={true} onDelete={handleDeleteComment} />
             )}
           </PopoverContent>
         </Popover>

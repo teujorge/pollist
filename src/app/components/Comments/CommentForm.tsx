@@ -98,7 +98,7 @@ export function CommentForm({
   return (
     <form
       ref={formRef}
-      className="  flex w-full flex-col gap-2 p-4"
+      className={`flex w-full flex-col gap-2 p-4 ${isLoading && "opacity-50"}`}
       onSubmit={handleSubmit}
     >
       {label && <label>{label}</label>}

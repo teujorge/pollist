@@ -7,7 +7,13 @@ import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/database/dbRealtime";
 import { Analytics } from "@vercel/analytics/react";
 import { getAnonUser } from "./api/anon/actions";
-import { getNotifications } from "./users/actions";
+import {
+  getNotificationsItems,
+  getNotificationsCommentRelation,
+  getNotificationsCommentLikeRelation,
+  getNotificationsFollowAcceptedRelation,
+  getNotificationsFollowPendingRelation,
+} from "./components/Header/actions";
 import {
   useRef,
   useMemo,
@@ -16,14 +22,24 @@ import {
   useContext,
   createContext,
 } from "react";
-import type { Notification } from "@prisma/client";
 import type { RealtimeChannel } from "@supabase/supabase-js";
+import type {
+  NotificationCommentItem,
+  NotificationCommentLikeItem,
+  NotificationFollowPendingItem,
+  NotificationFollowAcceptedItem,
+} from "./components/Header/actions";
 
 type UserData = {
   userId: string | undefined;
   isAnon: boolean;
   loading: boolean;
-  notifications: Notification[];
+  notifications: {
+    comments: NotificationCommentItem[];
+    commentLikes: NotificationCommentLikeItem[];
+    followsPending: NotificationFollowPendingItem[];
+    followsAccepted: NotificationFollowAcceptedItem[];
+  };
 };
 
 type AppProviderValue = UserData & {
@@ -43,7 +59,12 @@ export function App({ children }: { children: React.ReactNode }) {
     userId: undefined,
     isAnon: true,
     loading: true,
-    notifications: [],
+    notifications: {
+      comments: [],
+      commentLikes: [],
+      followsPending: [],
+      followsAccepted: [],
+    },
   });
 
   useEffect(() => {
@@ -55,41 +76,125 @@ export function App({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    function handleOnNotificationInsert({
+      type,
+      payload,
+    }: {
+      type: keyof UserData["notifications"];
+      payload: Record<string, string>;
+    }) {
+      console.log("Notification inserted:", type, payload);
+      setUserStatus((prev) => {
+        return {
+          ...prev,
+          notifications: {
+            ...prev.notifications,
+            [type]: [...prev.notifications[type], { ...payload }],
+          },
+        };
+      });
+    }
+
+    function handleOnNotificationUpdate({
+      type,
+      payload,
+    }: {
+      type: keyof UserData["notifications"];
+      payload: Record<string, string>;
+    }) {
+      console.log("Notification updated:", type, payload);
+      setUserStatus((prev) => {
+        const updatedNotifications = prev.notifications[type].map(
+          (notification) =>
+            notification.id === payload.id
+              ? { ...notification, ...payload }
+              : notification,
+        );
+        return {
+          ...prev,
+          notifications: {
+            ...prev.notifications,
+            [type]: updatedNotifications,
+          },
+        };
+      });
+    }
+
+    function handleOnNotificationDelete({
+      type,
+      payload,
+    }: {
+      type: keyof UserData["notifications"];
+      payload: Record<string, string>;
+    }) {
+      console.log("Notification deleted:", type, payload);
+      setUserStatus((prev) => {
+        const updatedNotifications = prev.notifications[type].filter(
+          (notification) => notification.id !== payload.id,
+        );
+        return {
+          ...prev,
+          notifications: {
+            ...prev.notifications,
+            [type]: updatedNotifications,
+          },
+        };
+      });
+    }
+
     async function handleInitNotifications() {
       if (!user) return;
 
       // get initial notifications
-      const notifications = await getNotifications();
+      const notifications = await getNotificationsItems();
       console.log("Initial notifications:", notifications);
 
       if (notifications) {
-        setUserStatus((prev) => ({ ...prev, notifications }));
+        setUserStatus((prev) => ({
+          ...prev,
+          notifications: {
+            comments: notifications.notificationsComment,
+            commentLikes: notifications.notificationsCommentLike,
+            followsPending: notifications.notificationsFollowPending,
+            followsAccepted: notifications.notificationsFollowAccepted,
+          },
+        }));
       }
 
       // notification subscription for subsequent changes
       notificationsSubscriptionRef.current = supabase
         ?.channel(`${user.id}-notifications`)
+        // === NotificationComment ===
         .on(
           "postgres_changes",
           {
             event: "INSERT",
             schema: "public",
-            table: "Notification",
-            filter: `userId=eq.${user.id}`,
+            table: "NotificationComment",
+            filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
+            console.log("NotificationComment inserted:", payload);
             const newPayload: Record<string, string> = payload.new;
 
-            const newNotification = {
-              ...newPayload,
-              createdAt: new Date(newPayload.createdAt ?? ""),
-            } as Notification;
+            if (!newPayload.id) return;
 
-            console.log("Notification inserted:", newNotification);
-            setUserStatus((prev) => ({
-              ...prev,
-              notifications: [...prev.notifications, newNotification],
-            }));
+            getNotificationsCommentRelation(newPayload.id)
+              .then((payloadRelations) => {
+                handleOnNotificationInsert({
+                  type: "comments",
+                  payload: {
+                    ...newPayload,
+                    ...(payloadRelations as unknown as Record<string, string>),
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting NotificationComment relations:",
+                  error,
+                );
+              });
           },
         )
         .on(
@@ -97,23 +202,30 @@ export function App({ children }: { children: React.ReactNode }) {
           {
             event: "UPDATE",
             schema: "public",
-            table: "Notification",
-            filter: `userId=eq.${user.id}`,
+            table: "NotificationComment",
+            filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
             const newPayload: Record<string, string> = payload.new;
 
-            const newNotification = {
-              ...newPayload,
-              createdAt: new Date(newPayload.createdAt ?? ""),
-            } as Notification;
+            if (!newPayload.id) return;
 
-            setUserStatus((prev) => ({
-              ...prev,
-              notifications: prev.notifications.map((n) =>
-                n.id === newNotification.id ? newNotification : n,
-              ),
-            }));
+            getNotificationsCommentRelation(newPayload.id)
+              .then((payloadRelations) => {
+                handleOnNotificationUpdate({
+                  type: "comments",
+                  payload: {
+                    ...newPayload,
+                    ...(payloadRelations as unknown as Record<string, string>),
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting NotificationComment relations:",
+                  error,
+                );
+              });
           },
         )
         .on(
@@ -121,25 +233,265 @@ export function App({ children }: { children: React.ReactNode }) {
           {
             event: "DELETE",
             schema: "public",
-            table: "Notification",
-            filter: `userId=eq.${user.id}`,
+            table: "NotificationComment",
+            filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
             const oldPayload: Record<string, string> = payload.old;
 
-            const notificationId = oldPayload.id;
-            if (!notificationId) return;
-
-            console.log("Notification deleted:", oldPayload);
-            setUserStatus((prev) => ({
-              ...prev,
-              notifications: prev.notifications.filter(
-                (n) => n.id !== notificationId,
-              ),
-            }));
+            handleOnNotificationDelete({
+              type: "comments",
+              payload: oldPayload,
+            });
           },
         )
-        .subscribe();
+
+        // === NotificationCommentLike ===
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "NotificationCommentLike",
+            filter: `notifyeeId=eq.${user.id}`,
+          },
+          (payload) => {
+            const newPayload: Record<string, string> = payload.new;
+
+            if (!newPayload.id) return;
+
+            getNotificationsCommentLikeRelation(newPayload.id)
+              .then((payloadRelations) => {
+                handleOnNotificationInsert({
+                  type: "commentLikes",
+                  payload: {
+                    ...newPayload,
+                    ...(payloadRelations as unknown as Record<string, string>),
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting NotificationCommentLike relations:",
+                  error,
+                );
+              });
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "NotificationCommentLike",
+            filter: `notifyeeId=eq.${user.id}`,
+          },
+          (payload) => {
+            const newPayload: Record<string, string> = payload.new;
+
+            if (!newPayload.id) return;
+
+            getNotificationsCommentLikeRelation(newPayload.id)
+              .then((payloadRelations) => {
+                handleOnNotificationUpdate({
+                  type: "commentLikes",
+                  payload: {
+                    ...newPayload,
+                    ...(payloadRelations as unknown as Record<string, string>),
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting NotificationCommentLike relations:",
+                  error,
+                );
+              });
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "NotificationCommentLike",
+            filter: `notifyeeId=eq.${user.id}`,
+          },
+          (payload) => {
+            const oldPayload: Record<string, string> = payload.old;
+
+            handleOnNotificationDelete({
+              type: "commentLikes",
+              payload: oldPayload,
+            });
+          },
+        )
+
+        // === NotificationFollowPending ===
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "NotificationFollowPending",
+            filter: `notifyeeId=eq.${user.id}`,
+          },
+          (payload) => {
+            const newPayload: Record<string, string> = payload.new;
+
+            if (!newPayload.id) return;
+
+            getNotificationsFollowPendingRelation(newPayload.id)
+              .then((payloadRelations) => {
+                handleOnNotificationInsert({
+                  type: "followsPending",
+                  payload: {
+                    ...newPayload,
+                    ...(payloadRelations as unknown as Record<string, string>),
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting NotificationFollowPending relations:",
+                  error,
+                );
+              });
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "NotificationFollowPending",
+            filter: `notifyeeId=eq.${user.id}`,
+          },
+          (payload) => {
+            const newPayload: Record<string, string> = payload.new;
+
+            if (!newPayload.id) return;
+
+            getNotificationsFollowPendingRelation(newPayload.id)
+              .then((payloadRelations) => {
+                handleOnNotificationUpdate({
+                  type: "followsPending",
+                  payload: {
+                    ...newPayload,
+                    ...(payloadRelations as unknown as Record<string, string>),
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting NotificationFollowPending relations:",
+                  error,
+                );
+              });
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "NotificationFollowPending",
+            filter: `notifyeeId=eq.${user.id}`,
+          },
+          (payload) => {
+            const oldPayload: Record<string, string> = payload.old;
+
+            handleOnNotificationDelete({
+              type: "followsPending",
+              payload: oldPayload,
+            });
+          },
+        )
+
+        // === NotificationFollowAccepted ===
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "NotificationFollowAccepted",
+            filter: `notifyeeId=eq.${user.id}`,
+          },
+          (payload) => {
+            const newPayload: Record<string, string> = payload.new;
+
+            if (!newPayload.id) return;
+
+            getNotificationsFollowAcceptedRelation(newPayload.id)
+              .then((payloadRelations) => {
+                handleOnNotificationInsert({
+                  type: "followsAccepted",
+                  payload: {
+                    ...newPayload,
+                    ...(payloadRelations as unknown as Record<string, string>),
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting NotificationFollowAccepted relations:",
+                  error,
+                );
+              });
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "NotificationFollowAccepted",
+            filter: `notifyeeId=eq.${user.id}`,
+          },
+          (payload) => {
+            const newPayload: Record<string, string> = payload.new;
+
+            if (!newPayload.id) return;
+
+            getNotificationsFollowAcceptedRelation(newPayload.id)
+              .then((payloadRelations) => {
+                handleOnNotificationUpdate({
+                  type: "followsAccepted",
+                  payload: {
+                    ...newPayload,
+                    ...(payloadRelations as unknown as Record<string, string>),
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting NotificationFollowAccepted relations:",
+                  error,
+                );
+              });
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "NotificationFollowAccepted",
+            filter: `notifyeeId=eq.${user.id}`,
+          },
+          (payload) => {
+            const oldPayload: Record<string, string> = payload.old;
+
+            handleOnNotificationDelete({
+              type: "followsAccepted",
+              payload: oldPayload,
+            });
+          },
+        )
+
+        .subscribe((status, error) => {
+          console.log("notifications subscription status:", status, error);
+        });
     }
 
     if (user) {
@@ -148,7 +500,12 @@ export function App({ children }: { children: React.ReactNode }) {
         userId: user.id,
         isAnon: false,
         loading: false,
-        notifications: [],
+        notifications: {
+          comments: [],
+          commentLikes: [],
+          followsPending: [],
+          followsAccepted: [],
+        },
       });
     } else {
       console.log("setting anon user");
@@ -156,7 +513,12 @@ export function App({ children }: { children: React.ReactNode }) {
         userId: userId,
         isAnon: true,
         loading: false,
-        notifications: [],
+        notifications: {
+          comments: [],
+          commentLikes: [],
+          followsPending: [],
+          followsAccepted: [],
+        },
       });
     }
 

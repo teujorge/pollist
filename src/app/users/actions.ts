@@ -18,12 +18,11 @@ export async function follow(userId: string) {
   });
 
   if (newFollow) {
-    await db.notification
+    await db.notificationFollowPending
       .create({
         data: {
-          type: "FOLLOW_PENDING",
-          referenceId: newFollow.id,
-          userId,
+          followId: newFollow.id,
+          notifyeeId: userId,
         },
       })
       .catch((error) => {
@@ -100,12 +99,9 @@ export async function declineFollow(followerId: string) {
   });
 
   if (declinedFollow) {
-    await db.notification
+    await db.notificationFollowPending
       .deleteMany({
-        where: {
-          type: "FOLLOW_PENDING",
-          referenceId: declinedFollow.id,
-        },
+        where: { followId: declinedFollow.id },
       })
       .catch((error) => {
         console.error("Error deleting notification", error);
@@ -136,28 +132,26 @@ export async function acceptFollow(followerId: string) {
   });
 
   if (updatedFollow) {
-    await db.notification
+    const removedPendingFollow = await db.notificationFollowPending
       .deleteMany({
-        where: {
-          type: "FOLLOW_PENDING",
-          referenceId: updatedFollow.id,
-        },
+        where: { followId: updatedFollow.id },
       })
       .catch((error) => {
         console.error("Error deleting notification", error);
       });
 
-    await db.notification
-      .create({
-        data: {
-          type: "FOLLOW_ACCEPTED",
-          referenceId: updatedFollow.id,
-          userId: followerId,
-        },
-      })
-      .catch((error) => {
-        console.error("Error creating notification", error);
-      });
+    if (removedPendingFollow) {
+      await db.notificationFollowAccepted
+        .create({
+          data: {
+            followId: updatedFollow.id,
+            notifyeeId: followerId,
+          },
+        })
+        .catch((error) => {
+          console.error("Error creating notification", error);
+        });
+    }
   }
 
   console.log("updatedFollow", updatedFollow);
@@ -179,19 +173,6 @@ export async function cancelFollow(followedId: string) {
       },
     },
   });
-
-  if (cancelledFollow) {
-    await db.notification
-      .deleteMany({
-        where: {
-          type: "FOLLOW_PENDING",
-          referenceId: cancelledFollow.id,
-        },
-      })
-      .catch((error) => {
-        console.error("Error deleting notification", error);
-      });
-  }
 
   console.log("deletedFollow", cancelledFollow);
   revalidatePath(`/users/${myId}`);
@@ -215,61 +196,4 @@ export async function getPendingFollows(userId: string) {
   });
 
   return pendingFollows;
-}
-
-export async function getUnreadComments(userId: string) {
-  const replyNotifications = await db.notification.findMany({
-    where: {
-      userId,
-      type: "COMMENT_REPLY",
-      seen: false,
-    },
-    select: {
-      referenceId: true,
-    },
-  });
-
-  const unreadComments = await db.comment.findMany({
-    where: {
-      id: {
-        in: replyNotifications.map((notification) => notification.referenceId),
-      },
-      authorId: {
-        not: userId,
-      },
-    },
-    select: {
-      id: true,
-      pollId: true,
-      author: {
-        select: {
-          username: true,
-        },
-      },
-      parent: {
-        select: {
-          id: true,
-        },
-      },
-    },
-  });
-
-  return unreadComments;
-}
-
-export async function getNotifications() {
-  const { userId } = auth();
-
-  if (!userId) return;
-
-  const notifications = await db.notification.findMany({
-    where: {
-      userId,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-
-  return notifications;
 }
