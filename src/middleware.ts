@@ -6,6 +6,7 @@ import { authMiddleware } from "@clerk/nextjs";
 export default authMiddleware({
   publicRoutes: (req) => req.url.includes("/"),
   ignoredRoutes: ["/api/sitemap.xml"],
+  debug: true,
 
   // afterAuth(auth, req) {
   //   // allow access to  public routes
