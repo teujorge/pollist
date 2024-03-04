@@ -16,17 +16,19 @@ export async function UserFollowedList({ userId }: { userId: string }) {
 
   console.log("following -> following", following.length);
 
-  return (
-    <div className="flex flex-col items-center justify-center gap-4">
-      <div className="flex flex-col gap-1">
-        {following.map((f) => (
-          <ActiveFollowedCard
-            key={f.followed.id}
-            userId={userId}
-            followed={f.followed}
-          />
-        ))}
-      </div>
+  return following.length === 0 ? (
+    <p className="text-sm text-neutral-400 underline underline-offset-4">
+      You are not following anyone yet!
+    </p>
+  ) : (
+    <div className="flex flex-col gap-1">
+      {following.map((f) => (
+        <ActiveFollowedCard
+          key={f.followed.id}
+          userId={userId}
+          followed={f.followed}
+        />
+      ))}
     </div>
   );
 }
