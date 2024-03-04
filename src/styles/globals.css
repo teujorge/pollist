@@ -11,19 +11,24 @@ body {
   color: #f1f1f1;
   background: black;
 
-  width: 100dvw;
-  max-width: 1000px;
-  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-  margin-left: auto;
-  margin-right: auto;
+  min-width: 100dvw;
+  min-height: 100dvh;
 
   overflow-x: hidden;
   overflow-y: auto;
   scrollbar-gutter: stable both-edges;
 }
 
+header {
+  max-width: 1000px;
+}
+
 main {
+  max-width: 1000px;
   padding: 1.5rem;
 }
 
