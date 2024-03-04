@@ -46,7 +46,7 @@ export function CommentCard({
     >
       {isCommentDeleted ? null : (
         <div
-          className={`flex w-full flex-col gap-2 rounded-lg border p-4
+          className={`flex w-full flex-col gap-2 rounded-lg border bg-neutral-950 p-4
         ${user && user.id === comment.parent?.authorId && unreadComment ? "border-purple-500" : "border-neutral-800"}
       `}
         >
