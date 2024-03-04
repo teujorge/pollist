@@ -14,7 +14,7 @@ export async function InfinitePolls(props: {
   });
 
   return (
-    <div className="flex w-full flex-col items-center gap-2">
+    <div className="flex w-full flex-col items-center gap-4">
       {firstPolls.map((poll) => (
         <PollCard
           key={`${props.idPrefix}-poll-card-${poll.id}`}
