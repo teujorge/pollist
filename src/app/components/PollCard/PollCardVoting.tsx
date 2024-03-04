@@ -258,7 +258,7 @@ export function PollCardVoting(props: PollCardVotingProps) {
                 )}
               >
                 <span
-                  className="absolute left-0 top-0 my-auto h-full rounded-xl bg-purple-500 opacity-10 transition-all"
+                  className="absolute left-0 top-0 h-full rounded-xl bg-neutral-500 opacity-10 transition-all"
                   style={{ width: `${votePercentage}%` }}
                 />
                 <div
