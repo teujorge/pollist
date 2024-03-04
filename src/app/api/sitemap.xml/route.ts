@@ -31,40 +31,50 @@ export async function GET() {
 }
 
 async function getPopularPollIds() {
-  const polls = await db.poll.findMany({
-    orderBy: {
-      votes: {
-        _count: "desc",
+  try {
+    const polls = await db.poll.findMany({
+      orderBy: {
+        votes: {
+          _count: "desc",
+        },
       },
-    },
-    take: 20,
-  });
+      take: 20,
+    });
 
-  return polls.map((poll) => poll.id);
+    return polls.map((poll) => poll.id);
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
 }
 
 async function getPopularUserIds() {
-  const usersCreators = await db.user.findMany({
-    orderBy: {
-      polls: {
-        _count: "desc",
+  try {
+    const usersCreators = await db.user.findMany({
+      orderBy: {
+        polls: {
+          _count: "desc",
+        },
       },
-    },
-    take: 10,
-  });
+      take: 10,
+    });
 
-  const usersFollowers = await db.user.findMany({
-    orderBy: {
-      followers: {
-        _count: "desc",
+    const usersFollowers = await db.user.findMany({
+      orderBy: {
+        followers: {
+          _count: "desc",
+        },
       },
-    },
-    take: 10,
-  });
+      take: 10,
+    });
 
-  const combinedUsers = [...usersCreators, ...usersFollowers];
+    const combinedUsers = [...usersCreators, ...usersFollowers];
 
-  const users = new Set(combinedUsers.map((user) => user.id));
+    const users = new Set(combinedUsers.map((user) => user.id));
 
-  return Array.from(users);
+    return Array.from(users);
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
 }
