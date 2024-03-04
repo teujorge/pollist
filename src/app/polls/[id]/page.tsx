@@ -34,7 +34,7 @@ export default async function PollPage({
   if (!poll) return notFound();
 
   return (
-    <main className=" relative flex min-h-[calc(100dvh-64px)] w-full flex-col">
+    <main className="relative flex min-h-[calc(100dvh-64px)] w-full flex-col">
       {/* header */}
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
@@ -58,7 +58,7 @@ export default async function PollPage({
         </div>
       </div>
 
-      <PollCardVoting poll={poll} useRealtime />
+      <PollCardVoting poll={poll} showChart useRealtime />
 
       <Suspense fallback={<AllCommentsFallback />}>
         <AllComments pollId={params.id} parentId={searchParams.parentId} />

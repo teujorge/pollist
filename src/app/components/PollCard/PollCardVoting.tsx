@@ -6,6 +6,7 @@ import { useApp } from "@/app/app";
 import { LockSvg } from "@/app/svgs/LockSvg";
 import { supabase } from "@/database/dbRealtime";
 import { handleVote } from "./actions";
+import { ChartDrawer } from "@/app/components/PollCard/ChartDrawer";
 import type { PollCardProps } from "./PollCard";
 import type { PollsDetails } from "../InfinitePolls/actions";
 import type { RealtimeChannel } from "@supabase/realtime-js";
@@ -13,6 +14,7 @@ import type { Vote } from "@prisma/client";
 import { type MutableRefObject, useEffect, useRef, useState } from "react";
 
 type PollCardVotingProps = PollCardProps & {
+  showChart?: boolean;
   useRealtime?: boolean;
 };
 
@@ -277,6 +279,22 @@ export function PollCardVoting(props: PollCardVotingProps) {
           );
         })}
       </ul>
+      {props.showChart && (
+        <ChartDrawer
+          data={optimisticPoll.options.map((option) => {
+            const optionVoteCounts =
+              optimisticPoll.votes.length === 0
+                ? 0
+                : Math.round(
+                    optimisticPoll.votes.filter(
+                      (vote) => vote.optionId === option.id,
+                    ).length,
+                  );
+
+            return { value: optionVoteCounts };
+          })}
+        />
+      )}
     </div>
   );
 }
