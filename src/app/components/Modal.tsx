@@ -34,7 +34,7 @@ export function Modal({
     >
       <div
         className={cn(
-          `m-auto h-fit w-fit overflow-y-auto overflow-x-hidden rounded-xl border border-neutral-800 bg-black p-4 ${styles["modal-in"]}`,
+          `m-auto h-fit w-fit overflow-y-auto overflow-x-hidden rounded-xl border border-neutral-700 bg-black p-4 ${styles["modal-in"]}`,
           className,
         )}
         onMouseDown={(e) => {

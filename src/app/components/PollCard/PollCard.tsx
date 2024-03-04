@@ -10,7 +10,7 @@ export type PollCardProps = {
 
 export function PollCard({ poll, highlightedUserId }: PollCardProps) {
   return (
-    <div className="flex w-full flex-col gap-2 rounded-lg border border-neutral-800 bg-neutral-950 p-6 shadow-md">
+    <div className="flex w-full flex-col gap-2 rounded-lg border border-neutral-700 bg-neutral-950 p-6 shadow-md">
       <Link
         href={`/users/${poll.authorId}`}
         // rel="noopener noreferrer"

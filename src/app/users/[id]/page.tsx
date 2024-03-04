@@ -54,7 +54,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 
   return (
     <>
-      <div className="flex w-full flex-row gap-8 rounded-xl border border-neutral-800 px-3 py-3">
+      <div className="flex w-full flex-row gap-8 rounded-xl border border-neutral-700 px-3 py-3">
         {user?.imageUrl ? (
           <ProfileImage
             src={user.imageUrl}
@@ -62,7 +62,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
             size={100}
           />
         ) : (
-          <div className="flex h-[100px] w-[100px] items-center justify-center rounded-full border border-neutral-800">
+          <div className="flex h-[100px] w-[100px] items-center justify-center rounded-full border border-neutral-700">
             <span className="select-none text-7xl">?</span>
           </div>
         )}

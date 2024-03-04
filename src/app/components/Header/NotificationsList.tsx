@@ -166,7 +166,7 @@ function NotificationCard({
   return (
     <div
       key={item.data.id}
-      className={`relative flex w-full select-none flex-row gap-2 rounded-md border border-neutral-800 bg-neutral-900 p-2 transition-all duration-200
+      className={`relative flex w-full select-none flex-row gap-2 rounded-md border border-neutral-700 bg-neutral-900 p-2 transition-all duration-200
         ${isRemoving && "translate-x-full opacity-0"}
         ${hasBeenRemoved && "hidden"}
       `}

@@ -173,13 +173,13 @@ export function CommentCardActions() {
             className="font-bold [&>span]:hovact:text-neutral-400"
             onClick={() => setIsReplying(!isReplying)}
           >
-            <span className="text-neutral-500 transition-colors">Reply</span>
+            <span className="text-neutral-400 transition-colors">Reply</span>
           </button>
 
           {/* like button */}
           <button
             className={`flex flex-row items-center justify-center gap-1 font-bold
-              ${comment.likes.length > 0 ? "[&>span]:text-purple-500 [&>span]:hovact:text-purple-400 [&>svg]:fill-purple-500 [&>svg]:hovact:fill-purple-400" : "[&>span]:text-neutral-500 [&>span]:hovact:text-neutral-400 [&>svg]:fill-neutral-500 [&>svg]:hovact:fill-neutral-400"}
+              ${comment.likes.length > 0 ? "[&>span]:text-purple-500 [&>span]:hovact:text-purple-400 [&>svg]:fill-purple-500 [&>svg]:hovact:fill-purple-400" : "[&>span]:text-neutral-400 [&>span]:hovact:text-neutral-400 [&>svg]:fill-neutral-500 [&>svg]:hovact:fill-neutral-400"}
               ${user?.id ? "cursor-pointer" : "pointer-events-none cursor-not-allowed"}
             `}
             onClick={handleLike}
@@ -226,7 +226,7 @@ export function CommentCardActions() {
         className="w-fit font-bold [&>span]:hovact:text-neutral-400"
         onClick={() => setIsViewingReplies(!isViewingReplies)}
       >
-        <span className="text-neutral-500 transition-colors">
+        <span className="text-neutral-400 transition-colors">
           View replies ({comment._count.replies})
         </span>
       </button>
@@ -312,10 +312,10 @@ function CommentReplies({
           className="w-fit font-bold [&>span]:hovact:text-neutral-400"
           onClick={handleLoadMore}
         >
-          <span className="text-neutral-500 transition-colors">load more</span>
+          <span className="text-neutral-400 transition-colors">load more</span>
         </button>
       ) : (
-        <p className="w-full text-center text-sm text-neutral-500 underline decoration-neutral-500 underline-offset-4">
+        <p className="w-full text-center text-sm text-neutral-400 underline decoration-neutral-500 underline-offset-4">
           end of reply thread
         </p>
       )}

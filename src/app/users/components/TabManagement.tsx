@@ -17,7 +17,7 @@ export function TabManagement({
         ${tab === tabKey ? "flex" : "hidden"}
       `}
     >
-      <div className="flex flex-col gap-2 overflow-y-auto rounded-xl border border-neutral-800 p-2">
+      <div className="flex flex-col gap-2 overflow-y-auto rounded-xl border border-neutral-700 p-2">
         {children}
       </div>
     </div>
