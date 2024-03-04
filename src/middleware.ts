@@ -6,6 +6,7 @@ import { NextResponse } from "next/server";
 // See https://clerk.com/docs/references/nextjs/auth-middleware for more information about configuring your Middleware
 export default authMiddleware({
   // publicRoutes: ["/", "/welcome", "/api/user"],
+  publicRoutes: ["/api/sitemap.xml"],
 
   afterAuth(auth, req) {
     // allow all users access
