@@ -7,10 +7,6 @@ import { authMiddleware } from "@clerk/nextjs";
 export default authMiddleware({
   // publicRoutes: ["/", "/welcome", "/api/user"],
 
-  beforeAuth() {
-    // allow all requests to be processed
-    return NextResponse.next();
-  },
   afterAuth(auth, req) {
     // allow all users access
     return NextResponse.next();
