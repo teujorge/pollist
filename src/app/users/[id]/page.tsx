@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { db } from "@/database/db";
 import { auth } from "@clerk/nextjs";
 import { Tabs } from "@/app/users/components/Tabs";
@@ -7,7 +6,15 @@ import { notFound } from "next/navigation";
 import { getAnonUser } from "@/app/api/anon/actions";
 import { ProfileImage } from "@/app/components/ProfileImage";
 import { FollowButton } from "@/app/users/components/FollowButton";
-import { getPendingFollows } from "../actions";
+import { UserFollowedList } from "../components/UserFollowedList";
+import { UserFollowersList } from "../components/UserFollowersList";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 // import {
 //   adminId,
@@ -19,32 +26,31 @@ import { getPendingFollows } from "../actions";
 export default async function UserPage({ params }: { params: { id: string } }) {
   const { userId: myId } = auth();
 
-  const [user, totalPendingCount] = await Promise.all([
-    // User data
-    db.user.findUnique({
-      where: {
-        id: params.id,
-      },
-      select: {
-        imageUrl: true,
-        username: true,
-        anon: true,
-        _count: {
-          select: {
-            polls: true,
-            votes: true,
-            followers: { where: { accepted: true } },
-            following: { where: { accepted: true } },
-          },
+  const user = await db.user.findUnique({
+    where: {
+      id: params.id,
+    },
+    select: {
+      imageUrl: true,
+      username: true,
+      anon: true,
+      _count: {
+        select: {
+          polls: true,
+          votes: true,
+          followers: { where: { accepted: true } },
+          following: { where: { accepted: true } },
         },
       },
-    }),
-    getPendingFollows(params.id),
-  ]);
+    },
+  });
 
   let anonId: string | undefined = undefined;
   if (!user) anonId = (await getAnonUser())?.id;
   if (!user && !anonId) return notFound();
+
+  const followersCount = user?._count?.following ?? 0;
+  const followingCount = user?._count?.followers ?? 0;
 
   return (
     <>
@@ -71,20 +77,40 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 
             <Stat label="votes" count={user?._count?.votes ?? 0} />
 
-            <Link href={`/users/${params.id}/following`}>
-              <Stat label="following" count={user?._count?.followers ?? 0} />
-            </Link>
+            {myId ? (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button>
+                    <Stat label="following" count={followingCount} />
+                  </button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Following</DialogTitle>
+                  </DialogHeader>
+                  <UserFollowedList userId={myId} />
+                </DialogContent>
+              </Dialog>
+            ) : (
+              <Stat label="following" count={followingCount} />
+            )}
 
-            <Link href={`/users/${params.id}/followers`}>
-              <Stat label="followers" count={user?._count?.following ?? 0} />
-            </Link>
-
-            {myId === params.id && (
-              <>
-                <Link href={`/users/${params.id}/pending`}>
-                  <Stat label="pending" count={totalPendingCount.length} />
-                </Link>
-              </>
+            {myId ? (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button>
+                    <Stat label="followers" count={followersCount} />
+                  </button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Followers</DialogTitle>
+                  </DialogHeader>
+                  <UserFollowersList userId={myId} />
+                </DialogContent>
+              </Dialog>
+            ) : (
+              <Stat label="followers" count={followersCount} />
             )}
           </div>
         </div>

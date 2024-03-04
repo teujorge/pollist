@@ -1,8 +1,8 @@
+import Link from "next/link";
 import { auth } from "@clerk/nextjs";
 import { ActiveFollowedCardAction } from "./ActiveFollowedCardActions";
-import type { User } from "@prisma/client";
 import { ProfileImage } from "@/app/components/ProfileImage";
-import Link from "next/link";
+import type { User } from "@prisma/client";
 
 export async function ActiveFollowedCard({
   userId,
@@ -17,8 +17,7 @@ export async function ActiveFollowedCard({
     <div className="gap- flex flex-row items-center justify-center gap-1">
       <Link
         className="flex flex-row items-center justify-center gap-1"
-        href={""}
-        // href={`/users/${followed.id}`}
+        href={`/users/${followed.id}`}
       >
         <ProfileImage
           src={followed.imageUrl}
