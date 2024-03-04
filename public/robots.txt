@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /api/
+Allow: /api/sitemap.xml
+
+Sitemap: https://pollist.org/api/sitemap.xml
