@@ -17,13 +17,7 @@ export default async function PollPage({
   searchParams: Record<string, string | undefined>;
 }) {
   const poll = await db.poll.findUnique({
-    where: {
-      id: params.id,
-      OR: [
-        { expiresAt: { gte: new Date() } }, // Polls that expire in the future
-        { expiresAt: null }, // Polls with no expiration date
-      ],
-    },
+    where: { id: params.id },
     include: {
       options: true,
       votes: true,
@@ -58,7 +52,7 @@ export default async function PollPage({
         </div>
       </div>
 
-      <PollCardVoting poll={poll} showChart useRealtime />
+      <PollCardVoting poll={poll} showChart />
 
       <Suspense fallback={<AllCommentsFallback />}>
         <AllComments pollId={params.id} parentId={searchParams.parentId} />

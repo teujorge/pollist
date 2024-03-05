@@ -51,7 +51,6 @@ export function CommentForm({
           username: user?.username ?? "optimistic",
           imageUrl: user?.imageUrl ?? null,
           bio: null,
-          anon: false,
         },
         parent: {
           authorId: "optimistic",

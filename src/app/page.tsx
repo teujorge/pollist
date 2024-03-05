@@ -21,7 +21,7 @@ export default function HomePage({
   const category = searchParams?.category?.toString() ?? "";
 
   return (
-    <main className="flex flex-col items-center gap-2">
+    <main className="flex w-full flex-col items-center gap-2">
       <div className="sticky top-10 z-20 flex w-full flex-row items-end justify-center gap-2 bg-gradient-to-b from-black from-80% pt-6 sm:items-center">
         <h1 className="text-4xl font-bold">Polls</h1>
         <div className="flex-grow" />

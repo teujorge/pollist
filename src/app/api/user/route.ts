@@ -1,8 +1,8 @@
 import { db } from "@/database/db";
+import { Webhook } from "svix";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import type { UserWebhookEvent } from "@clerk/clerk-sdk-node";
-import { Webhook } from "svix";
 
 export async function POST(req: NextRequest) {
   try {
@@ -47,7 +47,6 @@ export async function POST(req: NextRequest) {
             id: data.id,
             username: data.username ?? data.first_name ?? data.last_name,
             imageUrl: data.image_url,
-            anon: false,
           },
         });
 

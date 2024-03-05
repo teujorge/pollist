@@ -2,7 +2,7 @@
 
 import { toast } from "sonner";
 import { Loader } from "../Loader";
-import { useUser } from "@clerk/nextjs";
+import { SignInButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import { PAGE_SIZE } from "@/constants";
 import { ThumbUpSvg } from "@/app/svgs/ThumbUpSvg";
 import { NewComments } from "./NewComments";
@@ -164,29 +164,40 @@ export function CommentCardActions() {
     toast("Link copied to clipboard");
   }
 
+  const replyButtonComponent = (
+    <button
+      className="font-bold [&>span]:hovact:text-neutral-400"
+      onClick={user ? () => setIsReplying(!isReplying) : undefined}
+    >
+      <span className="text-neutral-400 transition-colors">Reply</span>
+    </button>
+  );
+
+  const likeButtonComponent = (
+    <button
+      className={`flex flex-row items-center justify-center gap-1 font-bold
+      ${comment.likes.length > 0 ? "[&>span]:text-purple-500 [&>span]:hovact:text-purple-400 [&>svg]:fill-purple-500 [&>svg]:hovact:fill-purple-400" : "[&>span]:text-neutral-400 [&>span]:hovact:text-neutral-400 [&>svg]:fill-neutral-500 [&>svg]:hovact:fill-neutral-400"}
+      `}
+      onClick={user ? handleLike : undefined}
+    >
+      <ThumbUpSvg className="h-6 w-6 transition-colors" />
+      <span className="transition-colors">{comment._count.likes}</span>
+    </button>
+  );
+
   return (
     <>
       <div className="flex-warp flex items-center justify-between gap-4">
         <div className="flex-warp flex items-center gap-4">
-          {/* reply button */}
-          <button
-            className="font-bold [&>span]:hovact:text-neutral-400"
-            onClick={() => setIsReplying(!isReplying)}
-          >
-            <span className="text-neutral-400 transition-colors">Reply</span>
-          </button>
+          <SignedIn>{replyButtonComponent}</SignedIn>
+          <SignedOut>
+            <SignInButton mode="modal">{replyButtonComponent}</SignInButton>
+          </SignedOut>
 
-          {/* like button */}
-          <button
-            className={`flex flex-row items-center justify-center gap-1 font-bold
-              ${comment.likes.length > 0 ? "[&>span]:text-purple-500 [&>span]:hovact:text-purple-400 [&>svg]:fill-purple-500 [&>svg]:hovact:fill-purple-400" : "[&>span]:text-neutral-400 [&>span]:hovact:text-neutral-400 [&>svg]:fill-neutral-500 [&>svg]:hovact:fill-neutral-400"}
-              ${user?.id ? "cursor-pointer" : "pointer-events-none cursor-not-allowed"}
-            `}
-            onClick={handleLike}
-          >
-            <ThumbUpSvg className="h-6 w-6 transition-colors" />
-            <span className="transition-colors">{comment._count.likes}</span>
-          </button>
+          <SignedIn>{likeButtonComponent}</SignedIn>
+          <SignedOut>
+            <SignInButton mode="modal">{likeButtonComponent}</SignInButton>
+          </SignedOut>
         </div>
 
         {/* options popover */}

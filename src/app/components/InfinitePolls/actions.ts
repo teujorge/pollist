@@ -23,14 +23,7 @@ export async function getInfinitePolls({
   const polls = await db.poll.findMany({
     where: {
       title: search ? { contains: search } : undefined,
-
-      OR: [
-        { expiresAt: { gte: new Date() } }, // Polls that expire in the future
-        { expiresAt: null }, // Polls with no expiration date
-      ],
-
       authorId: authorId ? { contains: authorId } : undefined,
-
       votes: {
         // Filter by voterId
         ...(voterId
@@ -52,7 +45,6 @@ export async function getInfinitePolls({
             }
           : {}),
       },
-
       ...(isControversial ? { controversial: true } : {}),
     },
     orderBy: isTrending

@@ -24,49 +24,40 @@ type NotificationData =
   | NotificationFollowAcceptedItem;
 
 export function NotificationList() {
-  const { notifications: _notifications } = useApp();
+  const { notifications } = useApp();
 
-  const [notifications, setNotifications] = useState<
-    {
-      type: NotificationType;
-      data: NotificationData;
-    }[]
-  >([]);
-
-  // Initial data "load"
-  useEffect(() => {
-    const notificationList = [
-      ..._notifications.comments.map((notification) => ({
-        type: "CommentNotification" as NotificationType,
-        data: notification,
-      })),
-      ..._notifications.commentLikes.map((notification) => ({
-        type: "CommentLikeNotification" as NotificationType,
-        data: notification,
-      })),
-      ..._notifications.followsPending.map((notification) => ({
-        type: "FollowPendingNotification" as NotificationType,
-        data: notification,
-      })),
-      ..._notifications.followsAccepted.map((notification) => ({
-        type: "FollowAcceptedNotification" as NotificationType,
-        data: notification,
-      })),
-    ].sort(
-      (a, b) =>
-        new Date(a.data.createdAt).getTime() -
-        new Date(b.data.createdAt).getTime(),
-    );
-
-    setNotifications(notificationList);
-  }, [_notifications]);
+  const notificationList: {
+    type: NotificationType;
+    data: NotificationData;
+  }[] = [
+    ...notifications.comments.map((notification) => ({
+      type: "CommentNotification" as NotificationType,
+      data: notification,
+    })),
+    ...notifications.commentLikes.map((notification) => ({
+      type: "CommentLikeNotification" as NotificationType,
+      data: notification,
+    })),
+    ...notifications.followsPending.map((notification) => ({
+      type: "FollowPendingNotification" as NotificationType,
+      data: notification,
+    })),
+    ...notifications.followsAccepted.map((notification) => ({
+      type: "FollowAcceptedNotification" as NotificationType,
+      data: notification,
+    })),
+  ].sort(
+    (a, b) =>
+      new Date(a.data.createdAt).getTime() -
+      new Date(b.data.createdAt).getTime(),
+  );
 
   return (
     <div
       className="flex min-w-fit flex-col items-center gap-2 overflow-y-auto overflow-x-hidden overscroll-y-contain p-2"
       style={{ maxHeight: "calc(100dvh - 100px)" }}
     >
-      {notifications.map((item) => (
+      {notificationList.map((item) => (
         <NotificationCard key={`${item.type}-${item.data.id}`} item={item} />
       ))}
     </div>

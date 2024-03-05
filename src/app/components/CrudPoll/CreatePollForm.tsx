@@ -1,19 +1,16 @@
 "use client";
 
+import { Input } from "../Input";
+import { Loader } from "../Loader";
+import { useEffect } from "react";
+import { CancelSvg } from "@/app/svgs/CancelSvg";
 import { createPoll } from "./actions";
-import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createPollSchema } from "./validation";
-import { Input } from "../Input";
-import { CancelSvg } from "@/app/svgs/CancelSvg";
-import { Loader } from "../Loader";
+import { useForm, useFieldArray } from "react-hook-form";
 import type { CreatePollFields } from "./validation";
-import { useEffect } from "react";
-import { useUser } from "@clerk/nextjs";
 
 export function CreatePollForm() {
-  const { user } = useUser();
-
   const form = useForm<CreatePollFields>({
     resolver: zodResolver(createPollSchema),
     defaultValues: {
@@ -98,28 +95,6 @@ export function CreatePollForm() {
       >
         + Add Option
       </button>
-
-      <div className="flex w-full flex-wrap gap-2">
-        {user?.id ? (
-          <>
-            <label className="flex w-fit items-center gap-1">
-              <input type="checkbox" {...form.register("realtime")} />
-              <span className="text-sm">Realtime</span>
-            </label>
-
-            <label className="flex w-fit items-center gap-1">
-              <input type="checkbox" {...form.register("allowAnon")} />
-              <span className="text-sm">Allow Anon</span>
-            </label>
-          </>
-        ) : (
-          <label className="flex w-fit items-center gap-1">
-            <span className="text-sm">Duration</span>
-            <input {...form.register("duration")} type="number" />
-            <span className="text-xs">Hrs</span>
-          </label>
-        )}
-      </div>
 
       <div className="flex h-12 items-center justify-center">
         {form.formState.isSubmitting || form.formState.isSubmitSuccessful ? (

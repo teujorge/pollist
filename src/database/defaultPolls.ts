@@ -224,8 +224,6 @@ export async function createPollsFromList() {
           options: {
             create: options.map((option) => ({ text: option.text })),
           },
-          realtime: true,
-          allowAnon: true,
         },
       });
     } catch (error) {

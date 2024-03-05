@@ -3,7 +3,6 @@ import { auth } from "@clerk/nextjs";
 import { Tabs } from "@/app/users/components/Tabs";
 import { Stat } from "@/app/users/components/Stat";
 import { notFound } from "next/navigation";
-import { getAnonUser } from "@/app/api/anon/actions";
 import { ProfileImage } from "@/app/components/ProfileImage";
 import { FollowButton } from "@/app/users/components/FollowButton";
 import { UserFollowedList } from "../components/UserFollowedList";
@@ -33,7 +32,6 @@ export default async function UserPage({ params }: { params: { id: string } }) {
     select: {
       imageUrl: true,
       username: true,
-      anon: true,
       _count: {
         select: {
           polls: true,
@@ -45,37 +43,24 @@ export default async function UserPage({ params }: { params: { id: string } }) {
     },
   });
 
-  let anonId: string | undefined = undefined;
-  if (!user) anonId = (await getAnonUser())?.id;
-  if (!user && !anonId) return notFound();
+  if (!user) return notFound();
 
-  const followersCount = user?._count?.following ?? 0;
-  const followingCount = user?._count?.followers ?? 0;
+  const followersCount = user._count?.following ?? 0;
+  const followingCount = user._count?.followers ?? 0;
 
   return (
     <>
       <div className="flex w-full flex-row gap-8 rounded-xl border border-neutral-700 px-3 py-3">
-        {user?.imageUrl ? (
-          <ProfileImage
-            src={user.imageUrl}
-            username={user.username}
-            size={100}
-          />
-        ) : (
-          <div className="flex h-[100px] w-[100px] items-center justify-center rounded-full border border-neutral-700">
-            <span className="select-none text-7xl">?</span>
-          </div>
-        )}
+        <ProfileImage src={user.imageUrl} username={user.username} size={100} />
 
         <div className="flex flex-col justify-around">
           <div className="flex items-center gap-2">
-            <h1>{user?.username ?? "Anon"}</h1>
-            {user?.anon === false && <FollowButton userId={params.id} />}
+            <h1>{user.username}</h1>
+            {myId && <FollowButton userId={params.id} />}
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-            <Stat label="polls" count={user?._count?.polls ?? 0} />
-
-            <Stat label="votes" count={user?._count?.votes ?? 0} />
+            <Stat label="polls" count={user._count.polls} />
+            <Stat label="votes" count={user._count.votes} />
 
             {myId ? (
               <Dialog>

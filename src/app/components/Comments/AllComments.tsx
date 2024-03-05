@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { db } from "@/database/db";
-import { auth } from "@clerk/nextjs";
+import { SignInButton, auth } from "@clerk/nextjs";
 import { Loader } from "../Loader";
 import { notFound } from "next/navigation";
 import { CommentForm } from "./CommentForm";
@@ -58,12 +58,20 @@ export async function AllComments({
       <h2 className="pb-2 pt-16 text-2xl">Comments</h2>
       <InfiniteComments pollId={pollId} parentId={parentId} />
       <div className="sticky bottom-0 bg-gradient-to-t from-black from-80% ">
-        <CommentForm
-          pollId={pollId}
-          parentId={parentId}
-          label={undefined}
-          placeholder="Write your comment here..."
-        />
+        {userId ? (
+          <CommentForm
+            pollId={pollId}
+            parentId={parentId}
+            label={undefined}
+            placeholder="Write your comment here..."
+          />
+        ) : (
+          <SignInButton mode="modal">
+            <p className="w-full cursor-pointer p-4 text-center text-neutral-400 hovact:text-white">
+              Sign in to share your thoughts
+            </p>
+          </SignInButton>
+        )}
       </div>
     </NewCommentsProvider>
   );

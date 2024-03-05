@@ -2,24 +2,24 @@
 
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { useApp } from "@/app/app";
+import { useUser } from "@clerk/nextjs";
 import { LockSvg } from "@/app/svgs/LockSvg";
 import { supabase } from "@/database/dbRealtime";
 import { handleVote } from "./actions";
 import { ChartDrawer } from "@/app/components/PollCard/ChartDrawer";
-import type { PollCardProps } from "./PollCard";
-import type { PollsDetails } from "../InfinitePolls/actions";
-import type { RealtimeChannel } from "@supabase/realtime-js";
+import { useEffect, useRef, useState } from "react";
 import type { Vote } from "@prisma/client";
-import { type MutableRefObject, useEffect, useRef, useState } from "react";
+import type { PollsDetails } from "../InfinitePolls/actions";
+import type { PollCardProps } from "./PollCard";
+import type { RealtimeChannel } from "@supabase/realtime-js";
+import type { MutableRefObject } from "react";
 
 type PollCardVotingProps = PollCardProps & {
   showChart?: boolean;
-  useRealtime?: boolean;
 };
 
 export function PollCardVoting(props: PollCardVotingProps) {
-  const { userId, isAnon } = useApp();
+  const { user } = useUser();
 
   const supabaseChannelRef: MutableRefObject<RealtimeChannel | undefined> =
     useRef();
@@ -28,17 +28,16 @@ export function PollCardVoting(props: PollCardVotingProps) {
     props.poll,
   );
 
-  const userVote = optimisticPoll.votes.find((vote) => vote.voterId === userId);
+  const userVote = optimisticPoll.votes.find(
+    (vote) => vote.voterId === user?.id,
+  );
 
   const [isVotePending, setIsVotePending] = useState(false);
 
   // Subscribe to changes in the database
   useEffect(() => {
-    if (!props.useRealtime) return;
-    if (!optimisticPoll.realtime) return;
-
     supabaseChannelRef.current = supabase
-      ?.channel(`${userId}-votes`)
+      ?.channel(`${user?.id}-votes`)
       .on(
         "postgres_changes",
         {
@@ -123,18 +122,11 @@ export function PollCardVoting(props: PollCardVotingProps) {
       .subscribe();
 
     return () => void supabaseChannelRef.current?.unsubscribe();
-  }, [
-    userId,
-    props.poll.id,
-    props.useRealtime,
-    isVotePending,
-    optimisticPoll.votes,
-    optimisticPoll.realtime,
-  ]);
+  }, [user, props.poll.id, isVotePending, optimisticPoll.votes]);
 
   async function onVote(optionId: string) {
-    if (isAnon && !props.poll.allowAnon) {
-      toast.warning("Sign in required to vote on this poll");
+    if (!user?.id) {
+      toast.warning("Sign in required to vote");
       return;
     }
 
@@ -154,11 +146,11 @@ export function PollCardVoting(props: PollCardVotingProps) {
 
       setOptimisticPoll((prev) => {
         // Get users current vote
-        const prevVote = prev.votes.find((vote) => vote.voterId === userId);
+        const prevVote = prev.votes.find((vote) => vote.voterId === user.id);
 
         // If un-voting, remove the vote from the array
         const updatedVotes = prev.votes.filter(
-          (vote) => vote.voterId !== userId,
+          (vote) => vote.voterId !== user.id,
         );
 
         // If voting, add the updated vote to the array
@@ -171,7 +163,7 @@ export function PollCardVoting(props: PollCardVotingProps) {
             : {
                 id: "optimistic-vote-id",
                 createdAt: new Date(),
-                voterId: userId ?? "anon",
+                voterId: user.id,
                 pollId: optimisticPoll.id,
                 optionId: idToSet,
               };
@@ -188,13 +180,13 @@ export function PollCardVoting(props: PollCardVotingProps) {
       const dbVote = await handleVote({
         pollId: optimisticPoll.id,
         optionId: idToSet,
-        userId: userId ?? "anon",
+        userId: user.id,
         voteId: userVote?.id,
       });
 
       if (isUnVoting) return;
       setOptimisticPoll((prev) => {
-        const newVotes = prev.votes.filter((vote) => vote.voterId !== userId);
+        const newVotes = prev.votes.filter((vote) => vote.voterId !== user.id);
         newVotes.push(dbVote);
         return { ...prev, votes: newVotes };
       });
@@ -218,19 +210,17 @@ export function PollCardVoting(props: PollCardVotingProps) {
     (vote) => vote.voterId === props.highlightedUserId,
   )?.optionId;
 
-  const voteBlocked = isAnon && !props.poll.allowAnon;
+  const voteBlocked = !user?.id;
 
   return (
     <div className="flex h-full w-full flex-grow flex-col pt-2 transition-opacity">
       {voteBlocked && (
-        <div title="Sign in required to vote on this poll" className="ml-auto">
+        <div title="Sign in required to vote" className="ml-auto">
           <LockSvg className="fill-neutral-500" />
         </div>
       )}
       <ul
-        title={
-          voteBlocked ? "Sign in required to vote on this poll" : undefined
-        }
+        title={voteBlocked ? "Sign in required to vote" : undefined}
         className={`divide-y divide-neutral-800
           ${voteBlocked && "opacity-50"}
         `}

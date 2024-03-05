@@ -20,7 +20,6 @@ model User {
   following                   Follow[]                     @relation("Following")
   followers                   Follow[]                     @relation("Followers")
   bio                         String?
-  anon                        Boolean
   notificationsComment        NotificationComment[]
   notificationsCommentLike    NotificationCommentLike[]
   notificationsFollowPending  NotificationFollowPending[]  @relation("NotifyeeRelation")
@@ -73,9 +72,6 @@ model Poll {
   id            String     @id @default(uuid())
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
-  expiresAt     DateTime?
-  realtime      Boolean    @default(false)
-  allowAnon     Boolean    @default(false)
   authorId      String
   title         String
   description   String

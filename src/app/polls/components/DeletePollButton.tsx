@@ -1,7 +1,7 @@
 "use client";
 
-import { useApp } from "@/app/app";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 
 export function DeletePollButton({
   pollId,
@@ -10,9 +10,9 @@ export function DeletePollButton({
   pollId: string;
   pollAuthorId: string;
 }) {
-  const { userId } = useApp();
+  const { user } = useUser();
 
-  if (userId !== pollAuthorId) return null;
+  if (user?.id !== pollAuthorId) return null;
 
   return (
     <Link

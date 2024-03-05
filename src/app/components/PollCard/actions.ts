@@ -66,13 +66,7 @@ export async function handleVote({
 
 export async function getPoll(pollId: string) {
   const poll = await db.poll.findUnique({
-    where: {
-      id: pollId,
-      OR: [
-        { expiresAt: { gte: new Date() } }, // Polls that expire in the future
-        { expiresAt: null }, // Polls with no expiration date
-      ],
-    },
+    where: { id: pollId },
     include: { votes: true },
   });
 

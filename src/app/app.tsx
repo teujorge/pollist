@@ -1,12 +1,10 @@
 "use client";
 
 import Script from "next/script";
-import GlobalLoading from "./loading";
 import { Header } from "./components/Header/Header";
 import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/database/dbRealtime";
 import { Analytics } from "@vercel/analytics/react";
-import { getAnonUser } from "./api/anon/actions";
 import {
   getNotificationsItems,
   getNotificationsCommentRelation,
@@ -30,20 +28,16 @@ import type {
   NotificationFollowAcceptedItem,
 } from "./components/Header/actions";
 
-type UserData = {
-  userId: string | undefined;
-  isAnon: boolean;
-  loading: boolean;
-  notifications: {
-    comments: NotificationCommentItem[];
-    commentLikes: NotificationCommentLikeItem[];
-    followsPending: NotificationFollowPendingItem[];
-    followsAccepted: NotificationFollowAcceptedItem[];
-  };
+type Notifications = {
+  comments: NotificationCommentItem[];
+  commentLikes: NotificationCommentLikeItem[];
+  followsPending: NotificationFollowPendingItem[];
+  followsAccepted: NotificationFollowAcceptedItem[];
 };
 
-type AppProviderValue = UserData & {
-  setHasNotifications: (hasNotification: boolean) => void;
+type AppProviderValue = {
+  notifications: Notifications;
+  setNotifications: (notifications: Notifications) => void;
 };
 
 export function App({ children }: { children: React.ReactNode }) {
@@ -53,44 +47,26 @@ export function App({ children }: { children: React.ReactNode }) {
 
   const { user } = useUser();
 
-  const [userId, setUserId] = useState<string | undefined>();
-
-  const [userData, setUserStatus] = useState<UserData>({
-    userId: undefined,
-    isAnon: true,
-    loading: true,
-    notifications: {
-      comments: [],
-      commentLikes: [],
-      followsPending: [],
-      followsAccepted: [],
-    },
+  const [notifications, setNotifications] = useState<Notifications>({
+    comments: [],
+    commentLikes: [],
+    followsPending: [],
+    followsAccepted: [],
   });
-
-  useEffect(() => {
-    async function initUserId() {
-      const id = (await getAnonUser())?.id;
-      if (id) setUserId(id);
-    }
-    void initUserId();
-  }, []);
 
   useEffect(() => {
     function handleOnNotificationInsert({
       type,
       payload,
     }: {
-      type: keyof UserData["notifications"];
+      type: keyof Notifications;
       payload: Record<string, string>;
     }) {
       console.log("Notification inserted:", type, payload);
-      setUserStatus((prev) => {
+      setNotifications((prev) => {
         return {
           ...prev,
-          notifications: {
-            ...prev.notifications,
-            [type]: [...prev.notifications[type], { ...payload }],
-          },
+          [type]: [...prev[type], payload],
         };
       });
     }
@@ -99,23 +75,19 @@ export function App({ children }: { children: React.ReactNode }) {
       type,
       payload,
     }: {
-      type: keyof UserData["notifications"];
+      type: keyof Notifications;
       payload: Record<string, string>;
     }) {
       console.log("Notification updated:", type, payload);
-      setUserStatus((prev) => {
-        const updatedNotifications = prev.notifications[type].map(
-          (notification) =>
-            notification.id === payload.id
-              ? { ...notification, ...payload }
-              : notification,
+      setNotifications((prev) => {
+        const updatedNotifications = prev[type].map((notification) =>
+          notification.id === payload.id
+            ? { ...notification, ...payload }
+            : notification,
         );
         return {
           ...prev,
-          notifications: {
-            ...prev.notifications,
-            [type]: updatedNotifications,
-          },
+          [type]: updatedNotifications,
         };
       });
     }
@@ -124,20 +96,17 @@ export function App({ children }: { children: React.ReactNode }) {
       type,
       payload,
     }: {
-      type: keyof UserData["notifications"];
+      type: keyof Notifications;
       payload: Record<string, string>;
     }) {
       console.log("Notification deleted:", type, payload);
-      setUserStatus((prev) => {
-        const updatedNotifications = prev.notifications[type].filter(
+      setNotifications((prev) => {
+        const updatedNotifications = prev[type].filter(
           (notification) => notification.id !== payload.id,
         );
         return {
           ...prev,
-          notifications: {
-            ...prev.notifications,
-            [type]: updatedNotifications,
-          },
+          [type]: updatedNotifications,
         };
       });
     }
@@ -150,15 +119,12 @@ export function App({ children }: { children: React.ReactNode }) {
       console.log("Initial notifications:", notifications);
 
       if (notifications) {
-        setUserStatus((prev) => ({
-          ...prev,
-          notifications: {
-            comments: notifications.notificationsComment,
-            commentLikes: notifications.notificationsCommentLike,
-            followsPending: notifications.notificationsFollowPending,
-            followsAccepted: notifications.notificationsFollowAccepted,
-          },
-        }));
+        setNotifications({
+          comments: notifications.notificationsComment,
+          commentLikes: notifications.notificationsCommentLike,
+          followsPending: notifications.notificationsFollowPending,
+          followsAccepted: notifications.notificationsFollowAccepted,
+        });
       }
 
       // notification subscription for subsequent changes
@@ -494,51 +460,26 @@ export function App({ children }: { children: React.ReactNode }) {
         });
     }
 
-    if (user) {
-      console.log("setting user:", user);
-      setUserStatus({
-        userId: user.id,
-        isAnon: false,
-        loading: false,
-        notifications: {
-          comments: [],
-          commentLikes: [],
-          followsPending: [],
-          followsAccepted: [],
-        },
-      });
-    } else {
-      console.log("setting anon user");
-      setUserStatus({
-        userId: userId,
-        isAnon: true,
-        loading: false,
-        notifications: {
-          comments: [],
-          commentLikes: [],
-          followsPending: [],
-          followsAccepted: [],
-        },
-      });
-    }
+    console.log("resetting user:", user);
+    setNotifications({
+      comments: [],
+      commentLikes: [],
+      followsPending: [],
+      followsAccepted: [],
+    });
 
     void handleInitNotifications();
 
     return () => void notificationsSubscriptionRef.current?.unsubscribe();
-  }, [user, userId]);
-
-  useEffect(() => {
-    console.log("notifications changed", userData.notifications);
-  }, [userData.notifications]);
+  }, [user]);
 
   const memoizedChildren = useMemo(() => children, [children]);
 
   return (
     <AppProvider
       value={{
-        ...userData,
-        setHasNotifications: (hasNotifications: boolean) =>
-          setUserStatus((prev) => ({ ...prev, hasNotifications })),
+        notifications,
+        setNotifications,
       }}
     >
       {(user?.id !== undefined || true) && (
@@ -550,8 +491,8 @@ export function App({ children }: { children: React.ReactNode }) {
         />
       )}
       <Analytics />
-      <Header userId={userData.userId} />
-      {userData.loading ? <GlobalLoading /> : memoizedChildren}
+      <Header userId={user?.id} />
+      {memoizedChildren}
     </AppProvider>
   );
 }
