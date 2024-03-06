@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { db } from "@/database/db";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { PollCardVoting } from "@/app/components/PollCard/PollCardVoting";
+import { getSinglePoll } from "@/app/components/InfinitePolls/actions";
+import { PollCardActions } from "@/app/components/PollCard/PollCardActions";
 import { DeletePollButton } from "@/app/polls/components/DeletePollButton";
 import {
   AllComments,
@@ -16,14 +16,7 @@ export default async function PollPage({
   params: { id: string };
   searchParams: Record<string, string | undefined>;
 }) {
-  const poll = await db.poll.findUnique({
-    where: { id: params.id },
-    include: {
-      options: true,
-      votes: true,
-      author: true,
-    },
-  });
+  const poll = await getSinglePoll({ pollId: params.id });
 
   if (!poll) return notFound();
 
@@ -52,7 +45,7 @@ export default async function PollPage({
         </div>
       </div>
 
-      <PollCardVoting poll={poll} showChart />
+      <PollCardActions poll={poll} showChart />
 
       <Suspense fallback={<AllCommentsFallback />}>
         <AllComments pollId={params.id} parentId={searchParams.parentId} />
