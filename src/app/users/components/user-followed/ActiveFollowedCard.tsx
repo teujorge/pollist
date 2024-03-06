@@ -14,7 +14,7 @@ export async function ActiveFollowedCard({
   const { userId: myId } = auth();
 
   return (
-    <div className="gap- flex flex-row items-center justify-center gap-1">
+    <div className="flex w-full flex-row items-center justify-between gap-1">
       <Link
         className="flex flex-row items-center justify-center gap-1"
         href={`/users/${followed.id}`}

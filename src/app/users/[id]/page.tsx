@@ -69,7 +69,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                     <Stat label="following" count={followingCount} />
                   </button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="flex w-72 flex-col">
                   <DialogHeader>
                     <DialogTitle>Following</DialogTitle>
                   </DialogHeader>
@@ -87,7 +87,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                     <Stat label="followers" count={followersCount} />
                   </button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="flex w-72 flex-col">
                   <DialogHeader>
                     <DialogTitle>Followers</DialogTitle>
                   </DialogHeader>

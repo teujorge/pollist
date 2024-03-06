@@ -7,30 +7,53 @@ import { declineFollow } from "../../actions";
 import type { User } from "@prisma/client";
 
 export function ActiveFollowerCardActions({ follower }: { follower: User }) {
-  const [status, setStatus] = useState({ loading: false, complete: false });
+  const [isDeclining, setIsDeclining] = useState(false);
 
-  async function _declineFollow() {
+  async function handleRemoveFollow() {
+    setIsDeclining(true);
     try {
-      setStatus({ loading: true, complete: false });
       await declineFollow(follower.id);
-      setStatus({ loading: false, complete: true });
     } catch (error) {
+      setIsDeclining(false);
       console.error(error);
-      toast.error("Failed to decline follow");
-      setStatus({ loading: false, complete: false });
+
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to decline follow");
+      }
     }
   }
 
-  return status.complete ? null : status.loading ? (
-    <Loader className="h-4 w-4 border-2" />
-  ) : (
-    <button
-      onClick={_declineFollow}
-      className="rounded-lg border border-transparent bg-neutral-900 px-1.5"
-    >
-      <span className="text-red-500 underline decoration-transparent hovact:decoration-red-500">
-        Remove
-      </span>
-    </button>
+  return (
+    <div className="flex h-9 w-fit items-center justify-center overflow-hidden">
+      {isDeclining ? (
+        <Loader className="h-4 w-4 border-2" />
+      ) : (
+        <button
+          type="button"
+          onClick={handleRemoveFollow}
+          className="flex items-center justify-center rounded-lg bg-neutral-900 px-2 py-1 transition-colors hovact:bg-red-500/20"
+        >
+          <span className="text-red-500">Remove</span>
+        </button>
+      )}
+    </div>
   );
+}
+
+{
+  /* <div className="flex h-9 w-fit items-center justify-center overflow-hidden">
+{isUnfollowing ? (
+  <Loader className="h-5 w-5 border-2" />
+) : (
+  <button
+    type="button"
+    onClick={handleUnfollow}
+    className="flex items-center justify-center rounded-lg bg-neutral-900 px-2 py-1 transition-colors hovact:bg-red-500/20"
+  >
+    <span className="text-red-500">Unfollow</span>
+  </button>
+)}
+</div> */
 }

@@ -21,7 +21,7 @@ export async function UserFollowersList({ userId }: { userId: string }) {
       No one is following you yet!
     </p>
   ) : (
-    <div className="gap flex flex-col gap-1">
+    <div className="flex h-full w-full flex-col gap-1 overflow-y-auto">
       {followers.map((f) => (
         <ActiveFollowerCard
           key={f.follower.id}

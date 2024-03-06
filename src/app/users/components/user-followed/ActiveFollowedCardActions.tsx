@@ -1,7 +1,8 @@
 "use client";
 
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { Loader } from "@/app/components/Loader";
+import { useState } from "react";
 import { unfollow } from "../../actions";
 import type { User } from "@prisma/client";
 
@@ -10,26 +11,32 @@ export async function ActiveFollowedCardAction({
 }: {
   followed: User;
 }) {
-  const router = useRouter();
+  const [isUnfollowing, setIsUnfollowing] = useState(false);
 
-  async function _unfollow() {
+  async function handleUnfollow() {
+    setIsUnfollowing(true);
     try {
       await unfollow(followed.id);
-      router.back();
     } catch (error) {
+      setIsUnfollowing(false);
       console.error(error);
       toast.error("Failed to unfollow");
     }
   }
 
   return (
-    <button
-      onClick={_unfollow}
-      className="rounded-lg border border-transparent bg-neutral-900 px-1.5"
-    >
-      <span className=" text-red-500 underline decoration-transparent hovact:decoration-red-500">
-        Unfollow
-      </span>
-    </button>
+    <div className="flex h-9 w-fit items-center justify-center overflow-hidden">
+      {isUnfollowing ? (
+        <Loader className="h-4 w-4 border-2" />
+      ) : (
+        <button
+          type="button"
+          onClick={handleUnfollow}
+          className="flex items-center justify-center rounded-lg bg-neutral-900 px-2 py-1 transition-colors hovact:bg-red-500/20"
+        >
+          <span className="text-red-500">Unfollow</span>
+        </button>
+      )}
+    </div>
   );
 }
