@@ -5,7 +5,7 @@ import { useApp } from "@/app/app";
 import { useUser } from "@clerk/nextjs";
 import { ProfileImage } from "../ProfileImage";
 import { CommentCardActions } from "./CommentCardActions";
-import { ReplyAcknowledgmentTrigger } from "./ReplyAcknowledgmentTrigger";
+import { CommentAcknowledgmentTrigger } from "./ReplyAcknowledgmentTrigger";
 import { createContext, useContext, useState } from "react";
 import type { Comment } from "../InfiniteComments/actions";
 
@@ -25,9 +25,17 @@ export function CommentCard({
   const [isCommentDeleted, setIsCommentDeleted] = useState(false);
   const [isChangeProcessing, setIsChangeProcessing] = useState(false);
 
-  const unreadComment = notifications.comments.some(
+  const isReplyUnread = notifications.comments.some(
     (n) => n.commentId === comment.id,
   );
+  const showPurpleForUnreadComment =
+    (user && user.id === comment.parent?.authorId && isReplyUnread) ?? false;
+
+  const isLikeUnread = notifications.commentLikes.some(
+    (n) => n.commentLike.commentId === comment.id,
+  );
+  const showPurpleForUnreadLike =
+    (user && user.id === comment.authorId && isLikeUnread) ?? false;
 
   return (
     <CommentCardContextProvider
@@ -47,8 +55,8 @@ export function CommentCard({
       {isCommentDeleted ? null : (
         <div
           className={`flex w-full flex-col gap-2 rounded-lg border bg-neutral-950 p-4
-        ${user && user.id === comment.parent?.authorId && unreadComment ? "border-purple-500" : "border-neutral-700"}
-      `}
+        ${showPurpleForUnreadComment || showPurpleForUnreadLike ? "border-purple-500" : "border-neutral-700"}
+        `}
         >
           <Link
             href={`/users/${comment.author.id}`}
@@ -76,11 +84,12 @@ export function CommentCard({
 
           <CommentCardActions />
 
-          {user?.id &&
-            user.id === comment.parent?.authorId &&
-            unreadComment && (
-              <ReplyAcknowledgmentTrigger commentId={comment.id} />
-            )}
+          {showPurpleForUnreadComment && (
+            <CommentAcknowledgmentTrigger type="reply" commentId={comment.id} />
+          )}
+          {showPurpleForUnreadLike && (
+            <CommentAcknowledgmentTrigger type="like" commentId={comment.id} />
+          )}
         </div>
       )}
     </CommentCardContextProvider>

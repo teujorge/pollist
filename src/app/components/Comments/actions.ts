@@ -82,7 +82,11 @@ export async function createComment({
   return newComment;
 }
 
-export async function acknowledgeReply({ commentId }: { commentId: string }) {
+export async function acknowledgeCommentReply({
+  commentId,
+}: {
+  commentId: string;
+}) {
   const { userId } = auth();
 
   if (!userId) {
@@ -99,6 +103,29 @@ export async function acknowledgeReply({ commentId }: { commentId: string }) {
   });
 
   console.log("DONE acknowledgeReply", commentId);
+
+  return notification;
+}
+
+export async function acknowledgeCommentLike({
+  commentId,
+}: {
+  commentId: string;
+}) {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("You must be logged in to acknowledge a like");
+  }
+
+  const notification = await db.notificationCommentLike.deleteMany({
+    where: {
+      commentLike: {
+        commentId: commentId,
+      },
+      notifyeeId: userId,
+    },
+  });
 
   return notification;
 }
@@ -130,7 +157,7 @@ export async function likeComment({
     },
   });
 
-  if (like) {
+  if (like && like.comment.authorId !== userId) {
     const notification = await db.notificationCommentLike
       .create({
         data: {

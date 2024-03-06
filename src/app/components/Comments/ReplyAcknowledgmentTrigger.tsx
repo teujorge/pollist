@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { acknowledgeReply } from "./actions";
+import { acknowledgeCommentLike, acknowledgeCommentReply } from "./actions";
 
-export function ReplyAcknowledgmentTrigger({
+export function CommentAcknowledgmentTrigger({
+  type,
   commentId,
 }: {
+  type: "reply" | "like";
   commentId: string;
 }) {
   const triggerElementRef = useRef(null);
@@ -19,7 +21,14 @@ export function ReplyAcknowledgmentTrigger({
       setHasBeenTriggered(true);
 
       try {
-        await acknowledgeReply({ commentId });
+        switch (type) {
+          case "reply":
+            await acknowledgeCommentReply({ commentId });
+            break;
+          case "like":
+            await acknowledgeCommentLike({ commentId });
+            break;
+        }
       } catch (error) {
         console.error(error);
         setHasBeenTriggered(false);
@@ -43,7 +52,7 @@ export function ReplyAcknowledgmentTrigger({
 
     // Cleanup observer on component unmount
     return () => observer.disconnect();
-  }, [commentId, hasBeenTriggered]);
+  }, [type, commentId, hasBeenTriggered]);
 
   return <div ref={triggerElementRef} />;
 }

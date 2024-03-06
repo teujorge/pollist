@@ -39,7 +39,7 @@ const notificationsCommentLikeInclude = {
   commentLike: {
     include: {
       author: true,
-      comment: { select: { pollId: true } },
+      comment: { select: { id: true, pollId: true } },
     },
   },
 };

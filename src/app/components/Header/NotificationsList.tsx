@@ -262,7 +262,7 @@ function CommentLikeNotificationCard(
       </Link>
 
       <Link
-        href={`/polls/${likeNotification.commentLike.comment.pollId}`}
+        href={`/polls/${likeNotification.commentLike.comment.pollId}?parentId=${likeNotification.commentLike.comment.id}`}
         onClick={() => popover.setIsNotificationsOpen(false)}
       >
         <p>liked your comment</p>
