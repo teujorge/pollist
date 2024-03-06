@@ -7,6 +7,7 @@ import { supabase } from "@/database/dbRealtime";
 import { Analytics } from "@vercel/analytics/react";
 import {
   getNotificationsItems,
+  getNotificationsPollLikeRelation,
   getNotificationsCommentRelation,
   getNotificationsCommentLikeRelation,
   getNotificationsFollowAcceptedRelation,
@@ -22,6 +23,7 @@ import {
 } from "react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import type {
+  NotificationPollLikeItem,
   NotificationCommentItem,
   NotificationCommentLikeItem,
   NotificationFollowPendingItem,
@@ -29,6 +31,7 @@ import type {
 } from "./components/Header/actions";
 
 type Notifications = {
+  pollLikes: NotificationPollLikeItem[];
   comments: NotificationCommentItem[];
   commentLikes: NotificationCommentLikeItem[];
   followsPending: NotificationFollowPendingItem[];
@@ -48,6 +51,7 @@ export function App({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
 
   const [notifications, setNotifications] = useState<Notifications>({
+    pollLikes: [],
     comments: [],
     commentLikes: [],
     followsPending: [],
@@ -120,6 +124,7 @@ export function App({ children }: { children: React.ReactNode }) {
 
       if (notifications) {
         setNotifications({
+          pollLikes: notifications.notificationsPollLike,
           comments: notifications.notificationsComment,
           commentLikes: notifications.notificationsCommentLike,
           followsPending: notifications.notificationsFollowPending,
@@ -130,6 +135,87 @@ export function App({ children }: { children: React.ReactNode }) {
       // notification subscription for subsequent changes
       notificationsSubscriptionRef.current = supabase
         ?.channel(`${user.id}-notifications`)
+        // === NotificationPollLike ===
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "NotificationPollLike",
+            filter: `notifyeeId=eq.${user.id}`,
+          },
+          (payload) => {
+            const newPayload: Record<string, string> = payload.new;
+
+            if (!newPayload.id) return;
+
+            getNotificationsPollLikeRelation(newPayload.id)
+              .then((payloadRelations) => {
+                handleOnNotificationInsert({
+                  type: "pollLikes",
+                  payload: {
+                    ...newPayload,
+                    ...(payloadRelations as unknown as Record<string, string>),
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting NotificationPollLike relations:",
+                  error,
+                );
+              });
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "NotificationPollLike",
+            filter: `notifyeeId=eq.${user.id}`,
+          },
+          (payload) => {
+            const newPayload: Record<string, string> = payload.new;
+
+            if (!newPayload.id) return;
+
+            getNotificationsPollLikeRelation(newPayload.id)
+              .then((payloadRelations) => {
+                handleOnNotificationUpdate({
+                  type: "pollLikes",
+                  payload: {
+                    ...newPayload,
+                    ...(payloadRelations as unknown as Record<string, string>),
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting NotificationPollLike relations:",
+                  error,
+                );
+              });
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "NotificationPollLike",
+            filter: `notifyeeId=eq.${user.id}`,
+          },
+          (payload) => {
+            const oldPayload: Record<string, string> = payload.old;
+
+            handleOnNotificationDelete({
+              type: "pollLikes",
+              payload: oldPayload,
+            });
+          },
+        )
+
         // === NotificationComment ===
         .on(
           "postgres_changes",
@@ -462,6 +548,7 @@ export function App({ children }: { children: React.ReactNode }) {
 
     console.log("resetting user:", user);
     setNotifications({
+      pollLikes: [],
       comments: [],
       commentLikes: [],
       followsPending: [],

@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/database/db";
+import { auth } from "@clerk/nextjs";
 
 export async function handleVote({
   userId,
@@ -64,6 +65,86 @@ export async function handleVote({
   }
 }
 
+export async function handleLikePoll({
+  pollId,
+  pollAuthorId,
+}: {
+  pollId: string;
+  pollAuthorId: string;
+}) {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("User not found");
+  }
+
+  const pollLike = await db.pollLike.create({
+    data: {
+      poll: {
+        connect: {
+          id: pollId,
+        },
+      },
+      author: {
+        connect: {
+          id: userId,
+        },
+      },
+    },
+  });
+  console.log("poll like", pollLike);
+
+  if (pollLike) {
+    // if (userId === pollAuthorId) {
+    //   return;
+    // }
+
+    const notification = await db.notificationPollLike.create({
+      data: {
+        pollLike: {
+          connect: {
+            id: pollLike.id,
+          },
+        },
+        notifyee: {
+          connect: {
+            id: pollAuthorId,
+          },
+        },
+      },
+    });
+    console.log("poll like notification", notification);
+  }
+}
+
+export async function handleUnlikePoll({ pollId }: { pollId: string }) {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("User not found");
+  }
+
+  const unlikes = await db.pollLike.deleteMany({
+    where: {
+      pollId,
+      authorId: userId,
+    },
+  });
+  console.log("poll unlikes", unlikes);
+
+  if (unlikes) {
+    const unlikesNotifications = await db.notificationPollLike.deleteMany({
+      where: {
+        pollLike: {
+          pollId,
+          authorId: userId,
+        },
+      },
+    });
+    console.log("poll unlikes notifications", unlikesNotifications);
+  }
+}
+
 export async function getPoll(pollId: string) {
   const poll = await db.poll.findUnique({
     where: { id: pollId },
@@ -71,4 +152,27 @@ export async function getPoll(pollId: string) {
   });
 
   return poll;
+}
+
+export async function acknowledgePollLike({
+  pollLikeId,
+}: {
+  pollLikeId: string;
+}) {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("User not found");
+  }
+
+  const notifications = await db.notificationPollLike.deleteMany({
+    where: {
+      pollLikeId: pollLikeId,
+      notifyeeId: userId,
+    },
+  });
+
+  console.log("acknowledgePollLike", notifications);
+
+  return notifications;
 }

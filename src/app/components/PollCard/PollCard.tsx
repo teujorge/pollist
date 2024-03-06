@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ProfileImage } from "../ProfileImage";
-import { PollCardVoting } from "@/app/components/PollCard/PollCardVoting";
+import { PollCardActions } from "@/app/components/PollCard/PollCardActions";
 import type { PollsDetails } from "../InfinitePolls/actions";
 
 export type PollCardProps = {
@@ -46,7 +46,7 @@ export function PollCard({ poll, highlightedUserId }: PollCardProps) {
         <h2 className="text-2xl font-bold">{poll.title}</h2>
       </Link>
 
-      <PollCardVoting poll={poll} highlightedUserId={highlightedUserId} />
+      <PollCardActions poll={poll} highlightedUserId={highlightedUserId} />
     </div>
   );
 }

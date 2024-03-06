@@ -4,6 +4,7 @@ import { db } from "@/database/db";
 import { auth } from "@clerk/nextjs";
 
 export type NotificationType =
+  | "PollLikeNotification"
   | "CommentNotification"
   | "CommentLikeNotification"
   | "FollowPendingNotification"
@@ -13,6 +14,8 @@ type NotificationItems = NonNullable<
   Awaited<ReturnType<typeof getNotificationsItems>>
 >;
 
+export type NotificationPollLikeItem =
+  NotificationItems["notificationsPollLike"][number];
 export type NotificationCommentItem =
   NotificationItems["notificationsComment"][number];
 export type NotificationCommentLikeItem =
@@ -21,6 +24,22 @@ export type NotificationFollowPendingItem =
   NotificationItems["notificationsFollowPending"][number];
 export type NotificationFollowAcceptedItem =
   NotificationItems["notificationsFollowAccepted"][number];
+
+const notificationsPollLikeInclude = {
+  pollLike: {
+    include: {
+      poll: { select: { id: true } },
+      author: { select: { imageUrl: true, username: true } },
+    },
+  },
+};
+
+export async function getNotificationsPollLikeRelation(notificationId: string) {
+  return await db.notificationPollLike.findUnique({
+    where: { id: notificationId },
+    include: notificationsPollLikeInclude,
+  });
+}
 
 const notificationsCommentInclude = {
   comment: {
@@ -91,6 +110,9 @@ export async function getNotificationsItems() {
   const userNotifications = await db.user.findUnique({
     where: { id: userId },
     include: {
+      notificationsPollLike: {
+        include: notificationsPollLikeInclude,
+      },
       notificationsComment: {
         include: notificationsCommentInclude,
       },
@@ -119,22 +141,31 @@ export async function removeNotification({
   type: NotificationType;
 }) {
   switch (type) {
+    case "PollLikeNotification":
+      return await db.notificationPollLike.deleteMany({
+        where: { id },
+      });
+
     case "FollowPendingNotification":
       return await db.notificationFollowPending.deleteMany({
         where: { id },
       });
+
     case "FollowAcceptedNotification":
       return await db.notificationFollowAccepted.deleteMany({
         where: { id },
       });
+
     case "CommentNotification":
       return await db.notificationComment.deleteMany({
         where: { id },
       });
+
     case "CommentLikeNotification":
       return await db.notificationCommentLike.deleteMany({
         where: { id },
       });
+
     default:
       throw new Error("Unknown notification type");
   }

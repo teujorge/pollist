@@ -80,7 +80,7 @@ model Poll {
   votes         Vote[]
   options       Option[]
   comments      Comment[]
-  pollLike      PollLike[]
+  likes         PollLike[]
 
   @@index([title])
   @@index([authorId])

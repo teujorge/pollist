@@ -2,24 +2,34 @@
 
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { useUser } from "@clerk/nextjs";
+import { useApp } from "@/app/app";
 import { LockSvg } from "@/app/svgs/LockSvg";
 import { supabase } from "@/database/dbRealtime";
-import { handleVote } from "./actions";
+import { ThumbUpSvg } from "@/app/svgs/ThumbUpSvg";
 import { ChartDrawer } from "@/app/components/PollCard/ChartDrawer";
+import { TriggerNotificationSeen } from "../TriggerNotificationSeen";
 import { useEffect, useRef, useState } from "react";
+import {
+  acknowledgePollLike,
+  handleLikePoll,
+  handleUnlikePoll,
+  handleVote,
+} from "./actions";
+import { SignInButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import type { Vote } from "@prisma/client";
 import type { PollsDetails } from "../InfinitePolls/actions";
 import type { PollCardProps } from "./PollCard";
 import type { RealtimeChannel } from "@supabase/realtime-js";
 import type { MutableRefObject } from "react";
 
-type PollCardVotingProps = PollCardProps & {
+type PollCardActionsProps = PollCardProps & {
   showChart?: boolean;
 };
 
-export function PollCardVoting(props: PollCardVotingProps) {
+export function PollCardActions(props: PollCardActionsProps) {
   const { user } = useUser();
+
+  const { notifications } = useApp();
 
   const supabaseChannelRef: MutableRefObject<RealtimeChannel | undefined> =
     useRef();
@@ -32,6 +42,7 @@ export function PollCardVoting(props: PollCardVotingProps) {
     (vote) => vote.voterId === user?.id,
   );
 
+  const [isLikePending, setIsLikePending] = useState(false);
   const [isVotePending, setIsVotePending] = useState(false);
 
   // Subscribe to changes in the database
@@ -206,19 +217,109 @@ export function PollCardVoting(props: PollCardVotingProps) {
     }
   }
 
+  async function handleLike() {
+    if (!user?.id) {
+      toast.warning("Sign in required to like");
+      return;
+    }
+
+    if (isLikePending) {
+      toast.warning("Like pending, please wait");
+      return;
+    }
+
+    setIsLikePending(true);
+
+    const isLiking = !optimisticPoll.likes.some(
+      (like) => like.authorId === user.id,
+    );
+
+    const originalLikeCount = optimisticPoll._count.likes;
+    const originalLikes = optimisticPoll.likes;
+
+    setOptimisticPoll((prev) => ({
+      ...prev,
+      likes: isLiking
+        ? [
+            {
+              id: "optimistic-like-id",
+              createdAt: new Date(),
+              authorId: user.id,
+              pollId: optimisticPoll.id,
+            },
+          ]
+        : [],
+      _count: {
+        likes: prev._count.likes + (isLiking ? 1 : -1),
+      },
+    }));
+
+    try {
+      console.log("handleLikePoll", isLiking ? "like" : "unlike");
+      if (isLiking) {
+        await handleLikePoll({
+          pollId: optimisticPoll.id,
+          pollAuthorId: optimisticPoll.authorId,
+        });
+      } else {
+        await handleUnlikePoll({ pollId: optimisticPoll.id });
+      }
+    } catch (error) {
+      console.error(error);
+
+      setOptimisticPoll((prev) => ({
+        ...prev,
+        likes: originalLikes,
+        _count: {
+          likes: originalLikeCount,
+        },
+      }));
+
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error(
+          "An unknown error occurred while liking. Please try again.",
+        );
+      }
+    }
+
+    setIsLikePending(false);
+  }
+
   const optionIdToHighlight = optimisticPoll.votes.find(
     (vote) => vote.voterId === props.highlightedUserId,
   )?.optionId;
 
   const voteBlocked = !user?.id;
 
+  const pollNotification = notifications.pollLikes.some(
+    (n) => n.pollLike.pollId === optimisticPoll.id,
+  );
+
+  const likeButtonComponent = (
+    <button
+      className={`flex flex-row items-center justify-center gap-1 font-bold
+      ${optimisticPoll.likes.length > 0 ? "[&>span]:text-purple-500 [&>span]:hovact:text-purple-400 [&>svg]:fill-purple-500 [&>svg]:hovact:fill-purple-400" : "[&>span]:text-neutral-400 [&>span]:hovact:text-neutral-400 [&>svg]:fill-neutral-500 [&>svg]:hovact:fill-neutral-400"}
+      `}
+      onClick={user ? handleLike : undefined}
+    >
+      <ThumbUpSvg className="h-6 w-6 transition-colors" />
+      <span className="transition-colors">{optimisticPoll._count.likes}</span>
+    </button>
+  );
+
   return (
-    <div className="flex h-full w-full flex-grow flex-col pt-2 transition-opacity">
+    <div className="relative flex h-full w-full flex-grow flex-col gap-2 pt-2 transition-opacity">
       {voteBlocked && (
-        <div title="Sign in required to vote" className="ml-auto">
-          <LockSvg className="fill-neutral-500" />
+        <div
+          title="Sign in required to vote"
+          className="absolute -right-1/2 -top-1/2"
+        >
+          <LockSvg className="fill-neutral-300" />
         </div>
       )}
+
       <ul
         title={voteBlocked ? "Sign in required to vote" : undefined}
         className={`divide-y divide-neutral-800
@@ -269,6 +370,30 @@ export function PollCardVoting(props: PollCardVotingProps) {
           );
         })}
       </ul>
+
+      <div
+        className={`relative w-fit rounded-full bg-opacity-20 px-2 py-1
+          ${pollNotification && "bg-purple-500"}
+        `}
+      >
+        <SignedIn>{likeButtonComponent}</SignedIn>
+        <SignedOut>
+          <SignInButton mode="modal">{likeButtonComponent}</SignInButton>
+        </SignedOut>
+
+        {pollNotification && (
+          <TriggerNotificationSeen
+            className="absolute left-0 top-0"
+            acknowledgeFunction={async () => {
+              console.log(optimisticPoll.id);
+              await acknowledgePollLike({
+                pollLikeId: optimisticPoll.likes[0]?.id ?? "",
+              });
+            }}
+          />
+        )}
+      </div>
+
       {props.showChart && (
         <ChartDrawer
           data={optimisticPoll.options.map((option) => {

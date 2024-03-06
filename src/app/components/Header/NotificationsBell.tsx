@@ -14,6 +14,7 @@ export function NotificationsBell() {
   const { notifications } = useApp();
 
   const notificationList = [
+    ...notifications.pollLikes,
     ...notifications.comments,
     ...notifications.commentLikes,
     ...notifications.followsPending,

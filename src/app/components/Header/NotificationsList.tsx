@@ -10,15 +10,17 @@ import { removeNotification } from "./actions";
 import { useEffect, useState } from "react";
 import { acceptFollow, declineFollow } from "@/app/users/actions";
 import type {
+  NotificationType,
+  NotificationPollLikeItem,
   NotificationCommentItem,
   NotificationCommentLikeItem,
   NotificationFollowAcceptedItem,
   NotificationFollowPendingItem,
-  NotificationType,
 } from "./actions";
 import { Loader } from "../Loader";
 
 type NotificationData =
+  | NotificationPollLikeItem
   | NotificationCommentItem
   | NotificationCommentLikeItem
   | NotificationFollowPendingItem
@@ -31,6 +33,10 @@ export function NotificationList() {
     type: NotificationType;
     data: NotificationData;
   }[] = [
+    ...notifications.pollLikes.map((notification) => ({
+      type: "PollLikeNotification" as NotificationType,
+      data: notification,
+    })),
     ...notifications.comments.map((notification) => ({
       type: "CommentNotification" as NotificationType,
       data: notification,
@@ -171,6 +177,11 @@ function NotificationCard({
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
+      {item.type === "PollLikeNotification" && (
+        <PollLikeNotificationCard
+          {...(item.data as NotificationPollLikeItem)}
+        />
+      )}
       {item.type === "CommentNotification" && (
         <CommentNotificationCard {...(item.data as NotificationCommentItem)} />
       )}
@@ -196,6 +207,37 @@ function NotificationCard({
       >
         <CloseSvg fill="white" height={16} width={16} />
       </button>
+    </div>
+  );
+}
+
+function PollLikeNotificationCard(
+  pollLikeNotification: NotificationPollLikeItem,
+) {
+  const popover = useNotifications();
+
+  return (
+    <div className="flex flex-col items-start justify-start gap-1">
+      <Link
+        href={`/users/${pollLikeNotification.pollLike.authorId}`}
+        className="flex flex-row items-center justify-center gap-1"
+        onClick={() => popover.setIsNotificationsOpen(false)}
+      >
+        <ProfileImage
+          src={pollLikeNotification.pollLike.author.imageUrl}
+          username={pollLikeNotification.pollLike.author.username}
+          size={30}
+        />
+        <p className="font-bold">
+          {pollLikeNotification.pollLike.author.username}
+        </p>
+      </Link>
+      <Link
+        href={`/polls/${pollLikeNotification.pollLike.poll.id}`}
+        onClick={() => popover.setIsNotificationsOpen(false)}
+      >
+        <p>liked your poll</p>
+      </Link>
     </div>
   );
 }
