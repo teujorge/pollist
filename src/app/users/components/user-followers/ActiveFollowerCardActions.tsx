@@ -41,19 +41,3 @@ export function ActiveFollowerCardActions({ follower }: { follower: User }) {
     </div>
   );
 }
-
-{
-  /* <div className="flex h-9 w-fit items-center justify-center overflow-hidden">
-{isUnfollowing ? (
-  <Loader className="h-5 w-5 border-2" />
-) : (
-  <button
-    type="button"
-    onClick={handleUnfollow}
-    className="flex items-center justify-center rounded-lg bg-neutral-900 px-2 py-1 transition-colors hovact:bg-red-500/20"
-  >
-    <span className="text-red-500">Unfollow</span>
-  </button>
-)}
-</div> */
-}
