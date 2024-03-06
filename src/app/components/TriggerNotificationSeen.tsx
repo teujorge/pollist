@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import { acknowledgeCommentLike, acknowledgeCommentReply } from "./actions";
+import { cn } from "@/lib/utils";
+import { useEffect, useRef, useState } from "react";
 
-export function CommentAcknowledgmentTrigger({
-  type,
-  commentId,
+export function TriggerNotificationSeen({
+  acknowledgeFunction,
+  className,
 }: {
-  type: "reply" | "like";
-  commentId: string;
+  acknowledgeFunction: () => Promise<void>;
+  className?: string;
 }) {
   const triggerElementRef = useRef(null);
   const [hasBeenTriggered, setHasBeenTriggered] = useState(false);
@@ -19,16 +19,10 @@ export function CommentAcknowledgmentTrigger({
 
     async function handleAcknowledgment() {
       setHasBeenTriggered(true);
+      console.log("Acknowledging notification as seen");
 
       try {
-        switch (type) {
-          case "reply":
-            await acknowledgeCommentReply({ commentId });
-            break;
-          case "like":
-            await acknowledgeCommentLike({ commentId });
-            break;
-        }
+        await acknowledgeFunction();
       } catch (error) {
         console.error(error);
         setHasBeenTriggered(false);
@@ -52,7 +46,16 @@ export function CommentAcknowledgmentTrigger({
 
     // Cleanup observer on component unmount
     return () => observer.disconnect();
-  }, [type, commentId, hasBeenTriggered]);
+  }, [acknowledgeFunction, hasBeenTriggered]);
 
-  return <div ref={triggerElementRef} />;
+  return (
+    <div
+      ref={triggerElementRef}
+      className={cn("invisible", className)}
+      style={{
+        maxWidth: 0,
+        maxHeight: 0,
+      }}
+    />
+  );
 }

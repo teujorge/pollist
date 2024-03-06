@@ -5,9 +5,10 @@ import { useApp } from "@/app/app";
 import { useUser } from "@clerk/nextjs";
 import { ProfileImage } from "../ProfileImage";
 import { CommentCardActions } from "./CommentCardActions";
-import { CommentAcknowledgmentTrigger } from "./ReplyAcknowledgmentTrigger";
 import { createContext, useContext, useState } from "react";
 import type { Comment } from "../InfiniteComments/actions";
+import { TriggerNotificationSeen } from "../TriggerNotificationSeen";
+import { acknowledgeCommentLike, acknowledgeCommentReply } from "./actions";
 
 export function CommentCard({
   comment: _comment,
@@ -85,10 +86,18 @@ export function CommentCard({
           <CommentCardActions />
 
           {showPurpleForUnreadComment && (
-            <CommentAcknowledgmentTrigger type="reply" commentId={comment.id} />
+            <TriggerNotificationSeen
+              acknowledgeFunction={async () => {
+                await acknowledgeCommentReply({ commentId: comment.id });
+              }}
+            />
           )}
           {showPurpleForUnreadLike && (
-            <CommentAcknowledgmentTrigger type="like" commentId={comment.id} />
+            <TriggerNotificationSeen
+              acknowledgeFunction={async () => {
+                await acknowledgeCommentLike({ commentId: comment.id });
+              }}
+            />
           )}
         </div>
       )}
