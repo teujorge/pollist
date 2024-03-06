@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { IconSvg } from "../../svgs/IconSvg";
-import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { SignInButton, UserButton } from "@clerk/nextjs";
 import { NotificationsBell } from "./NotificationsBell";
 
 export function Header({ userId }: { userId?: string }) {
@@ -18,14 +18,13 @@ export function Header({ userId }: { userId?: string }) {
       <div className="relative flex flex-row items-center gap-4">
         <Link href="/">Home</Link>
 
-        <SignedIn>
+        {userId ? (
           <Link href="/polls/create">Create</Link>
-        </SignedIn>
-        <SignedOut>
+        ) : (
           <div className="flex h-8 w-fit items-center [&>button]:transition-colors [&>button]:hovact:text-purple-500">
             <SignInButton mode="modal">Create</SignInButton>
           </div>
-        </SignedOut>
+        )}
 
         {userId && (
           <>
@@ -34,16 +33,15 @@ export function Header({ userId }: { userId?: string }) {
           </>
         )}
 
-        <SignedIn>
+        {userId ? (
           <div className="h-8 w-8 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500">
             <UserButton afterSignOutUrl="/" />
           </div>
-        </SignedIn>
-        <SignedOut>
+        ) : (
           <div className="flex h-8 w-fit items-center [&>button]:transition-colors [&>button]:hovact:text-purple-500">
             <SignInButton mode="modal" />
           </div>
-        </SignedOut>
+        )}
       </div>
     </header>
   );
