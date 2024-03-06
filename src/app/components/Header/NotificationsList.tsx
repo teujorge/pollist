@@ -16,6 +16,7 @@ import type {
   NotificationFollowPendingItem,
   NotificationType,
 } from "./actions";
+import { Loader } from "../Loader";
 
 type NotificationData =
   | NotificationCommentItem
@@ -190,7 +191,7 @@ function NotificationCard({
       )}
 
       <button
-        className="absolute right-0 top-0 -translate-y-1/3 translate-x-1/3 rounded-full border border-neutral-600 bg-neutral-950 p-0.5 transition-colors hover:cursor-pointer hovact:bg-neutral-600"
+        className="absolute right-0 top-0 -translate-y-1/3 translate-x-1/3 rounded-full border border-neutral-600 bg-neutral-950 p-0.5 transition-colors hovact:cursor-pointer hovact:bg-neutral-600"
         onClick={handleRemove}
       >
         <CloseSvg fill="white" height={16} width={16} />
@@ -276,6 +277,39 @@ function FollowPendingNotificationCard(
 ) {
   const popover = useNotifications();
 
+  const [isAccepting, setIsAccepting] = useState(false);
+  const [isDeclining, setIsDeclining] = useState(false);
+
+  async function handleAccept() {
+    setIsAccepting(true);
+    try {
+      await acceptFollow(followNotification.follow.followerId);
+    } catch (error) {
+      setIsAccepting(false);
+      console.error("Failed to accept follow", error);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to accept follow");
+      }
+    }
+  }
+
+  async function handleDecline() {
+    setIsDeclining(true);
+    try {
+      await declineFollow(followNotification.follow.followerId);
+    } catch (error) {
+      setIsDeclining(false);
+      console.error("Failed to decline follow", error);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to decline follow");
+      }
+    }
+  }
+
   return (
     <div className="flex flex-col items-start justify-start">
       <Link
@@ -295,16 +329,22 @@ function FollowPendingNotificationCard(
       <p>requested to follow you</p>
       <div className="flex flex-row gap-1">
         <button
-          onClick={() => acceptFollow(followNotification.follow.followerId)}
-          className="text-green-500 underline decoration-transparent hovact:decoration-green-500"
+          disabled={isAccepting || isDeclining}
+          onClick={handleAccept}
+          className={`flex h-7 w-14 items-center justify-center text-green-500 underline decoration-transparent hovact:decoration-green-500
+            ${isDeclining && "pointer-events-none opacity-50"}
+          `}
         >
-          Accept
+          {isAccepting ? <Loader className="h-5 w-5 border-2" /> : "Accept"}
         </button>
         <button
-          onClick={() => declineFollow(followNotification.follow.followerId)}
-          className=" text-red-500 underline decoration-transparent hovact:decoration-red-500"
+          disabled={isDeclining || isAccepting}
+          onClick={handleDecline}
+          className={`flex h-7 w-14 items-center justify-center text-red-500 underline decoration-transparent hovact:decoration-red-500
+            ${isAccepting && "pointer-events-none opacity-50"}
+          `}
         >
-          Decline
+          {isDeclining ? <Loader className="h-5 w-5 border-2" /> : "Decline"}
         </button>
       </div>
     </div>
@@ -316,12 +356,20 @@ function FollowAcceptedNotificationCard(
 ) {
   const popover = useNotifications();
 
+  async function handleLinkClick() {
+    popover.setIsNotificationsOpen(false);
+    await removeNotification({
+      type: "FollowAcceptedNotification",
+      id: followNotification.id,
+    });
+  }
+
   return (
     <div className="flex flex-col items-start justify-start gap-1">
       <Link
         href={`/users/${followNotification.follow.followedId}`}
         className="flex flex-row items-center justify-center gap-1"
-        onClick={() => popover.setIsNotificationsOpen(false)}
+        onClick={handleLinkClick}
       >
         <ProfileImage
           src={followNotification.follow.followed.imageUrl}
