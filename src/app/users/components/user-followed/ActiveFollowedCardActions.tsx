@@ -32,7 +32,7 @@ export async function ActiveFollowedCardAction({
         <button
           type="button"
           onClick={handleUnfollow}
-          className="flex items-center justify-center rounded-lg bg-neutral-900 px-2 py-1 transition-colors hovact:bg-red-500/20"
+          className="flex items-center justify-center rounded-lg bg-neutral-900 px-2 py-1 transition-colors hovact:bg-red-500/25"
         >
           <span className="text-red-500">Unfollow</span>
         </button>
