@@ -314,9 +314,9 @@ export function PollCardActions(props: PollCardActionsProps) {
       {voteBlocked && (
         <div
           title="Sign in required to vote"
-          className="absolute -right-1/2 -top-1/2"
+          className="absolute right-0 top-0 -translate-y-1/2 translate-x-1/2"
         >
-          <LockSvg className="fill-neutral-300" />
+          <LockSvg className="fill-neutral-400" />
         </div>
       )}
 
