@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { toast } from "sonner";
+import { Loader } from "../Loader";
 import { useApp } from "@/app/app";
-import { CloseSvg } from "@/app/svgs/CloseSvg";
+import { Cross2Icon } from "@radix-ui/react-icons";
 import { ProfileImage } from "../ProfileImage";
 import { useNotifications } from "./NotificationsBell";
 import { removeNotification } from "./actions";
@@ -17,7 +18,6 @@ import type {
   NotificationFollowAcceptedItem,
   NotificationFollowPendingItem,
 } from "./actions";
-import { Loader } from "../Loader";
 
 type NotificationData =
   | NotificationPollLikeItem
@@ -205,7 +205,7 @@ function NotificationCard({
         className="absolute right-0 top-0 -translate-y-1/3 translate-x-1/3 rounded-full border border-neutral-600 bg-neutral-950 p-0.5 transition-colors hovact:cursor-pointer hovact:bg-neutral-600"
         onClick={handleRemove}
       >
-        <CloseSvg fill="white" height={16} width={16} />
+        <Cross2Icon />
       </button>
     </div>
   );

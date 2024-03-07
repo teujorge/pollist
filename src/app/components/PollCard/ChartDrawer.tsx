@@ -1,5 +1,6 @@
 "use client";
 
+import { BarChartIcon } from "@radix-ui/react-icons";
 import { Bar, BarChart, ResponsiveContainer } from "recharts";
 import {
   Drawer,
@@ -13,7 +14,9 @@ export function ChartDrawer({ data }: { data: { value: number }[] }) {
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <button className="w-fit">Open Chart</button>
+        <button className="flex h-fit w-fit flex-row items-center justify-center gap-2 rounded-md bg-neutral-900 px-2 py-1 text-neutral-300 transition-colors hovact:bg-neutral-800">
+          Chart <BarChartIcon />
+        </button>
       </DrawerTrigger>
       <DrawerContent>
         <div className="mx-auto w-full max-w-sm">
