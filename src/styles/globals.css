@@ -70,6 +70,7 @@ textarea::placeholder {
 input:hover,
 input:focus,
 input:active,
+textarea:hover,
 textarea:focus,
 textarea:active,
 select:hover,
@@ -78,6 +79,7 @@ select:active,
 option:hover,
 option:focus,
 option:active {
+  border-color: rgb(64 64 64);
   background-color: rgb(32 32 32);
 }
 
