@@ -3,6 +3,7 @@
 import { db } from "@/database/db";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
+import { supabase } from "@/database/dbRealtime";
 import type { CreatePollFields } from "./validation";
 
 export async function createPoll(fields: CreatePollFields) {
@@ -25,33 +26,85 @@ export async function createPoll(fields: CreatePollFields) {
         ],
       },
     },
+    include: {
+      options: true,
+    },
   });
 
-  if (createdPoll) redirect(`/polls/${createdPoll.id}`);
+  return createdPoll;
 }
 
-export async function deletePoll(formData: FormData) {
+export async function addImagePathToPollOption(optionId: string, path: string) {
+  const updatedOption = await db.option.update({
+    where: { id: optionId },
+    data: { imagePath: path },
+  });
+
+  return updatedOption;
+}
+
+export async function redirectToPoll(pollId: string) {
+  redirect(`/polls/${pollId}`);
+}
+
+import type { PollsDetails } from "@/app/components/InfinitePolls/actions";
+
+export async function deletePoll(poll: PollsDetails[number]) {
   const { userId } = auth();
-
-  // Get the pollId from the form data (dangerous data)
-
-  const pollId = (formData.get("pollId") ?? "") as string;
-
-  if (pollId === "") return;
-
-  // Get authorId from db (safe data)
-
-  const poll = await db.poll.findUnique({ where: { id: pollId } });
-
-  if (!poll) {
-    throw new Error("Poll not found...");
-  }
 
   if (userId !== poll.authorId) {
     throw new Error("You are not authorized to delete this poll");
   }
 
-  const deletedPoll = await db.poll.delete({ where: { id: pollId } });
+  if (!supabase) {
+    throw new Error("Supabase not found");
+  }
+
+  const imagePaths = poll.options
+    .map((option) => option.imagePath)
+    .filter((path) => path !== null) as string[];
+
+  if (imagePaths.length > 0) {
+    console.log("Deleting images", imagePaths);
+
+    const { data, error } = await supabase.storage
+      .from("polls")
+      .remove(imagePaths);
+    console.log("data:", data, "|", "error:", error);
+
+    if (error !== null || imagePaths.length !== data?.length) {
+      console.log("Error deleting images:", error);
+
+      const deletedPathsFromStorage = data?.map((file) => file.name) ?? [];
+
+      const optionsToUpdate = poll.options.filter(
+        (option) =>
+          option.imagePath &&
+          deletedPathsFromStorage.includes(option.imagePath),
+      );
+
+      console.log("Storage Deleted paths:", deletedPathsFromStorage);
+
+      const updatedOptions = await db.option.updateMany({
+        where: {
+          id: { in: optionsToUpdate.map((o) => o.id) },
+          imagePath: { in: deletedPathsFromStorage },
+        },
+        data: { imagePath: null },
+      });
+
+      console.log("Updated options:", updatedOptions);
+
+      // Now throw an error, to prevent deleting the poll
+      if (error?.message) throw new Error(error.message);
+      throw new Error("Some images were not be deleted. Please try again.");
+    }
+  }
+
+  const deletedPoll = await db.poll.delete({
+    where: { id: poll.id },
+    include: { options: true },
+  });
 
   if (deletedPoll) redirect(`/users/${userId}`);
 }

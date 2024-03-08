@@ -1,26 +1,38 @@
 "use client";
 
+import Image from "next/image";
+import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useApp } from "@/app/app";
-import { LockSvg } from "@/app/svgs/LockSvg";
 import { supabase } from "@/database/dbRealtime";
-import { ThumbUpSvg } from "@/app/svgs/ThumbUpSvg";
-import { ChartDrawer } from "@/app/components/PollCard/ChartDrawer";
-import { TriggerNotificationSeen } from "../TriggerNotificationSeen";
 import { useEffect, useRef, useState } from "react";
+import { LockClosedIcon, ThickArrowUpIcon } from "@radix-ui/react-icons";
+import { SignInButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import {
   acknowledgePollLike,
   handleLikePoll,
   handleUnlikePoll,
   handleVote,
 } from "./actions";
-import { SignInButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import type { Vote } from "@prisma/client";
 import type { PollsDetails } from "../InfinitePolls/actions";
 import type { PollCardProps } from "./PollCard";
 import type { RealtimeChannel } from "@supabase/realtime-js";
 import type { MutableRefObject } from "react";
+
+const ChartDrawer = dynamic(
+  () => import("./ChartDrawer").then((mod) => mod.ChartDrawer),
+  { ssr: false, loading: () => <div className="shimmer h-11 w-24" /> },
+);
+
+const TriggerNotificationSeen = dynamic(
+  () =>
+    import("../TriggerNotificationSeen").then(
+      (mod) => mod.TriggerNotificationSeen,
+    ),
+  { ssr: false },
+);
 
 type PollCardActionsProps = PollCardProps & {
   showChart?: boolean;
@@ -300,11 +312,11 @@ export function PollCardActions(props: PollCardActionsProps) {
   const likeButtonComponent = (
     <button
       className={`flex flex-row items-center justify-center gap-1 font-bold
-      ${optimisticPoll.likes.length > 0 ? "[&>span]:text-purple-500 [&>span]:hovact:text-purple-400 [&>svg]:fill-purple-500 [&>svg]:hovact:fill-purple-400" : "[&>span]:text-neutral-400 [&>span]:hovact:text-neutral-400 [&>svg]:fill-neutral-500 [&>svg]:hovact:fill-neutral-400"}
+        ${optimisticPoll.likes.length > 0 ? "[&>*]:text-purple-500 [&>*]:hovact:text-purple-400" : "[&>*]:text-neutral-400 [&>*]:hovact:text-neutral-300"}
       `}
       onClick={user ? handleLike : undefined}
     >
-      <ThumbUpSvg className="h-6 w-6 transition-colors" />
+      <ThickArrowUpIcon className="transition-colors" />
       <span className="transition-colors">{optimisticPoll._count.likes}</span>
     </button>
   );
@@ -314,9 +326,9 @@ export function PollCardActions(props: PollCardActionsProps) {
       {voteBlocked && (
         <div
           title="Sign in required to vote"
-          className="absolute right-0 top-0 -translate-y-1/2 translate-x-1/2"
+          className="absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 text-neutral-400"
         >
-          <LockSvg className="fill-neutral-400" />
+          <LockClosedIcon />
         </div>
       )}
 
@@ -357,6 +369,16 @@ export function PollCardActions(props: PollCardActionsProps) {
                     ${userVote?.optionId === option.id ? "bg-purple-500" : "bg-neutral-700"}
                   `}
                 />
+                <div className="h-full w-8 overflow-hidden rounded-lg object-cover">
+                  {option.imagePath && (
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/polls/${option.imagePath}`}
+                      alt="option-image"
+                      width={32}
+                      height={32}
+                    />
+                  )}
+                </div>
                 <p className="text-sm text-neutral-200">{option.text}</p>
                 <p className="ml-auto text-sm text-neutral-200">
                   {

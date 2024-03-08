@@ -4,6 +4,12 @@
  */
 await import("./src/env.js");
 
+import withBundleAnalyzer from "@next/bundle-analyzer";
+
+// const withBundleAnalyzer = require('@next/bundle-analyzer')({
+//   enabled: process.env.ANALYZE === 'true',
+// })
+
 /** @type {import("next").NextConfig} */
 const config = {
   images: {
@@ -12,8 +18,14 @@ const config = {
         protocol: "https",
         hostname: "img.clerk.com",
       },
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+      },
     ],
   },
 };
 
-export default config;
+export default withBundleAnalyzer({ enabled: process.env.ANALYZE === "true" })(
+  config,
+);

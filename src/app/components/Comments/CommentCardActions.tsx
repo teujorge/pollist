@@ -4,9 +4,9 @@ import { toast } from "sonner";
 import { Loader } from "../Loader";
 import { SignInButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import { PAGE_SIZE } from "@/constants";
-import { ThumbUpSvg } from "@/app/svgs/ThumbUpSvg";
 import { NewComments } from "./NewComments";
 import { CommentForm } from "./CommentForm";
+import { ThickArrowUpIcon } from "@radix-ui/react-icons";
 import { DeleteAlertDialog } from "../DeleteAlertDialog";
 import { useEffect, useState } from "react";
 import { getPaginatedComments } from "../InfiniteComments/actions";
@@ -176,11 +176,11 @@ export function CommentCardActions() {
   const likeButtonComponent = (
     <button
       className={`flex flex-row items-center justify-center gap-1 font-bold
-      ${comment.likes.length > 0 ? "[&>span]:text-purple-500 [&>span]:hovact:text-purple-400 [&>svg]:fill-purple-500 [&>svg]:hovact:fill-purple-400" : "[&>span]:text-neutral-400 [&>span]:hovact:text-neutral-400 [&>svg]:fill-neutral-500 [&>svg]:hovact:fill-neutral-400"}
+        ${comment.likes.length > 0 ? "[&>*]:text-purple-500 [&>*]:hovact:text-purple-400" : "[&>*]:text-neutral-400 [&>*]:hovact:text-neutral-300"}
       `}
       onClick={user ? handleLike : undefined}
     >
-      <ThumbUpSvg className="h-6 w-6 transition-colors" />
+      <ThickArrowUpIcon className="transition-colors" />
       <span className="transition-colors">{comment._count.likes}</span>
     </button>
   );
@@ -218,7 +218,10 @@ export function CommentCardActions() {
 
             {/* delete button */}
             {user?.id === comment.authorId && (
-              <DeleteAlertDialog await={true} onDelete={handleDeleteComment} />
+              <DeleteAlertDialog
+                willAwait={true}
+                onDelete={handleDeleteComment}
+              />
             )}
           </PopoverContent>
         </Popover>

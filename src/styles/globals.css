@@ -83,6 +83,17 @@ option:active {
   background-color: rgb(32 32 32);
 }
 
+input:focus,
+input:active,
+textarea:focus,
+textarea:active,
+select:focus,
+select:active,
+option:focus,
+option:active {
+  border-color: rgb(64 64 64);
+}
+
 a {
   transition: color 0.15s ease;
 }

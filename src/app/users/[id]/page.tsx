@@ -14,6 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import type { ResolvingMetadata, Metadata } from "next";
 
 // import {
 //   adminId,
@@ -22,7 +23,12 @@ import {
 //   testCron,
 // } from "@/database/defaultPolls";
 
-export default async function UserPage({ params }: { params: { id: string } }) {
+type Props = {
+  params: { id: string };
+  searchParams: Record<string, string | string[] | undefined>;
+};
+
+export default async function UserPage({ params }: Props) {
   const { userId: myId } = auth();
 
   const user = await db.user.findUnique({
@@ -118,4 +124,31 @@ export default async function UserPage({ params }: { params: { id: string } }) {
       <Tabs />
     </>
   );
+}
+
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  const user = await db.user.findUnique({
+    where: {
+      id: params.id,
+    },
+    select: {
+      imageUrl: true,
+      username: true,
+    },
+  });
+
+  const previousImages = (await parent).openGraph?.images ?? [];
+
+  return {
+    title: user?.username,
+    description: `${user?.username} user profile.`,
+    openGraph: {
+      images: user?.imageUrl
+        ? [user.imageUrl, ...previousImages]
+        : previousImages,
+    },
+  };
 }

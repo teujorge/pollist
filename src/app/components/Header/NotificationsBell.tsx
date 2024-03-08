@@ -1,9 +1,9 @@
 "use client";
 
 import { useApp } from "@/app/app";
-import { createContext, useContext, useState } from "react";
+import { BellIcon } from "@radix-ui/react-icons";
 import { NotificationList } from "./NotificationsList";
-import { NotificationSvg } from "../../svgs/NotificationSvg";
+import { createContext, useContext, useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -33,11 +33,12 @@ export function NotificationsBell() {
           onOpenChange={setIsNotificationsOpen}
         >
           <PopoverTrigger asChild>
-            <button className="relative select-none outline-none">
-              <NotificationSvg className="fill-white transition-colors hovact:fill-purple-500" />
-              <div className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs">
-                {notificationList.length}
-              </div>
+            <button
+              className="relative select-none outline-none
+            [&>svg]:hovact:text-purple-500"
+            >
+              <BellIcon className="text-white transition-colors" />
+              <div className="absolute -right-0.5 -top-0.5 flex h-2 w-2 items-center justify-center rounded-full bg-purple-500 text-xs" />
             </button>
           </PopoverTrigger>
           <PopoverContent>
