@@ -1,9 +1,10 @@
 import Link from "next/link";
+import { auth } from "@clerk/nextjs";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { getSinglePoll } from "@/app/components/InfinitePolls/actions";
+import { DeletePollForm } from "@/app/components/CrudPoll/DeletePollForm";
 import { PollCardActions } from "@/app/components/PollCard/PollCardActions";
-import { DeletePollButton } from "@/app/polls/components/DeletePollButton";
 import {
   AllComments,
   AllCommentsFallback,
@@ -19,6 +20,8 @@ export default async function PollPage({ params, searchParams }: Props) {
   const poll = await getSinglePoll({ pollId: params.id });
 
   if (!poll) return notFound();
+
+  const { userId } = auth();
 
   return (
     <main className="relative flex min-h-[calc(100dvh-64px)] w-full flex-col">
@@ -41,7 +44,7 @@ export default async function PollPage({ params, searchParams }: Props) {
             month: "long",
             day: "numeric",
           })}
-          <DeletePollButton pollId={poll.id} pollAuthorId={poll.author.id} />
+          {userId === poll.author.id && <DeletePollForm poll={poll} />}
         </div>
       </div>
 
@@ -86,4 +89,3 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: `Winning choice: "${winningOption?.text}", showing the majority's preference.`,
   };
 }
-

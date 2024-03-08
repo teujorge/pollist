@@ -218,7 +218,10 @@ export function CommentCardActions() {
 
             {/* delete button */}
             {user?.id === comment.authorId && (
-              <DeleteAlertDialog await={true} onDelete={handleDeleteComment} />
+              <DeleteAlertDialog
+                willAwait={true}
+                onDelete={handleDeleteComment}
+              />
             )}
           </PopoverContent>
         </Popover>
