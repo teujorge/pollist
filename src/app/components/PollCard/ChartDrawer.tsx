@@ -9,8 +9,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 
-const { Bar, BarChart, ResponsiveContainer } = (await import("recharts"))
-  .default;
+const { Bar, BarChart, ResponsiveContainer } = await import("recharts");
 
 export function ChartDrawer({ data }: { data: { value: number }[] }) {
   return (
