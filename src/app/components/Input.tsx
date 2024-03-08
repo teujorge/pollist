@@ -26,12 +26,12 @@ export function Input({
         id={inputProps?.name}
         autoComplete="off"
         {...inputProps}
-        className={cn(error && "border-red-500", inputProps?.className)}
+        className={cn(inputProps?.className, error && "border-red-500")}
       />
       <span
         role="alert"
-        className={`min-h-5 origin-top transform text-sm text-red-500 transition-all
-          ${error ? "scale-y-100 opacity-100" : "scale-y-75 opacity-0"}
+        className={`origin-top transform text-sm text-red-500 transition-all
+          ${error ? "h-5 min-h-5 scale-y-100 opacity-100" : "h-0 max-h-0 scale-y-75 opacity-0"}
         `}
       >
         {error}

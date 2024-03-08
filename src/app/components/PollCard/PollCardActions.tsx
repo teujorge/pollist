@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useApp } from "@/app/app";
@@ -356,6 +357,16 @@ export function PollCardActions(props: PollCardActionsProps) {
                     ${userVote?.optionId === option.id ? "bg-purple-500" : "bg-neutral-700"}
                   `}
                 />
+                <div className="h-full w-8 overflow-hidden rounded-lg object-cover">
+                  {option.imagePath && (
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/polls/${option.imagePath}`}
+                      alt="option-image"
+                      width={32}
+                      height={32}
+                    />
+                  )}
+                </div>
                 <p className="text-sm text-neutral-200">{option.text}</p>
                 <p className="ml-auto text-sm text-neutral-200">
                   {

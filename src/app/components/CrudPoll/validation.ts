@@ -1,7 +1,9 @@
 import { z } from "zod";
 
-const MAX_FILE_SIZE = 500000;
-const ACCEPTED_IMAGE_TYPES = [
+// max file size 5mb
+const maxFileSize = 5 * 1024 * 1024;
+// file type jpeg, png, webp, gif
+const allowedFileTypes = [
   "image/jpeg",
   "image/jpg",
   "image/png",
@@ -10,21 +12,34 @@ const ACCEPTED_IMAGE_TYPES = [
 ];
 
 const zFile = z
-  .instanceof(File)
+  .instanceof(FileList)
   .optional()
-  .refine((file) => file?.size ?? 0 <= MAX_FILE_SIZE, `Max file size is 5MB.`)
   .refine(
-    (file) => (file ? ACCEPTED_IMAGE_TYPES.includes(file.type) : true),
-    ".jpg, .jpeg, .png, .webp and .gif files are accepted.",
+    (files) =>
+      files === undefined ||
+      files.length === 0 ||
+      (files[0]?.size ?? 0) <= maxFileSize,
+    {
+      message: "File size must be less than 5MB",
+    },
+  )
+  .refine(
+    (files) =>
+      files === undefined ||
+      files.length === 0 ||
+      allowedFileTypes.includes(files[0]?.type ?? ""),
+    {
+      message: "File type must be JPEG, PNG, WEBP, or GIF",
+    },
   );
 
 export const createPollSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   option1: z.string().min(1, "Option is required"),
-  file1: zFile,
+  option1file: zFile,
   option2: z.string().min(1, "Option is required"),
-  file2: zFile,
+  option2file: zFile,
   options: z.array(
     z.object({
       value: z.string().min(1, "Option is required"),

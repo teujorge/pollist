@@ -3,6 +3,7 @@
 import { db } from "@/database/db";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
+import { supabase } from "@/database/dbRealtime";
 import type { CreatePollFields } from "./validation";
 
 export async function createPoll(fields: CreatePollFields) {
@@ -25,9 +26,25 @@ export async function createPoll(fields: CreatePollFields) {
         ],
       },
     },
+    include: {
+      options: true,
+    },
   });
 
-  if (createdPoll) redirect(`/polls/${createdPoll.id}`);
+  return createdPoll;
+}
+
+export async function addImagePathToPollOption(optionId: string, path: string) {
+  const updatedOption = await db.option.update({
+    where: { id: optionId },
+    data: { imagePath: path },
+  });
+
+  return updatedOption;
+}
+
+export async function redirectToPoll(pollId: string) {
+  redirect(`/polls/${pollId}`);
 }
 
 export async function deletePoll(formData: FormData) {
@@ -51,7 +68,31 @@ export async function deletePoll(formData: FormData) {
     throw new Error("You are not authorized to delete this poll");
   }
 
-  const deletedPoll = await db.poll.delete({ where: { id: pollId } });
+  const deletedPoll = await db.poll.delete({
+    where: { id: pollId },
+    include: { options: true },
+  });
+
+  if (supabase) {
+    const imagePaths = deletedPoll.options
+      .map((option) => option.imagePath)
+      .filter((path) => path !== null) as string[];
+    console.log("Deleting images", imagePaths);
+
+    const { data, error } = await supabase.storage
+      .from("polls")
+      .remove(imagePaths);
+    console.log(data, error);
+
+    if (error) {
+      const { data: data2, error: error2 } = await supabase.storage
+        .from("polls")
+        .remove(imagePaths);
+      console.log(data2, error2);
+    }
+  } else {
+    console.error("Supabase client not found");
+  }
 
   if (deletedPoll) redirect(`/users/${userId}`);
 }

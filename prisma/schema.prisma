@@ -112,11 +112,12 @@ model NotificationPollLike {
 }
 
 model Option {
-  id     String @id @default(uuid())
-  text   String
-  pollId String
-  votes  Vote[]
-  poll   Poll   @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  id        String  @id @default(uuid())
+  text      String
+  imagePath String?
+  pollId    String
+  votes     Vote[]
+  poll      Poll    @relation(fields: [pollId], references: [id], onDelete: Cascade)
 
   @@index([pollId])
 }
