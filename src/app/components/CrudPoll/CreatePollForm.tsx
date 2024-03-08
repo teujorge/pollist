@@ -49,8 +49,8 @@ export function CreatePollForm() {
     for (const option of newPoll?.options ?? []) {
       const optionText = option.text;
       const optionData = [
-        { value: data.option1, file: data.option1file },
-        { value: data.option2, file: data.option2file },
+        { value: data.option1, file: data.option1file as FileList },
+        { value: data.option2, file: data.option2file as FileList },
         ...data.options,
       ].find((o) => o.value === optionText);
 
@@ -59,7 +59,7 @@ export function CreatePollForm() {
         continue;
       }
 
-      const file = optionData.file[0];
+      const file = (optionData.file as FileList)[0];
       if (!file) {
         console.error("File not found for option", optionText);
         continue;
@@ -88,7 +88,7 @@ export function CreatePollForm() {
     }
 
     const extension = file.name.split(".").pop();
-    const imagePath = `/${pollId}/options/${optionId}/image.${extension}`;
+    const imagePath = `${pollId}/options/${optionId}/image.${extension}`;
 
     const { data, error } = await supabase.storage
       .from("polls")
@@ -138,7 +138,9 @@ export function CreatePollForm() {
           />
           <InputFile
             inputProps={{ ...form.register("option1file") }}
-            error={form.formState.errors.option1file?.message}
+            error={
+              form.formState.errors.option1file?.message as string | undefined
+            }
           />
         </OptionWrapper>
         <OptionWrapper>
@@ -149,7 +151,9 @@ export function CreatePollForm() {
           />
           <InputFile
             inputProps={{ ...form.register("option2file"), type: "file" }}
-            error={form.formState.errors.option2file?.message}
+            error={
+              form.formState.errors.option2file?.message as string | undefined
+            }
           />
         </OptionWrapper>
         {fields.map((option, index) => (
@@ -168,7 +172,11 @@ export function CreatePollForm() {
                 ...form.register(`options.${index}.file`),
                 type: "file",
               }}
-              error={form.formState.errors.options?.[index]?.file?.message}
+              error={
+                form.formState.errors.options?.[index]?.file?.message as
+                  | string
+                  | undefined
+              }
             />
             <button
               type="button"
