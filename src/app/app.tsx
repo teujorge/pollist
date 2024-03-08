@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { Header } from "./components/Header/Header";
+import dynamic from "next/dynamic";
 import { useUser } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/react";
 import { useCustomScrollbar } from "./hooks/useCustomScrollbar";
@@ -13,6 +13,14 @@ import type {
   NotificationFollowPendingItem,
   NotificationFollowAcceptedItem,
 } from "./components/Header/actions";
+
+const NotificationsHandler = dynamic(
+  () =>
+    import("@/app/components/Header/NotificationsHandler").then(
+      (mod) => mod.NotificationsHandler,
+    ),
+  { ssr: false },
+);
 
 export type Notifications = {
   pollLikes: NotificationPollLikeItem[];
@@ -52,8 +60,8 @@ export function App({ children }: { children: React.ReactNode }) {
           strategy="lazyOnload"
         />
       )}
+      {user?.id !== undefined && <NotificationsHandler />}
       <Analytics />
-      <Header />
       {memoizedChildren}
     </AppProvider>
   );
