@@ -6,26 +6,19 @@ import { Toaster } from "sonner";
 import { Suspense } from "react";
 import { Nunito_Sans } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import type { Metadata, Viewport } from "next";
 
 const nunito = Nunito_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
 });
 
-export const metadata = {
-  title: "Pollist",
-  description: "Opinions exposed",
-  icons: [{ rel: "icon", url: "/icon.png" }],
-};
-
 export default function RootLayout({
   children,
   crudPoll,
-  welcome,
 }: {
   children: React.ReactNode;
   crudPoll: React.ReactNode;
-  welcome: React.ReactNode;
 }) {
   return (
     <html lang="en">
@@ -56,7 +49,6 @@ export default function RootLayout({
               <Toaster richColors />
               {children}
               {crudPoll}
-              {welcome}
             </App>
           </body>
         </ClerkProvider>
@@ -64,3 +56,62 @@ export default function RootLayout({
     </html>
   );
 }
+
+export const metadata: Metadata = {
+  title: {
+    template: "Pollist | %s",
+    default: "Pollist | Opinions exposed",
+  },
+  description:
+    "Pollist is a platform for creating and sharing polls. Get opinions on your questions and share your thoughts with the world.",
+  category: "Social",
+  icons: [{ rel: "icon", url: "/icon.png" }],
+  metadataBase: new URL("https://pollist.org"),
+  creator: "Matheus Jorge",
+  authors: [
+    { name: "Matheus Jorge", url: "https://mjorge.me" },
+    { name: "Davi Guimell" },
+  ],
+  openGraph: {
+    title: "Pollist | Opinions exposed",
+    description:
+      "Pollist is a platform for creating and sharing polls. Get opinions on your questions and share your thoughts with the world.",
+    url: "https://pollist.org",
+    siteName: "Pollist",
+    images: [
+      {
+        url: "https://pollist.org/icon.png",
+        width: 600,
+        height: 600,
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Pollist",
+    description:
+      "Pollist is a platform for creating and sharing polls. Get opinions on your questions and share your thoughts with the world.",
+    images: {
+      url: "https://pollist.org/icon.png",
+      alt: "Pollist logo",
+    },
+    site: "@pollist",
+  },
+  appleWebApp: {
+    title: "Pollist",
+    statusBarStyle: "black-translucent",
+    startupImage: ["/icon.png"],
+  },
+  appLinks: {
+    web: {
+      url: "https://pollist.org",
+      should_fallback: true,
+    },
+  },
+};
+
+export const viewport: Viewport = {
+  colorScheme: "dark",
+  themeColor: "black",
+};
