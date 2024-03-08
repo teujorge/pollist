@@ -4,6 +4,12 @@
  */
 await import("./src/env.js");
 
+import withBundleAnalyzer from "@next/bundle-analyzer";
+
+// const withBundleAnalyzer = require('@next/bundle-analyzer')({
+//   enabled: process.env.ANALYZE === 'true',
+// })
+
 /** @type {import("next").NextConfig} */
 const config = {
   images: {
@@ -20,4 +26,6 @@ const config = {
   },
 };
 
-export default config;
+export default withBundleAnalyzer({ enabled: process.env.ANALYZE === "true" })(
+  config,
+);
