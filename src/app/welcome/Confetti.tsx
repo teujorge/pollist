@@ -1,7 +1,7 @@
 "use client";
 
-import { useWindowSize } from "@uidotdev/usehooks";
 import ReactConfetti from "react-confetti";
+import { useWindowSize } from "@uidotdev/usehooks";
 
 export function Confetti() {
   const size = useWindowSize();
