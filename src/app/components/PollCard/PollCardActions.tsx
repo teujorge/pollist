@@ -1,12 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { Loader } from "../Loader";
 import { useApp } from "@/app/app";
 import { supabase } from "@/database/dbRealtime";
-import { ChartDrawer } from "@/app/components/PollCard/ChartDrawer";
-import { TriggerNotificationSeen } from "../TriggerNotificationSeen";
 import { useEffect, useRef, useState } from "react";
 import { LockClosedIcon, ThickArrowUpIcon } from "@radix-ui/react-icons";
 import { SignInButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
@@ -21,6 +21,19 @@ import type { PollsDetails } from "../InfinitePolls/actions";
 import type { PollCardProps } from "./PollCard";
 import type { RealtimeChannel } from "@supabase/realtime-js";
 import type { MutableRefObject } from "react";
+
+const ChartDrawer = dynamic(
+  () => import("./ChartDrawer").then((mod) => mod.ChartDrawer),
+  { ssr: false, loading: () => <Loader /> },
+);
+
+const TriggerNotificationSeen = dynamic(
+  () =>
+    import("../TriggerNotificationSeen").then(
+      (mod) => mod.TriggerNotificationSeen,
+    ),
+  { ssr: false, loading: () => <Loader /> },
+);
 
 type PollCardActionsProps = PollCardProps & {
   showChart?: boolean;

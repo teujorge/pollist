@@ -1,7 +1,6 @@
 "use client";
 
 import { BarChartIcon } from "@radix-ui/react-icons";
-import { Bar, BarChart, ResponsiveContainer } from "recharts";
 import {
   Drawer,
   DrawerContent,
@@ -9,6 +8,9 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+
+const { Bar, BarChart, ResponsiveContainer } = (await import("recharts"))
+  .default;
 
 export function ChartDrawer({ data }: { data: { value: number }[] }) {
   return (

@@ -27,7 +27,7 @@ export default function HomePage({
       >
         <Suspense
           fallback={
-            <div className="w-full">
+            <div className="flex w-full items-center justify-center">
               <Loader />
             </div>
           }
