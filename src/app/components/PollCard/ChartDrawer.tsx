@@ -15,7 +15,7 @@ export function ChartDrawer({ data }: { data: { value: number }[] }) {
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <button className="flex h-fit w-fit flex-row items-center justify-center gap-2 rounded-md bg-neutral-900 px-2 py-1 text-neutral-300 transition-colors hovact:bg-neutral-800">
+        <button className="flex h-11 w-24 flex-row items-center justify-center gap-2 rounded-md border border-neutral-700 px-4 py-2 text-neutral-300 transition-colors hovact:bg-neutral-900">
           Chart <BarChartIcon />
         </button>
       </DrawerTrigger>

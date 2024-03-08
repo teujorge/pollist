@@ -4,7 +4,6 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { Loader } from "../Loader";
 import { useApp } from "@/app/app";
 import { supabase } from "@/database/dbRealtime";
 import { useEffect, useRef, useState } from "react";
@@ -24,7 +23,7 @@ import type { MutableRefObject } from "react";
 
 const ChartDrawer = dynamic(
   () => import("./ChartDrawer").then((mod) => mod.ChartDrawer),
-  { ssr: false, loading: () => <Loader /> },
+  { ssr: false, loading: () => <div className="shimmer h-11 w-24" /> },
 );
 
 const TriggerNotificationSeen = dynamic(
@@ -32,7 +31,7 @@ const TriggerNotificationSeen = dynamic(
     import("../TriggerNotificationSeen").then(
       (mod) => mod.TriggerNotificationSeen,
     ),
-  { ssr: false, loading: () => <Loader /> },
+  { ssr: false },
 );
 
 type PollCardActionsProps = PollCardProps & {
