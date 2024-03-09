@@ -1,5 +1,9 @@
+"use client";
+
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 import { UploadIcon } from "@radix-ui/react-icons";
+import { buttonVariants } from "@/components/ui/button";
 
 export function Input({
   wrapperProps,
@@ -26,12 +30,12 @@ export function Input({
         id={inputProps?.name}
         autoComplete="off"
         {...inputProps}
-        className={cn(inputProps?.className, error && "border-red-500")}
+        className={cn(inputProps?.className, error && "!border-destructive")}
       />
       <span
         role="alert"
-        className={`origin-top transform text-sm text-red-500 transition-all
-          ${error ? "h-5 min-h-5 scale-y-100 opacity-100" : "h-0 max-h-0 scale-y-75 opacity-0"}
+        className={`text-destructive origin-top transform text-xs transition-all
+          ${error ? "h-5 scale-y-100 opacity-100" : "h-0 scale-y-75 opacity-0"}
         `}
       >
         {error}
@@ -49,29 +53,51 @@ export function InputFile({
   inputProps?: React.ComponentProps<"input">;
   error?: string;
 }) {
+  // State to store the selected file name
+  const [fileName, setFileName] = useState<string>();
+
+  // Handle file selection
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFileName(e.target.files?.[0]?.name);
+    inputProps?.onChange?.(e);
+  };
+
   return (
     <div
       {...wrapperProps}
-      className={cn("flex flex-col p-1", wrapperProps?.className)}
+      className={cn("flex flex-col items-start p-1", wrapperProps?.className)}
     >
-      <div className="flex items-center justify-center">
+      <div className="flex w-full items-center justify-center">
         <input
           id={inputProps?.name}
           {...inputProps}
+          onChange={handleFileChange}
           type="file"
           className="hidden"
         />
         <label
           htmlFor={inputProps?.name}
-          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-purple-500 transition-colors hovact:bg-purple-500/25"
+          className={cn(
+            buttonVariants({ variant: "outline" }),
+            error ? "border-destructive" : "border-accent",
+            "cursor-pointer gap-2",
+            inputProps?.className,
+          )}
         >
-          <UploadIcon />
+          {fileName ? (
+            fileName
+          ) : (
+            <>
+              Upload Image
+              <UploadIcon />
+            </>
+          )}
         </label>
       </div>
       <span
         role="alert"
-        className={`min-h-5 origin-top transform text-sm text-red-500 transition-all
-          ${error ? "scale-y-100 opacity-100" : "scale-y-75 opacity-0"}
+        className={`text-destructive min-w-fit origin-top transform whitespace-nowrap text-xs transition-all
+          ${error ? "h-5 scale-y-100 opacity-100" : "h-0 scale-y-75 opacity-0"}
         `}
       >
         {error}
