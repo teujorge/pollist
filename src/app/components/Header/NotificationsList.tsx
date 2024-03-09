@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { toast } from "sonner";
 import { Loader } from "../Loader";
-import { useApp } from "@/app/app";
+import { useApp } from "@/app/(with-auth)/app";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { ProfileImage } from "../ProfileImage";
 import { useNotifications } from "./NotificationsBell";
 import { removeNotification } from "./actions";
 import { useEffect, useState } from "react";
-import { acceptFollow, declineFollow } from "@/app/users/actions";
+import { acceptFollow, declineFollow } from "@/app/(with-auth)/users/actions";
 import type {
   NotificationType,
   NotificationPollLikeItem,
@@ -164,7 +164,7 @@ function NotificationCard({
   return (
     <div
       key={item.data.id}
-      className={`border-accent relative flex w-full select-none flex-row gap-2 rounded-md border bg-neutral-900 p-2 transition-all duration-200
+      className={`relative flex w-full select-none flex-row gap-2 rounded-md border border-accent bg-neutral-900 p-2 transition-all duration-200
         ${isRemoving && "translate-x-full opacity-0"}
         ${hasBeenRemoved && "hidden"}
       `}
@@ -382,7 +382,7 @@ function FollowPendingNotificationCard(
         <button
           disabled={isDeclining || isAccepting}
           onClick={handleDecline}
-          className={`text-destructive hovact:decoration-destructive flex h-7 w-14 items-center justify-center underline decoration-transparent
+          className={`flex h-7 w-14 items-center justify-center text-destructive underline decoration-transparent hovact:decoration-destructive
             ${isAccepting && "pointer-events-none opacity-50"}
           `}
         >

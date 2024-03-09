@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useApp } from "@/app/app";
+import { useApp } from "@/app/(with-auth)/app";
 import { useUser } from "@clerk/nextjs";
 import { ProfileImage } from "../ProfileImage";
 import { CommentCardActions } from "./CommentCardActions";

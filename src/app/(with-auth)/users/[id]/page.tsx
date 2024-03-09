@@ -1,10 +1,10 @@
 import { db } from "@/database/db";
 import { auth } from "@clerk/nextjs";
-import { Tabs } from "@/app/users/components/Tabs";
-import { Stat } from "@/app/users/components/Stat";
+import { Tabs } from "@/app/(with-auth)/users/components/Tabs";
+import { Stat } from "@/app/(with-auth)/users/components/Stat";
 import { notFound } from "next/navigation";
 import { ProfileImage } from "@/app/components/ProfileImage";
-import { FollowButton } from "@/app/users/components/FollowButton";
+import { FollowButton } from "@/app/(with-auth)/users/components/FollowButton";
 import { UserFollowedList } from "../components/UserFollowedList";
 import { UserFollowersList } from "../components/UserFollowersList";
 import {
@@ -56,7 +56,7 @@ export default async function UserPage({ params }: Props) {
 
   return (
     <>
-      <div className="border-accent flex w-full flex-row gap-8 rounded-xl border px-3 py-3">
+      <div className="flex w-full flex-row gap-8 rounded-xl border border-accent px-3 py-3">
         <ProfileImage src={user.imageUrl} username={user.username} size={100} />
 
         <div className="flex flex-col justify-around">

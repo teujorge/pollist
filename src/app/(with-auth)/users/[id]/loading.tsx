@@ -1,9 +1,9 @@
-import { Stat } from "@/app/users/components/Stat";
+import { Stat } from "@/app/(with-auth)/users/components/Stat";
 
 export default function UserPageLoading() {
   return (
     <>
-      <div className="border-accent flex w-full flex-row gap-8 rounded-xl border px-3 py-3">
+      <div className="flex w-full flex-row gap-8 rounded-xl border border-accent px-3 py-3">
         <div className="flex flex-col gap-2">
           <div className="shimmer h-[100px] w-[100px] !rounded-full" />
         </div>

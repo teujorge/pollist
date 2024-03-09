@@ -1,6 +1,7 @@
 import { db } from "@/database/db";
+import { NextResponse } from "next/server";
 import type { Vote } from "@prisma/client";
-import { type NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 // recalculating the controversy score for all polls
 export async function GET(req: NextRequest) {

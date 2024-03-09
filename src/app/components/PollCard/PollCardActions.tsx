@@ -4,7 +4,7 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { useApp } from "@/app/app";
+import { useApp } from "@/app/(with-auth)/app";
 import { supabase } from "@/database/dbRealtime";
 import { useEffect, useRef, useState } from "react";
 import { LockClosedIcon, ThickArrowUpIcon } from "@radix-ui/react-icons";
@@ -334,7 +334,7 @@ export function PollCardActions(props: PollCardActionsProps) {
 
       <ul
         title={voteBlocked ? "Sign in required to vote" : undefined}
-        className={`divide-y divide-neutral-800
+        className={`
           ${voteBlocked && "opacity-50"}
         `}
       >
@@ -351,43 +351,53 @@ export function PollCardActions(props: PollCardActionsProps) {
                 );
 
           return (
-            <li key={option.id} onClick={() => onVote(option.id)}>
+            <li
+              key={option.id}
+              onClick={() => onVote(option.id)}
+              className={cn(
+                "relative flex w-full cursor-pointer flex-row items-center gap-2 rounded-xl border px-4 py-2 transition-colors hovact:bg-neutral-900",
+                option.id === optionIdToHighlight
+                  ? "border-primary"
+                  : "border-black",
+              )}
+            >
               <div
-                className={cn(
-                  "relative flex cursor-pointer flex-row items-center gap-2 rounded-xl border p-4 transition-colors hovact:bg-neutral-900 [&>div]:z-10 [&>p]:z-10 [&>span]:hovact:opacity-20",
-                  option.id === optionIdToHighlight
-                    ? "border-primary"
-                    : "border-transparent",
-                )}
-              >
-                <span
-                  className="absolute left-0 top-0 h-full rounded-xl bg-neutral-500 opacity-10 transition-all"
-                  style={{ width: `${votePercentage}%` }}
-                />
-                <div
-                  className={`min-h-4 min-w-4 rounded-full transition-colors
+                className={`max-h-4 min-h-4 min-w-4 max-w-4 rounded-full transition-colors
                     ${userVote?.optionId === option.id ? "bg-primary" : "bg-accent"}
                   `}
-                />
-                <div className="h-full w-8 overflow-hidden rounded-lg object-cover">
-                  {option.imagePath && (
-                    <Image
-                      src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/polls/${option.imagePath}`}
-                      alt="option-image"
-                      width={32}
-                      height={32}
-                    />
-                  )}
-                </div>
-                <p className="text-sm text-neutral-200">{option.text}</p>
-                <p className="ml-auto text-sm text-neutral-200">
+              />
+
+              <div className="h-8 w-8 overflow-hidden rounded-lg object-cover">
+                {option.imagePath && (
+                  <Image
+                    src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/polls/${option.imagePath}`}
+                    alt="option-image"
+                    width={40}
+                    height={40}
+                  />
+                )}
+              </div>
+              <div className="max-w-1/2">
+                <p className="w-full flex-grow">{option.text}</p>
+                <p className="whitespace-nowrap text-xs text-neutral-400">
                   {
                     optimisticPoll.votes.filter(
                       (vote) => vote.optionId === option.id,
                     ).length
-                  }
+                  }{" "}
+                  Votes
                 </p>
               </div>
+              <div className="flex h-1 min-w-10 flex-grow rounded-full sm:bg-accent">
+                <div
+                  className="hidden h-full rounded-full bg-primary opacity-25 transition-all sm:flex"
+                  style={{ width: `${votePercentage}%` }}
+                />
+              </div>
+              <p className="w-10 text-end text-sm text-neutral-200">
+                {votePercentage}%
+              </p>
+              <div className="h-8 w-8" />
             </li>
           );
         })}

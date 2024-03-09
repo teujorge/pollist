@@ -1,8 +1,14 @@
 export default function PrivacyPolicyPage() {
   return (
-    <main className="gap-2 [&>h1]:text-5xl [&>h1]:font-bold [&>h2]:pt-10 [&>h2]:text-3xl [&>h2]:font-semibold [&>p]:py-2 [&>ul]:list-disc [&>ul]:pl-6">
-      <h1>Privacy Policy</h1>
-      <p className="text-neutral-200">Last updated: February 19, 2024</p>
+    <main className="gap-2 [&>h2]:pt-10 [&>h2]:text-3xl [&>h2]:font-semibold [&>p]:py-2 [&>ul]:list-disc [&>ul]:pl-6">
+      <div className="py-20">
+        <h1 className="py-4 text-center text-7xl font-black md:text-9xl">
+          Privacy Policy
+        </h1>
+        <p className="text-center text-neutral-200">
+          Last updated: March 9, 2024
+        </p>
+      </div>
       <p>
         This Privacy Policy describes how Pollist (&quot;we,&quot;
         &quot;us,&quot; or &quot;our&quot;) collects, uses, and shares
