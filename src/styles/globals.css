@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --color-background: 0 0 0;
+    --color-primary: 168 85 247;
+    --color-primary-foreground: 0 0 0;
+    --color-secondary: 255 255 255;
+    --color-secondary-foreground: 0 0 0;
+    --color-destructive: 239 68 68;
+    --color-destructive-foreground: 255 255 255;
+    --color-accent: 64 64 64;
+    --color-accent-foreground: 212 212 212;
+  }
+}
+
 html {
   color-scheme: dark;
   background: black;
@@ -30,6 +44,11 @@ header {
 main {
   max-width: 1000px;
   padding: 1.5rem;
+}
+
+input::placeholder,
+textarea::placeholder {
+  font-size: 14px;
 }
 
 input,

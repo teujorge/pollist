@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader } from "./Loader";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import {
   AlertDialog,
@@ -45,7 +46,7 @@ export function DeleteAlertDialog(props: DeleteAlertDialogProps) {
 
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialogTrigger className="w-fit font-bold transition-colors hovact:text-red-500">
+      <AlertDialogTrigger className="hovact:text-destructive w-fit font-bold transition-colors">
         Delete
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -59,23 +60,18 @@ export function DeleteAlertDialog(props: DeleteAlertDialogProps) {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel
-            disabled={awaiting}
-            className="border-neutral-700 hovact:bg-neutral-900"
-          >
-            Cancel
-          </AlertDialogCancel>
+          <AlertDialogCancel disabled={awaiting}>Cancel</AlertDialogCancel>
           <div className="flex h-9 w-24 items-center justify-center">
             {awaiting ? (
               <Loader />
             ) : (
-              <button
+              <Button
                 disabled={awaiting}
-                className="rounded-md bg-white px-4 py-2 text-sm text-black transition-colors hovact:bg-red-500 hovact:text-white"
+                variant="destructive"
                 onClick={handleAwaitedDelete}
               >
                 Continue
-              </button>
+              </Button>
             )}
           </div>
         </AlertDialogFooter>

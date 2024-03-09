@@ -14,7 +14,7 @@ export default function WelcomePage() {
           }}
         />
         <div
-          className={`bg-purple-500 ${styles.blob2}`}
+          className={`bg-primary ${styles.blob2}`}
           style={{
             width: "calc(min(40vw, 40vh))",
             height: "calc(min(40vw, 40vh))",

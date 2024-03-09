@@ -3,7 +3,7 @@ import { Stat } from "@/app/users/components/Stat";
 export default function UserPageLoading() {
   return (
     <>
-      <div className="flex w-full flex-row gap-8 rounded-xl border border-neutral-700 px-3 py-3">
+      <div className="border-accent flex w-full flex-row gap-8 rounded-xl border px-3 py-3">
         <div className="flex flex-col gap-2">
           <div className="shimmer h-[100px] w-[100px] !rounded-full" />
         </div>

@@ -16,7 +16,7 @@ export async function ActiveFollowerCard({
   return (
     <div className="flex w-full flex-row items-center justify-between gap-1">
       <Link
-        className="flex flex-row items-center justify-center gap-1 hovact:text-purple-500"
+        className="hovact:text-primary flex flex-row items-center justify-center gap-1"
         href={`/users/${follower.id}`}
       >
         <ProfileImage

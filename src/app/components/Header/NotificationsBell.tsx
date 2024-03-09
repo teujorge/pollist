@@ -34,11 +34,11 @@ export function NotificationsBell() {
         >
           <PopoverTrigger asChild>
             <button
-              className="relative select-none outline-none
-            [&>svg]:hovact:text-purple-500"
+              className="[&>svg]:hovact:text-primary relative select-none
+            outline-none"
             >
               <BellIcon className="text-white transition-colors" />
-              <div className="absolute -right-0.5 -top-0.5 flex h-2 w-2 items-center justify-center rounded-full bg-purple-500 text-xs" />
+              <div className="bg-primary absolute -right-0.5 -top-0.5 flex h-2 w-2 items-center justify-center rounded-full text-xs" />
             </button>
           </PopoverTrigger>
           <PopoverContent>

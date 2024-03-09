@@ -164,7 +164,7 @@ function NotificationCard({
   return (
     <div
       key={item.data.id}
-      className={`relative flex w-full select-none flex-row gap-2 rounded-md border border-neutral-700 bg-neutral-900 p-2 transition-all duration-200
+      className={`border-accent relative flex w-full select-none flex-row gap-2 rounded-md border bg-neutral-900 p-2 transition-all duration-200
         ${isRemoving && "translate-x-full opacity-0"}
         ${hasBeenRemoved && "hidden"}
       `}
@@ -382,7 +382,7 @@ function FollowPendingNotificationCard(
         <button
           disabled={isDeclining || isAccepting}
           onClick={handleDecline}
-          className={`flex h-7 w-14 items-center justify-center text-red-500 underline decoration-transparent hovact:decoration-red-500
+          className={`text-destructive hovact:decoration-destructive flex h-7 w-14 items-center justify-center underline decoration-transparent
             ${isAccepting && "pointer-events-none opacity-50"}
           `}
         >

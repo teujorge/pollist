@@ -176,7 +176,7 @@ export function CommentCardActions() {
   const likeButtonComponent = (
     <button
       className={`flex flex-row items-center justify-center gap-1 font-bold
-        ${comment.likes.length > 0 ? "[&>*]:text-purple-500 [&>*]:hovact:text-purple-400" : "[&>*]:text-neutral-400 [&>*]:hovact:text-neutral-300"}
+        ${comment.likes.length > 0 ? "[&>*]:text-primary [&>*]:hovact:text-purple-400" : "[&>*]:text-neutral-400 [&>*]:hovact:text-neutral-300"}
       `}
       onClick={user ? handleLike : undefined}
     >
