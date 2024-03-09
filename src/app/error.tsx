@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 
 export default function Error({
@@ -22,12 +23,9 @@ export default function Error({
           {error.name}: {error.message}
         </p>
 
-        <button
-          className="rounded-lg px-4 py-2 hovact:bg-neutral-800"
-          onClick={() => reset()}
-        >
+        <Button variant="outline" onClick={() => reset()}>
           Try again
-        </button>
+        </Button>
       </div>
     </main>
   );

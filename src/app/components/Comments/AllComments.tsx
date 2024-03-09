@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { db } from "@/database/db";
-import { SignInButton, auth } from "@clerk/nextjs";
 import { Loader } from "../Loader";
+import { Button } from "@/components/ui/button";
 import { notFound } from "next/navigation";
 import { CommentForm } from "./CommentForm";
 import { CommentCard } from "./CommentCard";
-import { NewCommentsProvider } from "./NewCommentsProvider";
 import { InfiniteComments } from "@/app/components/InfiniteComments/InfiniteComments";
+import { SignInButton, auth } from "@clerk/nextjs";
+import { NewCommentsProvider } from "./NewCommentsProvider";
 
 export async function AllComments({
   pollId,
@@ -94,9 +95,9 @@ export function AllCommentsFallback() {
               className="flex-grow"
             />
             <div className="flex w-20 items-center justify-center">
-              <button className="ml-auto rounded-full px-3 py-1 text-green-500 hovact:bg-green-950">
+              <Button variant="outline" className="ml-auto">
                 Submit
-              </button>
+              </Button>
             </div>
           </div>
         </form>
