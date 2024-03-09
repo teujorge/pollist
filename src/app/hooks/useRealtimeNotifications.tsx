@@ -1,6 +1,6 @@
 "use client";
 
-import { useApp } from "../app";
+import { useApp } from "../(with-auth)/app";
 import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/database/dbRealtime";
 import { useEffect, useRef } from "react";
@@ -12,7 +12,7 @@ import {
   getNotificationsItems,
   getNotificationsPollLikeRelation,
 } from "../components/Header/actions";
-import type { Notifications } from "../app";
+import type { Notifications } from "../(with-auth)/app";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
 export function useRealtimeNotifications() {

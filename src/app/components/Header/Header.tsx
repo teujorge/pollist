@@ -11,19 +11,19 @@ export function Header() {
       <div className="flex flex-row items-center gap-4">
         <Link
           href="/"
-          className="[&>svg>path]:hovact:fill-primary [&>svg>path]:hovact:stroke-primary h-8 w-8 [&>svg>path]:transition-all"
+          className="h-8 w-8 [&>svg>path]:transition-all [&>svg>path]:hovact:fill-primary [&>svg>path]:hovact:stroke-primary"
         >
           <IconSvg className="h-full w-full" />
         </Link>
       </div>
 
-      <div className="relative flex flex-row items-center gap-4">
+      <div className="relative flex flex-row items-center gap-4 [&>a]:font-semibold">
         <Link href="/">Home</Link>
 
         {userId ? (
           <Link href="/polls/create">Create</Link>
         ) : (
-          <div className="[&>button]:hovact:text-primary flex h-8 w-fit items-center [&>button]:transition-colors">
+          <div className="flex h-8 w-fit items-center [&>button]:font-semibold [&>button]:transition-colors [&>button]:hovact:text-primary">
             <SignInButton mode="modal">Create</SignInButton>
           </div>
         )}
@@ -36,11 +36,11 @@ export function Header() {
         )}
 
         {userId ? (
-          <div className="to-primary h-8 w-8 rounded-full bg-gradient-to-r from-indigo-500">
+          <div className="h-8 w-8 rounded-full bg-gradient-to-r from-indigo-500 to-primary">
             <UserButton afterSignOutUrl="/" />
           </div>
         ) : (
-          <div className="[&>button]:hovact:text-primary flex h-8 w-fit items-center [&>button]:transition-colors">
+          <div className="flex h-8 w-fit items-center [&>button]:font-semibold [&>button]:transition-colors [&>button]:hovact:text-primary">
             <SignInButton mode="modal" />
           </div>
         )}

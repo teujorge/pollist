@@ -1,7 +1,7 @@
-import { Loader } from "./components/Loader";
+import { Loader } from "../components/Loader";
 import { Suspense } from "react";
 import { FilterBar } from "./index/components/FilterBar";
-import { InfinitePolls } from "./components/InfinitePolls/InfinitePolls";
+import { InfinitePolls } from "../components/InfinitePolls/InfinitePolls";
 
 export default function HomePage({
   searchParams,

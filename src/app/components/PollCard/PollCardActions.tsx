@@ -4,7 +4,7 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { useApp } from "@/app/app";
+import { useApp } from "@/app/(with-auth)/app";
 import { supabase } from "@/database/dbRealtime";
 import { useEffect, useRef, useState } from "react";
 import { LockClosedIcon, ThickArrowUpIcon } from "@radix-ui/react-icons";
