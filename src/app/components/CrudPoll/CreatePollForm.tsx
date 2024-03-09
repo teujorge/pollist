@@ -141,7 +141,7 @@ export function CreatePollForm() {
           error={form.formState.errors.description?.message}
         />
 
-        <div className="bg-accent my-4 h-0.5 w-full rounded-full" />
+        <div className="my-4 h-0.5 w-full rounded-full bg-accent" />
 
         <OptionWrapper>
           <Input
@@ -213,11 +213,11 @@ export function CreatePollForm() {
             <button
               type="button"
               onClick={() => remove(index)}
-              className="hovact:bg-destructive/20 hovact:text-destructive mb-6 mt-2 flex max-h-8 min-h-8 min-w-8 max-w-8 items-center justify-center rounded-full transition-colors"
+              className="mb-6 mt-2 flex max-h-8 min-h-8 min-w-8 max-w-8 items-center justify-center rounded-full transition-colors hovact:bg-destructive/20 hovact:text-destructive"
             >
               <CrossCircledIcon />
             </button>
-          </OptionWrapper>
+          </div>
         ))}
       </div>
 
