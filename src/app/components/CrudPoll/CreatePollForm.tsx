@@ -121,6 +121,8 @@ export function CreatePollForm() {
       className="flex w-[769px] max-w-full flex-col gap-4"
       onSubmit={form.handleSubmit(onSubmit)}
     >
+      <h1 className="text-2xl font-bold">Create A Poll</h1>
+
       <div className="flex w-full flex-col gap-4">
         <Input
           labelProps={{ text: "Title" }}
