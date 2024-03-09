@@ -2,23 +2,25 @@
 
 import { toast } from "sonner";
 import { Loader } from "../Loader";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/database/dbRealtime";
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input, InputFile } from "../Input";
 import { createPollSchema } from "./validation";
 import { useForm, useFieldArray } from "react-hook-form";
+import { PlusIcon, CrossCircledIcon } from "@radix-ui/react-icons";
 import {
   addImagePathToPollOption,
   createPoll,
   redirectToPoll,
 } from "./actions";
-import { MinusCircledIcon, PlusIcon } from "@radix-ui/react-icons";
 import type { CreatePollFields } from "./validation";
 
 export function CreatePollForm() {
   const form = useForm<CreatePollFields>({
     resolver: zodResolver(createPollSchema),
+    mode: "onChange",
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -116,28 +118,46 @@ export function CreatePollForm() {
 
   return (
     <form
-      className="flex w-96 max-w-full flex-col gap-4"
+      className="flex w-[769px] max-w-full flex-col gap-4"
       onSubmit={form.handleSubmit(onSubmit)}
     >
-      <div>
+      <h1 className="text-2xl font-bold">Create A Poll</h1>
+
+      <div className="flex w-full flex-col gap-4">
         <Input
           labelProps={{ text: "Title" }}
-          inputProps={{ ...form.register("title") }}
+          inputProps={{
+            placeholder: "E.g What should I have for lunch?",
+            ...form.register("title"),
+          }}
           error={form.formState.errors.title?.message}
         />
         <Input
           labelProps={{ text: "Description" }}
-          inputProps={{ ...form.register("description") }}
+          inputProps={{
+            placeholder: "Optional poll description.",
+            ...form.register("description"),
+          }}
           error={form.formState.errors.description?.message}
         />
+
+        <div className="my-4 h-0.5 w-full rounded-full bg-accent" />
+
         <OptionWrapper>
           <Input
             labelProps={{ text: "Option 1" }}
-            inputProps={{ ...form.register("option1") }}
+            inputProps={{
+              placeholder: "Enter an option.",
+              ...form.register("option1"),
+            }}
             error={form.formState.errors.option1?.message}
           />
           <InputFile
-            inputProps={{ ...form.register("option1file") }}
+            wrapperProps={{ className: "w-full" }}
+            inputProps={{
+              className: "w-full",
+              ...form.register("option1file"),
+            }}
             error={
               form.formState.errors.option1file?.message as string | undefined
             }
@@ -146,64 +166,78 @@ export function CreatePollForm() {
         <OptionWrapper>
           <Input
             labelProps={{ text: "Option 2" }}
-            inputProps={{ ...form.register("option2") }}
+            inputProps={{
+              placeholder: "Enter an option.",
+              ...form.register("option2"),
+            }}
             error={form.formState.errors.option2?.message}
           />
           <InputFile
-            inputProps={{ ...form.register("option2file"), type: "file" }}
+            wrapperProps={{ className: "w-full" }}
+            inputProps={{
+              className: "w-full",
+              ...form.register("option2file"),
+              type: "file",
+            }}
             error={
               form.formState.errors.option2file?.message as string | undefined
             }
           />
         </OptionWrapper>
         {fields.map((option, index) => (
-          <OptionWrapper key={`option-${index}`}>
-            <Input
-              labelProps={{ text: `Option ${index + 3}` }}
-              inputProps={{
-                // register the 'value' field of each option object
-                ...form.register(`options.${index}.value`),
-              }}
-              error={form.formState.errors.options?.[index]?.value?.message}
-            />
-            <InputFile
-              inputProps={{
-                // register the 'file' field of each option object
-                ...form.register(`options.${index}.file`),
-                type: "file",
-              }}
-              error={
-                form.formState.errors.options?.[index]?.file?.message as
-                  | string
-                  | undefined
-              }
-            />
+          <div key={`option-${index}`} className="flex w-full flex-row">
+            <OptionWrapper>
+              <Input
+                labelProps={{ text: `Option ${index + 3}` }}
+                inputProps={{
+                  placeholder: "Enter an option.",
+                  // register the 'value' field of each option object
+                  ...form.register(`options.${index}.value`),
+                }}
+                error={form.formState.errors.options?.[index]?.value?.message}
+              />
+              <InputFile
+                wrapperProps={{ className: "w-full" }}
+                inputProps={{
+                  className: "w-full",
+                  // register the 'file' field of each option object
+                  ...form.register(`options.${index}.file`),
+                }}
+                error={
+                  form.formState.errors.options?.[index]?.file?.message as
+                    | string
+                    | undefined
+                }
+              />
+            </OptionWrapper>
             <button
               type="button"
               onClick={() => remove(index)}
-              className="mb-6 flex max-h-8 min-h-8 min-w-8 max-w-8 items-center justify-center rounded-full text-red-500 transition-colors hovact:bg-red-500/25"
+              className="mb-6 mt-2 flex max-h-8 min-h-8 min-w-8 max-w-8 items-center justify-center rounded-full transition-colors hovact:bg-destructive/20 hovact:text-destructive"
             >
-              <MinusCircledIcon />
+              <CrossCircledIcon />
             </button>
-          </OptionWrapper>
+          </div>
         ))}
       </div>
 
-      <button
-        className="ml-auto flex h-fit w-fit flex-row items-center justify-center rounded-full px-3 py-1 text-green-500 transition-colors hovact:bg-green-500/25"
+      <Button
+        className="ml-auto flex flex-row items-center justify-center gap-2"
         type="button"
+        variant="ghost"
+        size="sm"
         onClick={addOption}
       >
         <PlusIcon /> Add Option
-      </button>
+      </Button>
 
       <div className="flex h-12 items-center justify-center">
         {form.formState.isSubmitting || form.formState.isSubmitSuccessful ? (
           <Loader />
         ) : (
-          <button className="rounded-lg bg-purple-500 px-4 py-2" type="submit">
-            Submit
-          </button>
+          <Button type="submit" variant="secondary">
+            Create Poll
+          </Button>
         )}
       </div>
     </form>
@@ -212,7 +246,7 @@ export function CreatePollForm() {
 
 function OptionWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-row items-end justify-center gap-0.5">
+    <div className="flex w-full flex-col items-end justify-center gap-0.5">
       {children}
     </div>
   );

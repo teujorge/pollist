@@ -10,12 +10,12 @@ export type PollCardProps = {
 
 export function PollCard({ poll, highlightedUserId }: PollCardProps) {
   return (
-    <div className="flex w-full flex-col gap-2 rounded-lg border border-neutral-700 bg-neutral-950 p-6 shadow-md">
+    <div className="border-accent flex w-full flex-col gap-2 rounded-lg border bg-neutral-950 p-6 shadow-md">
       <Link
         href={`/users/${poll.authorId}`}
         // rel="noopener noreferrer"
         // target="_blank"
-        className="flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 pl-0 transition-all [&>div>p]:hovact:text-purple-500 [&>div>span]:hovact:text-purple-600 [&>img]:hovact:border-purple-500"
+        className="[&>div>p]:hovact:text-primary [&>img]:hovact:border-primary flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 pl-0 transition-all [&>div>span]:hovact:text-purple-600"
       >
         <ProfileImage
           src={poll.author.imageUrl}

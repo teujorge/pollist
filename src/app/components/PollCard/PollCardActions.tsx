@@ -312,7 +312,7 @@ export function PollCardActions(props: PollCardActionsProps) {
   const likeButtonComponent = (
     <button
       className={`flex flex-row items-center justify-center gap-1 font-bold
-        ${optimisticPoll.likes.length > 0 ? "[&>*]:text-purple-500 [&>*]:hovact:text-purple-400" : "[&>*]:text-neutral-400 [&>*]:hovact:text-neutral-300"}
+        ${optimisticPoll.likes.length > 0 ? "[&>*]:text-primary [&>*]:hovact:text-purple-400" : "[&>*]:text-neutral-400 [&>*]:hovact:text-neutral-300"}
       `}
       onClick={user ? handleLike : undefined}
     >
@@ -356,7 +356,7 @@ export function PollCardActions(props: PollCardActionsProps) {
                 className={cn(
                   "relative flex cursor-pointer flex-row items-center gap-2 rounded-xl border p-4 transition-colors hovact:bg-neutral-900 [&>div]:z-10 [&>p]:z-10 [&>span]:hovact:opacity-20",
                   option.id === optionIdToHighlight
-                    ? "border-purple-500"
+                    ? "border-primary"
                     : "border-transparent",
                 )}
               >
@@ -366,7 +366,7 @@ export function PollCardActions(props: PollCardActionsProps) {
                 />
                 <div
                   className={`min-h-4 min-w-4 rounded-full transition-colors
-                    ${userVote?.optionId === option.id ? "bg-purple-500" : "bg-neutral-700"}
+                    ${userVote?.optionId === option.id ? "bg-primary" : "bg-accent"}
                   `}
                 />
                 <div className="h-full w-8 overflow-hidden rounded-lg object-cover">
@@ -395,7 +395,7 @@ export function PollCardActions(props: PollCardActionsProps) {
 
       <div
         className={`relative w-fit rounded-full bg-opacity-20 px-2 py-1
-          ${pollNotification && "bg-purple-500"}
+          ${pollNotification && "bg-primary"}
         `}
       >
         <SignedIn>{likeButtonComponent}</SignedIn>

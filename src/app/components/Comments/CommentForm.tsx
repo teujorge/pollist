@@ -2,6 +2,7 @@
 
 import { toast } from "sonner";
 import { Loader } from "../Loader";
+import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
 import { createComment } from "@/app/components/Comments/actions";
 import { useNewComments } from "./NewCommentsProvider";
@@ -103,21 +104,21 @@ export function CommentForm({
       onSubmit={handleSubmit}
     >
       {label && <label>{label}</label>}
-      <div className="flex flex-row items-end gap-2">
+      <div className="flex w-full flex-row items-end gap-2">
         <textarea
           required
           disabled={isLoading}
           name="comment"
           placeholder={placeholder}
-          className="flex-grow"
+          className="h-20 flex-grow resize-none"
         />
         <div className="flex w-20 items-center justify-center">
           {isLoading ? (
             <Loader />
           ) : (
-            <button className="ml-auto rounded-full px-3 py-1 text-green-500 hovact:bg-green-950">
+            <Button variant="outline" className="ml-auto">
               Submit
-            </button>
+            </Button>
           )}
         </div>
       </div>

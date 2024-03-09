@@ -56,7 +56,7 @@ export default async function UserPage({ params }: Props) {
 
   return (
     <>
-      <div className="flex w-full flex-row gap-8 rounded-xl border border-neutral-700 px-3 py-3">
+      <div className="border-accent flex w-full flex-row gap-8 rounded-xl border px-3 py-3">
         <ProfileImage src={user.imageUrl} username={user.username} size={100} />
 
         <div className="flex flex-col justify-around">
@@ -112,10 +112,10 @@ export default async function UserPage({ params }: Props) {
             <form className="italic text-green-500" action={createPollsFromList}>
               <button>create default polls</button>
             </form>
-            <form className="italic text-red-500" action={deleteAllPolls}>
+            <form className="italic text-destructive" action={deleteAllPolls}>
               <button>delete all polls</button>
             </form>
-            <form className="italic text-purple-500" action={testCron}>
+            <form className="italic text-primary" action={testCron}>
               <button>test cron jobs</button>
             </form>
           </div>

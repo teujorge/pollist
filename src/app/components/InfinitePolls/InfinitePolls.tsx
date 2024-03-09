@@ -3,6 +3,8 @@ import { getInfinitePolls as getPaginatedPolls } from "./actions";
 import { InfinitelyMorePolls } from "./InfinitelyMorePolls";
 import type { PollQuery } from "@/constants";
 
+export const dynamic = "force-dynamic";
+
 export async function InfinitePolls(props: {
   query: PollQuery;
   highlightedUserId?: string;

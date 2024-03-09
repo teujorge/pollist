@@ -2,15 +2,16 @@
 
 import { toast } from "sonner";
 import { Loader } from "../Loader";
+import { Button } from "@/components/ui/button";
 import { SignInButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import { PAGE_SIZE } from "@/constants";
 import { NewComments } from "./NewComments";
 import { CommentForm } from "./CommentForm";
-import { ThickArrowUpIcon } from "@radix-ui/react-icons";
 import { DeleteAlertDialog } from "../DeleteAlertDialog";
 import { useEffect, useState } from "react";
 import { getPaginatedComments } from "../InfiniteComments/actions";
 import { CommentCard, useCommentCard } from "./CommentCard";
+import { DotsHorizontalIcon, ThickArrowUpIcon } from "@radix-ui/react-icons";
 import { deleteComment, likeComment, unlikeComment } from "./actions";
 import {
   Popover,
@@ -176,7 +177,7 @@ export function CommentCardActions() {
   const likeButtonComponent = (
     <button
       className={`flex flex-row items-center justify-center gap-1 font-bold
-        ${comment.likes.length > 0 ? "[&>*]:text-purple-500 [&>*]:hovact:text-purple-400" : "[&>*]:text-neutral-400 [&>*]:hovact:text-neutral-300"}
+        ${comment.likes.length > 0 ? "[&>*]:text-primary [&>*]:hovact:text-purple-400" : "[&>*]:text-neutral-400 [&>*]:hovact:text-neutral-300"}
       `}
       onClick={user ? handleLike : undefined}
     >
@@ -203,9 +204,12 @@ export function CommentCardActions() {
         {/* options popover */}
         <Popover>
           <PopoverTrigger asChild>
-            <button className="rounded-full px-3 pb-2 text-lg font-bold transition-colors hovact:bg-neutral-800">
-              ...
-            </button>
+            <Button
+              variant="ghost"
+              className="flex h-7 w-7 items-center justify-center rounded-full p-1.5"
+            >
+              <DotsHorizontalIcon />
+            </Button>
           </PopoverTrigger>
           <PopoverContent className="flex flex-col bg-black p-4">
             {/* copy link button */}

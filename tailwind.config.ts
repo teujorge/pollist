@@ -23,6 +23,21 @@ const config = {
       },
     },
     extend: {
+      colors: {
+        primary: "rgb(var(--color-primary) / <alpha-value>)",
+        "primary-foreground":
+          "rgb(var(--color-primary-foreground) / <alpha-value>)",
+        secondary: "rgb(var(--color-secondary) / <alpha-value>)",
+        "secondary-foreground":
+          "rgb(var(--color-secondary-foreground) / <alpha-value>)",
+        destructive: "rgb(var(--color-destructive) / <alpha-value>)",
+        "destructive-foreground":
+          "rgb(var(--color-destructive-foreground) / <alpha-value>)",
+        accent: "rgb(var(--color-accent) / <alpha-value>)",
+        background: "rgb(var(--color-background) / <alpha-value>)",
+        "accent-foreground":
+          "rgb(var(--color-accent-foreground) / <alpha-value>)",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },

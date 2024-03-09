@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { BarChartIcon } from "@radix-ui/react-icons";
 import {
   Drawer,
@@ -15,9 +16,12 @@ export function ChartDrawer({ data }: { data: { value: number }[] }) {
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <button className="flex h-11 w-24 flex-row items-center justify-center gap-2 rounded-md border border-neutral-700 px-4 py-2 text-neutral-300 transition-colors hovact:bg-neutral-900">
+        <Button
+          variant="outline"
+          className="flex flex-row items-center justify-center gap-2"
+        >
           Chart <BarChartIcon />
-        </button>
+        </Button>
       </DrawerTrigger>
       <DrawerContent>
         <div className="mx-auto w-full max-w-sm">
