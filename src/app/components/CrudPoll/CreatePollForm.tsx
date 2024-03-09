@@ -217,7 +217,7 @@ export function CreatePollForm() {
             >
               <CrossCircledIcon />
             </button>
-          </div>
+          </OptionWrapper>
         ))}
       </div>
 
