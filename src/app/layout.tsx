@@ -1,4 +1,5 @@
 import "@/styles/globals.css";
+import Script from "next/script";
 import GlobalLoading from "./loading";
 import { App } from "./app";
 import { dark } from "@clerk/themes";
@@ -8,6 +9,7 @@ import { Suspense } from "react";
 import { Nunito_Sans } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
+import type { WithContext, WebSite } from "schema-dts";
 
 const nunito = Nunito_Sans({
   subsets: ["latin"],
@@ -24,6 +26,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Suspense fallback={<GlobalLoading />}>
+        <Script
+          id="json-ld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <ClerkProvider
           appearance={{
             baseTheme: dark,
@@ -58,6 +65,29 @@ export default function RootLayout({
     </html>
   );
 }
+
+const jsonLd: WithContext<WebSite> = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Pollist",
+  url: "https://pollist.org",
+  description:
+    "Pollist is a platform for creating and sharing polls. Get opinions on your questions and share your thoughts with the world.",
+  publisher: {
+    "@type": "Organization",
+    name: "Pollist",
+    url: "https://pollist.org",
+    logo: {
+      "@type": "ImageObject",
+      url: "https://pollist.org/icon.png",
+    },
+  },
+  author: {
+    "@type": "Person",
+    name: "Matheus Jorge",
+    url: "https://mjorge.me",
+  },
+};
 
 export const metadata: Metadata = {
   title: {
