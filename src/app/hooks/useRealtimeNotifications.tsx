@@ -1,6 +1,5 @@
 "use client";
 
-import { useApp } from "../(with-auth)/app";
 import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/database/dbRealtime";
 import { useEffect, useRef } from "react";
@@ -15,12 +14,17 @@ import {
 import type { Notifications } from "../(with-auth)/app";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
-export function useRealtimeNotifications() {
+export function useRealtimeNotifications({
+  setNotifications,
+}: {
+  setNotifications: React.Dispatch<React.SetStateAction<Notifications>>;
+}) {
   const { user } = useUser();
-  const { setNotifications } = useApp();
   const notificationsSubscriptionRef = useRef<RealtimeChannel>();
 
   useEffect(() => {
+    if (!user) return;
+
     function handleOnNotificationInsert({
       type,
       payload,

@@ -1,9 +1,9 @@
 "use client";
 
 import Script from "next/script";
-import dynamic from "next/dynamic";
 import { useUser } from "@clerk/nextjs";
 import { useCustomScrollbar } from "../hooks/useCustomScrollbar";
+import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
 import { useMemo, useState, useContext, createContext } from "react";
 import type {
   NotificationPollLikeItem,
@@ -12,14 +12,6 @@ import type {
   NotificationFollowPendingItem,
   NotificationFollowAcceptedItem,
 } from "../components/Header/actions";
-
-const NotificationsHandler = dynamic(
-  () =>
-    import("@/app/components/Header/NotificationsHandler").then(
-      (mod) => mod.NotificationsHandler,
-    ),
-  { ssr: false },
-);
 
 export type Notifications = {
   pollLikes: NotificationPollLikeItem[];
@@ -47,6 +39,8 @@ export function App({ children }: { children: React.ReactNode }) {
     followsAccepted: [],
   });
 
+  useRealtimeNotifications({ setNotifications });
+
   const memoizedChildren = useMemo(() => children, [children]);
 
   return (
@@ -59,7 +53,6 @@ export function App({ children }: { children: React.ReactNode }) {
           strategy="lazyOnload"
         />
       )}
-      {user?.id !== undefined && <NotificationsHandler />}
       {memoizedChildren}
     </AppProvider>
   );
