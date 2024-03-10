@@ -3,7 +3,6 @@
 import Script from "next/script";
 import dynamic from "next/dynamic";
 import { useUser } from "@clerk/nextjs";
-import { Analytics } from "@vercel/analytics/react";
 import { useCustomScrollbar } from "../hooks/useCustomScrollbar";
 import { useMemo, useState, useContext, createContext } from "react";
 import type {
@@ -61,7 +60,6 @@ export function App({ children }: { children: React.ReactNode }) {
         />
       )}
       {user?.id !== undefined && <NotificationsHandler />}
-      <Analytics />
       {memoizedChildren}
     </AppProvider>
   );
