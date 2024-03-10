@@ -89,7 +89,7 @@ export async function getNotificationsFollowPendingRelation(
 
 const notificationsFollowAcceptedInclude = {
   follow: {
-    include: { followed: true },
+    include: { followee: true },
   },
 };
 

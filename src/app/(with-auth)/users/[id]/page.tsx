@@ -5,7 +5,7 @@ import { Stat } from "@/app/(with-auth)/users/components/Stat";
 import { notFound } from "next/navigation";
 import { ProfileImage } from "@/app/components/ProfileImage";
 import { FollowButton } from "@/app/(with-auth)/users/components/FollowButton";
-import { UserFollowedList } from "../components/UserFollowedList";
+import { UserFollowingList } from "../components/UserFollowingList";
 import { UserFollowersList } from "../components/UserFollowersList";
 import {
   Dialog,
@@ -15,13 +15,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import type { ResolvingMetadata, Metadata } from "next";
-
-// import {
-//   adminId,
-//   createPollsFromList,
-//   deleteAllPolls,
-//   testCron,
-// } from "@/database/defaultPolls";
 
 type Props = {
   params: { id: string };
@@ -43,7 +36,7 @@ export default async function UserPage({ params }: Props) {
           polls: true,
           votes: true,
           followers: { where: { accepted: true } },
-          following: { where: { accepted: true } },
+          followees: { where: { accepted: true } },
         },
       },
     },
@@ -51,7 +44,7 @@ export default async function UserPage({ params }: Props) {
 
   if (!user) return notFound();
 
-  const followersCount = user._count?.following ?? 0;
+  const followersCount = user._count?.followees ?? 0;
   const followingCount = user._count?.followers ?? 0;
 
   return (
@@ -79,7 +72,7 @@ export default async function UserPage({ params }: Props) {
                   <DialogHeader>
                     <DialogTitle>Following</DialogTitle>
                   </DialogHeader>
-                  <UserFollowedList userId={myId} />
+                  <UserFollowingList userId={myId} />
                 </DialogContent>
               </Dialog>
             ) : (
@@ -105,21 +98,6 @@ export default async function UserPage({ params }: Props) {
             )}
           </div>
         </div>
-
-        {/* !!! ADMIN USE ONLY !!! */}
-        {/* {params.id === (await adminId()) && (
-          <div>
-            <form className="italic text-green-500" action={createPollsFromList}>
-              <button>create default polls</button>
-            </form>
-            <form className="italic text-destructive" action={deleteAllPolls}>
-              <button>delete all polls</button>
-            </form>
-            <form className="italic text-primary" action={testCron}>
-              <button>test cron jobs</button>
-            </form>
-          </div>
-        )} */}
       </div>
       <Tabs />
     </>

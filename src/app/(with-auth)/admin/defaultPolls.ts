@@ -1,6 +1,70 @@
 "use server";
 
-import { db } from "./db";
+import { db } from "@/database/db";
+
+export async function createPollsFromList() {
+  if (process.env.NODE_ENV !== "development") {
+    console.error("This function is only available in development mode.");
+    return;
+  }
+
+  if (process.env.ADMIN_ID === undefined) {
+    console.error("Bad ADMIN_ID.");
+    return;
+  }
+
+  for (const poll of polls) {
+    const { question, options } = poll;
+
+    try {
+      await db.poll.create({
+        data: {
+          authorId: process.env.ADMIN_ID,
+          title: question,
+          description: "",
+          options: {
+            create: options.map((option) => ({ text: option.text })),
+          },
+        },
+      });
+    } catch (error) {
+      console.error(`Error creating poll '${question}': `, error);
+    }
+  }
+}
+
+export async function deleteAllPolls() {
+  if (process.env.NODE_ENV !== "development") {
+    console.error("This function is only available in development mode.");
+    return;
+  }
+
+  if (process.env.ADMIN_ID === undefined) {
+    console.error("Bad ADMIN_ID.");
+    return;
+  }
+
+  await db.poll.deleteMany({
+    where: { authorId: process.env.ADMIN_ID },
+  });
+}
+
+// CRON JOBS TEST
+
+export async function testCron() {
+  if (process.env.NODE_ENV !== "development") {
+    console.error("This function is only available in development mode.");
+    return;
+  }
+
+  if (process.env.ADMIN_ID === undefined) {
+    console.error("Bad ADMIN_ID.");
+    return;
+  }
+
+  await fetch("http://localhost:3000/api/purge-expired");
+  await fetch("http://localhost:3000/api/controversy-calculator");
+}
 
 type Poll = {
   question: string;
@@ -210,39 +274,3 @@ const polls: Poll[] = [
     ],
   },
 ];
-
-export async function createPollsFromList() {
-  for (const poll of polls) {
-    const { question, options } = poll;
-
-    try {
-      await db.poll.create({
-        data: {
-          authorId: await adminId(),
-          title: question,
-          description: "",
-          options: {
-            create: options.map((option) => ({ text: option.text })),
-          },
-        },
-      });
-    } catch (error) {
-      console.error(`Error creating poll '${question}': `, error);
-    }
-  }
-}
-
-export async function deleteAllPolls() {
-  await db.poll.deleteMany({
-    where: { authorId: await adminId() },
-  });
-}
-
-export const adminId = async () => "user_2cPaAJQIPmK7XooVoIExRO7M2lF";
-
-// CRON JOBS TEST
-
-export async function testCron() {
-  await fetch("http://localhost:3000/api/purge-expired");
-  await fetch("http://localhost:3000/api/controversy-calculator");
-}

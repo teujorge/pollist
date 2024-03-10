@@ -13,7 +13,7 @@ export async function follow(userId: string) {
   const newFollow = await db.follow.create({
     data: {
       followerId: myId,
-      followedId: userId,
+      followeeId: userId,
     },
   });
 
@@ -45,9 +45,9 @@ export async function unfollow(userId: string) {
 
   const deletedFollow = await db.follow.delete({
     where: {
-      followerId_followedId: {
+      followerId_followeeId: {
         followerId: myId,
-        followedId: userId,
+        followeeId: userId,
       },
     },
   });
@@ -76,7 +76,7 @@ export async function getFollowers() {
 
   const followers = await db.follow.findMany({
     where: {
-      followedId: myId,
+      followeeId: myId,
     },
   });
 
@@ -91,9 +91,9 @@ export async function declineFollow(followerId: string) {
 
   const declinedFollow = await db.follow.delete({
     where: {
-      followerId_followedId: {
+      followerId_followeeId: {
         followerId,
-        followedId: myId,
+        followeeId: myId,
       },
     },
   });
@@ -121,9 +121,9 @@ export async function acceptFollow(followerId: string) {
 
   const updatedFollow = await db.follow.update({
     where: {
-      followerId_followedId: {
+      followerId_followeeId: {
         followerId,
-        followedId: myId,
+        followeeId: myId,
       },
     },
     data: {
@@ -159,17 +159,17 @@ export async function acceptFollow(followerId: string) {
   return updatedFollow;
 }
 
-export async function cancelFollow(followedId: string) {
-  console.log("cancelFollow", followedId);
+export async function cancelFollow(followeeId: string) {
+  console.log("cancelFollow", followeeId);
   const { userId: myId } = auth();
   if (!myId) return;
   console.log("myId", myId);
 
   const cancelledFollow = await db.follow.delete({
     where: {
-      followerId_followedId: {
+      followerId_followeeId: {
         followerId: myId,
-        followedId,
+        followeeId,
       },
     },
   });
@@ -188,7 +188,7 @@ export async function getPendingFollows(userId: string) {
           accepted: false,
         },
         {
-          followedId: userId,
+          followeeId: userId,
           accepted: false,
         },
       ],

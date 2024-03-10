@@ -1,4 +1,4 @@
-export default function NotFound() {
+export default function NotFoundPage() {
   return (
     <main className="flex h-[calc(100dvh-64px)] w-full items-center justify-center">
       <div className="flex w-fit flex-row items-center justify-center gap-2">

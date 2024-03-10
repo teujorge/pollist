@@ -409,17 +409,17 @@ function FollowAcceptedNotificationCard(
   return (
     <div className="flex flex-col items-start justify-start gap-1">
       <Link
-        href={`/users/${followNotification.follow.followedId}`}
+        href={`/users/${followNotification.follow.followeeId}`}
         className="flex flex-row items-center justify-center gap-1"
         onClick={handleLinkClick}
       >
         <ProfileImage
-          src={followNotification.follow.followed.imageUrl}
-          username={followNotification.follow.followed.username}
+          src={followNotification.follow.followee.imageUrl}
+          username={followNotification.follow.followee.username}
           size={30}
         />
         <p className="font-bold">
-          {followNotification.follow.followed.username}
+          {followNotification.follow.followee.username}
         </p>
       </Link>
       <p>accepted your follow request</p>

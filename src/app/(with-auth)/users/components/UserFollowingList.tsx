@@ -1,7 +1,7 @@
 import { db } from "@/database/db";
 import { ActiveFollowedCard } from "./user-followed/ActiveFollowedCard";
 
-export async function UserFollowedList({ userId }: { userId: string }) {
+export async function UserFollowingList({ userId }: { userId: string }) {
   console.log("following -> userId", userId);
 
   const following = await db.follow.findMany({
@@ -10,7 +10,7 @@ export async function UserFollowedList({ userId }: { userId: string }) {
       accepted: true,
     },
     select: {
-      followed: true,
+      followee: true,
     },
   });
 
@@ -24,9 +24,9 @@ export async function UserFollowedList({ userId }: { userId: string }) {
     <div className="flex h-full w-full flex-col gap-1 overflow-y-auto">
       {following.map((f) => (
         <ActiveFollowedCard
-          key={f.followed.id}
+          key={f.followee.id}
           userId={userId}
-          followed={f.followed}
+          followed={f.followee}
         />
       ))}
     </div>
