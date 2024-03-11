@@ -3,7 +3,7 @@
 import { useApp } from "@/app/(with-auth)/app";
 import { BellIcon } from "@radix-ui/react-icons";
 import { NotificationList } from "./NotificationsList";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -13,18 +13,19 @@ import {
 export function NotificationsBell() {
   const { notifications } = useApp();
 
-  const notificationList = [
-    ...notifications.pollLikes,
-    ...notifications.comments,
-    ...notifications.commentLikes,
-    ...notifications.followsPending,
-    ...notifications.followsAccepted,
-  ].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+  const notificationsExist =
+    notifications.pollLikes.length > 0 ||
+    notifications.comments.length > 0 ||
+    notifications.commentLikes.length > 0 ||
+    notifications.followsPending.length > 0 ||
+    notifications.followsAccepted.length > 0;
 
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
+  const memoizedNotificationsList = useMemo(() => <NotificationList />, []);
+
   return (
-    notificationList.length > 0 && (
+    notificationsExist && (
       <NotificationsProvider
         value={{ isNotificationsOpen, setIsNotificationsOpen }}
       >
@@ -41,9 +42,7 @@ export function NotificationsBell() {
               <div className="absolute -right-0.5 -top-0.5 flex h-2 w-2 items-center justify-center rounded-full bg-primary text-xs" />
             </button>
           </PopoverTrigger>
-          <PopoverContent>
-            <NotificationList />
-          </PopoverContent>
+          <PopoverContent>{memoizedNotificationsList}</PopoverContent>
         </Popover>
       </NotificationsProvider>
     )
