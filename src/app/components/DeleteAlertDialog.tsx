@@ -69,13 +69,14 @@ export function DeleteAlertDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={awaiting}>Cancel</AlertDialogCancel>
-          <div className="flex h-9 w-24 items-center justify-center">
+          <div className="flex h-9 w-full items-center justify-center sm:w-24">
             {awaiting ? (
               <Loader />
             ) : (
               <Button
                 disabled={awaiting}
                 variant="destructive"
+                className="w-full"
                 onClick={handleAwaitedDelete}
               >
                 Continue
