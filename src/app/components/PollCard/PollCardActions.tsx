@@ -438,7 +438,10 @@ export function PollCardActions(props: PollCardActionsProps) {
                     ).length,
                   );
 
-            return { value: optionVoteCounts };
+            return {
+              value: optionVoteCounts,
+              label: option.text,
+            };
           })}
         />
       )}
