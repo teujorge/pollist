@@ -223,7 +223,7 @@ export function CommentCardActions() {
             {/* delete button */}
             {user?.id === comment.authorId && (
               <DeleteAlertDialog
-                willAwait={true}
+                awaitType="promise"
                 onDelete={handleDeleteComment}
               />
             )}
