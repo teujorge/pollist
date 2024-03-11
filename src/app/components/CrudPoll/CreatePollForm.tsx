@@ -1,10 +1,10 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Loader } from "../Loader";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/database/dbRealtime";
-import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input, InputFile } from "../Input";
 import { createPollSchema } from "./validation";
@@ -108,17 +108,13 @@ export function CreatePollForm() {
     return data.path;
   }
 
-  useEffect(() => {
-    console.log("fields", fields);
-  }, [fields]);
-
-  useEffect(() => {
-    console.log("formState", form.formState);
-  }, [form.formState]);
-
   return (
     <form
-      className="flex w-[769px] max-w-full flex-col gap-4"
+      className={cn(
+        "flex w-[769px] max-w-full flex-col gap-4 transition-opacity",
+        (form.formState.isSubmitting || form.formState.isSubmitSuccessful) &&
+          "pointer-events-none opacity-50",
+      )}
       onSubmit={form.handleSubmit(onSubmit)}
     >
       <h1 className="text-2xl font-bold">Create A Poll</h1>

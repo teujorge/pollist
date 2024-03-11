@@ -24,7 +24,5 @@ export function DeletePollForm({ poll }: { poll: PollsDetails[number] }) {
     return false;
   }
 
-  return (
-    <DeleteAlertDialog willAwait onDelete={handleDelete}></DeleteAlertDialog>
-  );
+  return <DeleteAlertDialog awaitType="forever" onDelete={handleDelete} />;
 }
