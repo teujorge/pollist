@@ -77,7 +77,11 @@ export function CommentCardActions() {
           },
         }));
 
-        toast.error("Failed to unlike comment");
+        if (error instanceof Error) {
+          toast.error(error.message);
+        } else {
+          toast.error("Failed to unlike comment");
+        }
       }
     }
 
@@ -127,7 +131,11 @@ export function CommentCardActions() {
           },
         }));
 
-        toast.error("Failed to like comment");
+        if (error instanceof Error) {
+          toast.error(error.message);
+        } else {
+          toast.error("Failed to like comment");
+        }
       }
     }
 
@@ -152,7 +160,13 @@ export function CommentCardActions() {
     } catch (error) {
       // put back original if the request fails
       setIsCommentDeleted(false);
-      toast.error("Failed to delete comment, please try again");
+
+      console.error(error);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to delete comment, please try again");
+      }
     }
 
     setIsChangeProcessing(false);
@@ -275,8 +289,10 @@ function CommentReplies({
     isLoading: true,
   });
 
+  // initial fetch
   useEffect(() => {
     async function fetchInitialComments() {
+      // TODO: need to handle error
       const initialReplies = await getPaginatedComments({
         page: 1,
         pollId,
@@ -295,10 +311,12 @@ function CommentReplies({
     void fetchInitialComments();
   }, [pollId, parentId]);
 
+  // subsequent fetches
   async function handleLoadMore() {
     if (!data.hasMore) return;
     if (data.isLoading) return;
 
+    // TODO: need to handle error
     const newReplies = await getPaginatedComments({
       page: data.page,
       pollId,

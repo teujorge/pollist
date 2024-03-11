@@ -442,6 +442,7 @@ function FollowPendingNotificationCard({
     } catch (error) {
       setIsAccepting(false);
       console.error("Failed to accept follow", error);
+
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
@@ -457,6 +458,7 @@ function FollowPendingNotificationCard({
     } catch (error) {
       setIsDeclining(false);
       console.error("Failed to decline follow", error);
+
       if (error instanceof Error) {
         toast.error(error.message);
       } else {

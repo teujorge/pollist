@@ -4,6 +4,7 @@ import { db } from "@/database/db";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { supabase } from "@/database/dbRealtime";
+import type { PollsDetails } from "@/app/components/InfinitePolls/actions";
 import type { CreatePollFields } from "./validation";
 
 export async function createPoll(fields: CreatePollFields) {
@@ -46,8 +47,6 @@ export async function addImagePathToPollOption(optionId: string, path: string) {
 export async function redirectToPoll(pollId: string) {
   redirect(`/polls/${pollId}`);
 }
-
-import type { PollsDetails } from "@/app/components/InfinitePolls/actions";
 
 export async function deletePoll(poll: PollsDetails[number]) {
   const { userId } = auth();

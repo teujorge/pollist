@@ -217,9 +217,7 @@ export function PollCardActions(props: PollCardActionsProps) {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error(
-          "An unknown error occurred while voting. Please try again.",
-        );
+        toast.error("An error occurred while voting. Please try again.");
       }
 
       console.error(error);
@@ -290,9 +288,7 @@ export function PollCardActions(props: PollCardActionsProps) {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error(
-          "An unknown error occurred while liking. Please try again.",
-        );
+        toast.error("An error occurred while liking. Please try again.");
       }
     }
 

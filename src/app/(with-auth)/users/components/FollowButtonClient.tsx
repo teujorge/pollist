@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Loader } from "@/app/components/Loader";
 import { follow, unfollow } from "@/app/(with-auth)/users/actions";
+import { toast } from "sonner";
 
 export function FollowButtonClient({
   userId,
@@ -17,9 +18,27 @@ export function FollowButtonClient({
     setIsClicked(true);
 
     if (isFollowing) {
-      await unfollow(userId);
+      try {
+        await unfollow(userId);
+      } catch (error) {
+        console.error("Error unfollowing", error);
+        if (error instanceof Error) {
+          toast.error(error.message);
+        } else {
+          toast.error("Failed to unfollow");
+        }
+      }
     } else {
-      await follow(userId);
+      try {
+        await follow(userId);
+      } catch (error) {
+        console.error("Error following", error);
+        if (error instanceof Error) {
+          toast.error(error.message);
+        } else {
+          toast.error("Failed to follow");
+        }
+      }
     }
   }
 
