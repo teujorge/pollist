@@ -2,9 +2,9 @@
 
 import Script from "next/script";
 import { useUser } from "@clerk/nextjs";
+import { QueryProvider } from "./QueryProvider";
 import { useCustomScrollbar } from "../hooks/useCustomScrollbar";
 import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useMemo, useState, useContext, createContext } from "react";
 import type {
   NotificationPollLikeItem,
@@ -45,17 +45,19 @@ export function App({ children }: { children: React.ReactNode }) {
   const memoizedChildren = useMemo(() => children, [children]);
 
   return (
-    <AppProvider value={{ notifications, setNotifications }}>
-      {(user?.id !== undefined || true) && (
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6132246468312218"
-          crossOrigin="anonymous"
-          strategy="lazyOnload"
-        />
-      )}
-      {memoizedChildren}
-    </AppProvider>
+    <QueryProvider>
+      <AppProvider value={{ notifications, setNotifications }}>
+        {(user?.id !== undefined || true) && (
+          <Script
+            async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6132246468312218"
+            crossOrigin="anonymous"
+            strategy="lazyOnload"
+          />
+        )}
+        {memoizedChildren}
+      </AppProvider>
+    </QueryProvider>
   );
 }
 
@@ -66,14 +68,8 @@ type AppProviderProps = {
   children: React.ReactNode;
 };
 
-const queryClient = new QueryClient();
-
 function AppProvider({ value, children }: AppProviderProps) {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <AppContext.Provider value={value}>{children}</AppContext.Provider>
-    </QueryClientProvider>
-  );
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
 
 export function useApp() {
