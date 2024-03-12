@@ -1,5 +1,5 @@
 import { PollCard } from "../PollCard/PollCard";
-import { getInfinitePolls as getPaginatedPolls } from "./actions";
+import { getPaginatedPolls } from "./actions";
 import { InfinitelyMorePolls } from "./InfinitelyMorePolls";
 import type { PollQuery } from "@/constants";
 

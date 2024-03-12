@@ -4,6 +4,7 @@ import Script from "next/script";
 import { useUser } from "@clerk/nextjs";
 import { useCustomScrollbar } from "../hooks/useCustomScrollbar";
 import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useMemo, useState, useContext, createContext } from "react";
 import type {
   NotificationPollLikeItem,
@@ -65,8 +66,14 @@ type AppProviderProps = {
   children: React.ReactNode;
 };
 
+const queryClient = new QueryClient();
+
 function AppProvider({ value, children }: AppProviderProps) {
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AppContext.Provider value={value}>{children}</AppContext.Provider>
+    </QueryClientProvider>
+  );
 }
 
 export function useApp() {
