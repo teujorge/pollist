@@ -28,7 +28,7 @@ export function useFilter() {
 
     const queryString = params.toString();
 
-    router.push(`/?${queryString}`);
+    router.push(`/?${queryString}`, { scroll: false });
   }, [debouncedSearch, category, router]);
 
   return {

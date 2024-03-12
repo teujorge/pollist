@@ -11,6 +11,7 @@ export function Header() {
       <div className="flex flex-row items-center gap-4">
         <Link
           href="/"
+          scroll={false}
           className="h-8 w-8 [&>svg>path]:transition-all [&>svg>path]:hovact:fill-primary [&>svg>path]:hovact:stroke-primary"
         >
           <IconSvg className="h-full w-full" />
@@ -18,7 +19,9 @@ export function Header() {
       </div>
 
       <div className="relative flex flex-row items-center gap-4 [&>a]:font-semibold">
-        <Link href="/">Home</Link>
+        <Link href="/" scroll={false}>
+          Home
+        </Link>
 
         {userId ? (
           <Link href="/polls/create">Create</Link>
