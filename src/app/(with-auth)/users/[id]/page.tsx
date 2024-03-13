@@ -5,8 +5,8 @@ import { Stat } from "@/app/(with-auth)/users/components/Stat";
 import { notFound } from "next/navigation";
 import { ProfileImage } from "@/app/components/ProfileImage";
 import { FollowButton } from "@/app/(with-auth)/users/components/FollowButton";
-import { UserFollowingList } from "../components/UserFollowingList";
-import { UserFollowersList } from "../components/UserFollowersList";
+import { FolloweesList } from "../components/user-followees/FolloweesList";
+import { FollowersList } from "../components/user-followers/FollowersList";
 import {
   Dialog,
   DialogContent,
@@ -22,11 +22,12 @@ type Props = {
 };
 
 export default async function UserPage({ params }: Props) {
+  const userId = params.id;
   const { userId: myId } = auth();
 
   const user = await db.user.findUnique({
     where: {
-      id: params.id,
+      id: userId,
     },
     select: {
       imageUrl: true,
@@ -55,47 +56,39 @@ export default async function UserPage({ params }: Props) {
         <div className="flex flex-col justify-around">
           <div className="flex items-center gap-2">
             <h1>{user.username}</h1>
-            {myId && <FollowButton userId={params.id} />}
+            {myId && <FollowButton userId={userId} />}
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-4">
             <Stat label="polls" count={user._count.polls} />
             <Stat label="votes" count={user._count.votes} />
 
-            {myId ? (
-              <Dialog>
-                <DialogTrigger asChild>
-                  <button>
-                    <Stat label="following" count={followingCount} />
-                  </button>
-                </DialogTrigger>
-                <DialogContent className="flex w-72 flex-col">
-                  <DialogHeader>
-                    <DialogTitle>Following</DialogTitle>
-                  </DialogHeader>
-                  <UserFollowingList userId={myId} />
-                </DialogContent>
-              </Dialog>
-            ) : (
-              <Stat label="following" count={followingCount} />
-            )}
+            <Dialog>
+              <DialogTrigger asChild>
+                <button>
+                  <Stat label="following" count={followingCount} />
+                </button>
+              </DialogTrigger>
+              <DialogContent className="flex w-72 flex-col">
+                <DialogHeader>
+                  <DialogTitle>Following</DialogTitle>
+                </DialogHeader>
+                <FolloweesList userId={userId} />
+              </DialogContent>
+            </Dialog>
 
-            {myId ? (
-              <Dialog>
-                <DialogTrigger asChild>
-                  <button>
-                    <Stat label="followers" count={followersCount} />
-                  </button>
-                </DialogTrigger>
-                <DialogContent className="flex w-72 flex-col">
-                  <DialogHeader>
-                    <DialogTitle>Followers</DialogTitle>
-                  </DialogHeader>
-                  <UserFollowersList userId={myId} />
-                </DialogContent>
-              </Dialog>
-            ) : (
-              <Stat label="followers" count={followersCount} />
-            )}
+            <Dialog>
+              <DialogTrigger asChild>
+                <button>
+                  <Stat label="followers" count={followersCount} />
+                </button>
+              </DialogTrigger>
+              <DialogContent className="flex w-72 flex-col">
+                <DialogHeader>
+                  <DialogTitle>Followers</DialogTitle>
+                </DialogHeader>
+                <FollowersList userId={userId} />
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>

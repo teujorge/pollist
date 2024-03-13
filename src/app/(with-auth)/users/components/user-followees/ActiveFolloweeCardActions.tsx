@@ -6,11 +6,7 @@ import { useState } from "react";
 import { unfollow } from "../../actions";
 import type { User } from "@prisma/client";
 
-export async function ActiveFollowedCardAction({
-  followed,
-}: {
-  followed: User;
-}) {
+export function ActiveFolloweeCardActions({ followed }: { followed: User }) {
   const [isUnfollowing, setIsUnfollowing] = useState(false);
 
   async function handleUnfollow() {

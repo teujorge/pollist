@@ -217,7 +217,7 @@ export function CommentCardActions() {
 
         {/* options popover */}
         <Popover>
-          <PopoverTrigger asChild>
+          <PopoverTrigger>
             <Button
               variant="ghost"
               className="flex h-7 w-7 items-center justify-center rounded-full p-1.5"

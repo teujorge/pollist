@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs";
-import { ActiveFollowerCardActions } from "./ActiveFollowerCardActions";
 import { ProfileImage } from "@/app/components/ProfileImage";
+import { ActiveFollowerCardActions } from "./ActiveFollowerCardActions";
 import type { User } from "@prisma/client";
 
 export async function ActiveFollowerCard({
@@ -16,7 +16,7 @@ export async function ActiveFollowerCard({
   return (
     <div className="flex w-full flex-row items-center justify-between gap-1">
       <Link
-        className="hovact:text-primary flex flex-row items-center justify-center gap-1"
+        className="flex flex-row items-center justify-center gap-1 hovact:text-primary"
         href={`/users/${follower.id}`}
       >
         <ProfileImage

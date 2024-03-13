@@ -1,7 +1,15 @@
 import { db } from "@/database/db";
-import { ActiveFollowedCard } from "./user-followed/ActiveFollowedCard";
+import { auth } from "@clerk/nextjs";
+import { Loader } from "@/app/components/Loader";
+import { Suspense } from "react";
+import { ActiveFolloweeCard } from "./ActiveFolloweeCard";
 
-export async function UserFollowingList({ userId }: { userId: string }) {
+type FolloweesListProps = {
+  userId: string;
+};
+
+async function _FolloweesList({ userId }: FolloweesListProps) {
+  const { userId: myId } = auth();
   console.log("following -> userId", userId);
 
   const following = await db.follow.findMany({
@@ -18,17 +26,27 @@ export async function UserFollowingList({ userId }: { userId: string }) {
 
   return following.length === 0 ? (
     <p className="text-sm text-neutral-400 underline underline-offset-4">
-      You are not following anyone yet!
+      {myId === userId
+        ? "You are not following anyone yet."
+        : "This user is not following anyone yet."}
     </p>
   ) : (
     <div className="flex h-full w-full flex-col gap-1 overflow-y-auto">
       {following.map((f) => (
-        <ActiveFollowedCard
+        <ActiveFolloweeCard
           key={f.followee.id}
           userId={userId}
           followed={f.followee}
         />
       ))}
     </div>
+  );
+}
+
+export function FolloweesList({ userId }: FolloweesListProps) {
+  return (
+    <Suspense fallback={<Loader />}>
+      <_FolloweesList userId={userId} />
+    </Suspense>
   );
 }
