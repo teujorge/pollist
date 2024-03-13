@@ -9,7 +9,7 @@ export function InfinitelyMorePolls(props: {
   query: PollQuery;
   highlightedUserId?: string;
   idPrefix: string;
-  initialCursor: string;
+  initialCursor: string | undefined;
 }) {
   return (
     <InfinitelyMoreItems<PollsDetails[number], PollQuery>

@@ -27,7 +27,7 @@ export async function InfinitePolls(props: {
       <InfinitelyMorePolls
         idPrefix={props.idPrefix}
         query={props.query}
-        initialCursor={firstPolls[firstPolls.length - 1]!.id}
+        initialCursor={firstPolls[firstPolls.length - 1]?.id}
         highlightedUserId={props.highlightedUserId}
       />
     </div>
