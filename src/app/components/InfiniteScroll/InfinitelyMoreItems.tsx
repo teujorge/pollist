@@ -11,7 +11,8 @@ export function InfinitelyMoreItems<
   idPrefix: string;
   ItemComponent: React.ComponentType<TItem>;
   query: TQuery;
-  getter: (params: TQuery & { page: number }) => Promise<TItem[]>;
+  initialCursor: string | undefined;
+  getter: (params: TQuery & { cursor: string | undefined }) => Promise<TItem[]>;
 }) {
   const loaderRef = useRef<HTMLDivElement>(null);
 
@@ -19,6 +20,7 @@ export function InfinitelyMoreItems<
     query: props.query,
     loaderRef: loaderRef,
     getter: props.getter,
+    initialCursor: props.initialCursor,
   });
 
   return (

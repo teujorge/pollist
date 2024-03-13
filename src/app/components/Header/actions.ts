@@ -29,7 +29,7 @@ const notificationsPollLikeInclude = {
   pollLike: {
     include: {
       poll: { select: { id: true } },
-      author: { select: { imageUrl: true, username: true } },
+      author: { select: { username: true } },
     },
   },
 };
@@ -43,7 +43,7 @@ export async function getNotificationsPollLikeRelation(notificationId: string) {
 
 const notificationsCommentInclude = {
   comment: {
-    include: { author: true },
+    include: { author: { select: { username: true } } },
   },
 };
 
@@ -57,7 +57,7 @@ export async function getNotificationsCommentRelation(notificationId: string) {
 const notificationsCommentLikeInclude = {
   commentLike: {
     include: {
-      author: true,
+      author: { select: { username: true } },
       comment: { select: { id: true, pollId: true } },
     },
   },
@@ -89,7 +89,7 @@ export async function getNotificationsFollowPendingRelation(
 
 const notificationsFollowAcceptedInclude = {
   follow: {
-    include: { followed: true },
+    include: { followee: true },
   },
 };
 
@@ -133,37 +133,37 @@ export async function getNotificationsItems() {
   return userNotifications;
 }
 
-export async function removeNotification({
-  id,
+export async function removeNotifications({
+  ids,
   type,
 }: {
-  id: string;
+  ids: string[];
   type: NotificationType;
 }) {
   switch (type) {
     case "PollLikeNotification":
       return await db.notificationPollLike.deleteMany({
-        where: { id },
+        where: { id: { in: ids } },
       });
 
     case "FollowPendingNotification":
       return await db.notificationFollowPending.deleteMany({
-        where: { id },
+        where: { id: { in: ids } },
       });
 
     case "FollowAcceptedNotification":
       return await db.notificationFollowAccepted.deleteMany({
-        where: { id },
+        where: { id: { in: ids } },
       });
 
     case "CommentNotification":
       return await db.notificationComment.deleteMany({
-        where: { id },
+        where: { id: { in: ids } },
       });
 
     case "CommentLikeNotification":
       return await db.notificationCommentLike.deleteMany({
-        where: { id },
+        where: { id: { in: ids } },
       });
 
     default:

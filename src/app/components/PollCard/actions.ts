@@ -95,9 +95,9 @@ export async function handleLikePoll({
   console.log("poll like", pollLike);
 
   if (pollLike) {
-    // if (userId === pollAuthorId) {
-    //   return;
-    // }
+    if (userId === pollAuthorId) {
+      return;
+    }
 
     const notification = await db.notificationPollLike.create({
       data: {

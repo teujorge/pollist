@@ -5,17 +5,17 @@ import { PAGE_SIZE } from "@/constants";
 import { auth } from "@clerk/nextjs";
 
 export type Comment = NonNullable<
-  Awaited<ReturnType<typeof getPaginatedComments>>[number]
+  Awaited<ReturnType<typeof getInfiniteComments>>[number]
 >;
 
 export type GetPaginatedCommentsParams = {
-  page: number;
+  cursor: string | undefined;
   pollId: string;
   parentId: string | undefined;
 };
 
-export async function getPaginatedComments({
-  page,
+export async function getInfiniteComments({
+  cursor,
   pollId,
   parentId,
 }: GetPaginatedCommentsParams) {
@@ -36,7 +36,8 @@ export async function getPaginatedComments({
         createdAt: "desc",
       },
     ],
-    skip: (page - 1) * PAGE_SIZE,
+    cursor: cursor ? { id: cursor } : undefined,
+    skip: cursor ? 1 : undefined,
     take: PAGE_SIZE,
     include: {
       author: true,

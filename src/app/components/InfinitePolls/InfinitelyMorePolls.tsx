@@ -9,12 +9,14 @@ export function InfinitelyMorePolls(props: {
   query: PollQuery;
   highlightedUserId?: string;
   idPrefix: string;
+  initialCursor: string;
 }) {
   return (
     <InfinitelyMoreItems<PollsDetails[number], PollQuery>
       idPrefix={props.idPrefix}
       query={props.query}
       getter={getInfinitePolls}
+      initialCursor={props.initialCursor}
       ItemComponent={(poll) => (
         <PollCard poll={poll} highlightedUserId={props.highlightedUserId} />
       )}

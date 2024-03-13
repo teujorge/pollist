@@ -2,12 +2,13 @@
 
 import { CommentCard } from "../Comments/CommentCard";
 import { InfinitelyMoreItems } from "../InfiniteScroll/InfinitelyMoreItems";
-import { type Comment, getPaginatedComments } from "./actions";
+import { type Comment, getInfiniteComments } from "./actions";
 
 export function InfinitelyMoreComments(props: {
   pollId: string;
   parentId: string | undefined;
   highlightedUserId?: string;
+  initialCursor: string | undefined;
 }) {
   return (
     <InfinitelyMoreItems<
@@ -16,7 +17,8 @@ export function InfinitelyMoreComments(props: {
     >
       idPrefix="comment"
       query={{ pollId: props.pollId, parentId: props.parentId }}
-      getter={getPaginatedComments}
+      getter={getInfiniteComments}
+      initialCursor={props.initialCursor}
       ItemComponent={(comment) => <CommentCard comment={comment} />}
     />
   );

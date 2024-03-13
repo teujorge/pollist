@@ -10,9 +10,15 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 
-const { Bar, BarChart, ResponsiveContainer } = await import("recharts");
+const { Bar, BarChart, LabelList, ResponsiveContainer } = await import(
+  "recharts"
+);
 
-export function ChartDrawer({ data }: { data: { value: number }[] }) {
+export function ChartDrawer({
+  data,
+}: {
+  data: { value: number; label: string }[];
+}) {
   return (
     <Drawer>
       <DrawerTrigger asChild>
@@ -24,26 +30,35 @@ export function ChartDrawer({ data }: { data: { value: number }[] }) {
         </Button>
       </DrawerTrigger>
       <DrawerContent>
-        <div className="mx-auto w-full max-w-sm">
-          <DrawerHeader>
-            <DrawerTitle>Votes</DrawerTitle>
-          </DrawerHeader>
+        <DrawerHeader>
+          <DrawerTitle>Votes</DrawerTitle>
+        </DrawerHeader>
 
-          <div className="h-[60dvh] p-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data}>
-                <Bar
-                  dataKey="value"
-                  style={
-                    {
-                      fill: "white",
-                      opacity: 0.9,
-                    } as React.CSSProperties
-                  }
+        <div className="h-[60dvh] w-full p-4">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={data}
+              margin={{ top: 100, right: 30, bottom: 30, left: 30 }}
+            >
+              <Bar
+                dataKey="value"
+                fill="white"
+                label={{
+                  fill: "black",
+                  position: "insideTop",
+                  className: "text-base sm:text-2xl font-bold",
+                }}
+              >
+                <LabelList
+                  dataKey="label"
+                  position="top"
+                  angle={0}
+                  fill="rgb(212 212 212)"
+                  className="text-xs sm:text-base"
                 />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </DrawerContent>
     </Drawer>

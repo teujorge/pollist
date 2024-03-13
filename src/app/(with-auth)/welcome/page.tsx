@@ -51,7 +51,11 @@ export default function WelcomePage() {
         <div>
           <p className="text-sm">
             Feel free to browse{" "}
-            <Link href="/" className="underline underline-offset-2">
+            <Link
+              href="/"
+              scroll={false}
+              className="underline underline-offset-2"
+            >
               polls
             </Link>
           </p>

@@ -7,7 +7,7 @@ import { useApp } from "@/app/(with-auth)/app";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { ProfileImage } from "../ProfileImage";
 import { useNotifications } from "./NotificationsBell";
-import { removeNotification } from "./actions";
+import { removeNotifications } from "./actions";
 import { useEffect, useState } from "react";
 import { acceptFollow, declineFollow } from "@/app/(with-auth)/users/actions";
 import type {
@@ -29,34 +29,121 @@ type NotificationData =
 export function NotificationList() {
   const { notifications } = useApp();
 
-  const notificationList: {
-    type: NotificationType;
-    data: NotificationData;
-  }[] = [
-    ...notifications.pollLikes.map((notification) => ({
-      type: "PollLikeNotification" as NotificationType,
-      data: notification,
-    })),
-    ...notifications.comments.map((notification) => ({
-      type: "CommentNotification" as NotificationType,
-      data: notification,
-    })),
-    ...notifications.commentLikes.map((notification) => ({
-      type: "CommentLikeNotification" as NotificationType,
-      data: notification,
-    })),
+  function groupedPollLikes(): {
+    type: "PollLikeNotification";
+    data: NotificationPollLikeItem[];
+  }[] {
+    // Group pollLikes by pollId and map them to the desired structure
+    const groupedObject = notifications.pollLikes.reduce(
+      (acc, notification) => {
+        const key = notification.pollLike.pollId;
+        if (!acc[key]) acc[key] = [];
+        acc[key]?.push(notification);
+        return acc;
+      },
+      {} as Record<string, NotificationPollLikeItem[]>,
+    );
+
+    const groupedArray = Object.values(groupedObject).map((group) => ({
+      type: "PollLikeNotification" as const,
+      data: group.sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      ),
+    }));
+
+    return groupedArray;
+  }
+
+  function groupedComments(): {
+    type: "CommentNotification";
+    data: NotificationCommentItem[];
+  }[] {
+    // Group comments by pollId and map them to the desired structure
+    const groupedObject = notifications.comments.reduce(
+      (acc, notification) => {
+        const key = notification.comment.pollId;
+        if (!acc[key]) acc[key] = [];
+        acc[key]?.push(notification);
+        return acc;
+      },
+      {} as Record<string, NotificationCommentItem[]>,
+    );
+
+    const groupedArray = Object.values(groupedObject).map((group) => ({
+      type: "CommentNotification" as const,
+      data: group.sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      ),
+    }));
+
+    return groupedArray;
+  }
+
+  function groupedCommentLikes(): {
+    type: "CommentLikeNotification";
+    data: NotificationCommentLikeItem[];
+  }[] {
+    // Group commentLikes by pollId and map them to the desired structure
+    const groupedObject = notifications.commentLikes.reduce(
+      (acc, notification) => {
+        const key = notification.commentLike.comment.pollId;
+        if (!acc[key]) acc[key] = [];
+        acc[key]?.push(notification);
+        return acc;
+      },
+      {} as Record<string, NotificationCommentLikeItem[]>,
+    );
+
+    const groupedArray = Object.values(groupedObject).map((group) => ({
+      type: "CommentLikeNotification" as const,
+      data: group.sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      ),
+    }));
+
+    return groupedArray;
+  }
+
+  const notificationList: (
+    | {
+        type: "PollLikeNotification";
+        data: NotificationPollLikeItem[];
+      }
+    | {
+        type: "CommentNotification";
+        data: NotificationCommentItem[];
+      }
+    | {
+        type: "CommentLikeNotification";
+        data: NotificationCommentLikeItem[];
+      }
+    | {
+        type: "FollowPendingNotification";
+        data: NotificationFollowPendingItem[];
+      }
+    | {
+        type: "FollowAcceptedNotification";
+        data: NotificationFollowAcceptedItem[];
+      }
+  )[] = [
+    ...groupedPollLikes(),
+    ...groupedComments(),
+    ...groupedCommentLikes(),
     ...notifications.followsPending.map((notification) => ({
-      type: "FollowPendingNotification" as NotificationType,
-      data: notification,
+      type: "FollowPendingNotification" as const,
+      data: [notification],
     })),
     ...notifications.followsAccepted.map((notification) => ({
-      type: "FollowAcceptedNotification" as NotificationType,
-      data: notification,
+      type: "FollowAcceptedNotification" as const,
+      data: [notification],
     })),
   ].sort(
     (a, b) =>
-      new Date(a.data.createdAt).getTime() -
-      new Date(b.data.createdAt).getTime(),
+      new Date(a.data[0]?.createdAt ?? new Date()).getTime() -
+      new Date(b.data[0]?.createdAt ?? new Date()).getTime(),
   );
 
   return (
@@ -64,8 +151,11 @@ export function NotificationList() {
       className="flex min-w-fit flex-col items-center gap-2 overflow-y-auto overflow-x-hidden overscroll-y-contain p-2"
       style={{ maxHeight: "calc(100dvh - 100px)" }}
     >
-      {notificationList.map((item) => (
-        <NotificationCard key={`${item.type}-${item.data.id}`} item={item} />
+      {notificationList.map((group) => (
+        <NotificationCard
+          key={`${group.type}-${group.data[0]?.id}`}
+          item={group}
+        />
       ))}
     </div>
   );
@@ -76,7 +166,7 @@ function NotificationCard({
 }: {
   item: {
     type: NotificationType;
-    data: NotificationData;
+    data: NotificationData[];
   };
 }) {
   const [isDragging, setIsDragging] = useState(false);
@@ -100,7 +190,10 @@ function NotificationCard({
     setIsRemoving(true);
 
     try {
-      await removeNotification({ type: item.type, id: item.data.id });
+      await removeNotifications({
+        type: item.type,
+        ids: item.data.map((d) => d.id),
+      });
     } catch (error) {
       console.error("Failed to remove notification", error);
 
@@ -161,9 +254,43 @@ function NotificationCard({
     ? { transform: `translateX(${currentX - startX}px)`, transition: "none" }
     : {};
 
+  const card = (() => {
+    switch (item.type) {
+      case "PollLikeNotification":
+        return (
+          <PollLikeNotificationCard
+            pollLikeNotifications={item.data as NotificationPollLikeItem[]}
+          />
+        );
+      case "CommentNotification":
+        return (
+          <CommentNotificationCard
+            commentNotifications={item.data as NotificationCommentItem[]}
+          />
+        );
+      case "CommentLikeNotification":
+        return (
+          <CommentLikeNotificationCard
+            likeNotifications={item.data as NotificationCommentLikeItem[]}
+          />
+        );
+      case "FollowPendingNotification":
+        return (
+          <FollowPendingNotificationCard
+            followNotifications={item.data as NotificationFollowPendingItem[]}
+          />
+        );
+      case "FollowAcceptedNotification":
+        return (
+          <FollowAcceptedNotificationCard
+            followNotifications={item.data as NotificationFollowAcceptedItem[]}
+          />
+        );
+    }
+  })();
+
   return (
     <div
-      key={item.data.id}
       className={`relative flex w-full select-none flex-row gap-2 rounded-md border border-accent bg-neutral-900 p-2 transition-all duration-200
         ${isRemoving && "translate-x-full opacity-0"}
         ${hasBeenRemoved && "hidden"}
@@ -177,32 +304,9 @@ function NotificationCard({
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {item.type === "PollLikeNotification" && (
-        <PollLikeNotificationCard
-          {...(item.data as NotificationPollLikeItem)}
-        />
-      )}
-      {item.type === "CommentNotification" && (
-        <CommentNotificationCard {...(item.data as NotificationCommentItem)} />
-      )}
-      {item.type === "CommentLikeNotification" && (
-        <CommentLikeNotificationCard
-          {...(item.data as NotificationCommentLikeItem)}
-        />
-      )}
-      {item.type === "FollowPendingNotification" && (
-        <FollowPendingNotificationCard
-          {...(item.data as NotificationFollowPendingItem)}
-        />
-      )}
-      {item.type === "FollowAcceptedNotification" && (
-        <FollowAcceptedNotificationCard
-          {...(item.data as NotificationFollowAcceptedItem)}
-        />
-      )}
-
+      {card}
       <button
-        className="absolute right-0 top-0 -translate-y-1/3 translate-x-1/3 rounded-full border border-neutral-600 bg-neutral-950 p-0.5 transition-colors hovact:cursor-pointer hovact:bg-neutral-600"
+        className="absolute right-0 top-0 -translate-y-1/3 translate-x-1/3 rounded-full border border-neutral-600 bg-neutral-950 p-0.5 outline-none transition-colors hovact:cursor-pointer hovact:bg-neutral-600"
         onClick={handleRemove}
       >
         <Cross2Icon />
@@ -211,112 +315,121 @@ function NotificationCard({
   );
 }
 
-function PollLikeNotificationCard(
-  pollLikeNotification: NotificationPollLikeItem,
-) {
+function PollLikeNotificationCard({
+  pollLikeNotifications,
+}: {
+  pollLikeNotifications: NotificationPollLikeItem[];
+}) {
   const popover = useNotifications();
 
   return (
-    <div className="flex flex-col items-start justify-start gap-1">
+    <div className="flex flex-col items-start justify-start gap-0.5">
       <Link
-        href={`/users/${pollLikeNotification.pollLike.authorId}`}
-        className="flex flex-row items-center justify-center gap-1"
+        href={`/polls/${pollLikeNotifications[0]!.pollLike.poll.id}`}
         onClick={() => popover.setIsNotificationsOpen(false)}
       >
-        <ProfileImage
-          src={pollLikeNotification.pollLike.author.imageUrl}
-          username={pollLikeNotification.pollLike.author.username}
-          size={30}
-        />
-        <p className="font-bold">
-          {pollLikeNotification.pollLike.author.username}
-        </p>
+        Liked Your Poll
       </Link>
-      <Link
-        href={`/polls/${pollLikeNotification.pollLike.poll.id}`}
-        onClick={() => popover.setIsNotificationsOpen(false)}
-      >
-        <p>liked your poll</p>
-      </Link>
-    </div>
-  );
-}
 
-function CommentNotificationCard(commentNotification: NotificationCommentItem) {
-  const popover = useNotifications();
-
-  return (
-    <div className="flex flex-col items-start justify-start gap-1">
-      <Link
-        href={`/users/${commentNotification.comment.author.id}`}
-        className="flex flex-row items-center justify-center gap-1"
-        onClick={() => popover.setIsNotificationsOpen(false)}
-      >
-        <ProfileImage
-          src={commentNotification.comment.author.imageUrl}
-          username={commentNotification.comment.author.username}
-          size={30}
-        />
-        <p className="font-bold">
-          {commentNotification.comment.author.username}
-        </p>
-      </Link>
-      <p>
-        {commentNotification.comment.parentId ? (
-          <Link
-            href={`/polls/${commentNotification.comment.pollId}?parentId=${commentNotification.comment.parentId}`}
-            onClick={() => popover.setIsNotificationsOpen(false)}
-          >
-            replied to your comment
-          </Link>
-        ) : (
-          <Link
-            href={`/polls/${commentNotification.comment.pollId}`}
-            onClick={() => popover.setIsNotificationsOpen(false)}
-          >
-            commented on your on your poll
-          </Link>
+      <NotificationInfo>
+        By:{" "}
+        {notificationBy(
+          pollLikeNotifications.map(
+            (n) => n.pollLike.author.username ?? "Anon",
+          ),
         )}
-      </p>
+      </NotificationInfo>
+
+      <NotificationInfo>
+        {timeElapsed(pollLikeNotifications[0]!.createdAt)} ago
+      </NotificationInfo>
     </div>
   );
 }
 
-function CommentLikeNotificationCard(
-  likeNotification: NotificationCommentLikeItem,
-) {
+function CommentNotificationCard({
+  commentNotifications,
+}: {
+  commentNotifications: NotificationCommentItem[];
+}) {
   const popover = useNotifications();
 
   return (
-    <div className="flex flex-col items-start justify-start gap-1">
-      <Link
-        href={`/users/${likeNotification.commentLike.authorId}`}
-        className="flex flex-row items-center justify-center gap-1"
-        onClick={() => popover.setIsNotificationsOpen(false)}
-      >
-        <ProfileImage
-          src={likeNotification.commentLike.author.imageUrl}
-          username={likeNotification.commentLike.author.username}
-          size={30}
-        />
-        <p className="font-bold">
-          {likeNotification.commentLike.author.username}
-        </p>
-      </Link>
+    <div className="flex flex-col items-start justify-start gap-0.5">
+      {commentNotifications[0]!.comment.parentId ? (
+        <>
+          <Link
+            href={`/polls/${commentNotifications[0]!.comment.pollId}?parentId=${commentNotifications[0]!.comment.parentId}`}
+            onClick={() => popover.setIsNotificationsOpen(false)}
+          >
+            Replied To Your Comment
+          </Link>
 
+          <NotificationInfo>
+            By:{" "}
+            {notificationBy(
+              commentNotifications.map(
+                (n) => n.comment.author.username ?? "Anon",
+              ),
+            )}
+          </NotificationInfo>
+
+          <NotificationInfo>
+            {timeElapsed(commentNotifications[0]!.createdAt)} ago
+          </NotificationInfo>
+        </>
+      ) : (
+        <>
+          <Link
+            href={`/polls/${commentNotifications[0]!.comment.pollId}`}
+            onClick={() => popover.setIsNotificationsOpen(false)}
+          >
+            Commented On Your Poll
+          </Link>
+
+          <NotificationInfo>
+            By:{" "}
+            {notificationBy(
+              commentNotifications.map(
+                (n) => n.comment.author.username ?? "Anon",
+              ),
+            )}
+          </NotificationInfo>
+
+          <NotificationInfo>
+            {timeElapsed(commentNotifications[0]!.createdAt)} ago
+          </NotificationInfo>
+        </>
+      )}
+    </div>
+  );
+}
+
+function CommentLikeNotificationCard({
+  likeNotifications,
+}: {
+  likeNotifications: NotificationCommentLikeItem[];
+}) {
+  const popover = useNotifications();
+
+  return (
+    <div className="flex flex-col items-start justify-start gap-0.5">
       <Link
-        href={`/polls/${likeNotification.commentLike.comment.pollId}?parentId=${likeNotification.commentLike.comment.id}`}
+        href={`/polls/${likeNotifications[0]!.commentLike.comment.pollId}?parentId=${likeNotifications[0]!.commentLike.comment.id}`}
         onClick={() => popover.setIsNotificationsOpen(false)}
       >
-        <p>liked your comment</p>
+        {Array.from(likeNotifications).length} people liked your comment
       </Link>
     </div>
   );
 }
 
-function FollowPendingNotificationCard(
-  followNotification: NotificationFollowPendingItem,
-) {
+function FollowPendingNotificationCard({
+  followNotifications,
+}: {
+  followNotifications: NotificationFollowPendingItem[];
+}) {
+  const followNotification = followNotifications[0]!;
   const popover = useNotifications();
 
   const [isAccepting, setIsAccepting] = useState(false);
@@ -329,6 +442,7 @@ function FollowPendingNotificationCard(
     } catch (error) {
       setIsAccepting(false);
       console.error("Failed to accept follow", error);
+
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
@@ -344,6 +458,7 @@ function FollowPendingNotificationCard(
     } catch (error) {
       setIsDeclining(false);
       console.error("Failed to decline follow", error);
+
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
@@ -353,10 +468,10 @@ function FollowPendingNotificationCard(
   }
 
   return (
-    <div className="flex flex-col items-start justify-start">
+    <div className="flex flex-col items-start justify-start gap-0.5">
       <Link
         href={`/users/${followNotification.follow.followerId}`}
-        className="flex flex-row items-center justify-center gap-1"
+        className="flex flex-row items-center justify-center gap-0.5"
         onClick={() => popover.setIsNotificationsOpen(false)}
       >
         <ProfileImage
@@ -364,12 +479,14 @@ function FollowPendingNotificationCard(
           username={followNotification.follow.follower.username}
           size={30}
         />
-        <p className="font-bold">
+        <span className="font-bold">
           {followNotification.follow.follower.username}
-        </p>
+        </span>
       </Link>
-      <p>requested to follow you</p>
-      <div className="flex flex-row gap-1">
+
+      <span>Requested To Follow You</span>
+
+      <div className="flex flex-row gap-0.5">
         <button
           disabled={isAccepting || isDeclining}
           onClick={handleAccept}
@@ -380,7 +497,7 @@ function FollowPendingNotificationCard(
           {isAccepting ? <Loader className="h-5 w-5 border-2" /> : "Accept"}
         </button>
         <button
-          disabled={isDeclining || isAccepting}
+          disabled={isAccepting || isDeclining}
           onClick={handleDecline}
           className={`flex h-7 w-14 items-center justify-center text-destructive underline decoration-transparent hovact:decoration-destructive
             ${isAccepting && "pointer-events-none opacity-50"}
@@ -389,40 +506,94 @@ function FollowPendingNotificationCard(
           {isDeclining ? <Loader className="h-5 w-5 border-2" /> : "Decline"}
         </button>
       </div>
+
+      <NotificationInfo>
+        {timeElapsed(followNotification.createdAt)} ago
+      </NotificationInfo>
     </div>
   );
 }
 
-function FollowAcceptedNotificationCard(
-  followNotification: NotificationFollowAcceptedItem,
-) {
+function FollowAcceptedNotificationCard({
+  followNotifications,
+}: {
+  followNotifications: NotificationFollowAcceptedItem[];
+}) {
+  const followNotification = followNotifications[0]!;
   const popover = useNotifications();
 
   async function handleLinkClick() {
     popover.setIsNotificationsOpen(false);
-    await removeNotification({
+    await removeNotifications({
       type: "FollowAcceptedNotification",
-      id: followNotification.id,
+      ids: [followNotification.id],
     });
   }
 
   return (
-    <div className="flex flex-col items-start justify-start gap-1">
+    <div className="flex flex-col items-start justify-start gap-0.5">
       <Link
-        href={`/users/${followNotification.follow.followedId}`}
-        className="flex flex-row items-center justify-center gap-1"
+        href={`/users/${followNotification.follow.followeeId}`}
+        className="flex flex-row items-center justify-center gap-0.5"
         onClick={handleLinkClick}
       >
         <ProfileImage
-          src={followNotification.follow.followed.imageUrl}
-          username={followNotification.follow.followed.username}
+          src={followNotification.follow.followee.imageUrl}
+          username={followNotification.follow.followee.username}
           size={30}
         />
         <p className="font-bold">
-          {followNotification.follow.followed.username}
+          {followNotification.follow.followee.username}
         </p>
       </Link>
-      <p>accepted your follow request</p>
+
+      <span>Accepted Your Follow Request</span>
+
+      <NotificationInfo>
+        {timeElapsed(followNotification.createdAt)} ago
+      </NotificationInfo>
     </div>
   );
+}
+
+function notificationBy(usernames: string[]): string {
+  if (usernames.length === 1) {
+    return `${usernames[0]}`;
+  }
+
+  if (usernames.length === 2) {
+    return `${usernames[0]} and ${usernames[1]}`;
+  }
+
+  return `${usernames[0]}, ${usernames[1]}, and ${usernames.length - 2} others`;
+}
+
+function timeElapsed(date: Date): string {
+  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+  let interval = seconds / 31536000;
+
+  if (interval > 1) {
+    return Math.floor(interval) + " years";
+  }
+  interval = seconds / 2592000;
+  if (interval > 1) {
+    return Math.floor(interval) + " months";
+  }
+  interval = seconds / 86400;
+  if (interval > 1) {
+    return Math.floor(interval) + " days";
+  }
+  interval = seconds / 3600;
+  if (interval > 1) {
+    return Math.floor(interval) + " hours";
+  }
+  interval = seconds / 60;
+  if (interval > 1) {
+    return Math.floor(interval) + " minutes";
+  }
+  return Math.floor(seconds) + " seconds";
+}
+
+function NotificationInfo({ children }: { children: React.ReactNode }) {
+  return <span className="text-xs text-neutral-400">{children}</span>;
 }

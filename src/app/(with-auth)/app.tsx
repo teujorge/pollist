@@ -1,9 +1,10 @@
 "use client";
 
 import Script from "next/script";
-import dynamic from "next/dynamic";
 import { useUser } from "@clerk/nextjs";
+import { QueryProvider } from "./QueryProvider";
 import { useCustomScrollbar } from "../hooks/useCustomScrollbar";
+import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
 import { useMemo, useState, useContext, createContext } from "react";
 import type {
   NotificationPollLikeItem,
@@ -12,14 +13,6 @@ import type {
   NotificationFollowPendingItem,
   NotificationFollowAcceptedItem,
 } from "../components/Header/actions";
-
-const NotificationsHandler = dynamic(
-  () =>
-    import("@/app/components/Header/NotificationsHandler").then(
-      (mod) => mod.NotificationsHandler,
-    ),
-  { ssr: false },
-);
 
 export type Notifications = {
   pollLikes: NotificationPollLikeItem[];
@@ -47,21 +40,24 @@ export function App({ children }: { children: React.ReactNode }) {
     followsAccepted: [],
   });
 
+  useRealtimeNotifications({ setNotifications });
+
   const memoizedChildren = useMemo(() => children, [children]);
 
   return (
-    <AppProvider value={{ notifications, setNotifications }}>
-      {(user?.id !== undefined || true) && (
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6132246468312218"
-          crossOrigin="anonymous"
-          strategy="lazyOnload"
-        />
-      )}
-      {user?.id !== undefined && <NotificationsHandler />}
-      {memoizedChildren}
-    </AppProvider>
+    <QueryProvider>
+      <AppProvider value={{ notifications, setNotifications }}>
+        {(user?.id !== undefined || true) && (
+          <Script
+            async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6132246468312218"
+            crossOrigin="anonymous"
+            strategy="lazyOnload"
+          />
+        )}
+        {memoizedChildren}
+      </AppProvider>
+    </QueryProvider>
   );
 }
 

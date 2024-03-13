@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs";
-import { ActiveFollowedCardAction } from "./ActiveFollowedCardActions";
 import { ProfileImage } from "@/app/components/ProfileImage";
+import { ActiveFolloweeCardActions } from "./ActiveFolloweeCardActions";
 import type { User } from "@prisma/client";
 
-export async function ActiveFollowedCard({
+export async function ActiveFolloweeCard({
   userId,
   followed,
 }: {
@@ -26,7 +26,7 @@ export async function ActiveFollowedCard({
         />
         <p>{followed.username}</p>
       </Link>
-      {myId === userId && <ActiveFollowedCardAction followed={followed} />}
+      {myId === userId && <ActiveFolloweeCardActions followed={followed} />}
     </div>
   );
 }

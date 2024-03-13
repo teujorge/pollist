@@ -9,7 +9,7 @@ import { NewComments } from "./NewComments";
 import { CommentForm } from "./CommentForm";
 import { DeleteAlertDialog } from "../DeleteAlertDialog";
 import { useEffect, useState } from "react";
-import { getPaginatedComments } from "../InfiniteComments/actions";
+import { getInfiniteComments } from "../InfiniteComments/actions";
 import { CommentCard, useCommentCard } from "./CommentCard";
 import { DotsHorizontalIcon, ThickArrowUpIcon } from "@radix-ui/react-icons";
 import { deleteComment, likeComment, unlikeComment } from "./actions";
@@ -77,7 +77,11 @@ export function CommentCardActions() {
           },
         }));
 
-        toast.error("Failed to unlike comment");
+        if (error instanceof Error) {
+          toast.error(error.message);
+        } else {
+          toast.error("Failed to unlike comment");
+        }
       }
     }
 
@@ -127,7 +131,11 @@ export function CommentCardActions() {
           },
         }));
 
-        toast.error("Failed to like comment");
+        if (error instanceof Error) {
+          toast.error(error.message);
+        } else {
+          toast.error("Failed to like comment");
+        }
       }
     }
 
@@ -152,7 +160,13 @@ export function CommentCardActions() {
     } catch (error) {
       // put back original if the request fails
       setIsCommentDeleted(false);
-      toast.error("Failed to delete comment, please try again");
+
+      console.error(error);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to delete comment, please try again");
+      }
     }
 
     setIsChangeProcessing(false);
@@ -203,7 +217,7 @@ export function CommentCardActions() {
 
         {/* options popover */}
         <Popover>
-          <PopoverTrigger asChild>
+          <PopoverTrigger>
             <Button
               variant="ghost"
               className="flex h-7 w-7 items-center justify-center rounded-full p-1.5"
@@ -223,7 +237,7 @@ export function CommentCardActions() {
             {/* delete button */}
             {user?.id === comment.authorId && (
               <DeleteAlertDialog
-                willAwait={true}
+                awaitType="promise"
                 onDelete={handleDeleteComment}
               />
             )}
@@ -264,21 +278,23 @@ function CommentReplies({
   parentId: string;
 }) {
   const [data, setData] = useState<{
-    page: number;
+    cursor: string | undefined;
     replies: Comment[];
     hasMore: boolean;
     isLoading: boolean;
   }>({
-    page: 1,
+    cursor: undefined,
     replies: [],
     hasMore: true,
     isLoading: true,
   });
 
+  // initial fetch
   useEffect(() => {
     async function fetchInitialComments() {
-      const initialReplies = await getPaginatedComments({
-        page: 1,
+      // TODO: need to handle error
+      const initialReplies = await getInfiniteComments({
+        cursor: undefined,
         pollId,
         parentId,
       });
@@ -295,18 +311,20 @@ function CommentReplies({
     void fetchInitialComments();
   }, [pollId, parentId]);
 
+  // subsequent fetches
   async function handleLoadMore() {
     if (!data.hasMore) return;
     if (data.isLoading) return;
 
-    const newReplies = await getPaginatedComments({
-      page: data.page,
+    // TODO: need to handle error
+    const newReplies = await getInfiniteComments({
+      cursor: data.cursor,
       pollId,
       parentId,
     });
 
     setData((prev) => ({
-      page: prev.page + 1,
+      cursor: newReplies[newReplies.length - 1]?.id,
       replies: [...prev.replies, ...newReplies],
       hasMore: newReplies.length === PAGE_SIZE,
       isLoading: false,

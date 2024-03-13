@@ -17,19 +17,27 @@ import {
 type DeleteAlertDialogProps = {
   title?: string;
   description?: string;
-  willAwait?: boolean;
+  awaitType?: "none" | "promise" | "forever";
   onDelete: () => void | Promise<boolean | void>;
 };
 
-export function DeleteAlertDialog(props: DeleteAlertDialogProps) {
+export function DeleteAlertDialog({
+  title,
+  description,
+  awaitType = "none",
+  onDelete,
+}: DeleteAlertDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [awaiting, setAwaiting] = useState(false);
 
   async function handleAwaitedDelete() {
-    // await async
-    if (props.willAwait) {
+    // await promise or forever
+    if (awaitType === "promise" || awaitType === "forever") {
       setAwaiting(true);
-      const success = await props.onDelete();
+      const success = await onDelete();
+
+      if (awaitType === "forever") return;
+
       if (success === undefined || success === true) {
         setIsOpen(false);
       } else {
@@ -37,37 +45,38 @@ export function DeleteAlertDialog(props: DeleteAlertDialogProps) {
       }
     }
 
-    // do not await async
+    // do not await
     else {
-      void props.onDelete();
+      void onDelete();
       setIsOpen(false);
     }
   }
 
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialogTrigger className="hovact:text-destructive w-fit font-bold transition-colors">
+      <AlertDialogTrigger className="w-fit font-bold transition-colors hovact:text-destructive">
         Delete
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            {props.title ?? "Are you absolutely sure?"}
+            {title ?? "Are you absolutely sure?"}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            {props.description ??
+            {description ??
               "This action cannot be undone. This will permanently delete and remove your data from our servers."}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={awaiting}>Cancel</AlertDialogCancel>
-          <div className="flex h-9 w-24 items-center justify-center">
+          <div className="flex h-9 w-full items-center justify-center sm:w-24">
             {awaiting ? (
               <Loader />
             ) : (
               <Button
                 disabled={awaiting}
                 variant="destructive"
+                className="w-full"
                 onClick={handleAwaitedDelete}
               >
                 Continue

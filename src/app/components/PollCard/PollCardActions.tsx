@@ -217,9 +217,7 @@ export function PollCardActions(props: PollCardActionsProps) {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error(
-          "An unknown error occurred while voting. Please try again.",
-        );
+        toast.error("An error occurred while voting. Please try again.");
       }
 
       console.error(error);
@@ -290,9 +288,7 @@ export function PollCardActions(props: PollCardActionsProps) {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error(
-          "An unknown error occurred while liking. Please try again.",
-        );
+        toast.error("An error occurred while liking. Please try again.");
       }
     }
 
@@ -358,7 +354,7 @@ export function PollCardActions(props: PollCardActionsProps) {
                 "relative flex w-full cursor-pointer flex-row items-center gap-2 rounded-xl border px-4 py-2 transition-colors hovact:bg-neutral-900",
                 option.id === optionIdToHighlight
                   ? "border-primary"
-                  : "border-black",
+                  : "border-transparent",
               )}
             >
               <div
@@ -438,7 +434,10 @@ export function PollCardActions(props: PollCardActionsProps) {
                     ).length,
                   );
 
-            return { value: optionVoteCounts };
+            return {
+              value: optionVoteCounts,
+              label: option.text,
+            };
           })}
         />
       )}

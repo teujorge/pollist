@@ -9,13 +9,21 @@ export type PollsDetails = NonNullable<
 >;
 
 export async function getInfinitePolls({
-  page = 1,
+  cursor,
   search,
   category,
   authorId,
   voterId,
-}: PollQuery & { page: number }) {
+}: PollQuery & { cursor: string | undefined }) {
   const { userId } = auth();
+
+  console.log("getPaginatedPolls", {
+    cursor,
+    search,
+    category,
+    authorId,
+    voterId,
+  });
 
   const isTrending = category === "trending";
   const isControversial = category === "controversial";
@@ -58,7 +66,8 @@ export async function getInfinitePolls({
         }
       : { createdAt: "desc" },
 
-    skip: (page - 1) * PAGE_SIZE,
+    cursor: cursor ? { id: cursor } : undefined,
+    skip: cursor ? 1 : undefined,
     take: PAGE_SIZE,
     include: {
       author: true,

@@ -113,6 +113,10 @@ option:active {
   border-color: rgb(64 64 64);
 }
 
+button {
+  outline: none;
+}
+
 a {
   transition: color 0.15s ease;
 }

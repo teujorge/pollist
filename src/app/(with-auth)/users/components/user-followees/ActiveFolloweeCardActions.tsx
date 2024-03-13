@@ -6,11 +6,7 @@ import { useState } from "react";
 import { unfollow } from "../../actions";
 import type { User } from "@prisma/client";
 
-export async function ActiveFollowedCardAction({
-  followed,
-}: {
-  followed: User;
-}) {
+export function ActiveFolloweeCardActions({ followed }: { followed: User }) {
   const [isUnfollowing, setIsUnfollowing] = useState(false);
 
   async function handleUnfollow() {
@@ -20,7 +16,11 @@ export async function ActiveFollowedCardAction({
     } catch (error) {
       setIsUnfollowing(false);
       console.error(error);
-      toast.error("Failed to unfollow");
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to unfollow");
+      }
     }
   }
 
@@ -32,7 +32,7 @@ export async function ActiveFollowedCardAction({
         <button
           type="button"
           onClick={handleUnfollow}
-          className="hovact:bg-destructive/25 flex items-center justify-center rounded-lg bg-neutral-900 px-2 py-1 transition-colors"
+          className="flex items-center justify-center rounded-lg bg-neutral-900 px-2 py-1 transition-colors hovact:bg-destructive/25"
         >
           <span className="text-destructive">Unfollow</span>
         </button>

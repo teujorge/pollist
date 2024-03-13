@@ -17,8 +17,8 @@ model User {
   pollLikes                   PollLike[]
   comments                    Comment[]
   commentLikes                CommentLike[]
-  following                   Follow[]                     @relation("Following")
-  followers                   Follow[]                     @relation("Followers")
+  followees                   Follow[]                     @relation("Followee")
+  followers                   Follow[]                     @relation("Follower")
   bio                         String?
   notificationsComment        NotificationComment[]
   notificationsCommentLike    NotificationCommentLike[]
@@ -32,16 +32,16 @@ model Follow {
   createdAt                    DateTime                    @default(now())
   updatedAt                    DateTime                    @updatedAt
   followerId                   String
-  followedId                   String
-  follower                     User                        @relation("Followers", fields: [followerId], references: [id])
-  followed                     User                        @relation("Following", fields: [followedId], references: [id])
+  followeeId                   String
+  follower                     User                        @relation("Follower", fields: [followerId], references: [id])
+  followee                     User                        @relation("Followee", fields: [followeeId], references: [id])
   accepted                     Boolean                     @default(false)
   notificationFollowAcceptedId String?                     @unique
   notificationFollowPendingId  String?                     @unique
   notificationFollowAccepted   NotificationFollowAccepted?
   notificationFollowPending    NotificationFollowPending?
 
-  @@unique([followerId, followedId])
+  @@unique([followerId, followeeId])
 }
 
 model NotificationFollowAccepted {
