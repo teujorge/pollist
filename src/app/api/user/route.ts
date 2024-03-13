@@ -1,4 +1,4 @@
-import { db } from "@/database/db";
+import { db } from "@/database/prisma";
 import { Webhook } from "svix";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";

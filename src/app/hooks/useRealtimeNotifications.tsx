@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
-import { supabase } from "@/database/dbRealtime";
+import { supabase } from "@/database/supabase";
 import { useEffect, useRef } from "react";
 import {
   getNotificationsCommentLikeRelation,

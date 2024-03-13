@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { db } from "@/database/db";
+import { db } from "@/database/prisma";
 import { Loader } from "../Loader";
 import { Button } from "@/components/ui/button";
 import { notFound } from "next/navigation";

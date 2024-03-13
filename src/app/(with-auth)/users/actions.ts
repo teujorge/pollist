@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/database/db";
+import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs";
 import { revalidatePath } from "next/cache";
 

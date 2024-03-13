@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/database/db";
+import { db } from "@/database/prisma";
 
 export async function createPollsFromList() {
   if (process.env.NODE_ENV !== "development") {

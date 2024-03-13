@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/database/db";
+import { db } from "@/database/prisma";
 import { PAGE_SIZE } from "@/constants";
 import { auth } from "@clerk/nextjs";
 

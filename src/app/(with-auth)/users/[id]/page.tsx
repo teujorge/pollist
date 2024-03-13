@@ -1,4 +1,4 @@
-import { db } from "@/database/db";
+import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs";
 import { Tabs } from "@/app/(with-auth)/users/components/Tabs";
 import { Stat } from "@/app/(with-auth)/users/components/Stat";

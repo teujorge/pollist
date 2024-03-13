@@ -1,9 +1,9 @@
 "use server";
 
-import { db } from "@/database/db";
+import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-import { supabase } from "@/database/dbRealtime";
+import { supabase } from "@/database/supabase";
 import type { PollsDetails } from "@/app/components/InfinitePolls/actions";
 import type { CreatePollFields } from "./validation";
 
