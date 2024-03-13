@@ -5,10 +5,10 @@ import { type PollQuery, PAGE_SIZE } from "@/constants";
 import { auth } from "@clerk/nextjs";
 
 export type PollsDetails = NonNullable<
-  Awaited<ReturnType<typeof getInfinitePolls>>
+  Awaited<ReturnType<typeof getPaginatedPolls>>
 >;
 
-export async function getInfinitePolls({
+export async function getPaginatedPolls({
   page = 1,
   search,
   category,
