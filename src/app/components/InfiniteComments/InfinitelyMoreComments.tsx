@@ -8,7 +8,7 @@ export function InfinitelyMoreComments(props: {
   pollId: string;
   parentId: string | undefined;
   highlightedUserId?: string;
-  initialCursor: string;
+  initialCursor: string | undefined;
 }) {
   return (
     <InfinitelyMoreItems<

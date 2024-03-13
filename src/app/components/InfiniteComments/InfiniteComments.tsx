@@ -25,7 +25,7 @@ export async function InfiniteComments(props: {
       <InfinitelyMoreComments
         pollId={props.pollId}
         parentId={props.parentId}
-        initialCursor={firstComments[firstComments.length - 1]!.id}
+        initialCursor={firstComments[firstComments.length - 1]?.id}
       />
     </div>
   );
