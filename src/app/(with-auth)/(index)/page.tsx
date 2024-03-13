@@ -19,7 +19,7 @@ export default async function HomePage({
   await queryClient.prefetchQuery({
     queryKey: ["posts"],
     queryFn: () =>
-      fetch(`/api/polls?page=${1}search=${search}category=${category}`, {
+      fetch(`/api/polls?search=${search}category=${category}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

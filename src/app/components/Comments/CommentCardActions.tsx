@@ -9,7 +9,7 @@ import { NewComments } from "./NewComments";
 import { CommentForm } from "./CommentForm";
 import { DeleteAlertDialog } from "../DeleteAlertDialog";
 import { useEffect, useState } from "react";
-import { getPaginatedComments } from "../InfiniteComments/actions";
+import { getInfiniteComments } from "../InfiniteComments/actions";
 import { CommentCard, useCommentCard } from "./CommentCard";
 import { DotsHorizontalIcon, ThickArrowUpIcon } from "@radix-ui/react-icons";
 import { deleteComment, likeComment, unlikeComment } from "./actions";
@@ -278,12 +278,12 @@ function CommentReplies({
   parentId: string;
 }) {
   const [data, setData] = useState<{
-    page: number;
+    cursor: string | undefined;
     replies: Comment[];
     hasMore: boolean;
     isLoading: boolean;
   }>({
-    page: 1,
+    cursor: undefined,
     replies: [],
     hasMore: true,
     isLoading: true,
@@ -293,8 +293,8 @@ function CommentReplies({
   useEffect(() => {
     async function fetchInitialComments() {
       // TODO: need to handle error
-      const initialReplies = await getPaginatedComments({
-        page: 1,
+      const initialReplies = await getInfiniteComments({
+        cursor: undefined,
         pollId,
         parentId,
       });
@@ -317,14 +317,14 @@ function CommentReplies({
     if (data.isLoading) return;
 
     // TODO: need to handle error
-    const newReplies = await getPaginatedComments({
-      page: data.page,
+    const newReplies = await getInfiniteComments({
+      cursor: data.cursor,
       pollId,
       parentId,
     });
 
     setData((prev) => ({
-      page: prev.page + 1,
+      cursor: newReplies[newReplies.length - 1]?.id,
       replies: [...prev.replies, ...newReplies],
       hasMore: newReplies.length === PAGE_SIZE,
       isLoading: false,

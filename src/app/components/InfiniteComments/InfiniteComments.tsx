@@ -1,14 +1,14 @@
 import { CommentCard } from "../Comments/CommentCard";
 import { NewComments } from "../Comments/NewComments";
-import { getPaginatedComments } from "./actions";
+import { getInfiniteComments } from "./actions";
 import { InfinitelyMoreComments } from "./InfinitelyMoreComments";
 
 export async function InfiniteComments(props: {
   pollId: string;
   parentId: string | undefined;
 }) {
-  const firstComments = await getPaginatedComments({
-    page: 1,
+  const firstComments = await getInfiniteComments({
+    cursor: undefined,
     pollId: props.pollId,
     parentId: props.parentId,
   });
@@ -22,7 +22,11 @@ export async function InfiniteComments(props: {
           comment={comment}
         />
       ))}
-      <InfinitelyMoreComments pollId={props.pollId} parentId={props.parentId} />
+      <InfinitelyMoreComments
+        pollId={props.pollId}
+        parentId={props.parentId}
+        initialCursor={firstComments[firstComments.length - 1]!.id}
+      />
     </div>
   );
 }

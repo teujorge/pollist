@@ -5,17 +5,25 @@ import { type PollQuery, PAGE_SIZE } from "@/constants";
 import { auth } from "@clerk/nextjs";
 
 export type PollsDetails = NonNullable<
-  Awaited<ReturnType<typeof getPaginatedPolls>>
+  Awaited<ReturnType<typeof getInfinitePolls>>
 >;
 
-export async function getPaginatedPolls({
-  page = 1,
+export async function getInfinitePolls({
+  cursor,
   search,
   category,
   authorId,
   voterId,
-}: PollQuery & { page: number }) {
+}: PollQuery & { cursor: string | undefined }) {
   const { userId } = auth();
+
+  console.log("getPaginatedPolls", {
+    cursor,
+    search,
+    category,
+    authorId,
+    voterId,
+  });
 
   const isTrending = category === "trending";
   const isControversial = category === "controversial";
@@ -58,7 +66,8 @@ export async function getPaginatedPolls({
         }
       : { createdAt: "desc" },
 
-    skip: (page - 1) * PAGE_SIZE,
+    cursor: cursor ? { id: cursor } : undefined,
+    skip: cursor ? 1 : undefined,
     take: PAGE_SIZE,
     include: {
       author: true,

@@ -1,5 +1,5 @@
 import { PollCard } from "../PollCard/PollCard";
-import { getPaginatedPolls } from "./actions";
+import { getInfinitePolls } from "./actions";
 import { InfinitelyMorePolls } from "./InfinitelyMorePolls";
 import type { PollQuery } from "@/constants";
 
@@ -10,8 +10,8 @@ export async function InfinitePolls(props: {
   highlightedUserId?: string;
   idPrefix: string;
 }) {
-  const firstPolls = await getPaginatedPolls({
-    page: 1,
+  const firstPolls = await getInfinitePolls({
+    cursor: undefined,
     ...props.query,
   });
 
@@ -27,6 +27,7 @@ export async function InfinitePolls(props: {
       <InfinitelyMorePolls
         idPrefix={props.idPrefix}
         query={props.query}
+        initialCursor={firstPolls[firstPolls.length - 1]!.id}
         highlightedUserId={props.highlightedUserId}
       />
     </div>

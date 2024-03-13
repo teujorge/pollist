@@ -3,21 +3,22 @@
 import { PAGE_SIZE } from "@/constants";
 import { useEffect, useState } from "react";
 
-export function useInfiniteScroll<TItem, TQuery>(props: {
+export function useInfiniteScroll<TItem extends { id: string }, TQuery>(props: {
   query: TQuery;
-  getter: (params: TQuery & { page: number }) => Promise<TItem[]>;
+  initialCursor?: string;
+  getter: (params: TQuery & { cursor: string | undefined }) => Promise<TItem[]>;
   loaderRef: React.RefObject<HTMLElement>;
 }) {
   type Data = {
     items: TItem[];
-    page: number;
+    cursor?: string;
     hasMore: boolean;
     isLoading: boolean;
   };
 
   const initialData: Data = {
     items: [],
-    page: 2,
+    cursor: props.initialCursor,
     hasMore: true,
     isLoading: false,
   };
@@ -27,30 +28,34 @@ export function useInfiniteScroll<TItem, TQuery>(props: {
   // Change page when loaderRef is intersecting
   useEffect(() => {
     async function loadMore() {
-      const initialData = data;
+      const localInitialData = { ...data };
 
       try {
-        setData((prev) => ({ ...prev, page: prev.page + 1, isLoading: true }));
+        setData((prev) => ({
+          ...prev,
+          isLoading: true,
+        }));
 
         const newItems = await props.getter({
-          page: data.page,
+          cursor: data.cursor,
           ...props.query,
         });
 
         // another query change happened
-        if (initialData.page !== data.page) return;
+        if (localInitialData.cursor !== data.cursor) return;
 
         const hasMore = newItems.length === PAGE_SIZE;
 
         setData((prev) => ({
           ...prev,
+          cursor: newItems[newItems.length - 1]?.id,
           hasMore: hasMore,
           isLoading: false,
           items: [...prev.items, ...newItems],
         }));
       } catch (e) {
         console.error(e);
-        setData(initialData);
+        setData(localInitialData);
       }
     }
 

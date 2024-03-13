@@ -9,9 +9,15 @@ import type { PollQuery } from "@/constants";
 import type { PollsDetails } from "@/app/components/InfinitePolls/actions";
 
 export function AllPolls({ query }: { query: PollQuery }) {
-  async function _queryFn({ pageParam }: { pageParam: number }) {
+  async function _queryFn({ cursor }: { cursor: string }) {
+    const cursorQuery = cursor === "" ? undefined : `cursor=${cursor}`;
+    const searchQuery = query.search ? `search=${query.search}` : undefined;
+    const categoryQuery = query.category
+      ? `category=${query.category}`
+      : undefined;
+
     const response = await fetch(
-      `/api/polls?page=${pageParam}&search=${query.search}&category=${query.category}`,
+      `/api/polls?${cursorQuery}&${searchQuery}&${categoryQuery}`,
       {
         method: "GET",
         headers: {
@@ -32,11 +38,15 @@ export function AllPolls({ query }: { query: PollQuery }) {
 
   const { fetchNextPage, hasNextPage, data, status } = useInfiniteQuery({
     queryKey: ["polls", query],
-    queryFn: _queryFn,
-    initialPageParam: 1,
+    queryFn: (ctx) => _queryFn({ cursor: ctx.pageParam }),
+    initialPageParam: "",
     getNextPageParam: (lastPage, allPages, lastPageParam, allPageParams) => {
-      if (allPageParams.length === 0) return 1;
-      if (lastPage.length === PAGE_SIZE) return lastPageParam + 1;
+      if (allPageParams.length === 0) {
+        return "";
+      }
+      if (lastPage.length === PAGE_SIZE) {
+        return lastPage[lastPage.length - 1]?.id;
+      }
       return undefined;
     },
   });
