@@ -354,7 +354,7 @@ export function PollCardActions(props: PollCardActionsProps) {
                 "relative flex w-full cursor-pointer flex-row items-center gap-2 rounded-xl border px-4 py-2 transition-colors hovact:bg-neutral-900",
                 option.id === optionIdToHighlight
                   ? "border-primary"
-                  : "border-black",
+                  : "border-transparent",
               )}
             >
               <div
