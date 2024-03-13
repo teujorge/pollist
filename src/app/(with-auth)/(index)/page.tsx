@@ -1,9 +1,9 @@
 import { AllPolls } from "./components/AllPolls";
 import { FilterBar } from "./components/FilterBar";
 import {
-  HydrationBoundary,
-  QueryClient,
   dehydrate,
+  QueryClient,
+  HydrationBoundary,
 } from "@tanstack/react-query";
 
 export default async function HomePage({
@@ -29,13 +29,11 @@ export default async function HomePage({
 
   return (
     <main className="flex w-full flex-col items-center gap-2">
-      <div className="sticky top-10 z-20 flex w-full flex-col items-center gap-2 bg-gradient-to-b from-black from-80% pt-6 sm:items-center">
-        <h1 className="text-4xl font-bold">Polls</h1>
-        <div className="flex-grow" />
-        <FilterBar />
-      </div>
+      <h1 className="pt-6 text-5xl font-bold">Polls</h1>
 
-      <div className="h-4" />
+      <FilterBar />
+
+      <div className="h-2" />
 
       <HydrationBoundary state={dehydrate(queryClient)}>
         <AllPolls query={{ search, category }} />

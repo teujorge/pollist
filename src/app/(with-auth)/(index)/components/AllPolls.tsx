@@ -10,15 +10,8 @@ import type { PollsDetails } from "@/app/components/InfinitePolls/actions";
 
 export function AllPolls({ query }: { query: PollQuery }) {
   async function _queryFn({ pageParam }: { pageParam: number }) {
-    console.log("---------_queryFn -> pageParam", pageParam);
-
-    const searchQuery = query.search ? `&search=${query.search}` : "";
-    const categoryQuery = query.category ? `&category=${query.category}` : "";
-    const authorIdQuery = query.authorId ? `&authorId=${query.authorId}` : "";
-    const voterIdQuery = query.voterId ? `&voterId=${query.voterId}` : "";
-
-    const res = await fetch(
-      `/api/polls?page=${pageParam}${searchQuery}${categoryQuery}${authorIdQuery}${voterIdQuery}`,
+    const response = await fetch(
+      `/api/polls?page=${pageParam}&search=${query.search}&category=${query.category}`,
       {
         method: "GET",
         headers: {
@@ -27,17 +20,17 @@ export function AllPolls({ query }: { query: PollQuery }) {
       },
     );
 
-    const polls = ((await res.json()) as { status: number; data: unknown })
-      .data as PollsDetails;
+    const res = (await response.json()) as
+      | { status: number; data: PollsDetails; error: undefined }
+      | { status: number; data: undefined; error: string };
+    if (res.data === undefined) throw new Error(res.error);
 
-    console.log("---------_queryFn -> polls", polls);
-
+    const polls = res.data;
     hasInitedRef.current = true;
-
     return polls;
   }
 
-  const { fetchNextPage, hasNextPage, data, error, status } = useInfiniteQuery({
+  const { fetchNextPage, hasNextPage, data, status } = useInfiniteQuery({
     queryKey: ["polls", query],
     queryFn: _queryFn,
     initialPageParam: 1,
@@ -52,21 +45,11 @@ export function AllPolls({ query }: { query: PollQuery }) {
   const loaderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log("---------useEffect -> create observer");
-
-    async function nextPage() {
-      console.log("---------fetchNextPage", fetchNextPage);
-      console.log("---------hasNextPage", hasNextPage);
-
-      const x = await fetchNextPage();
-      console.log("---------x", x);
-    }
-
     function handleObserver(entities: IntersectionObserverEntry[]) {
       const target = entities[0];
       if (!target || !target.isIntersecting) return;
 
-      nextPage().catch((e) => console.error(e));
+      fetchNextPage().catch((e) => console.error(e));
     }
 
     const option = {
@@ -77,24 +60,16 @@ export function AllPolls({ query }: { query: PollQuery }) {
 
     const observer = new IntersectionObserver(handleObserver, option);
     if (loaderRef.current) observer.observe(loaderRef.current);
-    else console.error("---------loaderRef.current is null");
 
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, data]);
 
-  useEffect(() => {
-    scrollTo(0, 1000);
-  }, []);
-
   return (
     <div className="flex w-full flex-col gap-4">
-      <p>status: {status}</p>
-      <p>error: {error?.message}</p>
-
       {data?.pages.map((pages, i) => (
         <>
           {pages.map((poll) => (
-            <PollCard key={`home-page-${i}-poll-${poll.id}`} poll={poll} />
+            <PollCard key={keyGen(i, poll.id)} poll={poll} />
           ))}
         </>
       ))}
@@ -103,7 +78,9 @@ export function AllPolls({ query }: { query: PollQuery }) {
         ref={loaderRef}
         className="flex h-12 w-full items-center justify-center"
       >
-        {hasNextPage || hasInitedRef.current === false ? (
+        {status === "pending" ||
+        hasNextPage ||
+        hasInitedRef.current === false ? (
           <Loader />
         ) : (
           <p className="text-sm text-neutral-400 underline decoration-neutral-400 underline-offset-4">
@@ -113,4 +90,9 @@ export function AllPolls({ query }: { query: PollQuery }) {
       </div>
     </div>
   );
+}
+
+function keyGen(index: number, id: string) {
+  const key = `home-page-${index}-poll-${id}`;
+  return key;
 }

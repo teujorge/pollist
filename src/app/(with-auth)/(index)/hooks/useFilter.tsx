@@ -1,8 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { CATEGORIES } from "@/constants";
 import { useDebounce } from "@uidotdev/usehooks";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export function useFilter() {
