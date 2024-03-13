@@ -23,7 +23,7 @@ export function FilterBar() {
       const currentScrollY = window.scrollY;
 
       // Close to the top of the page
-      if (currentScrollY < 250) {
+      if (currentScrollY < 500) {
         initialScrollUpY.current = undefined;
         setIsVisible(true);
       }
@@ -56,10 +56,10 @@ export function FilterBar() {
     <div
       ref={filterRef}
       className={cn(
-        "sticky top-9 z-20 flex w-full justify-center gap-2 bg-gradient-to-b from-black from-80% pt-6 transition-transform",
+        "sticky top-9 z-20 flex w-full justify-center gap-2 bg-gradient-to-b from-black from-80% pt-6 transition-transform duration-300",
         {
-          "translate-y-0 transform": isVisible,
-          "-translate-y-full transform": !isVisible,
+          "translate-y-0": isVisible,
+          "-translate-y-full": !isVisible,
         },
       )}
     >
