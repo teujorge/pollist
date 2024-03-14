@@ -8,10 +8,16 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum SubTier {
+  FREE
+  PRO
+}
+
 model User {
   id                          String                       @id
   username                    String?
   imageUrl                    String?
+  tier                        SubTier                      @default(FREE)
   votes                       Vote[]
   polls                       Poll[]
   pollLikes                   PollLike[]
