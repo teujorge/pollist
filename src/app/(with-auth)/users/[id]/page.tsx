@@ -50,7 +50,7 @@ export default async function UserPage({ params }: Props) {
 
   return (
     <>
-      <div className="flex w-full flex-row gap-8 rounded-xl border border-accent px-3 py-3">
+      <div className="flex w-full flex-row gap-8 px-3 py-3">
         <ProfileImage src={user.imageUrl} username={user.username} size={100} />
 
         <div className="flex flex-col justify-around">
@@ -115,7 +115,7 @@ export async function generateMetadata(
 
   return {
     title: user?.username,
-    description: `${user?.username} user profile.`,
+    description: `${user?.username}'s profile.`,
     openGraph: {
       images: user?.imageUrl
         ? [user.imageUrl, ...previousImages]

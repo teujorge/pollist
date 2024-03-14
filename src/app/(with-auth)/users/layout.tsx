@@ -1,6 +1,7 @@
+import { TabManagement } from "./components/TabManagement";
 import { UserPageProvider } from "./context";
 
-export default function Layout({
+export default function UserPageLayout({
   children,
   polls,
   votes,
@@ -13,13 +14,11 @@ export default function Layout({
 }) {
   return (
     <>
-      <main className="flex max-h-[calc(100dvh-64px)] w-full flex-col gap-2 overflow-hidden md:gap-4 ">
+      <main className="flex w-full flex-col gap-2 overflow-hidden md:gap-4 ">
         <UserPageProvider>
           {children}
-          <div className="flex max-h-full flex-row gap-4 overflow-hidden">
-            {polls}
-            {votes}
-          </div>
+          <TabManagement tabKey="polls">{polls}</TabManagement>
+          <TabManagement tabKey="votes">{votes}</TabManagement>
         </UserPageProvider>
       </main>
       {follows}

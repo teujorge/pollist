@@ -13,11 +13,11 @@ export function TabManagement({
 
   return (
     <div
-      className={`w-full flex-grow flex-col gap-2 md:w-1/2
+      className={`w-full flex-grow flex-col gap-2
         ${tab === tabKey ? "flex" : "hidden"}
       `}
     >
-      <div className="border-accent flex flex-col gap-2 overflow-y-auto rounded-xl border p-2">
+      <div className="flex flex-col gap-2 overflow-y-auto rounded-xl p-2">
         {children}
       </div>
     </div>
