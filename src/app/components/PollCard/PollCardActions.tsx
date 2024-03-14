@@ -23,7 +23,7 @@ import type { MutableRefObject } from "react";
 
 const ChartDrawer = dynamic(
   () => import("./ChartDrawer").then((mod) => mod.ChartDrawer),
-  { ssr: false, loading: () => <div className="shimmer h-11 w-24" /> },
+  { ssr: false, loading: () => <div className="shimmer h-9 w-full" /> },
 );
 
 const TriggerNotificationSeen = dynamic(
