@@ -40,7 +40,14 @@ export async function getInfiniteComments({
     skip: cursor ? 1 : undefined,
     take: PAGE_SIZE,
     include: {
-      author: true,
+      author: {
+        select: {
+          id: true,
+          username: true,
+          imageUrl: true,
+          tier: true,
+        },
+      },
       parent: {
         select: {
           authorId: true,
