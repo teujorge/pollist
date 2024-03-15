@@ -15,8 +15,10 @@ enum SubTier {
 
 model User {
   id                          String                       @id
-  username                    String?
+  username                    String                       @unique
   imageUrl                    String?
+  bio                         String?
+  clerkId                     String?                      @unique
   tier                        SubTier                      @default(FREE)
   votes                       Vote[]
   polls                       Poll[]
@@ -25,12 +27,13 @@ model User {
   commentLikes                CommentLike[]
   followees                   Follow[]                     @relation("Followee")
   followers                   Follow[]                     @relation("Follower")
-  bio                         String?
   notificationsComment        NotificationComment[]
   notificationsCommentLike    NotificationCommentLike[]
   notificationsFollowPending  NotificationFollowPending[]  @relation("NotifyeeRelation")
   notificationsFollowAccepted NotificationFollowAccepted[] @relation("NotifyeeRelation")
   notificationsPollLike       NotificationPollLike[]
+
+  @@index([username])
 }
 
 model Follow {
