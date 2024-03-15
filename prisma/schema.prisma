@@ -18,6 +18,7 @@ model User {
   username                    String                       @unique
   imageUrl                    String?
   bio                         String?
+  private                     Boolean                      @default(false)
   clerkId                     String?                      @unique
   tier                        SubTier                      @default(FREE)
   votes                       Vote[]

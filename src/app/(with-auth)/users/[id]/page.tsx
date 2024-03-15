@@ -2,10 +2,14 @@ import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs";
 import { Tabs } from "@/app/(with-auth)/users/components/Tabs";
 import { Stat } from "@/app/(with-auth)/users/components/Stat";
+import { Loader } from "@/app/components/Loader";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { PricingTable } from "../components/PricingTable";
 import { ProfileImage } from "@/app/components/ProfileImage";
 import { FollowButton } from "@/app/(with-auth)/users/components/FollowButton";
+import { InfinitePolls } from "@/app/components/InfinitePolls/InfinitePolls";
+import { TabManagement } from "../components/TabManagement";
 import { FolloweesList } from "../components/user-followees/FolloweesList";
 import { FollowersList } from "../components/user-followers/FollowersList";
 import {
@@ -16,7 +20,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import type { ResolvingMetadata, Metadata } from "next";
-import Link from "next/link";
 
 type Props = {
   params: { id: string };
@@ -34,6 +37,7 @@ export default async function UserPage({ params }: Props) {
     select: {
       imageUrl: true,
       username: true,
+      private: true,
       tier: true,
       _count: {
         select: {
@@ -43,6 +47,14 @@ export default async function UserPage({ params }: Props) {
           followees: { where: { accepted: true } },
         },
       },
+      followees: myId
+        ? {
+            where: {
+              followerId: myId,
+              accepted: true,
+            },
+          }
+        : false,
     },
   });
 
@@ -50,6 +62,11 @@ export default async function UserPage({ params }: Props) {
 
   const followersCount = user._count?.followees ?? 0;
   const followingCount = user._count?.followers ?? 0;
+
+  console.log(user.followees);
+
+  const isContentPrivate =
+    myId !== userId && user.private && user.followees.length === 0;
 
   return (
     <>
@@ -63,12 +80,14 @@ export default async function UserPage({ params }: Props) {
               (user.tier === "FREE" ? (
                 <PricingTable userId={userId} />
               ) : (
-                <Link
+                <a
                   href={process.env.NEXT_PUBLIC_STRIPE_BILLING_URL ?? "/"}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="rounded-[4px] bg-white px-2 text-xs text-accent hovact:text-accent"
                 >
                   {user.tier}
-                </Link>
+                </a>
               ))}
             {myId && <FollowButton userId={userId} />}
           </div>
@@ -106,7 +125,46 @@ export default async function UserPage({ params }: Props) {
           </div>
         </div>
       </div>
-      <Tabs />
+
+      {isContentPrivate ? (
+        <p className="mx-auto pt-8 text-lg text-accent underline underline-offset-4">
+          User profile is private
+        </p>
+      ) : (
+        <>
+          <Tabs />
+          <TabManagement tabKey="polls">
+            <Suspense
+              fallback={
+                <div className="flex w-full items-center justify-center pt-8">
+                  <Loader />
+                </div>
+              }
+            >
+              <InfinitePolls
+                idPrefix="my-polls"
+                query={{ authorId: params.id }}
+                highlightedUserId={undefined}
+              />
+            </Suspense>
+          </TabManagement>
+          <TabManagement tabKey="votes">
+            <Suspense
+              fallback={
+                <div className="flex w-full items-center justify-center pt-8">
+                  <Loader />
+                </div>
+              }
+            >
+              <InfinitePolls
+                idPrefix="my-votes"
+                query={{ voterId: params.id }}
+                highlightedUserId={params.id}
+              />
+            </Suspense>
+          </TabManagement>
+        </>
+      )}
     </>
   );
 }
