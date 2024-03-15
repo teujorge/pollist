@@ -1,17 +1,20 @@
 import { db } from "@/database/prisma";
 import { Stripe } from "stripe";
-import { type NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import type { SubTier } from "@prisma/client";
+import type { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   if (!process.env.STRIPE_SECRET_KEY) {
     return NextResponse.json({ status: 401, error: "No Stripe secret key" });
   }
 
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
   let event: Stripe.Event;
   try {
     const payload = await req.text();
     const signature = req.headers.get("stripe-signature");
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
     if (!signature) {
       return NextResponse.json({ status: 401, error: "No signature" });
@@ -49,6 +52,7 @@ export async function POST(req: NextRequest) {
       const checkoutSessionCompleted = event.data.object;
 
       const userId = checkoutSessionCompleted.client_reference_id;
+      const customerId = checkoutSessionCompleted.customer?.toString();
 
       if (!userId) {
         console.error(
@@ -61,9 +65,26 @@ export async function POST(req: NextRequest) {
       }
 
       try {
+        // get tier from sub id
+        const subscription = await stripe.subscriptions.retrieve(
+          checkoutSessionCompleted.subscription as string,
+        );
+
+        const productId = subscription.items.data[0]?.price.id;
+
+        if (!productId) {
+          console.error(
+            `⚠️  No product ID found in subscription ${subscription.id}`,
+          );
+          return NextResponse.json({
+            status: 400,
+            error: "No product ID found in subscription",
+          });
+        }
+
         const updatedUser = await db.user.update({
           where: { id: userId },
-          data: { tier: "PRO" },
+          data: { tier: getTier(productId), clerkId: customerId },
         });
         console.log(`✅  Updated user to PRO`, updatedUser);
       } catch (e) {
@@ -77,75 +98,92 @@ export async function POST(req: NextRequest) {
       break;
     }
 
-    // // Subscription updated -> i.e. user has changed their subscription
-    // case "customer.subscription.updated": {
-    //   const subscriptionUpdated = event.data.object;
+    // Subscription updated -> i.e. user has changed their subscription
+    case "customer.subscription.updated": {
+      const subscriptionUpdated = event.data.object;
+      const customerId = subscriptionUpdated.customer as string;
 
-    //   const subscriptionId = subscriptionUpdated.id;
-    //   const userId = subscriptionUpdated.customer;
+      const productId = subscriptionUpdated.items.data[0]?.price.id;
 
-    //   if (!userId) {
-    //     console.error(`⚠️  No user ID found in subscription ${subscriptionId}`);
-    //     return NextResponse.json({
-    //       status: 400,
-    //       error: "No user ID found in subscription",
-    //     });
-    //   }
+      if (!productId) {
+        console.error(
+          `⚠️  No product ID found in subscription ${subscriptionUpdated.id}`,
+        );
+        return NextResponse.json({
+          status: 400,
+          error: "No product ID found in subscription",
+        });
+      }
 
-    //   const newTier = subscriptionUpdated.items.data[0]?.price.product;
-    //   try {
-    //     const updatedUser = await db.user.update({
-    //       where: { id: userId },
-    //       data: { tier: newTier },
-    //     });
-    //     console.log(`✅  Updated user to ${newTier}`, updatedUser);
-    //   } catch (e) {
-    //     console.error(`⚠️  Failed to update user ${userId}`, e);
-    //     return NextResponse.json({
-    //       status: 500,
-    //       error: "Failed to update user",
-    //     });
-    //   }
+      try {
+        const newTier = getTier(productId);
 
-    //   break;
-    // }
+        const updatedUser = await db.user.update({
+          where: { clerkId: customerId },
+          data: { tier: newTier },
+        });
+        console.log(`✅  Updated user to ${newTier}`, updatedUser);
+      } catch (e) {
+        console.error(`⚠️  Failed to update customer ${customerId}`, e);
+        return NextResponse.json({
+          status: 500,
+          error: "Failed to update user",
+        });
+      }
 
-    // // Subscription deleted -> i.e. user has cancelled their subscription
-    // case "customer.subscription.deleted": {
-    //   const subscriptionDeleted = event.data.object;
+      break;
+    }
 
-    //   const userId = subscriptionDeleted.customer;
+    // Subscription deleted -> i.e. user has cancelled their subscription
+    case "customer.subscription.deleted": {
+      const subscriptionDeleted = event.data.object;
+      const customerId = subscriptionDeleted.customer as string;
 
-    //   if (!userId) {
-    //     console.error(
-    //       `⚠️  No user ID found in subscription ${subscriptionDeleted.id}`,
-    //     );
-    //     return NextResponse.json({
-    //       status: 400,
-    //       error: "No user ID found in subscription",
-    //     });
-    //   }
+      if (!customerId) {
+        console.error(
+          `⚠️  No user ID found in subscription ${subscriptionDeleted.id}`,
+        );
+        return NextResponse.json({
+          status: 400,
+          error: "No user ID found in subscription",
+        });
+      }
 
-    //   try {
-    //     const updatedUser = await db.user.update({
-    //       where: { id: userId },
-    //       data: { tier: "FREE" },
-    //     });
-    //     console.log(`✅  Updated user to FREE`, updatedUser);
-    //   } catch (e) {
-    //     console.error(`⚠️  Failed to update user ${userId}`, e);
-    //     return NextResponse.json({
-    //       status: 500,
-    //       error: "Failed to update user",
-    //     });
-    //   }
+      try {
+        const updatedUser = await db.user.update({
+          where: { clerkId: customerId },
+          data: { tier: "FREE" },
+        });
+        console.log(`✅  Updated user to FREE`, updatedUser);
+      } catch (e) {
+        console.error(`⚠️  Failed to update customer ${customerId}`, e);
+        return NextResponse.json({
+          status: 500,
+          error: "Failed to update user",
+        });
+      }
 
-    //   break;
-    // }
+      break;
+    }
 
     default:
       console.log(`Unhandled event type ${event.type}`);
   }
 
   return NextResponse.json({ status: 200 });
+}
+
+function getTier(productId: string): SubTier {
+  const FREE_PRICE = "price_1OuH58BU3BMyGKUcRtBtJV15";
+  const PRO_PRICE = "price_1OuH5bBU3BMyGKUcWuir0DxV";
+
+  if (productId === FREE_PRICE) {
+    return "FREE";
+  }
+
+  if (productId === PRO_PRICE) {
+    return "PRO";
+  }
+
+  throw new Error(`Unknown product ID ${productId}`);
 }
