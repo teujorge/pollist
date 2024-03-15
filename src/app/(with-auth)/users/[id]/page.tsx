@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs";
 import { Tabs } from "@/app/(with-auth)/users/components/Tabs";
 import { Stat } from "@/app/(with-auth)/users/components/Stat";
 import { notFound } from "next/navigation";
+import { PricingTable } from "../components/PricingTable";
 import { ProfileImage } from "@/app/components/ProfileImage";
 import { FollowButton } from "@/app/(with-auth)/users/components/FollowButton";
 import { FolloweesList } from "../components/user-followees/FolloweesList";
@@ -15,6 +16,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import type { ResolvingMetadata, Metadata } from "next";
+import Link from "next/link";
 
 type Props = {
   params: { id: string };
@@ -32,6 +34,7 @@ export default async function UserPage({ params }: Props) {
     select: {
       imageUrl: true,
       username: true,
+      tier: true,
       _count: {
         select: {
           polls: true,
@@ -56,6 +59,17 @@ export default async function UserPage({ params }: Props) {
         <div className="flex flex-col justify-around">
           <div className="flex items-center gap-2">
             <h1>{user.username}</h1>
+            {myId === userId &&
+              (user.tier === "FREE" ? (
+                <PricingTable userId={userId} />
+              ) : (
+                <Link
+                  href={process.env.NEXT_PUBLIC_STRIPE_BILLING_URL ?? "/"}
+                  className="rounded-[4px] bg-white px-2 text-xs text-accent hovact:text-accent"
+                >
+                  {user.tier}
+                </Link>
+              ))}
             {myId && <FollowButton userId={userId} />}
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-4">
