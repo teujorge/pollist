@@ -174,8 +174,8 @@ export async function POST(req: NextRequest) {
 }
 
 function getTier(productId: string): SubTier {
-  const FREE_PRICE = "price_1OuH58BU3BMyGKUcRtBtJV15";
-  const PRO_PRICE = "price_1OuH5bBU3BMyGKUcWuir0DxV";
+  const FREE_PRICE = process.env.STRIPE_SUB_FREE_PRICE;
+  const PRO_PRICE = process.env.STRIPE_SUB_PRO_PRICE;
 
   if (productId === FREE_PRICE) {
     return "FREE";
