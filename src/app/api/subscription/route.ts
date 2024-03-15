@@ -1,30 +1,22 @@
 import { db } from "@/database/prisma";
 import { Stripe } from "stripe";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-
-// https://docs.stripe.com/webhooks#local-listener
+import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   if (!process.env.STRIPE_SECRET_KEY) {
     return NextResponse.json({ status: 401, error: "No Stripe secret key" });
   }
 
-  if (!req.body) {
-    return NextResponse.json({ status: 400, error: "No request body" });
-  }
-
-  const payload = await req.text();
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-  // Get the signature sent by Stripe
-  const signature = req.headers.get("stripe-signature");
-  if (!signature) {
-    return NextResponse.json({ status: 401, error: "No signature" });
-  }
-
   let event: Stripe.Event;
   try {
+    const payload = await req.text();
+    const signature = req.headers.get("stripe-signature");
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+    if (!signature) {
+      return NextResponse.json({ status: 401, error: "No signature" });
+    }
+
     event = stripe.webhooks.constructEvent(
       payload,
       signature,
@@ -32,7 +24,10 @@ export async function POST(req: NextRequest) {
     );
   } catch (err) {
     if (err instanceof Error) {
-      console.error(`⚠️  Webhook signature verification failed.`, err.message);
+      console.error(
+        `⚠️  Webhook signature verification failed:\n`,
+        err.message,
+      );
     } else {
       console.error(`⚠️  Webhook signature verification failed.`);
     }
