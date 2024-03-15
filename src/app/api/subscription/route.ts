@@ -3,6 +3,8 @@ import { Stripe } from "stripe";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+// https://docs.stripe.com/webhooks#local-listener
+
 export async function POST(req: NextRequest) {
   if (!process.env.STRIPE_SECRET_KEY) {
     return NextResponse.json({ status: 401, error: "No Stripe secret key" });
