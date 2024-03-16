@@ -60,7 +60,7 @@ export function CommentCard({
         `}
         >
           <Link
-            href={`/users/${comment.author.id}`}
+            href={`/users/${comment.author.username}`}
             className="flex w-fit flex-row items-center gap-2"
           >
             <ProfileImage

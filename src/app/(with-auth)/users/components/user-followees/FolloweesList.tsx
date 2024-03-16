@@ -36,7 +36,7 @@ async function _FolloweesList({ userId }: FolloweesListProps) {
         <ActiveFolloweeCard
           key={f.followee.id}
           userId={userId}
-          followed={f.followee}
+          followee={f.followee}
         />
       ))}
     </div>

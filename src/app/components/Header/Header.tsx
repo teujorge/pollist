@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { IconSvg } from "../../svgs/IconSvg";
+import { ProfileLink } from "./ProfileLink";
 import { NotificationsBell } from "./NotificationsBell";
 import { SignInButton, UserButton, auth } from "@clerk/nextjs";
 
-export function Header() {
+export async function Header() {
   const { userId } = auth();
 
   return (
@@ -33,7 +34,7 @@ export function Header() {
 
         {userId && (
           <>
-            <Link href={`/users/${userId}`}>Me</Link>
+            <ProfileLink />
             <NotificationsBell />
           </>
         )}

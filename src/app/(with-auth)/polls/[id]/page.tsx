@@ -32,7 +32,7 @@ export default async function PollPage({ params, searchParams }: Props) {
           <h2>{poll.description}</h2>
           <span>
             Created by{" "}
-            <Link href={`/users/${poll.author.id}`}>
+            <Link href={`/users/${poll.author.username}`}>
               {poll.author.username}
             </Link>
           </span>

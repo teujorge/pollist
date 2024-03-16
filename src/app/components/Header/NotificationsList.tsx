@@ -470,7 +470,7 @@ function FollowPendingNotificationCard({
   return (
     <div className="flex flex-col items-start justify-start gap-0.5">
       <Link
-        href={`/users/${followNotification.follow.followerId}`}
+        href={`/users/${followNotification.follow.follower.username}`}
         className="flex flex-row items-center justify-center gap-0.5"
         onClick={() => popover.setIsNotificationsOpen(false)}
       >
@@ -533,7 +533,7 @@ function FollowAcceptedNotificationCard({
   return (
     <div className="flex flex-col items-start justify-start gap-0.5">
       <Link
-        href={`/users/${followNotification.follow.followeeId}`}
+        href={`/users/${followNotification.follow.followee.username}`}
         className="flex flex-row items-center justify-center gap-0.5"
         onClick={handleLinkClick}
       >

@@ -102,8 +102,10 @@ export async function deletePoll(poll: PollsDetails[number]) {
 
   const deletedPoll = await db.poll.delete({
     where: { id: poll.id },
-    include: { options: true },
+    include: {
+      author: { select: { username: true } },
+    },
   });
 
-  if (deletedPoll) redirect(`/users/${userId}`);
+  if (deletedPoll) redirect(`/users/${deletedPoll.author.username}`);
 }

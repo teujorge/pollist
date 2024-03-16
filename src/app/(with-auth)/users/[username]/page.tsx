@@ -20,21 +20,23 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import type { ResolvingMetadata, Metadata } from "next";
+import { GearIcon } from "@radix-ui/react-icons";
 
 type Props = {
-  params: { id: string };
+  params: { username: string };
   searchParams: Record<string, string | string[] | undefined>;
 };
 
 export default async function UserPage({ params }: Props) {
-  const userId = params.id;
+  const username = params.username;
   const { userId: myId } = auth();
 
   const user = await db.user.findUnique({
     where: {
-      id: userId,
+      username: username,
     },
     select: {
+      id: true,
       imageUrl: true,
       username: true,
       private: true,
@@ -66,7 +68,7 @@ export default async function UserPage({ params }: Props) {
   console.log(user.followees);
 
   const isContentPrivate =
-    myId !== userId && user.private && user.followees.length === 0;
+    myId !== user.id && user.private && user.followees.length === 0;
 
   return (
     <>
@@ -76,20 +78,37 @@ export default async function UserPage({ params }: Props) {
         <div className="flex flex-col justify-around">
           <div className="flex items-center gap-2">
             <h1>{user.username}</h1>
-            {myId === userId &&
-              (user.tier === "FREE" ? (
-                <PricingTable userId={userId} />
-              ) : (
-                <a
-                  href={process.env.NEXT_PUBLIC_STRIPE_BILLING_URL ?? "/"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-[4px] bg-white px-2 text-xs text-accent hovact:text-accent"
-                >
-                  {user.tier}
-                </a>
-              ))}
-            {myId && <FollowButton userId={userId} />}
+            {myId === user.id && (
+              <>
+                {user.tier === "FREE" ? (
+                  <PricingTable userId={user.id} />
+                ) : (
+                  <a
+                    href={process.env.NEXT_PUBLIC_STRIPE_BILLING_URL ?? "/"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-[4px] bg-white px-2 text-xs text-accent hovact:text-accent"
+                  >
+                    {user.tier}
+                  </a>
+                )}
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <button>
+                      <GearIcon />
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="flex w-72 flex-col">
+                    <DialogHeader>
+                      <DialogTitle>Profile Settings</DialogTitle>
+                    </DialogHeader>
+                    <p className="text-center">Coming soon!</p>
+                  </DialogContent>
+                </Dialog>
+              </>
+            )}
+
+            {myId && <FollowButton userId={user.id} />}
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-4">
             <Stat label="polls" count={user._count.polls} />
@@ -105,7 +124,7 @@ export default async function UserPage({ params }: Props) {
                 <DialogHeader>
                   <DialogTitle>Following</DialogTitle>
                 </DialogHeader>
-                <FolloweesList userId={userId} />
+                <FolloweesList userId={user.id} />
               </DialogContent>
             </Dialog>
 
@@ -119,7 +138,7 @@ export default async function UserPage({ params }: Props) {
                 <DialogHeader>
                   <DialogTitle>Followers</DialogTitle>
                 </DialogHeader>
-                <FollowersList userId={userId} />
+                <FollowersList userId={user.id} />
               </DialogContent>
             </Dialog>
           </div>
@@ -143,7 +162,7 @@ export default async function UserPage({ params }: Props) {
             >
               <InfinitePolls
                 idPrefix="my-polls"
-                query={{ authorId: params.id }}
+                query={{ authorId: user.id }}
                 highlightedUserId={undefined}
               />
             </Suspense>
@@ -158,8 +177,8 @@ export default async function UserPage({ params }: Props) {
             >
               <InfinitePolls
                 idPrefix="my-votes"
-                query={{ voterId: params.id }}
-                highlightedUserId={params.id}
+                query={{ voterId: user.id }}
+                highlightedUserId={user.id}
               />
             </Suspense>
           </TabManagement>
@@ -175,7 +194,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const user = await db.user.findUnique({
     where: {
-      id: params.id,
+      username: params.username,
     },
     select: {
       imageUrl: true,

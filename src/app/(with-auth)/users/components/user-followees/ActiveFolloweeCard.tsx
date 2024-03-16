@@ -6,10 +6,10 @@ import type { User } from "@prisma/client";
 
 export async function ActiveFolloweeCard({
   userId,
-  followed,
+  followee,
 }: {
   userId: string;
-  followed: User;
+  followee: User;
 }) {
   const { userId: myId } = auth();
 
@@ -17,16 +17,16 @@ export async function ActiveFolloweeCard({
     <div className="flex w-full flex-row items-center justify-between gap-1">
       <Link
         className="flex flex-row items-center justify-center gap-1"
-        href={`/users/${followed.id}`}
+        href={`/users/${followee.username}`}
       >
         <ProfileImage
-          src={followed.imageUrl}
-          username={followed.username}
+          src={followee.imageUrl}
+          username={followee.username}
           size={20}
         />
-        <p>{followed.username}</p>
+        <p>{followee.username}</p>
       </Link>
-      {myId === userId && <ActiveFolloweeCardActions followed={followed} />}
+      {myId === userId && <ActiveFolloweeCardActions followed={followee} />}
     </div>
   );
 }
