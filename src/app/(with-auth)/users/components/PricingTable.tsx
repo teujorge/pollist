@@ -15,13 +15,11 @@ export function PricingTable({ userId }: { userId: string }) {
           UPGRADE
         </button>
       </DialogTrigger>
-      <DialogContent className="max-w-[90dvw]">
+      <DialogContent className="max-h-[90dvh] max-w-[90dvw] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Subscriptions</DialogTitle>
         </DialogHeader>
-        <div className="h-full w-full overflow-y-auto rounded-lg">
-          <PricingTableEmbed userId={userId} />
-        </div>
+        <PricingTableEmbed userId={userId} />
       </DialogContent>
     </Dialog>
   );
