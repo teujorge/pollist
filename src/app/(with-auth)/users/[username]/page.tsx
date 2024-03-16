@@ -118,10 +118,7 @@ export default async function UserPage({ params }: Props) {
                       <DialogHeader>
                         <DialogTitle>Profile Settings</DialogTitle>
                       </DialogHeader>
-                      <ProfileSettings
-                        userId={user.id}
-                        isPrivate={user.private}
-                      />
+                      <ProfileSettings isPrivate={user.private} />
                     </DialogContent>
                   </Dialog>
                 </>
