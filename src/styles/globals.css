@@ -18,12 +18,12 @@
 
 html {
   color-scheme: dark;
-  background: black;
+  background: rgb(var(--color-background));
 }
 
 body {
-  color: #f1f1f1;
-  background: black;
+  color: rgb(var(--color-secondary));
+  background: rgb(var(--color-background));
 
   display: flex;
   flex-direction: column;

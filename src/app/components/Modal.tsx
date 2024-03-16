@@ -21,7 +21,7 @@ export function Modal({
 
   return (
     <div
-      className="fixed inset-0 z-40 flex h-dvh w-dvw items-center justify-center overflow-y-auto bg-black bg-opacity-65 p-4 backdrop-blur-sm scrollbar-gutter"
+      className="fixed inset-0 z-40 flex h-dvh w-dvw items-center justify-center overflow-y-auto bg-background bg-opacity-65 p-4 backdrop-blur-sm scrollbar-gutter"
       onMouseDown={() => {
         bgMouseUp = false;
         bgMouseDown = true;
@@ -34,7 +34,7 @@ export function Modal({
     >
       <div
         className={cn(
-          `border-accent m-auto h-fit w-fit overflow-y-auto overflow-x-hidden rounded-xl border bg-black p-4 ${styles["modal-in"]}`,
+          `m-auto h-fit w-fit overflow-y-auto overflow-x-hidden rounded-xl border border-accent bg-background p-4 ${styles["modal-in"]}`,
           className,
         )}
         onMouseDown={(e) => {

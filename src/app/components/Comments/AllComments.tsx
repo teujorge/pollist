@@ -58,7 +58,7 @@ export async function AllComments({
     <NewCommentsProvider>
       <h2 className="pb-2 pt-16 text-2xl">Comments</h2>
       <InfiniteComments pollId={pollId} parentId={parentId} />
-      <div className="sticky bottom-0 bg-gradient-to-t from-black from-80%">
+      <div className="sticky bottom-0 bg-gradient-to-t from-background from-80%">
         {userId ? (
           <CommentForm
             pollId={pollId}
@@ -87,7 +87,7 @@ export function AllCommentsFallback() {
         <Loader />
       </div>
 
-      <div className="sticky bottom-0 bg-gradient-to-t from-black from-80%">
+      <div className="sticky bottom-0 bg-gradient-to-t from-background from-80%">
         <form className="pointer-events-none flex w-full flex-col gap-2 p-4 opacity-50">
           <div className="flex flex-row items-end gap-2">
             <textarea

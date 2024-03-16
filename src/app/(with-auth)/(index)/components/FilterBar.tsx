@@ -56,7 +56,7 @@ export function FilterBar() {
     <div
       ref={filterRef}
       className={cn(
-        "sticky top-9 z-20 flex w-full justify-center gap-2 bg-gradient-to-b from-black from-80% pt-6 transition-transform duration-300",
+        "sticky top-9 z-20 flex w-full justify-center gap-2 bg-gradient-to-b from-background from-80% pt-6 transition-transform duration-300",
         {
           "translate-y-0": isVisible,
           "-translate-y-full": !isVisible,
