@@ -2,10 +2,11 @@
 
 import Script from "next/script";
 import { useUser } from "@clerk/nextjs";
+import { getUserTier } from "./actions";
 import { QueryProvider } from "./QueryProvider";
 import { useCustomScrollbar } from "../hooks/useCustomScrollbar";
 import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
-import { useMemo, useState, useContext, createContext } from "react";
+import { useState, useContext, createContext, useEffect } from "react";
 import type {
   NotificationPollLikeItem,
   NotificationCommentItem,
@@ -32,6 +33,8 @@ export function App({ children }: { children: React.ReactNode }) {
 
   const { user } = useUser();
 
+  const [showAds, setShowAds] = useState(true);
+
   const [notifications, setNotifications] = useState<Notifications>({
     pollLikes: [],
     comments: [],
@@ -42,12 +45,19 @@ export function App({ children }: { children: React.ReactNode }) {
 
   useRealtimeNotifications({ setNotifications });
 
-  const memoizedChildren = useMemo(() => children, [children]);
+  useEffect(() => {
+    if (!user?.id) return;
+
+    void getUserTier(user.id).then((tier) => {
+      if (tier === "FREE") setShowAds(true);
+      else setShowAds(false);
+    });
+  }, [user]);
 
   return (
     <QueryProvider>
       <AppProvider value={{ notifications, setNotifications }}>
-        {(user?.id !== undefined || true) && (
+        {showAds && (
           <Script
             async
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6132246468312218"
@@ -55,7 +65,7 @@ export function App({ children }: { children: React.ReactNode }) {
             strategy="lazyOnload"
           />
         )}
-        {memoizedChildren}
+        {children}
       </AppProvider>
     </QueryProvider>
   );
