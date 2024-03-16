@@ -109,7 +109,8 @@ export default async function UserPage({ params }: Props) {
                     {user.tier}
                   </a>
                 )} */}
-                <Dialog>
+                {/* TODO: temporarily remove settings for prod deployment */}
+                {/* <Dialog>
                   <DialogTrigger asChild>
                     <button>
                       <GearIcon />
@@ -121,7 +122,7 @@ export default async function UserPage({ params }: Props) {
                     </DialogHeader>
                     <p className="text-center">Coming soon!</p>
                   </DialogContent>
-                </Dialog>
+                </Dialog> */}
               </>
             )}
 
