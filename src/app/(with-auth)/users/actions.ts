@@ -217,3 +217,18 @@ export async function getPendingFollows(userId: string) {
 
   return pendingFollows;
 }
+
+export async function togglePrivateAccount(isPrivate: boolean) {
+  const { userId } = auth();
+
+  if (!userId) throw new Error("User not found");
+
+  const newUser = await db.user.update({
+    where: { id: userId },
+    data: { private: isPrivate },
+  });
+
+  console.log(newUser);
+  revalidatePath(`/users/${newUser.username}`);
+  return newUser;
+}

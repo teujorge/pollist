@@ -5,6 +5,7 @@ import { Stat } from "@/app/(with-auth)/users/components/Stat";
 import { Loader } from "@/app/components/Loader";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import { GearIcon } from "@radix-ui/react-icons";
 import { PricingTable } from "../components/PricingTable";
 import { ProfileImage } from "@/app/components/ProfileImage";
 import { FollowButton } from "@/app/(with-auth)/users/components/FollowButton";
@@ -12,6 +13,7 @@ import { InfinitePolls } from "@/app/components/InfinitePolls/InfinitePolls";
 import { TabManagement } from "../components/TabManagement";
 import { FolloweesList } from "../components/user-followees/FolloweesList";
 import { FollowersList } from "../components/user-followers/FollowersList";
+import { ProfileSettings } from "../components/ProfileSettings";
 import {
   Dialog,
   DialogContent,
@@ -20,7 +22,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import type { ResolvingMetadata, Metadata } from "next";
-import { GearIcon } from "@radix-ui/react-icons";
 
 type Props = {
   params: { username: string };
@@ -94,11 +95,11 @@ export default async function UserPage({ params }: Props) {
         <div className="flex flex-col justify-around">
           <div className="flex items-center gap-2">
             <h1>{user.username}</h1>
-            {myId === user.id && (
-              <>
-                {user.tier === "FREE" ? (
-                  <PricingTable userId={user.id} />
-                ) : (
+            {myId === user.id &&
+              (user.tier === "FREE" ? (
+                <PricingTable userId={user.id} />
+              ) : (
+                <>
                   <a
                     href={process.env.NEXT_PUBLIC_STRIPE_BILLING_URL ?? "/"}
                     target="_blank"
@@ -107,22 +108,24 @@ export default async function UserPage({ params }: Props) {
                   >
                     {user.tier}
                   </a>
-                )}
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <button>
-                      <GearIcon />
-                    </button>
-                  </DialogTrigger>
-                  <DialogContent className="flex w-72 flex-col">
-                    <DialogHeader>
-                      <DialogTitle>Profile Settings</DialogTitle>
-                    </DialogHeader>
-                    <p className="text-center">Coming soon!</p>
-                  </DialogContent>
-                </Dialog>
-              </>
-            )}
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button>
+                        <GearIcon />
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent className="flex w-72 flex-col">
+                      <DialogHeader>
+                        <DialogTitle>Profile Settings</DialogTitle>
+                      </DialogHeader>
+                      <ProfileSettings
+                        userId={user.id}
+                        isPrivate={user.private}
+                      />
+                    </DialogContent>
+                  </Dialog>
+                </>
+              ))}
 
             {myId && <FollowButton userId={user.id} />}
           </div>
