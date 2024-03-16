@@ -1,11 +1,13 @@
-import { db } from "@/database/db";
+import { db } from "@/database/prisma";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   const staticPages = ["/", "/welcome", "/privacy-policy"];
   const dynamicPages = [
     ...(await getPopularPollIds()).map((id) => `/polls/${id}`),
-    ...(await getPopularUserIds()).map((id) => `/users/${id}`),
+    ...(await getPopularUserUsernames()).map(
+      (username) => `/users/${username}`,
+    ),
   ];
 
   const pages = [...staticPages, ...dynamicPages];
@@ -48,7 +50,7 @@ async function getPopularPollIds() {
   }
 }
 
-async function getPopularUserIds() {
+async function getPopularUserUsernames() {
   try {
     const usersCreators = await db.user.findMany({
       orderBy: {
@@ -57,6 +59,7 @@ async function getPopularUserIds() {
         },
       },
       take: 10,
+      select: { username: true },
     });
 
     const usersFollowers = await db.user.findMany({
@@ -66,11 +69,12 @@ async function getPopularUserIds() {
         },
       },
       take: 10,
+      select: { username: true },
     });
 
     const combinedUsers = [...usersCreators, ...usersFollowers];
 
-    const users = new Set(combinedUsers.map((user) => user.id));
+    const users = new Set(combinedUsers.map((user) => user.username));
 
     return Array.from(users);
   } catch (e) {

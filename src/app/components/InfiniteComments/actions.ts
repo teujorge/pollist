@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/database/db";
+import { db } from "@/database/prisma";
 import { PAGE_SIZE } from "@/constants";
 import { auth } from "@clerk/nextjs";
 
@@ -40,7 +40,14 @@ export async function getInfiniteComments({
     skip: cursor ? 1 : undefined,
     take: PAGE_SIZE,
     include: {
-      author: true,
+      author: {
+        select: {
+          id: true,
+          username: true,
+          imageUrl: true,
+          tier: true,
+        },
+      },
       parent: {
         select: {
           authorId: true,

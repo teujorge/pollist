@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { db } from "@/database/db";
+import { db } from "@/database/prisma";
 import { Loader } from "../Loader";
 import { Button } from "@/components/ui/button";
 import { notFound } from "next/navigation";
@@ -58,7 +58,7 @@ export async function AllComments({
     <NewCommentsProvider>
       <h2 className="pb-2 pt-16 text-2xl">Comments</h2>
       <InfiniteComments pollId={pollId} parentId={parentId} />
-      <div className="sticky bottom-0 bg-gradient-to-t from-black from-80% ">
+      <div className="sticky bottom-0 bg-gradient-to-t from-background from-80%">
         {userId ? (
           <CommentForm
             pollId={pollId}
@@ -83,8 +83,11 @@ export function AllCommentsFallback() {
     <>
       <p className="py-4 pt-16 text-2xl">Comments</p>
 
-      <Loader />
-      <div className="sticky bottom-0 bg-gradient-to-t from-black from-80% ">
+      <div className="flex w-full items-center justify-center">
+        <Loader />
+      </div>
+
+      <div className="sticky bottom-0 bg-gradient-to-t from-background from-80%">
         <form className="pointer-events-none flex w-full flex-col gap-2 p-4 opacity-50">
           <div className="flex flex-row items-end gap-2">
             <textarea
@@ -92,7 +95,7 @@ export function AllCommentsFallback() {
               disabled
               name="comment"
               placeholder="Loading..."
-              className="flex-grow"
+              className="h-20 flex-grow"
             />
             <div className="flex w-20 items-center justify-center">
               <Button variant="outline" className="ml-auto">

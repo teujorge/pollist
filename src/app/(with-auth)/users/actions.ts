@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/database/db";
+import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs";
 import { revalidatePath } from "next/cache";
 
@@ -14,6 +14,10 @@ export async function follow(userId: string) {
     data: {
       followerId: myId,
       followeeId: userId,
+    },
+    select: {
+      id: true,
+      follower: { select: { username: true } },
     },
   });
 
@@ -32,7 +36,7 @@ export async function follow(userId: string) {
 
   console.log("newFollow", newFollow);
 
-  revalidatePath(`/users/${userId}`);
+  revalidatePath(`/users/${newFollow.follower.username}`);
 
   return newFollow;
 }
@@ -50,9 +54,12 @@ export async function unfollow(userId: string) {
         followeeId: userId,
       },
     },
+    select: {
+      follower: { select: { username: true } },
+    },
   });
 
-  revalidatePath(`/users/${userId}`);
+  revalidatePath(`/users/${deletedFollow.follower.username}`);
 
   return deletedFollow;
 }
@@ -96,6 +103,10 @@ export async function declineFollow(followerId: string) {
         followeeId: myId,
       },
     },
+    select: {
+      id: true,
+      followee: { select: { username: true } },
+    },
   });
 
   if (declinedFollow) {
@@ -109,7 +120,7 @@ export async function declineFollow(followerId: string) {
   }
 
   console.log("deletedFollow", declinedFollow);
-  revalidatePath(`/users/${myId}`);
+  revalidatePath(`/users/${declinedFollow.followee.username}`);
   return declinedFollow;
 }
 
@@ -128,6 +139,11 @@ export async function acceptFollow(followerId: string) {
     },
     data: {
       accepted: true,
+    },
+    select: {
+      id: true,
+      followee: { select: { username: true } },
+      follower: { select: { username: true } },
     },
   });
 
@@ -155,7 +171,8 @@ export async function acceptFollow(followerId: string) {
   }
 
   console.log("updatedFollow", updatedFollow);
-  revalidatePath(`/users/${myId}`);
+  revalidatePath(`/users/${updatedFollow.followee.username}`);
+  revalidatePath(`/users/${updatedFollow.follower.username}`);
   return updatedFollow;
 }
 
@@ -172,10 +189,13 @@ export async function cancelFollow(followeeId: string) {
         followeeId,
       },
     },
+    select: {
+      follower: { select: { username: true } },
+    },
   });
 
   console.log("deletedFollow", cancelledFollow);
-  revalidatePath(`/users/${myId}`);
+  revalidatePath(`/users/${cancelledFollow.follower.username}`);
   return cancelledFollow;
 }
 

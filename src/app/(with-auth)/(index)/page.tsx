@@ -1,5 +1,4 @@
 import { AllPolls } from "./components/AllPolls";
-import { FilterBar } from "./components/FilterBar";
 import {
   dehydrate,
   QueryClient,
@@ -28,16 +27,8 @@ export default async function HomePage({
   });
 
   return (
-    <main className="flex w-full flex-col items-center gap-2">
-      <h1 className="pt-6 text-5xl font-bold">Polls</h1>
-
-      <FilterBar />
-
-      <div className="h-2" />
-
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <AllPolls query={{ search, category }} />
-      </HydrationBoundary>
-    </main>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <AllPolls query={{ search, category }} />
+    </HydrationBoundary>
   );
 }

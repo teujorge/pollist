@@ -1,4 +1,4 @@
-import { db } from "@/database/db";
+import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs";
 import { Loader } from "@/app/components/Loader";
 import { Suspense } from "react";
@@ -36,7 +36,7 @@ async function _FolloweesList({ userId }: FolloweesListProps) {
         <ActiveFolloweeCard
           key={f.followee.id}
           userId={userId}
-          followed={f.followee}
+          followee={f.followee}
         />
       ))}
     </div>

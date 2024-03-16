@@ -24,21 +24,20 @@ export default async function PollPage({ params, searchParams }: Props) {
   const { userId } = auth();
 
   return (
-    <main className="relative flex min-h-[calc(100dvh-64px)] w-full flex-col">
+    <main className="relative flex min-h-[calc(100dvh-64px)] w-full flex-col gap-1">
       {/* header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col items-start justify-start gap-1 sm:flex-row sm:justify-between">
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl">{poll.title}</h1>
           <h2>{poll.description}</h2>
           <span>
             Created by{" "}
-            <Link href={`/users/${poll.author.id}`}>
+            <Link href={`/users/${poll.author.username}`}>
               {poll.author.username}
             </Link>
           </span>
         </div>
-        <div className="flex flex-row gap-2 text-sm text-neutral-400">
-          Created on{" "}
+        <div className="flex flex-col gap-1 text-sm text-neutral-400 sm:items-end">
           {poll.createdAt.toLocaleDateString(undefined, {
             year: "numeric",
             month: "long",

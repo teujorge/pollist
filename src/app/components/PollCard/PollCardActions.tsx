@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useApp } from "@/app/(with-auth)/app";
-import { supabase } from "@/database/dbRealtime";
+import { supabase } from "@/database/supabase";
 import { useEffect, useRef, useState } from "react";
 import { LockClosedIcon, ThickArrowUpIcon } from "@radix-ui/react-icons";
 import { SignInButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
@@ -23,7 +23,7 @@ import type { MutableRefObject } from "react";
 
 const ChartDrawer = dynamic(
   () => import("./ChartDrawer").then((mod) => mod.ChartDrawer),
-  { ssr: false, loading: () => <div className="shimmer h-11 w-24" /> },
+  { ssr: false, loading: () => <div className="shimmer h-9 w-full" /> },
 );
 
 const TriggerNotificationSeen = dynamic(
