@@ -96,8 +96,7 @@ export default async function UserPage({ params }: Props) {
             <h1>{user.username}</h1>
             {myId === user.id && (
               <>
-                {/* TODO: temporarily remove pricing table for prod deployment */}
-                {/* {user.tier === "FREE" ? (
+                {user.tier === "FREE" ? (
                   <PricingTable userId={user.id} />
                 ) : (
                   <a
@@ -108,9 +107,8 @@ export default async function UserPage({ params }: Props) {
                   >
                     {user.tier}
                   </a>
-                )} */}
-                {/* TODO: temporarily remove settings for prod deployment */}
-                {/* <Dialog>
+                )}
+                <Dialog>
                   <DialogTrigger asChild>
                     <button>
                       <GearIcon />
@@ -122,7 +120,7 @@ export default async function UserPage({ params }: Props) {
                     </DialogHeader>
                     <p className="text-center">Coming soon!</p>
                   </DialogContent>
-                </Dialog> */}
+                </Dialog>
               </>
             )}
 
