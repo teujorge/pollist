@@ -60,15 +60,31 @@ export default async function UserPage({ params }: Props) {
     },
   });
 
-  if (!user) return notFound();
+  if (!user?.id) return notFound();
+
+  function calcIsContentPrivate() {
+    // just for typescript :/
+    if (!user) return true;
+
+    // if user is not private, content is not private
+    if (!user.private) return false;
+
+    // if user is "me", content is not private
+    if (myId === user.id) return false;
+
+    // if I follow them, content is not private
+    if (user.followees && user.followees.length > 0) return false;
+
+    // otherwise content is private
+    return true;
+  }
 
   const followersCount = user._count?.followees ?? 0;
   const followingCount = user._count?.followers ?? 0;
 
   console.log(user.followees);
 
-  const isContentPrivate =
-    myId !== user.id && user.private && user.followees.length === 0;
+  const isContentPrivate = calcIsContentPrivate();
 
   return (
     <>
@@ -146,7 +162,7 @@ export default async function UserPage({ params }: Props) {
       </div>
 
       {isContentPrivate ? (
-        <p className="mx-auto pt-8 text-lg text-accent underline underline-offset-4">
+        <p className="mx-auto pt-28 text-neutral-400 underline underline-offset-4">
           User profile is private
         </p>
       ) : (
