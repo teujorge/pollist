@@ -6,7 +6,10 @@ import type { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   if (!process.env.STRIPE_SECRET_KEY) {
-    return NextResponse.json({ status: 401, error: "No Stripe secret key" });
+    return NextResponse.json(null, {
+      status: 401,
+      statusText: "Unauthorized: No Stripe key",
+    });
   }
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -17,7 +20,10 @@ export async function POST(req: NextRequest) {
     const signature = req.headers.get("stripe-signature");
 
     if (!signature) {
-      return NextResponse.json({ status: 401, error: "No signature" });
+      return NextResponse.json(null, {
+        status: 401,
+        statusText: "Unauthorized: No signature",
+      });
     }
 
     event = stripe.webhooks.constructEvent(
@@ -26,26 +32,16 @@ export async function POST(req: NextRequest) {
       process.env.STRIPE_WEBHOOK_SECRET!,
     );
   } catch (err) {
-    if (err instanceof Error) {
-      console.error(
-        `⚠️  Webhook signature verification failed:\n`,
-        err.message,
-      );
-    } else {
-      console.error(`⚠️  Webhook signature verification failed.`);
-    }
-
-    return NextResponse.json({
+    let logMessage = `Webhook signature verification failed`;
+    if (err instanceof Error) logMessage += `: ${err.message}`;
+    console.error(logMessage);
+    return NextResponse.json(null, {
       status: 401,
-      error: "Webhook signature verification failed",
+      statusText: "Unauthorized: " + logMessage,
     });
   }
 
-  console.log(`✅  Webhook verified: ${event.id}`);
-  console.log(`🔍  Event type: ${event.type}`);
-  console.log(`🔍  Event data:`, event.data.object);
-
-  // Handle the event
+  // Handle the events
   switch (event.type) {
     // Checkout completed -> i.e. user has paid
     case "checkout.session.completed": {
@@ -55,12 +51,11 @@ export async function POST(req: NextRequest) {
       const customerId = checkoutSessionCompleted.customer?.toString();
 
       if (!userId) {
-        console.error(
-          `⚠️  No user ID found in checkout session ${checkoutSessionCompleted.id}`,
-        );
-        return NextResponse.json({
+        const logMessage = `No user ID found in checkout session ${checkoutSessionCompleted.id}`;
+        console.error(logMessage);
+        return NextResponse.json(null, {
           status: 400,
-          error: "No user ID found in checkout session",
+          statusText: logMessage,
         });
       }
 
@@ -73,25 +68,25 @@ export async function POST(req: NextRequest) {
         const productId = subscription.items.data[0]?.price.id;
 
         if (!productId) {
-          console.error(
-            `⚠️  No product ID found in subscription ${subscription.id}`,
-          );
-          return NextResponse.json({
+          const logMessage = `No product ID found in subscription ${subscription.id}`;
+          console.error(logMessage);
+          return NextResponse.json(null, {
             status: 400,
-            error: "No product ID found in subscription",
+            statusText: logMessage,
           });
         }
 
-        const updatedUser = await db.user.update({
+        await db.user.update({
           where: { id: userId },
           data: { tier: getTier(productId), clerkId: customerId },
         });
-        console.log(`✅  Updated user to PRO`, updatedUser);
       } catch (e) {
-        console.error(`⚠️  Failed to update user ${userId}`, e);
-        return NextResponse.json({
+        let logMessage = `⚠️  Failed to update user ${userId}`;
+        if (e instanceof Error) logMessage += `: ${e.message}`;
+        console.error(logMessage);
+        return NextResponse.json(null, {
           status: 500,
-          error: "Failed to update user",
+          statusText: logMessage,
         });
       }
 
@@ -106,28 +101,27 @@ export async function POST(req: NextRequest) {
       const productId = subscriptionUpdated.items.data[0]?.price.id;
 
       if (!productId) {
-        console.error(
-          `⚠️  No product ID found in subscription ${subscriptionUpdated.id}`,
-        );
-        return NextResponse.json({
+        const logMessage = `No product ID found in subscription ${subscriptionUpdated.id}`;
+        console.error(logMessage);
+        return NextResponse.json(null, {
           status: 400,
-          error: "No product ID found in subscription",
+          statusText: logMessage,
         });
       }
 
       try {
-        const newTier = getTier(productId);
-
-        const updatedUser = await db.user.update({
+        throw new Error("...TEST ERROR...");
+        await db.user.update({
           where: { clerkId: customerId },
-          data: { tier: newTier },
+          data: { tier: getTier(productId) },
         });
-        console.log(`✅  Updated user to ${newTier}`, updatedUser);
       } catch (e) {
-        console.error(`⚠️  Failed to update customer ${customerId}`, e);
-        return NextResponse.json({
+        let logMessage = `⚠️  Failed to update customer ${customerId}`;
+        if (e instanceof Error) logMessage += `: ${e.message}`;
+        console.error(logMessage);
+        return NextResponse.json(null, {
           status: 500,
-          error: "Failed to update user",
+          statusText: logMessage,
         });
       }
 
@@ -140,26 +134,27 @@ export async function POST(req: NextRequest) {
       const customerId = subscriptionDeleted.customer as string;
 
       if (!customerId) {
-        console.error(
-          `⚠️  No user ID found in subscription ${subscriptionDeleted.id}`,
-        );
-        return NextResponse.json({
+        const logMessage = `No user ID found in subscription ${subscriptionDeleted.id}`;
+        console.error(logMessage);
+        return NextResponse.json(null, {
           status: 400,
-          error: "No user ID found in subscription",
+          statusText: logMessage,
         });
       }
 
       try {
-        const updatedUser = await db.user.update({
+        await db.user.update({
           where: { clerkId: customerId },
           data: { tier: "FREE" },
         });
-        console.log(`✅  Updated user to FREE`, updatedUser);
       } catch (e) {
-        console.error(`⚠️  Failed to update customer ${customerId}`, e);
-        return NextResponse.json({
+        let logMessage = `⚠️  Failed to update customer ${customerId} subscription in deleted event`;
+        if (e instanceof Error) logMessage += `: ${e.message}`;
+
+        console.error(logMessage);
+        return NextResponse.json(null, {
           status: 500,
-          error: "Failed to update user",
+          statusText: logMessage,
         });
       }
 
@@ -170,7 +165,7 @@ export async function POST(req: NextRequest) {
       console.log(`Unhandled event type ${event.type}`);
   }
 
-  return NextResponse.json({ status: 200 });
+  return NextResponse.json(null, { status: 200 });
 }
 
 function getTier(productId: string): SubTier {
