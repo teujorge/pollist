@@ -181,14 +181,6 @@ async function getProductPriceIdFromUser({
     customer: customerId,
   });
 
-  if (subscriptions.data.length === 0) {
-    throw Error(`No subscriptions found for customer ${customerId}`);
-  }
-
-  if (subscriptions.data.length > 1) {
-    throw Error(`Multiple subscriptions found for customer ${customerId}`);
-  }
-
   const productId = subscriptions.data[0]?.items.data[0]?.price.id;
 
   return productId;
