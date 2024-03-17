@@ -110,11 +110,10 @@ export async function POST(req: NextRequest) {
       }
 
       try {
-        throw new Error("...TEST ERROR...");
-        // await db.user.update({
-        //   where: { clerkId: customerId },
-        //   data: { tier: getTier(productId) },
-        // });
+        await db.user.update({
+          where: { clerkId: customerId },
+          data: { tier: getTier(productId) },
+        });
       } catch (e) {
         let logMessage = `⚠️  Failed to update customer ${customerId}`;
         if (e instanceof Error) logMessage += `: ${e.message}`;
