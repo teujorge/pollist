@@ -1,8 +1,8 @@
 import { db } from "@/database/prisma";
 import { Stripe } from "stripe";
 import { NextResponse } from "next/server";
-import type { SubTier } from "@prisma/client";
 import type { NextRequest } from "next/server";
+import type { SubTier, User } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
   if (!process.env.STRIPE_SECRET_KEY) {
@@ -74,9 +74,10 @@ export async function POST(req: NextRequest) {
           stripe,
         });
 
+        const newTier = getTier(productPriceId);
         await db.user.update({
           where: { id: userId },
-          data: { tier: getTier(productPriceId), clerkId: customerId },
+          data: { ...newUserData(newTier), clerkId: customerId },
         });
       } catch (e) {
         let logMessage = `⚠️  Failed to update user ${userId}`;
@@ -102,13 +103,10 @@ export async function POST(req: NextRequest) {
           stripe,
         });
 
-        // for testing
-        if (Math.random() < 0.5) throw new Error("Test error 😉");
-        // for testing
-
+        const newTier = getTier(productPriceId);
         await db.user.update({
           where: { clerkId: customerId },
-          data: { tier: getTier(productPriceId) },
+          data: newUserData(newTier),
         });
       } catch (e) {
         let logMessage = `⚠️  Failed to update customer ${customerId}`;
@@ -143,9 +141,10 @@ export async function POST(req: NextRequest) {
           stripe,
         });
 
+        const newTier = getTier(productPriceId);
         await db.user.update({
           where: { clerkId: customerId },
-          data: { tier: getTier(productPriceId) },
+          data: newUserData(newTier),
         });
       } catch (e) {
         let logMessage = `⚠️  Failed to update customer ${customerId} subscription in deleted event`;
@@ -194,4 +193,14 @@ function getTier(productPriceId?: string): SubTier {
   if (productPriceId === process.env.STRIPE_SUB_PRO_PRICE) return "PRO";
 
   throw new Error(`Unknown product ID ${productPriceId}`);
+}
+
+function newUserData(tier: SubTier): Partial<User> {
+  if (tier === "FREE") {
+    return {
+      tier: tier,
+      private: false,
+    };
+  }
+  return { tier: tier };
 }
