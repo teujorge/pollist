@@ -22,6 +22,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import type { ResolvingMetadata, Metadata } from "next";
+import { getUser } from "../actions";
 
 type Props = {
   params: { username: string };
@@ -32,34 +33,7 @@ export default async function UserPage({ params }: Props) {
   const username = params.username;
   const { userId: myId } = auth();
 
-  const user = await db.user.findUnique({
-    where: {
-      username: username,
-    },
-    select: {
-      id: true,
-      imageUrl: true,
-      username: true,
-      private: true,
-      tier: true,
-      _count: {
-        select: {
-          polls: true,
-          votes: true,
-          followers: { where: { accepted: true } },
-          followees: { where: { accepted: true } },
-        },
-      },
-      followees: myId
-        ? {
-            where: {
-              followerId: myId,
-              accepted: true,
-            },
-          }
-        : false,
-    },
-  });
+  const user = await getUser(username);
 
   if (!user?.id) return notFound();
 
@@ -118,7 +92,7 @@ export default async function UserPage({ params }: Props) {
                       <DialogHeader>
                         <DialogTitle>Profile Settings</DialogTitle>
                       </DialogHeader>
-                      <ProfileSettings isPrivate={user.private} />
+                      <ProfileSettings {...user} />
                     </DialogContent>
                   </Dialog>
                 </>

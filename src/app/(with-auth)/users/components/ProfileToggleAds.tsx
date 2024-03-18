@@ -3,20 +3,20 @@
 import { toast } from "sonner";
 import { Loader } from "@/app/components/Loader";
 import { useEffect, useState } from "react";
-import { setPrivateAccount } from "../actions";
+import { setShowAds } from "../actions";
 
-export function ProfileTogglePrivate({ isPrivate }: { isPrivate: boolean }) {
+export function ProfileToggleAds({ showAds }: { showAds: boolean }) {
   const [isChanging, setIsChanging] = useState(false);
 
   useEffect(() => {
     setIsChanging(false);
-  }, [isPrivate]);
+  }, [showAds]);
 
   async function handleToggle() {
     setIsChanging(true);
 
     try {
-      await setPrivateAccount(!isPrivate);
+      await setShowAds(!showAds);
     } catch (error) {
       console.error(error);
       if (error instanceof Error) {
@@ -33,7 +33,7 @@ export function ProfileTogglePrivate({ isPrivate }: { isPrivate: boolean }) {
       className={`${isChanging ? "pointer-events-none opacity-50" : "opacity-100"}`}
     >
       <label htmlFor="username" className="text-sm">
-        Private Account
+        Hide Ads
       </label>
       {isChanging ? (
         <Loader className="h-4 w-4 border-2" />
@@ -42,7 +42,7 @@ export function ProfileTogglePrivate({ isPrivate }: { isPrivate: boolean }) {
           type="checkbox"
           id="private"
           name="private"
-          defaultChecked={isPrivate}
+          defaultChecked={!showAds}
           onChange={handleToggle}
         />
       )}

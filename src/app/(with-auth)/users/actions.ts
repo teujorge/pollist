@@ -4,6 +4,44 @@ import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs";
 import { revalidatePath } from "next/cache";
 
+export type GetUser = NonNullable<Awaited<ReturnType<typeof getUser>>>;
+
+export async function getUser(username: string) {
+  const { userId: myId } = auth();
+
+  const user = await db.user.findUnique({
+    where: {
+      username: username,
+    },
+    select: {
+      id: true,
+      imageUrl: true,
+      username: true,
+      ads: true,
+      private: true,
+      tier: true,
+      _count: {
+        select: {
+          polls: true,
+          votes: true,
+          followers: { where: { accepted: true } },
+          followees: { where: { accepted: true } },
+        },
+      },
+      followees: myId
+        ? {
+            where: {
+              followerId: myId,
+              accepted: true,
+            },
+          }
+        : false,
+    },
+  });
+
+  return user;
+}
+
 // myId asks to follow userId
 export async function follow(userId: string) {
   const { userId: myId } = auth();
@@ -218,7 +256,7 @@ export async function getPendingFollows(userId: string) {
   return pendingFollows;
 }
 
-export async function togglePrivateAccount(isPrivate: boolean) {
+export async function setPrivateAccount(isPrivate: boolean) {
   const { userId } = auth();
 
   if (!userId) throw new Error("User not found");
@@ -226,6 +264,21 @@ export async function togglePrivateAccount(isPrivate: boolean) {
   const newUser = await db.user.update({
     where: { id: userId },
     data: { private: isPrivate },
+  });
+
+  console.log(newUser);
+  revalidatePath(`/users/${newUser.username}`);
+  return newUser;
+}
+
+export async function setShowAds(showAds: boolean) {
+  const { userId } = auth();
+
+  if (!userId) throw new Error("User not found");
+
+  const newUser = await db.user.update({
+    where: { id: userId },
+    data: { ads: showAds },
   });
 
   console.log(newUser);
