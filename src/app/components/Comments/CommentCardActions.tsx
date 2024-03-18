@@ -225,7 +225,10 @@ export function CommentCardActions() {
               <DotsHorizontalIcon />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="flex flex-col bg-background p-4">
+          <PopoverContent
+            align="end"
+            className="flex flex-col bg-background p-4"
+          >
             {/* copy link button */}
             <button
               className="w-fit font-bold [&>span]:hovact:text-neutral-400"
