@@ -15,6 +15,7 @@ import {
   createPoll,
   redirectToPoll,
 } from "./actions";
+import type { Metadata } from "next";
 import type { CreatePollFields } from "./validation";
 
 export function CreatePollForm() {
@@ -247,3 +248,8 @@ function OptionWrapper({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+
+export const metadata: Metadata = {
+  title: "Create Poll",
+  description: "Create a poll to share with your friends and family.",
+};
