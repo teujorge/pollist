@@ -42,6 +42,16 @@ export const metadata: Metadata = {
     "Pollist is a platform for creating and sharing polls. Get opinions on your questions and share your thoughts with the world.",
   category: "Social",
   icons: [{ rel: "icon", url: "/icon.png" }],
+  keywords: [
+    "pollist",
+    "polls",
+    "opinions",
+    "questions",
+    "answers",
+    "polling",
+    "voting",
+    "create",
+  ],
   metadataBase: new URL("https://pollist.org"),
   creator: "Matheus Jorge",
   authors: [
