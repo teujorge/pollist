@@ -2,42 +2,37 @@ import Link from "next/link";
 import { IconSvg } from "../../svgs/IconSvg";
 import { Suspense } from "react";
 import { ProfileLink } from "./ProfileLink";
+import { HeaderMobile } from "./HeaderMobile";
 import { NotificationsBell } from "./NotificationsBell";
-import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { SignInButton, UserButton, auth } from "@clerk/nextjs";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover";
 
 export function Header() {
   const { userId } = auth();
 
-  const headerLinks = (
-    <>
-      <Link href="/" scroll={false}>
-        Home
-      </Link>
-      {userId ? (
-        <Link href="/polls/create">Create</Link>
-      ) : (
-        <SignInButton mode="modal">Create</SignInButton>
-      )}
-      {userId && (
-        <>
-          <Suspense>
-            <ProfileLink />
-          </Suspense>
-          <NotificationsBell />
-        </>
-      )}
-      {userId ? (
-        <UserButton afterSignOutUrl="/" />
-      ) : (
-        <SignInButton mode="modal" />
-      )}
-    </>
+  const homeLink = (
+    <Link key="header-home" href="/" scroll={false}>
+      Home
+    </Link>
+  );
+
+  const createLink = userId ? (
+    <Link href="/polls/create">Create</Link>
+  ) : (
+    <SignInButton mode="modal">Create</SignInButton>
+  );
+
+  const userLink = userId ? (
+    <Suspense>
+      <ProfileLink />
+    </Suspense>
+  ) : undefined;
+
+  const notifications = userId ? <NotificationsBell /> : undefined;
+
+  const clerkUserButton = userId ? (
+    <UserButton afterSignOutUrl="/" />
+  ) : (
+    <SignInButton mode="modal" />
   );
 
   return (
@@ -53,25 +48,22 @@ export function Header() {
 
       {/* Desktop Links */}
       <div className="hidden flex-row items-center gap-4 sm:flex [&>a]:font-semibold">
-        {headerLinks}
+        {homeLink}
+        {createLink}
+        {userLink}
+        {notifications}
+        {clerkUserButton}
       </div>
 
       {/* Mobile Popover */}
-      <div className="flex items-center sm:hidden">
-        <Popover>
-          <PopoverTrigger asChild>
-            <button aria-label="Open navigation" className="rounded-full">
-              <HamburgerMenuIcon />
-            </button>
-          </PopoverTrigger>
-          <PopoverContent
-            side="top"
-            align="end"
-            className="flex w-32 min-w-fit flex-col items-end gap-2 p-4 [&>a]:text-lg [&>a]:font-semibold"
-          >
-            {headerLinks}
-          </PopoverContent>
-        </Popover>
+      <div className="flex items-center gap-4 sm:hidden">
+        {clerkUserButton}
+        <HeaderMobile
+          homeLink={homeLink}
+          createLink={createLink}
+          userLink={userLink}
+          notifications={notifications}
+        />
       </div>
     </header>
   );
