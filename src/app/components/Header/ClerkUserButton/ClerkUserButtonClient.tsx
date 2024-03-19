@@ -17,6 +17,8 @@ export function ClerkUserButtonClient({
       >
         {settings}
       </UserButton.UserProfilePage>
+      <UserButton.UserProfilePage label="account" />
+      <UserButton.UserProfilePage label="security" />
     </UserButton>
   );
 }
