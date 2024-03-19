@@ -87,6 +87,7 @@ model Poll {
   title         String     @unique
   description   String?
   controversial Boolean    @default(false)
+  sensitive     Boolean    @default(false)
   author        User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   votes         Vote[]
   options       Option[]
