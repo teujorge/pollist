@@ -13,18 +13,17 @@ export function PollCard({ poll, highlightedUserId }: PollCardProps) {
     <div className="flex w-full flex-col gap-2 rounded-lg border border-accent bg-neutral-950 p-6 shadow-md">
       <Link
         href={`/users/${poll.author.username}`}
-        // rel="noopener noreferrer"
-        // target="_blank"
-        className="flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 pl-0 transition-all [&>div>p]:hovact:text-primary [&>div>span]:hovact:text-purple-600 [&>img]:hovact:border-primary"
+        className="flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 pl-0 transition-all [&>div>p]:hovact:text-primary [&>div>span]:hovact:text-purple-600 [&>div]:hovact:border-[#d0b3f5]"
       >
-        <ProfileImage
-          src={poll.author.imageUrl}
-          username={poll.author.username}
-          size={38}
-          className="border-2 border-neutral-600 transition-colors"
-        />
+        <div className="rounded-full border-[3px] border-background transition-colors">
+          <ProfileImage
+            src={poll.author.imageUrl}
+            username={poll.author.username}
+            size={38}
+          />
+        </div>
 
-        <div className="flex flex-col justify-center gap-1">
+        <div className="flex flex-col justify-center gap-1 border-0">
           <p className="text-neutral-200 transition-colors">
             {poll.author.username}
           </p>
@@ -37,12 +36,7 @@ export function PollCard({ poll, highlightedUserId }: PollCardProps) {
           </span>
         </div>
       </Link>
-      <Link
-        href={`/polls/${poll.id}`}
-        // rel="noopener noreferrer"
-        // target="_blank"
-        className="w-fit"
-      >
+      <Link href={`/polls/${poll.id}`} className="w-fit">
         <h2 className="text-2xl font-bold">{poll.title}</h2>
       </Link>
 
