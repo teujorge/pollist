@@ -19,13 +19,20 @@ export default function RootLayout({
       <ClerkProvider
         appearance={{
           baseTheme: dark,
+          layout: {
+            termsPageUrl: "/tos",
+            privacyPageUrl: "/privacy",
+            logoPlacement: "outside",
+            socialButtonsVariant: "blockButton",
+            socialButtonsPlacement: "top",
+          },
           variables: {
             colorPrimary: "#a855f7", // purple
             colorDanger: "#cc3333", // red
             colorSuccess: "#22c55e", // green
             colorWarning: "#F59e0b", // amber
 
-            colorAlphaShade: "#ffffff",
+            colorNeutral: "#ffffff",
 
             colorTextOnPrimaryBackground: "#f1f1f1",
             colorTextSecondary: "#f1f1f1",

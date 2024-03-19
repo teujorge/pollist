@@ -1,5 +1,5 @@
 import { db } from "@/database/prisma";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { Tabs } from "@/app/(with-auth)/users/components/Tabs";
 import { Stat } from "@/app/(with-auth)/users/components/Stat";
 import { Loader } from "@/app/components/Loader";

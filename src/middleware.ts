@@ -1,12 +1,7 @@
-import { authMiddleware } from "@clerk/nextjs";
+import { clerkMiddleware } from "@clerk/nextjs/server";
 
-// docs : https://clerk.com/docs/references/nextjs/auth-middleware
-
-export default authMiddleware({
-  publicRoutes: () => true,
-  ignoredRoutes: ["/api/sitemap.xml"],
-});
+export default clerkMiddleware();
 
 export const config = {
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
 };

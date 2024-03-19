@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/database/prisma";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import type { Comment } from "../InfiniteComments/actions";
 
 export async function createComment({

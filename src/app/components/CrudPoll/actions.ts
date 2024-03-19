@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/database/prisma";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { supabase } from "@/database/supabase";
 import type { PollsDetails } from "@/app/components/InfinitePolls/actions";

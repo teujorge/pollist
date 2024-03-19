@@ -1,5 +1,5 @@
 import { db } from "@/database/prisma";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { FollowButtonClient } from "./FollowButtonClient";
 
 export async function FollowButton({ userId }: { userId: string }) {
