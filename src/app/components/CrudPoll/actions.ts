@@ -18,7 +18,7 @@ export async function createPoll(fields: CreatePollFields) {
     data: {
       authorId: userId,
       title: fields.title,
-      description: fields.description ?? "",
+      description: fields.description,
       options: {
         create: [
           { text: fields.option1 },
