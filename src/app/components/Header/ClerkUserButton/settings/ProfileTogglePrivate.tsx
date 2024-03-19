@@ -2,8 +2,8 @@
 
 import { toast } from "sonner";
 import { Loader } from "@/app/components/Loader";
+import { setPrivateAccount } from "../../../../(with-auth)/users/actions";
 import { useEffect, useState } from "react";
-import { setPrivateAccount } from "../actions";
 
 export function ProfileTogglePrivate({ isPrivate }: { isPrivate: boolean }) {
   const [isChanging, setIsChanging] = useState(false);
@@ -29,19 +29,23 @@ export function ProfileTogglePrivate({ isPrivate }: { isPrivate: boolean }) {
 
   return (
     <form
-      className={`${isChanging ? "pointer-events-none opacity-50" : "opacity-100"}`}
+      className={`relative rounded-md ${isChanging ? "pointer-events-none opacity-50" : "opacity-100 hovact:bg-accent/40"}`}
     >
-      <label htmlFor="username" className="text-sm">
+      <label
+        htmlFor="private-toggle"
+        className="flex h-full w-full cursor-pointer items-center justify-start px-8 py-2 text-sm"
+      >
         Private Account
       </label>
       {isChanging ? (
-        <Loader className="h-4 w-4 border-2" />
+        <Loader className="absolute right-5 h-4 w-4 border-2" />
       ) : (
         <input
           type="checkbox"
-          id="private"
-          name="private"
+          id="private-toggle"
+          name="private-toggle"
           defaultChecked={isPrivate}
+          className="absolute right-6"
           onChange={handleToggle}
         />
       )}

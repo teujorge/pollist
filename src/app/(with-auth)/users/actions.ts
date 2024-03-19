@@ -250,7 +250,10 @@ export async function setPrivateAccount(isPrivate: boolean) {
   if (!userId) throw new Error("User not found");
 
   const newUser = await db.user.update({
-    where: { id: userId },
+    where: {
+      id: userId,
+      tier: { not: { equals: "FREE" } },
+    },
     data: { private: isPrivate },
   });
 
@@ -264,7 +267,10 @@ export async function setShowAds(showAds: boolean) {
   if (!userId) throw new Error("User not found");
 
   const newUser = await db.user.update({
-    where: { id: userId },
+    where: {
+      id: userId,
+      tier: { not: { equals: "FREE" } },
+    },
     data: { ads: showAds },
   });
 

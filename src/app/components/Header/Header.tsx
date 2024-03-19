@@ -3,9 +3,10 @@ import { auth } from "@clerk/nextjs";
 import { IconSvg } from "../../svgs/IconSvg";
 import { Suspense } from "react";
 import { ProfileLink } from "./ProfileLink";
+import { SignInButton } from "@clerk/nextjs";
 import { HeaderMobile } from "./HeaderMobile";
 import { NotificationsBell } from "./NotificationsBell";
-import { SignInButton, UserButton } from "@clerk/nextjs";
+import { ClerkUserButton } from "./ClerkUserButton/ClerkUserButton";
 
 export function Header() {
   const { userId } = auth();
@@ -33,7 +34,7 @@ export function Header() {
   const notifications = userId ? <NotificationsBell /> : undefined;
 
   const clerkUserButton = userId ? (
-    <UserButton afterSignOutUrl="/" />
+    <ClerkUserButton />
   ) : (
     <SignInButton mode="modal">
       <button className="hovact:text-purple-500">Sign in</button>

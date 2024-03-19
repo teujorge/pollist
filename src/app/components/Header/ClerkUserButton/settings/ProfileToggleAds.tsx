@@ -2,8 +2,8 @@
 
 import { toast } from "sonner";
 import { Loader } from "@/app/components/Loader";
+import { setShowAds } from "../../../../(with-auth)/users/actions";
 import { useEffect, useState } from "react";
-import { setShowAds } from "../actions";
 
 export function ProfileToggleAds({ showAds }: { showAds: boolean }) {
   const [isChanging, setIsChanging] = useState(false);
@@ -29,19 +29,23 @@ export function ProfileToggleAds({ showAds }: { showAds: boolean }) {
 
   return (
     <form
-      className={`${isChanging ? "pointer-events-none opacity-50" : "opacity-100"}`}
+      className={`relative rounded-md ${isChanging ? "pointer-events-none opacity-50" : "opacity-100 hovact:bg-accent/40"}`}
     >
-      <label htmlFor="username" className="text-sm">
+      <label
+        htmlFor="ads-toggle"
+        className="flex h-full w-full cursor-pointer items-center justify-start px-8 py-2 text-sm"
+      >
         Hide Ads
       </label>
       {isChanging ? (
-        <Loader className="h-4 w-4 border-2" />
+        <Loader className="absolute right-5 h-4 w-4 border-2" />
       ) : (
         <input
           type="checkbox"
-          id="private"
-          name="private"
+          id="ads-toggle"
+          name="ads-toggle"
           defaultChecked={!showAds}
+          className="absolute right-6"
           onChange={handleToggle}
         />
       )}
