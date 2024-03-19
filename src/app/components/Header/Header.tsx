@@ -18,7 +18,9 @@ export function Header() {
   const createLink = userId ? (
     <Link href="/polls/create">Create</Link>
   ) : (
-    <SignInButton mode="modal">Create</SignInButton>
+    <SignInButton mode="modal">
+      <button className="hovact:text-purple-500">Create</button>
+    </SignInButton>
   );
 
   const userLink = userId ? (
@@ -32,7 +34,9 @@ export function Header() {
   const clerkUserButton = userId ? (
     <UserButton afterSignOutUrl="/" />
   ) : (
-    <SignInButton mode="modal" />
+    <SignInButton mode="modal">
+      <button className="hovact:text-purple-500">Sign in</button>
+    </SignInButton>
   );
 
   return (
@@ -47,7 +51,7 @@ export function Header() {
       </Link>
 
       {/* Desktop Links */}
-      <div className="hidden flex-row items-center gap-4 sm:flex [&>a]:font-semibold">
+      <div className="hidden flex-row items-center gap-4 sm:flex [&>*]:font-semibold">
         {homeLink}
         {createLink}
         {userLink}
@@ -56,7 +60,7 @@ export function Header() {
       </div>
 
       {/* Mobile Popover */}
-      <div className="flex items-center gap-4 sm:hidden">
+      <div className="flex items-center gap-4 sm:hidden [&>*]:font-semibold">
         {clerkUserButton}
         <HeaderMobile
           homeLink={homeLink}
