@@ -5,11 +5,12 @@ import { toast } from "sonner";
 import { Loader } from "../Loader";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/database/supabase";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input, InputFile } from "../Input";
 import { createPollSchema } from "./validation";
 import { useForm, useFieldArray } from "react-hook-form";
-import { PlusIcon, CrossCircledIcon } from "@radix-ui/react-icons";
+import { PlusIcon, CrossCircledIcon, Cross2Icon } from "@radix-ui/react-icons";
 import {
   addImagePathToPollOption,
   createPoll,
@@ -18,7 +19,13 @@ import {
 import type { Metadata } from "next";
 import type { CreatePollFields } from "./validation";
 
-export function CreatePollForm() {
+export function CreatePollForm({
+  showBackButton,
+}: {
+  showBackButton?: boolean;
+}) {
+  const router = useRouter();
+
   const form = useForm<CreatePollFields>({
     resolver: zodResolver(createPollSchema),
     mode: "onChange",
@@ -110,134 +117,144 @@ export function CreatePollForm() {
   }
 
   return (
-    <form
-      className={cn(
-        "flex w-[769px] max-w-full flex-col gap-4 transition-opacity",
-        (form.formState.isSubmitting || form.formState.isSubmitSuccessful) &&
-          "pointer-events-none opacity-50",
+    <>
+      {showBackButton && (
+        <button
+          className="absolute right-4 top-4"
+          onClick={() => router.back()}
+        >
+          <Cross2Icon />
+        </button>
       )}
-      onSubmit={form.handleSubmit(onSubmit)}
-    >
-      <h1 className="text-2xl font-bold">Create A Poll</h1>
-
-      <div className="flex w-full flex-col gap-4">
-        <Input
-          labelProps={{ text: "Title" }}
-          inputProps={{
-            placeholder: "E.g What should I have for lunch?",
-            ...form.register("title"),
-          }}
-          error={form.formState.errors.title?.message}
-        />
-        <Input
-          labelProps={{ text: "Description" }}
-          inputProps={{
-            placeholder: "Optional poll description.",
-            ...form.register("description"),
-          }}
-          error={form.formState.errors.description?.message}
-        />
-
-        <div className="my-4 h-0.5 w-full rounded-full bg-accent" />
-
-        <OptionWrapper>
-          <Input
-            labelProps={{ text: "Option 1" }}
-            inputProps={{
-              placeholder: "Enter an option.",
-              ...form.register("option1"),
-            }}
-            error={form.formState.errors.option1?.message}
-          />
-          <InputFile
-            wrapperProps={{ className: "w-full" }}
-            inputProps={{
-              className: "w-full",
-              ...form.register("option1file"),
-            }}
-            error={
-              form.formState.errors.option1file?.message as string | undefined
-            }
-          />
-        </OptionWrapper>
-        <OptionWrapper>
-          <Input
-            labelProps={{ text: "Option 2" }}
-            inputProps={{
-              placeholder: "Enter an option.",
-              ...form.register("option2"),
-            }}
-            error={form.formState.errors.option2?.message}
-          />
-          <InputFile
-            wrapperProps={{ className: "w-full" }}
-            inputProps={{
-              className: "w-full",
-              ...form.register("option2file"),
-              type: "file",
-            }}
-            error={
-              form.formState.errors.option2file?.message as string | undefined
-            }
-          />
-        </OptionWrapper>
-        {fields.map((option, index) => (
-          <div key={`option-${index}`} className="flex w-full flex-row">
-            <OptionWrapper>
-              <Input
-                labelProps={{ text: `Option ${index + 3}` }}
-                inputProps={{
-                  placeholder: "Enter an option.",
-                  // register the 'value' field of each option object
-                  ...form.register(`options.${index}.value`),
-                }}
-                error={form.formState.errors.options?.[index]?.value?.message}
-              />
-              <InputFile
-                wrapperProps={{ className: "w-full" }}
-                inputProps={{
-                  className: "w-full",
-                  // register the 'file' field of each option object
-                  ...form.register(`options.${index}.file`),
-                }}
-                error={
-                  form.formState.errors.options?.[index]?.file?.message as
-                    | string
-                    | undefined
-                }
-              />
-            </OptionWrapper>
-            <button
-              type="button"
-              onClick={() => remove(index)}
-              className="mb-6 mt-2 flex max-h-8 min-h-8 min-w-8 max-w-8 items-center justify-center rounded-full transition-colors hovact:bg-destructive/20 hovact:text-destructive"
-            >
-              <CrossCircledIcon />
-            </button>
-          </div>
-        ))}
-      </div>
-
-      <Button
-        className="ml-auto flex flex-row items-center justify-center gap-2"
-        type="button"
-        variant="ghost"
-        size="sm"
-        onClick={addOption}
-      >
-        <PlusIcon /> Add Option
-      </Button>
-
-      <div className="flex h-12 items-center justify-center">
-        {form.formState.isSubmitting || form.formState.isSubmitSuccessful ? (
-          <Loader />
-        ) : (
-          <Button type="submit" variant="secondary">
-            Create Poll
-          </Button>
+      <form
+        className={cn(
+          "flex w-[769px] max-w-full flex-col gap-4 p-2 transition-opacity",
+          (form.formState.isSubmitting || form.formState.isSubmitSuccessful) &&
+            "pointer-events-none opacity-50",
         )}
-      </div>
-    </form>
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <h1 className="text-2xl font-bold">Create A Poll</h1>
+
+        <div className="flex w-full flex-col gap-4">
+          <Input
+            labelProps={{ text: "Title" }}
+            inputProps={{
+              placeholder: "E.g What should I have for lunch?",
+              ...form.register("title"),
+            }}
+            error={form.formState.errors.title?.message}
+          />
+          <Input
+            labelProps={{ text: "Description" }}
+            inputProps={{
+              placeholder: "Optional poll description.",
+              ...form.register("description"),
+            }}
+            error={form.formState.errors.description?.message}
+          />
+
+          <div className="my-4 h-0.5 w-full rounded-full bg-accent" />
+
+          <OptionWrapper>
+            <Input
+              labelProps={{ text: "Option 1" }}
+              inputProps={{
+                placeholder: "Enter an option.",
+                ...form.register("option1"),
+              }}
+              error={form.formState.errors.option1?.message}
+            />
+            <InputFile
+              wrapperProps={{ className: "w-full" }}
+              inputProps={{
+                className: "w-full",
+                ...form.register("option1file"),
+              }}
+              error={
+                form.formState.errors.option1file?.message as string | undefined
+              }
+            />
+          </OptionWrapper>
+          <OptionWrapper>
+            <Input
+              labelProps={{ text: "Option 2" }}
+              inputProps={{
+                placeholder: "Enter an option.",
+                ...form.register("option2"),
+              }}
+              error={form.formState.errors.option2?.message}
+            />
+            <InputFile
+              wrapperProps={{ className: "w-full" }}
+              inputProps={{
+                className: "w-full",
+                ...form.register("option2file"),
+                type: "file",
+              }}
+              error={
+                form.formState.errors.option2file?.message as string | undefined
+              }
+            />
+          </OptionWrapper>
+          {fields.map((option, index) => (
+            <div key={`option-${index}`} className="flex w-full flex-row">
+              <OptionWrapper>
+                <Input
+                  labelProps={{ text: `Option ${index + 3}` }}
+                  inputProps={{
+                    placeholder: "Enter an option.",
+                    // register the 'value' field of each option object
+                    ...form.register(`options.${index}.value`),
+                  }}
+                  error={form.formState.errors.options?.[index]?.value?.message}
+                />
+                <InputFile
+                  wrapperProps={{ className: "w-full" }}
+                  inputProps={{
+                    className: "w-full",
+                    // register the 'file' field of each option object
+                    ...form.register(`options.${index}.file`),
+                  }}
+                  error={
+                    form.formState.errors.options?.[index]?.file?.message as
+                      | string
+                      | undefined
+                  }
+                />
+              </OptionWrapper>
+              <button
+                type="button"
+                onClick={() => remove(index)}
+                className="mb-6 mt-2 flex max-h-8 min-h-8 min-w-8 max-w-8 items-center justify-center rounded-full transition-colors hovact:bg-destructive/20 hovact:text-destructive"
+              >
+                <CrossCircledIcon />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <Button
+          className="ml-auto flex flex-row items-center justify-center gap-2"
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={addOption}
+        >
+          <PlusIcon /> Add Option
+        </Button>
+
+        <div className="flex h-12 items-center justify-center">
+          {form.formState.isSubmitting || form.formState.isSubmitSuccessful ? (
+            <Loader />
+          ) : (
+            <Button type="submit" variant="secondary">
+              Create Poll
+            </Button>
+          )}
+        </div>
+      </form>
+    </>
   );
 }
 

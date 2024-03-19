@@ -4,7 +4,7 @@ import { Modal } from "@/app/components/Modal";
 export default function CreatePollPage() {
   return (
     <Modal>
-      <CreatePollForm />
+      <CreatePollForm showBackButton />
     </Modal>
   );
 }
