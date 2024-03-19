@@ -1,10 +1,11 @@
 import Link from "next/link";
+import { auth } from "@clerk/nextjs";
 import { IconSvg } from "../../svgs/IconSvg";
 import { Suspense } from "react";
 import { ProfileLink } from "./ProfileLink";
 import { HeaderMobile } from "./HeaderMobile";
 import { NotificationsBell } from "./NotificationsBell";
-import { SignInButton, UserButton, auth } from "@clerk/nextjs";
+import { SignInButton, UserButton } from "@clerk/nextjs";
 
 export function Header() {
   const { userId } = auth();

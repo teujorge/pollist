@@ -1,8 +1,9 @@
 "use server";
 
 import { db } from "@/database/prisma";
-import { type PollQuery, PAGE_SIZE } from "@/constants";
 import { auth } from "@clerk/nextjs";
+import { PAGE_SIZE } from "@/constants";
+import type { PollQuery } from "@/constants";
 
 export type PollsDetails = NonNullable<
   Awaited<ReturnType<typeof getInfinitePolls>>

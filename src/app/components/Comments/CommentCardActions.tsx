@@ -3,7 +3,6 @@
 import { toast } from "sonner";
 import { Loader } from "../Loader";
 import { Button } from "@/components/ui/button";
-import { SignInButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import { PAGE_SIZE } from "@/constants";
 import { NewComments } from "./NewComments";
 import { CommentForm } from "./CommentForm";
@@ -13,6 +12,7 @@ import { getInfiniteComments } from "../InfiniteComments/actions";
 import { CommentCard, useCommentCard } from "./CommentCard";
 import { DotsHorizontalIcon, ThickArrowUpIcon } from "@radix-ui/react-icons";
 import { deleteComment, likeComment, unlikeComment } from "./actions";
+import { SignInButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import {
   Popover,
   PopoverContent,

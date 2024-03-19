@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { db } from "@/database/prisma";
+import { auth } from "@clerk/nextjs";
 import { Loader } from "../Loader";
 import { Button } from "@/components/ui/button";
 import { notFound } from "next/navigation";
 import { CommentForm } from "./CommentForm";
 import { CommentCard } from "./CommentCard";
+import { SignInButton } from "@clerk/nextjs";
 import { InfiniteComments } from "@/app/components/InfiniteComments/InfiniteComments";
-import { SignInButton, auth } from "@clerk/nextjs";
 import { NewCommentsProvider } from "./NewCommentsProvider";
 
 export async function AllComments({

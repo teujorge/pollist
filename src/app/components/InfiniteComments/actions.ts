@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/database/prisma";
-import { PAGE_SIZE } from "@/constants";
 import { auth } from "@clerk/nextjs";
+import { PAGE_SIZE } from "@/constants";
 
 export type Comment = NonNullable<
   Awaited<ReturnType<typeof getInfiniteComments>>[number]
