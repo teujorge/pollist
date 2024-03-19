@@ -32,8 +32,10 @@ export default function RootLayout({
             colorSuccess: "#22c55e", // green
             colorWarning: "#F59e0b", // amber
 
-            colorNeutral: "#ffffff",
-
+   
+            colorAlphaShade: "#ffffff90",
+            colorBackground: "#000000",
+            
             colorTextOnPrimaryBackground: "#f1f1f1",
             colorTextSecondary: "#f1f1f1",
 
