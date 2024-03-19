@@ -10,10 +10,7 @@ export type PollCardProps = {
 
 export function PollCard({ poll, highlightedUserId }: PollCardProps) {
   return (
-    <div
-      data-safe={poll.sensitive}
-      className="flex w-full flex-col gap-2 rounded-lg border border-accent bg-neutral-950 p-6 shadow-md"
-    >
+    <div className="flex w-full flex-col gap-2 rounded-lg border border-accent bg-neutral-950 p-6 shadow-md">
       <Link
         href={`/users/${poll.author.username}`}
         className="flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 pl-0 transition-all [&>div>p]:hovact:text-primary [&>div>span]:hovact:text-purple-600 [&>div]:hovact:border-[#d0b3f5]"
