@@ -45,9 +45,6 @@ export function CreatePollForm({
       delete option.file;
     }
 
-    console.log("data", data);
-    console.log("dataToSend", dataToSend);
-
     const newPoll = await createPoll(dataToSend);
 
     if (!newPoll) {
@@ -65,19 +62,15 @@ export function CreatePollForm({
       ].find((o) => o.value === optionText);
 
       if (!optionData?.file) {
-        console.error("File not found for option", optionText);
         continue;
       }
 
       const file = (optionData.file as FileList)[0];
       if (!file) {
-        console.error("File not found for option", optionText);
         continue;
       }
 
-      console.log("Uploading file for option", optionText);
-      const path = await uploadPollOptionFile(newPoll.id, option.id, file);
-      console.log("File uploaded to", path);
+      await uploadPollOptionFile(newPoll.id, option.id, file);
     }
 
     await redirectToPoll(newPoll.id);
@@ -93,7 +86,6 @@ export function CreatePollForm({
     file: File,
   ) {
     if (!supabase) {
-      console.error("Supabase client not found");
       throw new Error("Supabase client not found");
     }
 
@@ -106,10 +98,7 @@ export function CreatePollForm({
 
     await addImagePathToPollOption(optionId, imagePath);
 
-    console.log(data, error);
-
     if (error) {
-      console.error(error);
       throw new Error(error.message);
     }
 

@@ -161,7 +161,6 @@ export function CommentCardActions() {
       // put back original if the request fails
       setIsCommentDeleted(false);
 
-      console.error(error);
       if (error instanceof Error) {
         toast.error(error.message);
       } else {

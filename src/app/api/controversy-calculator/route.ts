@@ -71,7 +71,6 @@ function isControversial(votes: Vote[]): boolean {
   const stdDeviation = Math.sqrt(
     counts.reduce((a, b) => a + (b - meanVotes) ** 2, 0) / counts.length,
   );
-  // console.log(counts, meanVotes, stdDeviation);
 
   // Determine if the vote distribution is controversial
   const isControversial = stdDeviation <= meanVotes * arbitrary;

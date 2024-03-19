@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import type { Comment } from "../InfiniteComments/actions";
 
 // Type definition remains the same
@@ -17,10 +17,6 @@ const NewCommentsContext = createContext<NewCommentsContextType | undefined>(
 // Provider function
 function NewCommentsProvider({ children }: { children: React.ReactNode }) {
   const [newReplies, setNewReplies] = useState<Comment[]>([]);
-
-  useEffect(() => {
-    console.log("newReplies changed", newReplies);
-  }, [newReplies]);
 
   return (
     <NewCommentsContext.Provider

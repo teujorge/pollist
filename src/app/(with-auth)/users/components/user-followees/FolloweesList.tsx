@@ -10,7 +10,6 @@ type FolloweesListProps = {
 
 async function _FolloweesList({ userId }: FolloweesListProps) {
   const { userId: myId } = auth();
-  console.log("following -> userId", userId);
 
   const following = await db.follow.findMany({
     where: {
@@ -21,8 +20,6 @@ async function _FolloweesList({ userId }: FolloweesListProps) {
       followee: true,
     },
   });
-
-  console.log("following -> following", following.length);
 
   return following.length === 0 ? (
     <p className="text-sm text-neutral-400 underline underline-offset-4">

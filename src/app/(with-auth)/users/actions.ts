@@ -68,14 +68,11 @@ export async function follow(userId: string) {
         },
       })
       .catch((error) => {
-        console.error("Error creating notification", error);
+        console.error("Error creating follow notification", error);
       });
   }
 
-  console.log("newFollow", newFollow);
-
   revalidatePath(`/users/${newFollow.follower.username}`);
-
   return newFollow;
 }
 
@@ -129,10 +126,8 @@ export async function getFollowers() {
 }
 
 export async function declineFollow(followerId: string) {
-  console.log("declineFollow", followerId);
   const { userId: myId } = auth();
   if (!myId) return;
-  console.log("myId", myId);
 
   const declinedFollow = await db.follow.delete({
     where: {
@@ -153,20 +148,17 @@ export async function declineFollow(followerId: string) {
         where: { followId: declinedFollow.id },
       })
       .catch((error) => {
-        console.error("Error deleting notification", error);
+        console.error("Error deleting follow notification", error);
       });
   }
 
-  console.log("deletedFollow", declinedFollow);
   revalidatePath(`/users/${declinedFollow.followee.username}`);
   return declinedFollow;
 }
 
 export async function acceptFollow(followerId: string) {
-  console.log("acceptFollow", followerId);
   const { userId: myId } = auth();
   if (!myId) return;
-  console.log("myId", myId);
 
   const updatedFollow = await db.follow.update({
     where: {
@@ -191,7 +183,7 @@ export async function acceptFollow(followerId: string) {
         where: { followId: updatedFollow.id },
       })
       .catch((error) => {
-        console.error("Error deleting notification", error);
+        console.error("Error deleting follow notification", error);
       });
 
     if (removedPendingFollow) {
@@ -203,22 +195,19 @@ export async function acceptFollow(followerId: string) {
           },
         })
         .catch((error) => {
-          console.error("Error creating notification", error);
+          console.error("Error creating follow accept notification", error);
         });
     }
   }
 
-  console.log("updatedFollow", updatedFollow);
   revalidatePath(`/users/${updatedFollow.followee.username}`);
   revalidatePath(`/users/${updatedFollow.follower.username}`);
   return updatedFollow;
 }
 
 export async function cancelFollow(followeeId: string) {
-  console.log("cancelFollow", followeeId);
   const { userId: myId } = auth();
   if (!myId) return;
-  console.log("myId", myId);
 
   const cancelledFollow = await db.follow.delete({
     where: {
@@ -232,7 +221,6 @@ export async function cancelFollow(followeeId: string) {
     },
   });
 
-  console.log("deletedFollow", cancelledFollow);
   revalidatePath(`/users/${cancelledFollow.follower.username}`);
   return cancelledFollow;
 }
@@ -266,7 +254,6 @@ export async function setPrivateAccount(isPrivate: boolean) {
     data: { private: isPrivate },
   });
 
-  console.log(newUser);
   revalidatePath(`/users/${newUser.username}`);
   return newUser;
 }
@@ -281,7 +268,6 @@ export async function setShowAds(showAds: boolean) {
     data: { ads: showAds },
   });
 
-  console.log(newUser);
   revalidatePath(`/users/${newUser.username}`);
   return newUser;
 }

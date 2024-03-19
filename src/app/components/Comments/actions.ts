@@ -65,7 +65,7 @@ export async function createComment({
     if (userId === newComment.parent.authorId) {
       return newComment;
     }
-    const notification = await db.notificationComment
+    await db.notificationComment
       .create({
         data: {
           notifyeeId: newComment.parent.authorId,
@@ -75,8 +75,6 @@ export async function createComment({
       .catch((error) => {
         console.error("Error creating notification", error);
       });
-
-    console.log("notification", notification);
   }
 
   return newComment;
@@ -93,16 +91,12 @@ export async function acknowledgeCommentReply({
     throw new Error("You must be logged in to acknowledge a reply");
   }
 
-  console.log("acknowledgeReply", commentId);
-
   const notification = await db.notificationComment.deleteMany({
     where: {
       commentId: commentId,
       notifyeeId: userId,
     },
   });
-
-  console.log("DONE acknowledgeReply", commentId);
 
   return notification;
 }
@@ -158,7 +152,7 @@ export async function likeComment({
   });
 
   if (like && like.comment.authorId !== userId) {
-    const notification = await db.notificationCommentLike
+    await db.notificationCommentLike
       .create({
         data: {
           commentLikeId: like.id,
@@ -168,8 +162,6 @@ export async function likeComment({
       .catch((error) => {
         console.error("Error creating notification", error);
       });
-
-    console.log("notification", notification);
   }
 
   return like;

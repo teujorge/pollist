@@ -76,8 +76,6 @@ export function CommentForm({
       );
       formRef.current?.reset();
     } catch (e) {
-      console.error(e);
-
       // Remove the optimistic comment
       setNewReplies((replies) =>
         replies.filter((reply) => reply.id !== tempId),

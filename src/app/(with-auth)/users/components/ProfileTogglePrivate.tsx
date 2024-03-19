@@ -18,7 +18,6 @@ export function ProfileTogglePrivate({ isPrivate }: { isPrivate: boolean }) {
     try {
       await setPrivateAccount(!isPrivate);
     } catch (error) {
-      console.error(error);
       if (error instanceof Error) {
         toast.error(error.message);
       } else {

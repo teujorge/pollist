@@ -54,12 +54,10 @@ export function useInfiniteScroll<TItem extends { id: string }, TQuery>(props: {
           items: [...prev.items, ...newItems],
         }));
       } catch (e) {
-        console.error(e);
         setData(localInitialData);
       }
     }
 
-    // console.log("useEffect - loaderRef is intersecting");
     function handleObserver(entities: IntersectionObserverEntry[]) {
       if (!data.hasMore) return;
       if (data.isLoading) return;

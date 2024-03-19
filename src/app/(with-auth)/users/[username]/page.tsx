@@ -57,8 +57,6 @@ export default async function UserPage({ params }: Props) {
   const followersCount = user._count?.followees ?? 0;
   const followingCount = user._count?.followers ?? 0;
 
-  console.log(user.followees);
-
   const isContentPrivate = calcIsContentPrivate();
 
   return (

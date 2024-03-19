@@ -17,14 +17,6 @@ export async function getInfinitePolls({
 }: PollQuery & { cursor: string | undefined }) {
   const { userId } = auth();
 
-  console.log("getPaginatedPolls", {
-    cursor,
-    search,
-    category,
-    authorId,
-    voterId,
-  });
-
   const isTrending = category === "trending";
   const isControversial = category === "controversial";
 

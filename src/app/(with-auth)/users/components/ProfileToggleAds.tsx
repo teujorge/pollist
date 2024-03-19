@@ -18,7 +18,6 @@ export function ProfileToggleAds({ showAds }: { showAds: boolean }) {
     try {
       await setShowAds(!showAds);
     } catch (error) {
-      console.error(error);
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
