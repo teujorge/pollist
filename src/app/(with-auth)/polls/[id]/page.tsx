@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { getSinglePoll } from "@/app/components/InfinitePolls/actions";

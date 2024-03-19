@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/database/prisma";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
 export type GetUser = NonNullable<Awaited<ReturnType<typeof getUser>>>;
