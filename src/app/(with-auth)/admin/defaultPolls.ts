@@ -13,7 +13,8 @@ export async function createPollsFromList() {
     return;
   }
 
-  for (const poll of polls) {
+  const _polls = polls.sort(() => Math.random() - 0.5);
+  for (const poll of _polls) {
     const { question, description, options } = poll;
 
     try {
