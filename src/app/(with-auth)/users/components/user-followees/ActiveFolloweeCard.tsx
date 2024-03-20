@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { ProfileImage } from "@/app/components/ProfileImage";
 import { ActiveFolloweeCardActions } from "./ActiveFolloweeCardActions";
 import type { User } from "@prisma/client";

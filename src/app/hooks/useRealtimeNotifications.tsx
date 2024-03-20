@@ -32,7 +32,6 @@ export function useRealtimeNotifications({
       type: keyof Notifications;
       payload: Record<string, string>;
     }) {
-      console.log("Notification inserted:", type, payload);
       setNotifications((prev) => {
         return {
           ...prev,
@@ -48,7 +47,6 @@ export function useRealtimeNotifications({
       type: keyof Notifications;
       payload: Record<string, string>;
     }) {
-      console.log("Notification updated:", type, payload);
       setNotifications((prev) => {
         const updatedNotifications = prev[type].map((notification) =>
           notification.id === payload.id
@@ -69,7 +67,6 @@ export function useRealtimeNotifications({
       type: keyof Notifications;
       payload: Record<string, string>;
     }) {
-      console.log("Notification deleted:", type, payload);
       setNotifications((prev) => {
         const updatedNotifications = prev[type].filter(
           (notification) => notification.id !== payload.id,
@@ -86,7 +83,6 @@ export function useRealtimeNotifications({
 
       // get initial notifications
       const notifications = await getNotificationsItems();
-      console.log("Initial notifications:", notifications);
 
       if (notifications) {
         setNotifications({
@@ -192,7 +188,6 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
-            console.log("NotificationComment inserted:", payload);
             const newPayload: Record<string, string> = payload.new;
 
             if (!newPayload.id) return;
@@ -507,12 +502,9 @@ export function useRealtimeNotifications({
           },
         )
 
-        .subscribe((status, error) => {
-          console.log("notifications subscription status:", status, error);
-        });
+        .subscribe();
     }
 
-    console.log("resetting user:", user);
     setNotifications({
       pollLikes: [],
       comments: [],

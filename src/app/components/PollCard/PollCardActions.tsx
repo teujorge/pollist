@@ -79,7 +79,6 @@ export function PollCardActions(props: PollCardActionsProps) {
             createdAt: new Date(newPayload.createdAt ?? ""),
           } as Vote;
 
-          console.log("Vote inserted:", newVote);
           if (optimisticPoll.votes.some((vote) => vote.id === newVote.id)) {
             return;
           }
@@ -108,7 +107,6 @@ export function PollCardActions(props: PollCardActionsProps) {
           } as Vote;
           if (!newVote) return;
 
-          console.log("Vote updated:", newVote);
           setOptimisticPoll((prev) => ({
             ...prev,
             votes: prev.votes.map((vote) =>
@@ -135,7 +133,6 @@ export function PollCardActions(props: PollCardActionsProps) {
             createdAt: new Date(oldPayload.createdAt ?? ""),
           } as Vote;
 
-          console.log("Vote deleted:", oldVote);
           setOptimisticPoll((prev) => ({
             ...prev,
             votes: prev.votes.filter((vote) => vote.id !== oldVote.id),
@@ -220,7 +217,6 @@ export function PollCardActions(props: PollCardActionsProps) {
         toast.error("An error occurred while voting. Please try again.");
       }
 
-      console.error(error);
       setOptimisticPoll(prevPoll);
     } finally {
       setIsVotePending(false);
@@ -265,7 +261,6 @@ export function PollCardActions(props: PollCardActionsProps) {
     }));
 
     try {
-      console.log("handleLikePoll", isLiking ? "like" : "unlike");
       if (isLiking) {
         await handleLikePoll({
           pollId: optimisticPoll.id,
@@ -275,8 +270,6 @@ export function PollCardActions(props: PollCardActionsProps) {
         await handleUnlikePoll({ pollId: optimisticPoll.id });
       }
     } catch (error) {
-      console.error(error);
-
       setOptimisticPoll((prev) => ({
         ...prev,
         likes: originalLikes,
@@ -413,7 +406,6 @@ export function PollCardActions(props: PollCardActionsProps) {
           <TriggerNotificationSeen
             className="absolute left-0 top-0"
             acknowledgeFunction={async () => {
-              console.log(optimisticPoll.id);
               await acknowledgePollLike({
                 pollLikeId: optimisticPoll.likes[0]?.id ?? "",
               });

@@ -19,12 +19,10 @@ export function TriggerNotificationSeen({
 
     async function handleAcknowledgment() {
       setHasBeenTriggered(true);
-      console.log("Acknowledging notification as seen");
 
       try {
         await acknowledgeFunction();
       } catch (error) {
-        console.error(error);
         setHasBeenTriggered(false);
       }
     }

@@ -1,5 +1,5 @@
 import { db } from "@/database/prisma";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { Loader } from "@/app/components/Loader";
 import { Suspense } from "react";
 import { ActiveFolloweeCard } from "./ActiveFolloweeCard";
@@ -10,7 +10,6 @@ type FolloweesListProps = {
 
 async function _FolloweesList({ userId }: FolloweesListProps) {
   const { userId: myId } = auth();
-  console.log("following -> userId", userId);
 
   const following = await db.follow.findMany({
     where: {
@@ -21,8 +20,6 @@ async function _FolloweesList({ userId }: FolloweesListProps) {
       followee: true,
     },
   });
-
-  console.log("following -> following", following.length);
 
   return following.length === 0 ? (
     <p className="text-sm text-neutral-400 underline underline-offset-4">

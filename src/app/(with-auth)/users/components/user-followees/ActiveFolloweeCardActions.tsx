@@ -15,7 +15,7 @@ export function ActiveFolloweeCardActions({ followed }: { followed: User }) {
       await unfollow(followed.id);
     } catch (error) {
       setIsUnfollowing(false);
-      console.error(error);
+
       if (error instanceof Error) {
         toast.error(error.message);
       } else {

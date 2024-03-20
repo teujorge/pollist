@@ -19,30 +19,37 @@ export async function POST(req: NextRequest) {
       msg = wh.verify(payloadBuffer, headersObject);
     } catch (err) {
       console.error("Error verifying webhook:", msg, "Error:", err);
-      return NextResponse.json({
-        status: 400,
-        body: { error: "Invalid Signature" },
-      });
+      return NextResponse.json(
+        {
+          error: err instanceof Error ? err : "Invalid Signature",
+          message: msg,
+        },
+        {
+          status: 400,
+        },
+      );
     }
 
     // Convert buffer to JSON
     const event = JSON.parse(payloadBuffer.toString()) as UserWebhookEvent;
-    console.log("Clerk User Event:", event);
 
     // Ensure the request body is a valid event object
     if (event.object !== "event") {
-      console.log("Invalid event object:");
-      return NextResponse.json({
-        status: 400,
-        body: { error: "Invalid event object" },
-      });
+      return NextResponse.json(
+        {
+          error: "Invalid event object",
+        },
+        {
+          status: 400,
+        },
+      );
     }
 
     switch (event.type) {
       case "user.created": {
         const data = event.data;
 
-        const user = await db.user.create({
+        await db.user.create({
           data: {
             id: data.id,
             username: data.username ?? data.first_name ?? data.last_name,
@@ -50,22 +57,21 @@ export async function POST(req: NextRequest) {
           },
         });
 
-        console.log("User Created:", user);
         break;
       }
       case "user.deleted": {
         const data = event.data;
 
         if (data.deleted) {
-          const user = await db.user.delete({ where: { id: data.id } });
-          console.log("User Deleted:", user);
+          await db.user.delete({ where: { id: data.id } });
         }
 
         break;
       }
       case "user.updated": {
         const data = event.data;
-        const user = await db.user.update({
+
+        await db.user.update({
           where: { id: data.id },
           data: {
             username: data.username ?? data.first_name ?? data.last_name,
@@ -73,15 +79,17 @@ export async function POST(req: NextRequest) {
           },
         });
 
-        console.log("User Updated:", user);
         break;
       }
       default: {
-        console.log("Unknown event type");
-        return NextResponse.json({
-          status: 400,
-          body: { error: "Invalid event type" },
-        });
+        return NextResponse.json(
+          {
+            error: "Invalid event type",
+          },
+          {
+            status: 400,
+          },
+        );
       }
     }
 
@@ -92,10 +100,14 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error("Error processing webhook:", error);
-    return NextResponse.json({
-      status: 500,
-      body: { error: "Internal Server Error" },
-    });
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error : "Internal Server Error",
+      },
+      {
+        status: 500,
+      },
+    );
   }
 }
 

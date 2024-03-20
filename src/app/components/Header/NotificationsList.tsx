@@ -195,8 +195,6 @@ function NotificationCard({
         ids: item.data.map((d) => d.id),
       });
     } catch (error) {
-      console.error("Failed to remove notification", error);
-
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
@@ -441,7 +439,6 @@ function FollowPendingNotificationCard({
       await acceptFollow(followNotification.follow.followerId);
     } catch (error) {
       setIsAccepting(false);
-      console.error("Failed to accept follow", error);
 
       if (error instanceof Error) {
         toast.error(error.message);
@@ -457,7 +454,6 @@ function FollowPendingNotificationCard({
       await declineFollow(followNotification.follow.followerId);
     } catch (error) {
       setIsDeclining(false);
-      console.error("Failed to decline follow", error);
 
       if (error instanceof Error) {
         toast.error(error.message);

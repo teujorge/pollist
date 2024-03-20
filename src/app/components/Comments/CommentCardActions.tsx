@@ -3,7 +3,6 @@
 import { toast } from "sonner";
 import { Loader } from "../Loader";
 import { Button } from "@/components/ui/button";
-import { SignInButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import { PAGE_SIZE } from "@/constants";
 import { NewComments } from "./NewComments";
 import { CommentForm } from "./CommentForm";
@@ -13,6 +12,7 @@ import { getInfiniteComments } from "../InfiniteComments/actions";
 import { CommentCard, useCommentCard } from "./CommentCard";
 import { DotsHorizontalIcon, ThickArrowUpIcon } from "@radix-ui/react-icons";
 import { deleteComment, likeComment, unlikeComment } from "./actions";
+import { SignInButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import {
   Popover,
   PopoverContent,
@@ -161,7 +161,6 @@ export function CommentCardActions() {
       // put back original if the request fails
       setIsCommentDeleted(false);
 
-      console.error(error);
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
@@ -225,7 +224,10 @@ export function CommentCardActions() {
               <DotsHorizontalIcon />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="flex flex-col bg-background p-4">
+          <PopoverContent
+            align="end"
+            className="flex flex-col bg-background p-4"
+          >
             {/* copy link button */}
             <button
               className="w-fit font-bold [&>span]:hovact:text-neutral-400"

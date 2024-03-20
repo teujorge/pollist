@@ -15,7 +15,6 @@ export function ActiveFollowerCardActions({ follower }: { follower: User }) {
       await declineFollow(follower.id);
     } catch (error) {
       setIsDeclining(false);
-      console.error(error);
 
       if (error instanceof Error) {
         toast.error(error.message);
@@ -33,7 +32,7 @@ export function ActiveFollowerCardActions({ follower }: { follower: User }) {
         <button
           type="button"
           onClick={handleRemoveFollow}
-          className="hovact:bg-destructive/25 flex items-center justify-center rounded-lg bg-neutral-900 px-2 py-1 transition-colors"
+          className="flex items-center justify-center rounded-lg bg-neutral-900 px-2 py-1 transition-colors hovact:bg-destructive/25"
         >
           <span className="text-destructive">Remove</span>
         </button>

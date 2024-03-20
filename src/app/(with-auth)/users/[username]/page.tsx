@@ -1,11 +1,10 @@
 import { db } from "@/database/prisma";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { Tabs } from "@/app/(with-auth)/users/components/Tabs";
 import { Stat } from "@/app/(with-auth)/users/components/Stat";
 import { Loader } from "@/app/components/Loader";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { PricingTable } from "../components/PricingTable";
 import { ProfileImage } from "@/app/components/ProfileImage";
 import { FollowButton } from "@/app/(with-auth)/users/components/FollowButton";
 import { InfinitePolls } from "@/app/components/InfinitePolls/InfinitePolls";
@@ -20,7 +19,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import type { ResolvingMetadata, Metadata } from "next";
-import { GearIcon } from "@radix-ui/react-icons";
+import { getUser } from "../actions";
 
 type Props = {
   params: { username: string };
@@ -31,34 +30,7 @@ export default async function UserPage({ params }: Props) {
   const username = params.username;
   const { userId: myId } = auth();
 
-  const user = await db.user.findUnique({
-    where: {
-      username: username,
-    },
-    select: {
-      id: true,
-      imageUrl: true,
-      username: true,
-      private: true,
-      tier: true,
-      _count: {
-        select: {
-          polls: true,
-          votes: true,
-          followers: { where: { accepted: true } },
-          followees: { where: { accepted: true } },
-        },
-      },
-      followees: myId
-        ? {
-            where: {
-              followerId: myId,
-              accepted: true,
-            },
-          }
-        : false,
-    },
-  });
+  const user = await getUser(username);
 
   if (!user?.id) return notFound();
 
@@ -82,8 +54,6 @@ export default async function UserPage({ params }: Props) {
   const followersCount = user._count?.followees ?? 0;
   const followingCount = user._count?.followers ?? 0;
 
-  console.log(user.followees);
-
   const isContentPrivate = calcIsContentPrivate();
 
   return (
@@ -94,38 +64,6 @@ export default async function UserPage({ params }: Props) {
         <div className="flex flex-col justify-around">
           <div className="flex items-center gap-2">
             <h1>{user.username}</h1>
-            {myId === user.id && (
-              <>
-                {/* TODO: temporarily remove pricing table for prod deployment */}
-                {/* {user.tier === "FREE" ? (
-                  <PricingTable userId={user.id} />
-                ) : (
-                  <a
-                    href={process.env.NEXT_PUBLIC_STRIPE_BILLING_URL ?? "/"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-[4px] bg-white px-2 text-xs text-accent hovact:text-accent"
-                  >
-                    {user.tier}
-                  </a>
-                )} */}
-                {/* TODO: temporarily remove settings for prod deployment */}
-                {/* <Dialog>
-                  <DialogTrigger asChild>
-                    <button>
-                      <GearIcon />
-                    </button>
-                  </DialogTrigger>
-                  <DialogContent className="flex w-72 flex-col">
-                    <DialogHeader>
-                      <DialogTitle>Profile Settings</DialogTitle>
-                    </DialogHeader>
-                    <p className="text-center">Coming soon!</p>
-                  </DialogContent>
-                </Dialog> */}
-              </>
-            )}
-
             {myId && <FollowButton userId={user.id} />}
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-4">

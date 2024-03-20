@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/database/prisma";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { supabase } from "@/database/supabase";
 import type { PollsDetails } from "@/app/components/InfinitePolls/actions";
@@ -18,7 +18,7 @@ export async function createPoll(fields: CreatePollFields) {
     data: {
       authorId: userId,
       title: fields.title,
-      description: fields.description ?? "",
+      description: fields.description,
       options: {
         create: [
           { text: fields.option1 },
@@ -64,16 +64,11 @@ export async function deletePoll(poll: PollsDetails[number]) {
     .filter((path) => path !== null) as string[];
 
   if (imagePaths.length > 0) {
-    console.log("Deleting images", imagePaths);
-
     const { data, error } = await supabase.storage
       .from("polls")
       .remove(imagePaths);
-    console.log("data:", data, "|", "error:", error);
 
     if (error !== null || imagePaths.length !== data?.length) {
-      console.log("Error deleting images:", error);
-
       const deletedPathsFromStorage = data?.map((file) => file.name) ?? [];
 
       const optionsToUpdate = poll.options.filter(
@@ -82,17 +77,13 @@ export async function deletePoll(poll: PollsDetails[number]) {
           deletedPathsFromStorage.includes(option.imagePath),
       );
 
-      console.log("Storage Deleted paths:", deletedPathsFromStorage);
-
-      const updatedOptions = await db.option.updateMany({
+      await db.option.updateMany({
         where: {
           id: { in: optionsToUpdate.map((o) => o.id) },
           imagePath: { in: deletedPathsFromStorage },
         },
         data: { imagePath: null },
       });
-
-      console.log("Updated options:", updatedOptions);
 
       // Now throw an error, to prevent deleting the poll
       if (error?.message) throw new Error(error.message);

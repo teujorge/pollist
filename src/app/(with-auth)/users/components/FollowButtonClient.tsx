@@ -21,7 +21,6 @@ export function FollowButtonClient({
       try {
         await unfollow(userId);
       } catch (error) {
-        console.error("Error unfollowing", error);
         if (error instanceof Error) {
           toast.error(error.message);
         } else {
@@ -32,7 +31,6 @@ export function FollowButtonClient({
       try {
         await follow(userId);
       } catch (error) {
-        console.error("Error following", error);
         if (error instanceof Error) {
           toast.error(error.message);
         } else {

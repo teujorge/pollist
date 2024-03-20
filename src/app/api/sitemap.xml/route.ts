@@ -2,7 +2,7 @@ import { db } from "@/database/prisma";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const staticPages = ["/", "/welcome", "/privacy-policy"];
+  const staticPages = ["/", "/welcome", "/privacy", "/tos"];
   const dynamicPages = [
     ...(await getPopularPollIds()).map((id) => `/polls/${id}`),
     ...(await getPopularUserUsernames()).map(

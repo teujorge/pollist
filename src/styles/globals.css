@@ -130,6 +130,12 @@ a:active {
   color: #a855f7;
 }
 
+*[data-safe] {
+  user-select: none !important;
+  pointer-events: none !important;
+  filter: blur(0.75rem) !important;
+}
+
 .cl-card {
   border: 1px solid #262626;
 }
@@ -174,9 +180,9 @@ a:active {
   border-radius: 0.5rem;
   background: linear-gradient(
     120deg,
-    #eeeeee10 40%,
-    #fafafa18 50%,
-    #eeeeee10 60%
+    #eeeeee15 35%,
+    #fafafa20 50%,
+    #eeeeee15 65%
   );
   background-size: 300%;
   background-position-x: 100%;

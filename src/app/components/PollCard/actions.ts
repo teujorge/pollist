@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/database/prisma";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 
 export async function handleVote({
   userId,
@@ -92,14 +92,13 @@ export async function handleLikePoll({
       },
     },
   });
-  console.log("poll like", pollLike);
 
   if (pollLike) {
     if (userId === pollAuthorId) {
       return;
     }
 
-    const notification = await db.notificationPollLike.create({
+    await db.notificationPollLike.create({
       data: {
         pollLike: {
           connect: {
@@ -113,7 +112,6 @@ export async function handleLikePoll({
         },
       },
     });
-    console.log("poll like notification", notification);
   }
 }
 
@@ -130,10 +128,9 @@ export async function handleUnlikePoll({ pollId }: { pollId: string }) {
       authorId: userId,
     },
   });
-  console.log("poll unlikes", unlikes);
 
   if (unlikes) {
-    const unlikesNotifications = await db.notificationPollLike.deleteMany({
+    await db.notificationPollLike.deleteMany({
       where: {
         pollLike: {
           pollId,
@@ -141,7 +138,6 @@ export async function handleUnlikePoll({ pollId }: { pollId: string }) {
         },
       },
     });
-    console.log("poll unlikes notifications", unlikesNotifications);
   }
 }
 
@@ -171,8 +167,6 @@ export async function acknowledgePollLike({
       notifyeeId: userId,
     },
   });
-
-  console.log("acknowledgePollLike", notifications);
 
   return notifications;
 }

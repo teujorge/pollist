@@ -1,8 +1,46 @@
 "use server";
 
 import { db } from "@/database/prisma";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+
+export type GetUser = NonNullable<Awaited<ReturnType<typeof getUser>>>;
+
+export async function getUser(username: string) {
+  const { userId: myId } = auth();
+
+  const user = await db.user.findUnique({
+    where: {
+      username: username,
+    },
+    select: {
+      id: true,
+      imageUrl: true,
+      username: true,
+      ads: true,
+      private: true,
+      tier: true,
+      _count: {
+        select: {
+          polls: true,
+          votes: true,
+          followers: { where: { accepted: true } },
+          followees: { where: { accepted: true } },
+        },
+      },
+      followees: myId
+        ? {
+            where: {
+              followerId: myId,
+              accepted: true,
+            },
+          }
+        : false,
+    },
+  });
+
+  return user;
+}
 
 // myId asks to follow userId
 export async function follow(userId: string) {
@@ -30,14 +68,11 @@ export async function follow(userId: string) {
         },
       })
       .catch((error) => {
-        console.error("Error creating notification", error);
+        console.error("Error creating follow notification", error);
       });
   }
 
-  console.log("newFollow", newFollow);
-
   revalidatePath(`/users/${newFollow.follower.username}`);
-
   return newFollow;
 }
 
@@ -91,10 +126,8 @@ export async function getFollowers() {
 }
 
 export async function declineFollow(followerId: string) {
-  console.log("declineFollow", followerId);
   const { userId: myId } = auth();
   if (!myId) return;
-  console.log("myId", myId);
 
   const declinedFollow = await db.follow.delete({
     where: {
@@ -115,20 +148,17 @@ export async function declineFollow(followerId: string) {
         where: { followId: declinedFollow.id },
       })
       .catch((error) => {
-        console.error("Error deleting notification", error);
+        console.error("Error deleting follow notification", error);
       });
   }
 
-  console.log("deletedFollow", declinedFollow);
   revalidatePath(`/users/${declinedFollow.followee.username}`);
   return declinedFollow;
 }
 
 export async function acceptFollow(followerId: string) {
-  console.log("acceptFollow", followerId);
   const { userId: myId } = auth();
   if (!myId) return;
-  console.log("myId", myId);
 
   const updatedFollow = await db.follow.update({
     where: {
@@ -153,7 +183,7 @@ export async function acceptFollow(followerId: string) {
         where: { followId: updatedFollow.id },
       })
       .catch((error) => {
-        console.error("Error deleting notification", error);
+        console.error("Error deleting follow notification", error);
       });
 
     if (removedPendingFollow) {
@@ -165,22 +195,19 @@ export async function acceptFollow(followerId: string) {
           },
         })
         .catch((error) => {
-          console.error("Error creating notification", error);
+          console.error("Error creating follow accept notification", error);
         });
     }
   }
 
-  console.log("updatedFollow", updatedFollow);
   revalidatePath(`/users/${updatedFollow.followee.username}`);
   revalidatePath(`/users/${updatedFollow.follower.username}`);
   return updatedFollow;
 }
 
 export async function cancelFollow(followeeId: string) {
-  console.log("cancelFollow", followeeId);
   const { userId: myId } = auth();
   if (!myId) return;
-  console.log("myId", myId);
 
   const cancelledFollow = await db.follow.delete({
     where: {
@@ -194,7 +221,6 @@ export async function cancelFollow(followeeId: string) {
     },
   });
 
-  console.log("deletedFollow", cancelledFollow);
   revalidatePath(`/users/${cancelledFollow.follower.username}`);
   return cancelledFollow;
 }
@@ -216,4 +242,38 @@ export async function getPendingFollows(userId: string) {
   });
 
   return pendingFollows;
+}
+
+export async function setPrivateAccount(isPrivate: boolean) {
+  const { userId } = auth();
+
+  if (!userId) throw new Error("User not found");
+
+  const newUser = await db.user.update({
+    where: {
+      id: userId,
+      tier: { not: { equals: "FREE" } },
+    },
+    data: { private: isPrivate },
+  });
+
+  revalidatePath(`/users/${newUser.username}`);
+  return newUser;
+}
+
+export async function setShowAds(showAds: boolean) {
+  const { userId } = auth();
+
+  if (!userId) throw new Error("User not found");
+
+  const newUser = await db.user.update({
+    where: {
+      id: userId,
+      tier: { not: { equals: "FREE" } },
+    },
+    data: { ads: showAds },
+  });
+
+  revalidatePath(`/users/${newUser.username}`);
+  return newUser;
 }

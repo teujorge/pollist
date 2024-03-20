@@ -20,7 +20,7 @@ export function ChartDrawer({
   data: { value: number; label: string }[];
 }) {
   return (
-    <Drawer>
+    <Drawer shouldScaleBackground>
       <DrawerTrigger asChild>
         <Button
           variant="outline"

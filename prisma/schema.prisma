@@ -18,6 +18,7 @@ model User {
   username                    String                       @unique
   imageUrl                    String?
   bio                         String?
+  ads                         Boolean                      @default(true)
   private                     Boolean                      @default(false)
   clerkId                     String?                      @unique
   tier                        SubTier                      @default(FREE)
@@ -83,9 +84,10 @@ model Poll {
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
   authorId      String
-  title         String
-  description   String
+  title         String     @unique
+  description   String?
   controversial Boolean    @default(false)
+  sensitive     Boolean    @default(false)
   author        User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   votes         Vote[]
   options       Option[]

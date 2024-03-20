@@ -1,6 +1,6 @@
-import { auth } from "@clerk/nextjs";
-import { createPollsFromList, deleteAllPolls, testCron } from "./defaultPolls";
+import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
+import { createPollsFromList, deleteAllPolls, testCron } from "./defaultPolls";
 
 export default async function UserPage() {
   const { userId: myId } = auth();

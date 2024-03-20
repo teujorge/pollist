@@ -59,7 +59,7 @@ export function AllPolls({ query }: { query: PollQuery }) {
       const target = entities[0];
       if (!target || !target.isIntersecting) return;
 
-      fetchNextPage().catch((e) => console.error(e));
+      void fetchNextPage();
     }
 
     const option = {
