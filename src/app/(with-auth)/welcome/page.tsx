@@ -1,5 +1,6 @@
 import Link from "next/link";
 import styles from "@/styles/blob.module.css";
+import { CTA } from "./CTA";
 import { Confetti } from "./Confetti";
 
 export default function WelcomePage() {
@@ -33,19 +34,14 @@ export default function WelcomePage() {
         <div />
 
         <div className="flex flex-col items-center gap-4">
-          <h1 className="pb-4 text-5xl font-bold sm:text-6xl md:text-7xl">
+          <h1 className="pb-4 text-6xl font-bold md:text-8xl lg:text-9xl">
             Welcome!
           </h1>
 
           <p className="pb-2">
             How about participating in your first poll to get started?
           </p>
-          <Link
-            href="/polls/sample-poll"
-            className="w-fit rounded bg-white px-4 py-2 font-bold text-black"
-          >
-            Participate in a Poll
-          </Link>
+          <CTA />
         </div>
 
         <div>
