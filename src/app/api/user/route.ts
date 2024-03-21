@@ -53,14 +53,14 @@ export async function POST(req: NextRequest) {
             },
           });
         } catch (e) {
-          let errorMessage = "⚠️  Error creating user: ";
+          let logMessage = "⚠️  Error creating user: ";
           if (e instanceof Error) {
-            errorMessage += `${e.message}`;
+            logMessage += `${e.message}`;
           } else {
-            errorMessage += "Internal Server Error";
+            logMessage += "Internal Server Error";
           }
-          console.error(errorMessage);
-          return NextResponse.json({ error: errorMessage }, { status: 500 });
+          console.error(logMessage);
+          return NextResponse.json({ error: logMessage }, { status: 500 });
         }
 
         break;
@@ -82,14 +82,14 @@ export async function POST(req: NextRequest) {
             await db.user.delete({ where: { id: data.id } });
           }
         } catch (e) {
-          let errorMessage = "⚠️  Error deleting user: ";
+          let logMessage = "⚠️  Error deleting user: ";
           if (e instanceof Error) {
-            errorMessage += `${e.message}`;
+            logMessage += `${e.message}`;
           } else {
-            errorMessage += "Internal Server Error";
+            logMessage += "Internal Server Error";
           }
-          console.error(errorMessage);
-          return NextResponse.json({ error: errorMessage }, { status: 500 });
+          console.error(logMessage);
+          return NextResponse.json({ error: logMessage }, { status: 500 });
         }
 
         break;
@@ -106,14 +106,14 @@ export async function POST(req: NextRequest) {
             },
           });
         } catch (e) {
-          let errorMessage = "⚠️  Error updating user: ";
+          let logMessage = "⚠️  Error updating user: ";
           if (e instanceof Error) {
-            errorMessage += `${e.message}`;
+            logMessage += `${e.message}`;
           } else {
-            errorMessage += "Internal Server Error";
+            logMessage += "Internal Server Error";
           }
-          console.error(errorMessage);
-          return NextResponse.json({ error: errorMessage }, { status: 500 });
+          console.error(logMessage);
+          return NextResponse.json({ error: logMessage }, { status: 500 });
         }
 
         break;
