@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
           data: { ...newUserData(newTier), clerkId: customerId },
         });
       } catch (e) {
-        let logMessage = `⚠️  Failed to update user ${userId} subscription in checkout session completed event`;
+        let logMessage = `⚠️  Failed to update user ${userId} in subscription in checkout session completed event`;
         if (e instanceof Error) logMessage += `: ${e.message}`;
         console.error(logMessage);
         return NextResponse.json(null, {
@@ -111,12 +111,12 @@ export async function POST(req: NextRequest) {
         });
 
         const newTier = getTier(productPriceId);
-        await db.user.update({
+        await db.user.updateMany({
           where: { clerkId: customerId },
           data: newUserData(newTier),
         });
       } catch (e) {
-        let logMessage = `⚠️  Failed to update customer ${customerId} subscription in updated event`;
+        let logMessage = `⚠️  Failed to update customer ${customerId} in subscription in updated event`;
         if (e instanceof Error) logMessage += `: ${e.message}`;
         console.error(logMessage);
         return NextResponse.json(null, {
@@ -147,12 +147,12 @@ export async function POST(req: NextRequest) {
         });
 
         const newTier = getTier(productPriceId);
-        await db.user.update({
+        await db.user.updateMany({
           where: { clerkId: customerId },
           data: newUserData(newTier),
         });
       } catch (e) {
-        let logMessage = `⚠️  Failed to update customer ${customerId} subscription in deleted event`;
+        let logMessage = `⚠️  Failed to update customer ${customerId} in subscription in deleted event`;
         if (e instanceof Error) logMessage += `: ${e.message}`;
 
         console.error(logMessage);
