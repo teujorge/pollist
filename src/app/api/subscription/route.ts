@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
           data: { ...newUserData(newTier), clerkId: customerId },
         });
       } catch (e) {
-        let logMessage = `⚠️  Failed to update user ${userId}`;
+        let logMessage = `⚠️  Failed to update user ${userId} subscription in checkout session completed event`;
         if (e instanceof Error) logMessage += `: ${e.message}`;
         console.error(logMessage);
         return NextResponse.json(null, {
@@ -95,7 +95,14 @@ export async function POST(req: NextRequest) {
     // Subscription updated -> i.e. user has changed their subscription
     case "customer.subscription.updated": {
       const subscriptionUpdated = event.data.object;
-      const customerId = subscriptionUpdated.customer as string;
+      const customerId = subscriptionUpdated.customer as string | undefined;
+
+      if (!customerId) {
+        // No user ID found in subscription
+        // This is not an error, as the user may deleted their account
+        // and thus have cancelled their subscription
+        return NextResponse.json(null, { status: 200 });
+      }
 
       try {
         const productPriceId = await getProductPriceIdFromUser({
@@ -109,7 +116,7 @@ export async function POST(req: NextRequest) {
           data: newUserData(newTier),
         });
       } catch (e) {
-        let logMessage = `⚠️  Failed to update customer ${customerId}`;
+        let logMessage = `⚠️  Failed to update customer ${customerId} subscription in updated event`;
         if (e instanceof Error) logMessage += `: ${e.message}`;
         console.error(logMessage);
         return NextResponse.json(null, {
@@ -124,15 +131,13 @@ export async function POST(req: NextRequest) {
     // Subscription deleted -> i.e. user has cancelled their subscription
     case "customer.subscription.deleted": {
       const subscriptionDeleted = event.data.object;
-      const customerId = subscriptionDeleted.customer as string;
+      const customerId = subscriptionDeleted.customer as string | undefined;
 
       if (!customerId) {
-        const logMessage = `No user ID found in subscription ${subscriptionDeleted.id}`;
-        console.error(logMessage);
-        return NextResponse.json(null, {
-          status: 400,
-          statusText: logMessage,
-        });
+        // No user ID found in subscription
+        // This is not an error, as the user may deleted their account
+        // and thus have cancelled their subscription
+        return NextResponse.json(null, { status: 200 });
       }
 
       try {
