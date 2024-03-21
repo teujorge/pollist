@@ -1,34 +1,12 @@
 import Link from "next/link";
-import styles from "@/styles/blob.module.css";
-import { CTA } from "./CTA";
+import { CTA } from "../../components/CTA";
+import { BlobBg } from "@/app/components/BlobBg";
 import { Confetti } from "./Confetti";
 
 export default function WelcomePage() {
   return (
     <main className="flex h-[calc(100dvh-64px)] w-full justify-center">
-      <div className="fixed left-0 top-0 z-0 h-full w-full scale-150 blur-2xl [&>div]:absolute [&>div]:left-1/2 [&>div]:top-1/2 [&>div]:-translate-x-1/2 [&>div]:-translate-y-1/2 [&>div]:transform [&>div]:rounded-full [&>div]:opacity-50 [&>div]:filter">
-        <div
-          className={`bg-purple-300 ${styles.blob1}`}
-          style={{
-            width: "calc(min(30vw, 30vh))",
-            height: "calc(min(30vw, 30vh))",
-          }}
-        />
-        <div
-          className={`bg-primary ${styles.blob2}`}
-          style={{
-            width: "calc(min(40vw, 40vh))",
-            height: "calc(min(40vw, 40vh))",
-          }}
-        />
-        <div
-          className={`bg-purple-900 ${styles.blob3}`}
-          style={{
-            width: "calc(min(30vw, 30vh))",
-            height: "calc(min(30vw, 30vh))",
-          }}
-        />
-      </div>
+      <BlobBg />
 
       <div className="relative z-10 m-auto flex h-full min-h-[50dvh] w-full min-w-[50dvw] flex-grow flex-col items-center justify-between text-center">
         <div />
