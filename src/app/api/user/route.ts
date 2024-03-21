@@ -1,3 +1,4 @@
+import Stripe from "stripe";
 import { db } from "@/database/prisma";
 import { Webhook } from "svix";
 import { NextResponse } from "next/server";
@@ -24,9 +25,7 @@ export async function POST(req: NextRequest) {
           error: err instanceof Error ? err : "Invalid Signature",
           message: msg,
         },
-        {
-          status: 400,
-        },
+        { status: 401 },
       );
     }
 
@@ -36,12 +35,8 @@ export async function POST(req: NextRequest) {
     // Ensure the request body is a valid event object
     if (event.object !== "event") {
       return NextResponse.json(
-        {
-          error: "Invalid event object",
-        },
-        {
-          status: 400,
-        },
+        { error: "Invalid event object" },
+        { status: 400 },
       );
     }
 
@@ -49,21 +44,52 @@ export async function POST(req: NextRequest) {
       case "user.created": {
         const data = event.data;
 
-        await db.user.create({
-          data: {
-            id: data.id,
-            username: data.username ?? data.first_name ?? data.last_name,
-            imageUrl: data.image_url,
-          },
-        });
+        try {
+          await db.user.create({
+            data: {
+              id: data.id,
+              username: data.username ?? data.first_name ?? data.last_name,
+              imageUrl: data.image_url,
+            },
+          });
+        } catch (e) {
+          let errorMessage = "⚠️  Error creating user: ";
+          if (e instanceof Error) {
+            errorMessage += `${e.message}`;
+          } else {
+            errorMessage += "Internal Server Error";
+          }
+          console.error(errorMessage);
+          return NextResponse.json({ error: errorMessage }, { status: 500 });
+        }
 
         break;
       }
       case "user.deleted": {
         const data = event.data;
 
-        if (data.deleted) {
-          await db.user.delete({ where: { id: data.id } });
+        try {
+          if (data.deleted) {
+            const user = await db.user.findUnique({ where: { id: data.id } });
+
+            // Cancel user subscription (stripe)
+            if (user?.clerkId) {
+              const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+              await stripe.customers.del(user.clerkId);
+            }
+
+            // Delete the user from the database
+            await db.user.delete({ where: { id: data.id } });
+          }
+        } catch (e) {
+          let errorMessage = "⚠️  Error deleting user: ";
+          if (e instanceof Error) {
+            errorMessage += `${e.message}`;
+          } else {
+            errorMessage += "Internal Server Error";
+          }
+          console.error(errorMessage);
+          return NextResponse.json({ error: errorMessage }, { status: 500 });
         }
 
         break;
@@ -71,42 +97,42 @@ export async function POST(req: NextRequest) {
       case "user.updated": {
         const data = event.data;
 
-        await db.user.update({
-          where: { id: data.id },
-          data: {
-            username: data.username ?? data.first_name ?? data.last_name,
-            imageUrl: data.image_url,
-          },
-        });
+        try {
+          await db.user.update({
+            where: { id: data.id },
+            data: {
+              username: data.username ?? data.first_name ?? data.last_name,
+              imageUrl: data.image_url,
+            },
+          });
+        } catch (e) {
+          let errorMessage = "⚠️  Error updating user: ";
+          if (e instanceof Error) {
+            errorMessage += `${e.message}`;
+          } else {
+            errorMessage += "Internal Server Error";
+          }
+          console.error(errorMessage);
+          return NextResponse.json({ error: errorMessage }, { status: 500 });
+        }
 
         break;
       }
       default: {
         return NextResponse.json(
-          {
-            error: "Invalid event type",
-          },
-          {
-            status: 400,
-          },
+          { error: "Invalid event type" },
+          { status: 400 },
         );
       }
     }
 
     // Respond to the request indicating success
-    return NextResponse.json({
-      status: 200,
-      body: { message: "Webhook received and processed" },
-    });
+    return NextResponse.json({ message: "Webhook received and processed" });
   } catch (error) {
     console.error("Error processing webhook:", error);
     return NextResponse.json(
-      {
-        error: error instanceof Error ? error : "Internal Server Error",
-      },
-      {
-        status: 500,
-      },
+      { error: error instanceof Error ? error : "Internal Server Error" },
+      { status: 500 },
     );
   }
 }
