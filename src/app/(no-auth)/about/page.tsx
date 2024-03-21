@@ -22,13 +22,11 @@ export default function AboutPage() {
         <CTA />
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {/* These Card components would ideally be extracted to their own components for better reusability */}
-
           <Card title="Engage on the Edge">
             <p>
-              Ever wondered if pineapple on pizza is a crime? Or maybe, just
-              maybe, if there&apos;s life on Mars waiting to unfriend us?
-              Pollist is where these existential debates happen. 🔥
+              Pondering whether a cat video can truly change the world, or why
+              we can&apos;t stop watching them? Pollist is your playground for
+              the whimsical, the profound, and everything in between. 🎭
             </p>
           </Card>
 
@@ -96,7 +94,7 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-lg border-2 border-background bg-background/30 p-4 shadow-md">
+    <div className="rounded-lg border border-accent bg-background/40 p-4 shadow-md">
       <h3 className="mb-2 text-xl font-bold">{title}</h3>
       {children}
     </div>
