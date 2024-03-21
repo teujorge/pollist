@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 export default function TermsOfServicePage() {
   return (
     <main className="gap-2 [&>h2]:pt-10 [&>h2]:text-3xl [&>h2]:font-semibold [&>p]:py-2 [&>ul]:list-disc [&>ul]:pl-6">
@@ -76,3 +78,8 @@ export default function TermsOfServicePage() {
     </main>
   );
 }
+
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description: "Read our terms and conditions for using Pollist.",
+};

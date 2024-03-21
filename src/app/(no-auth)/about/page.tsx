@@ -1,5 +1,6 @@
 import { CTA } from "@/app/components/CTA";
 import { BlobBg } from "@/app/components/BlobBg";
+import type { Metadata } from "next";
 
 export default function AboutPage() {
   return (
@@ -100,3 +101,9 @@ function Card({
     </div>
   );
 }
+
+export const metadata: Metadata = {
+  title: "About",
+  description:
+    "Welcome to Pollist! A place where questions are odder than your aunt's Facebook posts.",
+};
