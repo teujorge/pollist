@@ -1,5 +1,5 @@
 import Image from "next/image";
-import DefaultImage from "public/default-profile-icon.jpg";
+import DefaultImage from "public/default-profile-icon.webp";
 import { cn } from "@/lib/utils";
 
 type ProfileImageProps = {

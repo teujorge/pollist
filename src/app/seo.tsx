@@ -15,7 +15,7 @@ const jsonLd: WithContext<WebSite> = {
     url: "https://pollist.org",
     logo: {
       "@type": "ImageObject",
-      url: "https://pollist.org/icon.png",
+      url: "https://pollist.org/pollist.ico",
     },
   },
   author: {
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   description:
     "Pollist is a platform for creating and sharing polls. Get opinions on your questions and share your thoughts with the world.",
   category: "Social",
-  icons: [{ rel: "icon", url: "/icon.png" }],
+  icons: [{ rel: "icon", url: "/pollist.ico" }],
   keywords: [
     "pollist",
     "polls",
@@ -66,9 +66,9 @@ export const metadata: Metadata = {
     siteName: "Pollist",
     images: [
       {
-        url: "https://pollist.org/icon.png",
-        width: 600,
-        height: 600,
+        url: "https://pollist.org/pollist.ico",
+        width: 256,
+        height: 256,
       },
     ],
     type: "website",
@@ -79,7 +79,7 @@ export const metadata: Metadata = {
     description:
       "Pollist is a platform for creating and sharing polls. Get opinions on your questions and share your thoughts with the world.",
     images: {
-      url: "https://pollist.org/icon.png",
+      url: "https://pollist.org/pollist.ico",
       alt: "Pollist logo",
     },
     site: "@pollist",
@@ -87,7 +87,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     title: "Pollist",
     statusBarStyle: "black-translucent",
-    startupImage: ["/icon.png"],
+    startupImage: ["/pollist.ico"],
   },
   appLinks: {
     web: {
