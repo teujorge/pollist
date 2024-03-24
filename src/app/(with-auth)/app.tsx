@@ -1,12 +1,19 @@
 "use client";
 
 import Script from "next/script";
+import GlobalLoading from "../loading";
 import { useUser } from "@clerk/nextjs";
 import { getUserTier } from "./actions";
 import { QueryProvider } from "./QueryProvider";
 import { useCustomScrollbar } from "../hooks/useCustomScrollbar";
 import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
-import { useState, useContext, createContext, useEffect } from "react";
+import {
+  useState,
+  useContext,
+  createContext,
+  useEffect,
+  Suspense,
+} from "react";
 import type {
   NotificationPollLikeItem,
   NotificationCommentItem,
@@ -65,7 +72,7 @@ export function App({ children }: { children: React.ReactNode }) {
             strategy="lazyOnload"
           />
         )}
-        {children}
+        <Suspense fallback={<GlobalLoading />}>{children}</Suspense>
       </AppProvider>
     </QueryProvider>
   );
