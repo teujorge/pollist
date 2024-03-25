@@ -15,7 +15,9 @@ const jsonLd: WithContext<WebSite> = {
     url: "https://pollist.org",
     logo: {
       "@type": "ImageObject",
-      url: "https://pollist.org/pollist.ico",
+      url: "https://pollist.org/logo.png",
+      width: "600",
+      height: "600",
     },
   },
   author: {
@@ -36,21 +38,22 @@ export const JsonLd = () => (
 export const metadata: Metadata = {
   title: {
     template: "Pollist | %s",
-    default: "Pollist | Opinions exposed",
+    default: "Pollist | Your Voice, Shaping the World's Next Distraction",
   },
   description:
-    "Pollist is a platform for creating and sharing polls. Get opinions on your questions and share your thoughts with the world.",
-  category: "Social",
-  icons: [{ rel: "icon", url: "/pollist.ico" }],
+    "Discover and engage with a wide array of polls on Pollist. Share your opinions and explore what the world thinks on diverse topics.",
+  category: "Social Media, Polls, Public Opinion",
+  icons: [{ rel: "icon", url: "/logo.png" }],
   keywords: [
-    "pollist",
     "polls",
-    "fun polls",
-    "vote on polls",
-    "share opinions",
-    "polling",
-    "poll voting",
-    "create polls",
+    "pollist",
+    "opinions",
+    "social media",
+    "public voting",
+    "community engagement",
+    "interactive polls",
+    "vote on issues",
+    "global opinions",
   ],
   metadataBase: new URL("https://pollist.org"),
   creator: "Matheus Jorge",
@@ -59,27 +62,28 @@ export const metadata: Metadata = {
     { name: "Davi Guimell" },
   ],
   openGraph: {
-    title: "Pollist | Opinions exposed",
+    title: "Pollist | Your Voice, Shaping the World's Next Distraction",
     description:
-      "Pollist is a platform for creating and sharing polls. Get opinions on your questions and share your thoughts with the world.",
+      "Join Pollist to vote on and create polls on any topic. Share your thoughts and see how they align with others globally.",
     url: "https://pollist.org",
     siteName: "Pollist",
     images: [
       {
-        url: "https://pollist.org/pollist.ico",
-        width: 256,
-        height: 256,
+        url: "https://pollist.org/logo.png",
+        width: 600,
+        height: 600,
+        type: "image/png",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Pollist",
+    title: "Pollist | Your Voice, Shaping the World's Next Distraction",
     description:
-      "Pollist is a platform for creating and sharing polls. Get opinions on your questions and share your thoughts with the world.",
+      "Explore global opinions with Pollist. Create, share, and vote on polls on any topic.",
     images: {
-      url: "https://pollist.org/pollist.ico",
+      url: "https://pollist.org/logo.png",
       alt: "Pollist logo",
     },
     site: "@pollist",
@@ -87,17 +91,17 @@ export const metadata: Metadata = {
   appleWebApp: {
     title: "Pollist",
     statusBarStyle: "black-translucent",
-    startupImage: ["/pollist.ico"],
+    startupImage: "/logo.png",
   },
   appLinks: {
     web: {
       url: "https://pollist.org",
-      should_fallback: true,
+      should_fallback: false,
     },
   },
 };
 
 export const viewport: Viewport = {
   colorScheme: "dark",
-  themeColor: "black",
+  themeColor: "#000000",
 };
