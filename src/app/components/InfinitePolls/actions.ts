@@ -26,7 +26,7 @@ export async function getInfinitePolls({
 
   const polls = await db.poll.findMany({
     where: {
-      title: search ? { contains: search } : undefined,
+      title: search ? { contains: search, mode: "insensitive" } : undefined,
       authorId: authorId ? { contains: authorId } : undefined,
       votes: {
         // Filter by voterId
