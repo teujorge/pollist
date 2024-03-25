@@ -20,6 +20,7 @@ import type { PollsDetails } from "../InfinitePolls/actions";
 import type { PollCardProps } from "./PollCard";
 import type { RealtimeChannel } from "@supabase/realtime-js";
 import type { MutableRefObject } from "react";
+import { CircularProgress } from "../CircularProgress";
 
 const ChartDrawer = dynamic(
   () => import("./ChartDrawer").then((mod) => mod.ChartDrawer),
@@ -366,8 +367,8 @@ export function PollCardActions(props: PollCardActionsProps) {
                   />
                 )}
               </div>
-              <div className="max-w-1/2">
-                <p className="w-full flex-grow">{option.text}</p>
+              <div className="w-full flex-grow">
+                <p>{option.text}</p>
                 <p className="whitespace-nowrap text-xs text-neutral-400">
                   {
                     optimisticPoll.votes.filter(
@@ -377,16 +378,8 @@ export function PollCardActions(props: PollCardActionsProps) {
                   Votes
                 </p>
               </div>
-              <div className="flex h-1 min-w-10 flex-grow rounded-full sm:bg-accent">
-                <div
-                  className="hidden h-full rounded-full bg-primary opacity-25 transition-all sm:flex"
-                  style={{ width: `${votePercentage}%` }}
-                />
-              </div>
-              <p className="w-10 text-end text-sm text-neutral-200">
-                {votePercentage}%
-              </p>
-              <div className="h-8 w-8" />
+
+              <CircularProgress size={40} progress={votePercentage} />
             </li>
           );
         })}
