@@ -41,20 +41,18 @@ export function ChartDrawer({
               margin={{ top: 100, right: 30, bottom: 30, left: 30 }}
             >
               <Bar
+                className="fill-foreground"
                 dataKey="value"
-                fill="white"
                 label={{
-                  fill: "black",
                   position: "insideTop",
-                  className: "text-base sm:text-2xl font-bold",
+                  className: "text-base sm:text-2xl font-bold fill-background",
                 }}
               >
                 <LabelList
                   dataKey="label"
                   position="top"
                   angle={0}
-                  fill="rgb(212 212 212)"
-                  className="text-xs sm:text-base"
+                  className="fill-accent-foreground text-xs sm:text-base"
                 />
               </Bar>
             </BarChart>

@@ -22,7 +22,7 @@ async function _FollowersList({ userId }: FollowersListProps) {
   });
 
   return followers.length === 0 ? (
-    <p className="text-sm text-neutral-400 underline underline-offset-4">
+    <p className="text-sm text-accent-foreground underline underline-offset-4">
       {myId === userId
         ? "No one is following you yet."
         : "This user is not being followed by anyone yet."}

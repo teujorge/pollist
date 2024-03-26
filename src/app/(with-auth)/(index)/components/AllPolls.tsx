@@ -93,7 +93,7 @@ export function AllPolls({ query }: { query: PollQuery }) {
         hasInitedRef.current === false ? (
           <Loader />
         ) : (
-          <p className="text-sm text-neutral-400 underline decoration-neutral-400 underline-offset-4">
+          <p className="text-sm text-accent-foreground underline decoration-accent-foreground underline-offset-4">
             Nothing more to show...
           </p>
         )}

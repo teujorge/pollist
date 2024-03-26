@@ -12,7 +12,7 @@ export function CTA() {
           className={cn(
             "shimmer",
             buttonVariants({ variant: "secondary", size: "lg" }),
-            "pointer-events-none text-black/50",
+            "pointer-events-none text-background/50",
           )}
         >
           Participate in a Poll
@@ -40,7 +40,7 @@ async function _CTA() {
       href={`/polls/${randomPopularPoll.id}`}
       className={cn(
         buttonVariants({ variant: "secondary", size: "lg" }),
-        "hovact:text-black",
+        "hovact:text-background",
       )}
     >
       Participate in a Poll

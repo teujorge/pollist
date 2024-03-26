@@ -68,7 +68,7 @@ export function CircularProgress({
           dy=".3em"
           textAnchor="middle"
           fontSize={fontSize}
-          className="fill-white"
+          className="fill-foreground"
         >
           {`${progress}%`}
         </text>

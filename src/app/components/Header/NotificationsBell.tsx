@@ -39,7 +39,7 @@ export function NotificationsBell() {
             [&>svg]:hovact:text-primary"
             >
               <BellIcon
-                className="text-white transition-colors"
+                className="text-foreground transition-colors"
                 width={18}
                 height={18}
               />

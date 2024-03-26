@@ -37,7 +37,7 @@ export default async function PollPage({ params, searchParams }: Props) {
             </Link>
           </span>
         </div>
-        <div className="flex flex-col gap-1 text-sm text-neutral-400 sm:items-end">
+        <div className="flex flex-col gap-1 text-sm text-accent-foreground sm:items-end">
           {poll.createdAt.toLocaleDateString(undefined, {
             year: "numeric",
             month: "long",

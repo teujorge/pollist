@@ -9,7 +9,7 @@ export function Tabs() {
     <div className="sticky top-20 flex h-10 w-full flex-row justify-center">
       <button
         className={`z-10 w-40 rounded-lg p-2 transition-colors
-          ${tab === "polls" ? "cursor-default font-bold text-white" : "text-neutral-400 hovact:bg-accent/40"}
+          ${tab === "polls" ? "cursor-default font-bold text-foreground" : "text-accent-foreground hovact:bg-accent/40"}
         `}
         onClick={() => setTab("polls")}
       >
@@ -18,7 +18,7 @@ export function Tabs() {
 
       <button
         className={`z-10 w-40 rounded-lg p-2 transition-colors
-          ${tab === "votes" ? "cursor-default font-bold text-white" : "text-neutral-400 hovact:bg-accent/40"}
+          ${tab === "votes" ? "cursor-default font-bold text-foreground" : "text-accent-foreground hovact:bg-accent/40"}
         `}
         onClick={() => setTab("votes")}
       >

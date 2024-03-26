@@ -28,7 +28,9 @@ export function Header() {
           <Link href="/polls/create">Create</Link>
         ) : (
           <SignInButton mode="modal">
-            <button className="hovact:text-purple-500">Create</button>
+            <button className="transition-colors hovact:text-purple-500">
+              Create
+            </button>
           </SignInButton>
         )}
 
@@ -38,7 +40,9 @@ export function Header() {
           <ClerkUserButton />
         ) : (
           <SignInButton mode="modal">
-            <button className="hovact:text-purple-500">Sign in</button>
+            <button className="transition-colors hovact:text-purple-500">
+              Sign in
+            </button>
           </SignInButton>
         )}
       </div>

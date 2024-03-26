@@ -3,12 +3,12 @@ import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs";
 import { Loader } from "../../Loader";
 import { Suspense } from "react";
+import { ProfileLink } from "./ProfileLink";
 import { ProfileToggleAds } from "./settings/ProfileToggleAds";
 import { PricingTableEmbed } from "./settings/PricingTableEmbed";
 import { ProfileTogglePrivate } from "./settings/ProfileTogglePrivate";
 import { ClerkUserButtonClient } from "./ClerkUserButtonClient";
 import { ArrowRightIcon, ExternalLinkIcon } from "@radix-ui/react-icons";
-import Link from "next/link";
 
 export function ClerkUserButton() {
   return (
@@ -38,9 +38,7 @@ async function SettingsTab() {
       <div className="flex flex-col gap-1">
         <h1 className="text-[2rem] font-semibold">Settings</h1>
         <p>Manage your preferences</p>
-        <Link href={`/users/${user.username}`} className="text-xs">
-          Visit your profile page
-        </Link>
+        <ProfileLink href={`/users/${user.username}`} />
       </div>
 
       <div className="flex flex-col gap-4">

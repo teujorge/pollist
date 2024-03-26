@@ -102,7 +102,7 @@ export default async function UserPage({ params }: Props) {
       </div>
 
       {isContentPrivate ? (
-        <p className="mx-auto pt-28 text-neutral-400 underline underline-offset-4">
+        <p className="mx-auto pt-28 text-accent-foreground underline underline-offset-4">
           User profile is private
         </p>
       ) : (

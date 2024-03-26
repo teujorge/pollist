@@ -10,7 +10,7 @@ export type PollCardProps = {
 
 export function PollCard({ poll, highlightedUserId }: PollCardProps) {
   return (
-    <div className="flex w-full flex-col gap-2 rounded-lg border border-accent bg-neutral-950 p-6 shadow-md">
+    <div className="flex w-full flex-col gap-2 rounded-lg border border-accent bg-accent/10 p-6 shadow-md">
       <Link
         href={`/users/${poll.author.username}`}
         className="flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 pl-0 transition-all [&>div>p]:hovact:text-primary [&>div>span]:hovact:text-purple-600 [&>div]:hovact:border-[#d0b3f5]"
@@ -23,11 +23,11 @@ export function PollCard({ poll, highlightedUserId }: PollCardProps) {
           />
         </div>
 
-        <div className="flex flex-col justify-center gap-1 border-0">
-          <p className="text-neutral-200 transition-colors">
+        <div className="flex flex-col justify-center gap-0.5 border-0">
+          <p className="text-foreground transition-colors">
             {poll.author.username}
           </p>
-          <span className="text-xs text-neutral-400 transition-colors">
+          <span className="text-xs text-accent-foreground transition-colors">
             {new Date(poll.createdAt).toLocaleDateString(undefined, {
               year: "2-digit",
               month: "short",

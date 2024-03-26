@@ -32,7 +32,7 @@ export function ActiveFollowerCardActions({ follower }: { follower: User }) {
         <button
           type="button"
           onClick={handleRemoveFollow}
-          className="flex items-center justify-center rounded-lg bg-neutral-900 px-2 py-1 transition-colors hovact:bg-destructive/25"
+          className="flex items-center justify-center rounded-lg px-2 py-1 text-sm transition-colors hovact:bg-destructive/25"
         >
           <span className="text-destructive">Remove</span>
         </button>

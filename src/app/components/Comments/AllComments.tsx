@@ -69,7 +69,7 @@ export async function AllComments({
           />
         ) : (
           <SignInButton mode="modal">
-            <p className="w-full cursor-pointer p-4 text-center text-neutral-400 hovact:text-white">
+            <p className="w-full cursor-pointer p-4 text-center text-accent-foreground transition-colors hovact:text-foreground">
               Sign in to share your thoughts
             </p>
           </SignInButton>

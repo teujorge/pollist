@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
 import React from "react";
+import { cn } from "@/lib/utils";
 
 const Loader = React.forwardRef<
   HTMLSpanElement,
@@ -10,7 +10,7 @@ const Loader = React.forwardRef<
       {...props}
       ref={ref}
       className={cn(
-        "loader h-10 w-10 border-4 border-neutral-300",
+        "loader h-10 w-10 border-[3px] border-foreground",
         props.className,
       )}
     />

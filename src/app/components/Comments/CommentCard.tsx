@@ -55,7 +55,7 @@ export function CommentCard({
     >
       {isCommentDeleted ? null : (
         <div
-          className={`flex w-full flex-col gap-2 rounded-lg border bg-neutral-950 p-4
+          className={`flex w-full flex-col gap-2 rounded-lg border bg-accent/10 p-4
         ${showPurpleForUnreadComment || showPurpleForUnreadLike ? "border-primary" : "border-accent"}
         `}
         >

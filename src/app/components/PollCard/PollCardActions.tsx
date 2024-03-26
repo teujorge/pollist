@@ -302,7 +302,7 @@ export function PollCardActions(props: PollCardActionsProps) {
   const likeButtonComponent = (
     <button
       className={`flex flex-row items-center justify-center gap-1 font-bold
-        ${optimisticPoll.likes.length > 0 ? "[&>*]:text-primary [&>*]:hovact:text-purple-400" : "[&>*]:text-neutral-400 [&>*]:hovact:text-neutral-300"}
+        ${optimisticPoll.likes.length > 0 ? "[&>*]:text-primary [&>*]:hovact:text-purple-400" : "[&>*]:text-accent-foreground [&>*]:hovact:text-foreground"}
       `}
       onClick={user ? handleLike : undefined}
     >
@@ -316,7 +316,7 @@ export function PollCardActions(props: PollCardActionsProps) {
       {voteBlocked && (
         <div
           title="Sign in required to vote"
-          className="absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 text-neutral-400"
+          className="absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 text-foreground"
         >
           <LockClosedIcon />
         </div>
@@ -345,7 +345,7 @@ export function PollCardActions(props: PollCardActionsProps) {
               key={option.id}
               onClick={() => onVote(option.id)}
               className={cn(
-                "relative flex w-full cursor-pointer flex-row items-center gap-2 rounded-xl border px-4 py-2 transition-colors hovact:bg-neutral-900",
+                "relative flex w-full cursor-pointer flex-row items-center gap-2 rounded-xl border px-4 py-2 transition-colors hovact:bg-accent/30",
                 option.id === optionIdToHighlight
                   ? "border-primary"
                   : "border-transparent",
@@ -369,7 +369,7 @@ export function PollCardActions(props: PollCardActionsProps) {
               </div>
               <div className="w-full flex-grow">
                 <p>{option.text}</p>
-                <p className="whitespace-nowrap text-xs text-neutral-400">
+                <p className="whitespace-nowrap text-xs text-accent-foreground">
                   {
                     optimisticPoll.votes.filter(
                       (vote) => vote.optionId === option.id,

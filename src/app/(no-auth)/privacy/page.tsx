@@ -7,7 +7,7 @@ export default function PrivacyPolicyPage() {
         <h1 className="py-4 text-center text-7xl font-black md:text-9xl">
           Privacy Policy
         </h1>
-        <p className="text-center text-neutral-200">
+        <p className="text-center text-accent-foreground">
           Last updated: March 9, 2024
         </p>
       </div>

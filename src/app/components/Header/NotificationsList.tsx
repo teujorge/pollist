@@ -289,7 +289,7 @@ function NotificationCard({
 
   return (
     <div
-      className={`relative flex w-full select-none flex-row gap-2 rounded-md border border-accent bg-neutral-900 p-2 transition-all duration-200
+      className={`relative flex w-full select-none flex-row gap-2 rounded-md border border-accent bg-accent/10 p-2 transition-all duration-200
         ${isRemoving && "translate-x-full opacity-0"}
         ${hasBeenRemoved && "hidden"}
       `}
@@ -304,7 +304,7 @@ function NotificationCard({
     >
       {card}
       <button
-        className="absolute right-0 top-0 -translate-y-1/3 translate-x-1/3 rounded-full border border-neutral-600 bg-neutral-950 p-0.5 outline-none transition-colors hovact:cursor-pointer hovact:bg-neutral-600"
+        className="absolute right-0 top-0 rounded-full p-1 text-foreground outline-none transition-colors hovact:text-destructive"
         onClick={handleRemove}
       >
         <Cross2Icon />
@@ -486,20 +486,20 @@ function FollowPendingNotificationCard({
         <button
           disabled={isAccepting || isDeclining}
           onClick={handleAccept}
-          className={`flex h-7 w-14 items-center justify-center text-green-500 underline decoration-transparent hovact:decoration-green-500
+          className={`flex h-7 w-14 items-center justify-center text-sm text-green-500 underline decoration-transparent hovact:decoration-green-500
             ${isDeclining && "pointer-events-none opacity-50"}
           `}
         >
-          {isAccepting ? <Loader className="h-5 w-5 border-2" /> : "Accept"}
+          {isAccepting ? <Loader className="h-4 w-4 border-2" /> : "Accept"}
         </button>
         <button
           disabled={isAccepting || isDeclining}
           onClick={handleDecline}
-          className={`flex h-7 w-14 items-center justify-center text-destructive underline decoration-transparent hovact:decoration-destructive
+          className={`flex h-7 w-14 items-center justify-center text-sm text-destructive underline decoration-transparent hovact:decoration-destructive
             ${isAccepting && "pointer-events-none opacity-50"}
           `}
         >
-          {isDeclining ? <Loader className="h-5 w-5 border-2" /> : "Decline"}
+          {isDeclining ? <Loader className="h-4 w-4 border-2" /> : "Decline"}
         </button>
       </div>
 
@@ -591,5 +591,5 @@ function timeElapsed(date: Date): string {
 }
 
 function NotificationInfo({ children }: { children: React.ReactNode }) {
-  return <span className="text-xs text-neutral-400">{children}</span>;
+  return <span className="text-xs text-accent-foreground">{children}</span>;
 }

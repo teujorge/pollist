@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Loader } from "@/app/components/Loader";
 import { follow, unfollow } from "@/app/(with-auth)/users/actions";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 
 export function FollowButtonClient({
   userId,
@@ -40,11 +42,19 @@ export function FollowButtonClient({
     }
   }
 
-  if (isClicked) return <Loader className="h-7 w-7" />;
+  if (isClicked)
+    return (
+      <div className="flex h-7 items-center justify-center pl-2">
+        <Loader className="h-4 w-4 border-2" />
+      </div>
+    );
 
   return (
     <button
-      className="h-fit w-fit rounded-lg bg-neutral-900 px-1.5 py-0.5 transition-colors hovact:bg-neutral-800"
+      className={cn(
+        buttonVariants({ variant: "outline", size: "sm" }),
+        "h-7 w-14 px-2 py-1",
+      )}
       onClick={handleClick}
     >
       {isFollowing ? "unfollow" : "follow"}

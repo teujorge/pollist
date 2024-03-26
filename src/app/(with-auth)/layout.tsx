@@ -5,6 +5,7 @@ import { Header } from "../components/Header/Header";
 import { Toaster } from "sonner";
 import { Suspense } from "react";
 import { ClerkProvider } from "@clerk/nextjs";
+import { clerkElements } from "@/styles/clerk";
 
 export default function RootLayout({
   children,
@@ -22,7 +23,7 @@ export default function RootLayout({
           layout: {
             termsPageUrl: "/tos",
             privacyPageUrl: "/privacy",
-            logoPlacement: "outside",
+            logoPlacement: "none",
             socialButtonsVariant: "blockButton",
             socialButtonsPlacement: "top",
           },
@@ -32,18 +33,16 @@ export default function RootLayout({
             colorSuccess: "#22c55e", // green
             colorWarning: "#F59e0b", // amber
 
-   
             colorAlphaShade: "#ffffff90",
             colorBackground: "#000000",
-            
+
             colorTextOnPrimaryBackground: "#f1f1f1",
             colorTextSecondary: "#f1f1f1",
-
-            // colorBackground: "#010101",
 
             colorInputText: "#f1f1f1",
             colorInputBackground: "#191919",
           },
+          elements: clerkElements,
         }}
       >
         <App>

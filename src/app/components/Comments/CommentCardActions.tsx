@@ -179,18 +179,17 @@ export function CommentCardActions() {
   }
 
   const replyButtonComponent = (
-    <button
-      className="font-bold [&>span]:hovact:text-neutral-400"
-      onClick={user ? () => setIsReplying(!isReplying) : undefined}
-    >
-      <span className="text-neutral-400 transition-colors">Reply</span>
+    <button onClick={user ? () => setIsReplying(!isReplying) : undefined}>
+      <span className="font-bold text-accent-foreground transition-colors hovact:text-foreground">
+        Reply
+      </span>
     </button>
   );
 
   const likeButtonComponent = (
     <button
       className={`flex flex-row items-center justify-center gap-1 font-bold
-        ${comment.likes.length > 0 ? "[&>*]:text-primary [&>*]:hovact:text-purple-400" : "[&>*]:text-neutral-400 [&>*]:hovact:text-neutral-300"}
+        ${comment.likes.length > 0 ? "[&>*]:text-primary [&>*]:hovact:text-purple-400" : "[&>*]:text-accent-foreground [&>*]:hovact:text-foreground"}
       `}
       onClick={user ? handleLike : undefined}
     >
@@ -230,7 +229,7 @@ export function CommentCardActions() {
           >
             {/* copy link button */}
             <button
-              className="w-fit font-bold [&>span]:hovact:text-neutral-400"
+              className="w-fit font-bold [&>span]:hovact:text-accent-foreground"
               onClick={handleCopyThreadLink}
             >
               <span className="transition-colors">Copy Link</span>
@@ -257,10 +256,10 @@ export function CommentCardActions() {
       )}
 
       <button
-        className="w-fit font-bold [&>span]:hovact:text-neutral-400"
+        className="w-fit font-bold [&>span]:hovact:text-foreground"
         onClick={() => setIsViewingReplies(!isViewingReplies)}
       >
-        <span className="text-neutral-400 transition-colors">
+        <span className="text-accent-foreground transition-colors">
           View replies ({comment._count.replies})
         </span>
       </button>
@@ -347,13 +346,13 @@ function CommentReplies({
         <Loader className="mx-auto" />
       ) : data.hasMore ? (
         <button
-          className="w-fit font-bold [&>span]:hovact:text-neutral-400"
+          className="w-fit font-bold [&>span]:hovact:text-accent-foreground"
           onClick={handleLoadMore}
         >
-          <span className="text-neutral-400 transition-colors">load more</span>
+          <span className="text-foreground transition-colors">load more</span>
         </button>
       ) : (
-        <p className="w-full text-center text-sm text-neutral-400 underline decoration-neutral-500 underline-offset-4">
+        <p className="w-full text-center text-sm text-accent-foreground underline decoration-accent-foreground underline-offset-4">
           end of reply thread
         </p>
       )}
