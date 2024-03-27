@@ -1,8 +1,10 @@
-import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { Loader } from "@/app/components/Loader";
 import { Suspense } from "react";
+import { PAGE_SIZE } from "@/constants";
 import { ActiveFollowerCard } from "./ActiveFollowerCard";
+import { getMoreFollowers } from "./actions";
+import { MoreFollowers } from "./MoreFollowers";
 
 type FollowersListProps = {
   userId: string;
@@ -11,15 +13,15 @@ type FollowersListProps = {
 async function _FollowersList({ userId }: FollowersListProps) {
   const { userId: myId } = auth();
 
-  const followers = await db.follow.findMany({
-    where: {
-      followeeId: userId,
-      accepted: true,
-    },
-    select: {
-      follower: true,
-    },
+  const followers = await getMoreFollowers({
+    userId: userId,
+    cursor: undefined,
   });
+
+  const cursor =
+    followers.length === PAGE_SIZE
+      ? followers[followers.length - 1]!.id
+      : undefined;
 
   return followers.length === 0 ? (
     <p className="text-sm text-accent-foreground underline underline-offset-4">
@@ -29,13 +31,14 @@ async function _FollowersList({ userId }: FollowersListProps) {
     </p>
   ) : (
     <div className="flex h-full w-full flex-col gap-1 overflow-y-auto">
-      {followers.map((f) => (
+      {followers.map((follower) => (
         <ActiveFollowerCard
-          key={f.follower.id}
+          key={follower.id}
           userId={userId}
-          follower={f.follower}
+          follower={follower}
         />
       ))}
+      {cursor && <MoreFollowers userId={userId} initialCursor={cursor} />}
     </div>
   );
 }

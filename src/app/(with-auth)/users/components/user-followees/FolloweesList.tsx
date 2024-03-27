@@ -1,7 +1,9 @@
-import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { Loader } from "@/app/components/Loader";
 import { Suspense } from "react";
+import { PAGE_SIZE } from "@/constants";
+import { getMoreFollowees } from "./actions";
+import { MoreFollowees } from "./MoreFollowees";
 import { ActiveFolloweeCard } from "./ActiveFolloweeCard";
 
 type FolloweesListProps = {
@@ -11,17 +13,17 @@ type FolloweesListProps = {
 async function _FolloweesList({ userId }: FolloweesListProps) {
   const { userId: myId } = auth();
 
-  const following = await db.follow.findMany({
-    where: {
-      followerId: userId,
-      accepted: true,
-    },
-    select: {
-      followee: true,
-    },
+  const followees = await getMoreFollowees({
+    userId: userId,
+    cursor: undefined,
   });
 
-  return following.length === 0 ? (
+  const cursor =
+    followees.length === PAGE_SIZE
+      ? followees[followees.length - 1]!.id
+      : undefined;
+
+  return followees.length === 0 ? (
     <p className="text-sm text-accent-foreground underline underline-offset-4">
       {myId === userId
         ? "You are not following anyone yet."
@@ -29,13 +31,14 @@ async function _FolloweesList({ userId }: FolloweesListProps) {
     </p>
   ) : (
     <div className="flex h-full w-full flex-col gap-1 overflow-y-auto">
-      {following.map((f) => (
+      {followees.map((followee) => (
         <ActiveFolloweeCard
-          key={f.followee.id}
+          key={followee.id}
           userId={userId}
-          followee={f.followee}
+          followee={followee}
         />
       ))}
+      {cursor && <MoreFollowees userId={userId} initialCursor={cursor} />}
     </div>
   );
 }
