@@ -84,7 +84,7 @@ model Poll {
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
   authorId      String
-  title         String     @db.VarChar(100)
+  title         String     @db.VarChar(200)
   description   String?    @db.VarChar(200)
   controversial Boolean    @default(false)
   sensitive     Boolean    @default(false)
