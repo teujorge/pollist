@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs";
 import { IconSvg } from "../../svgs/IconSvg";
+import { ProfileLink } from "./ProfileLink";
 import { SignInButton } from "@clerk/nextjs";
 import { NotificationsBell } from "./NotificationsBell";
 import { ClerkUserButton } from "./ClerkUserButton/ClerkUserButton";
@@ -33,6 +34,8 @@ export function Header() {
             </button>
           </SignInButton>
         )}
+
+        <ProfileLink />
 
         {userId && <NotificationsBell />}
 
