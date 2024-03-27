@@ -13,6 +13,7 @@ export function InfinitelyMoreItems<
   query: TQuery;
   initialCursor: string | undefined;
   getter: (params: TQuery & { cursor: string | undefined }) => Promise<TItem[]>;
+  loaderClassName?: string;
 }) {
   const loaderRef = useRef<HTMLDivElement>(null);
 
@@ -33,10 +34,10 @@ export function InfinitelyMoreItems<
       ))}
       <div
         ref={loaderRef}
-        className="flex h-12 w-full items-center justify-center"
+        className="flex min-h-12 w-full items-center justify-center"
       >
         {data.hasMore ? (
-          <Loader />
+          <Loader className={props.loaderClassName} />
         ) : (
           <p className="text-sm text-accent-foreground underline decoration-accent-foreground underline-offset-4">
             Nothing more to show...
