@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ProfileImage } from "../ProfileImage";
 import { PollCardActions } from "@/app/components/PollCard/PollCardActions";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import type { PollsDetails } from "../InfinitePolls/actions";
 
 export type PollCardProps = {
@@ -40,7 +41,19 @@ export function PollCard({ poll, highlightedUserId }: PollCardProps) {
         <h2 className="text-2xl font-bold">{poll.title}</h2>
       </Link>
 
-      <PollCardActions poll={poll} highlightedUserId={highlightedUserId} />
+      <SignedIn>
+        <PollCardActions poll={poll} highlightedUserId={highlightedUserId} />
+      </SignedIn>
+      <SignedOut>
+        <SignInButton mode="modal">
+          <button className="w-full text-left">
+            <PollCardActions
+              poll={poll}
+              highlightedUserId={highlightedUserId}
+            />
+          </button>
+        </SignInButton>
+      </SignedOut>
     </div>
   );
 }
