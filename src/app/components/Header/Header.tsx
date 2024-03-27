@@ -1,17 +1,16 @@
 import Link from "next/link";
-import { auth } from "@clerk/nextjs";
 import { IconSvg } from "../../svgs/IconSvg";
-import { ProfileLink } from "./ProfileLink";
-import { SignInButton } from "@clerk/nextjs";
-import { NotificationsBell } from "./NotificationsBell";
+import { MobileHeader } from "./HeaderMobile";
+import { DesktopHeader } from "./HeaderDesktop";
 import { ClerkUserButton } from "./ClerkUserButton/ClerkUserButton";
+import { NotificationsBell } from "./NotificationsBell";
+import { auth, SignInButton } from "@clerk/nextjs";
 
 export function Header() {
   const { userId } = auth();
 
   return (
-    <header className="sticky left-0 right-0 top-0 z-40 flex w-full flex-row justify-between bg-gradient-to-b from-background from-60% px-5 py-4">
-      {/* App Icon for all sizes */}
+    <header className="sticky left-0 right-0 top-0 z-40 flex w-full flex-row justify-between bg-gradient-to-b from-background from-60% px-5 py-4 text-lg font-semibold">
       <Link
         href="/"
         scroll={false}
@@ -20,22 +19,8 @@ export function Header() {
         <IconSvg className="h-full w-full" />
       </Link>
 
-      <div className="flex flex-row items-center justify-end gap-3 sm:gap-4">
-        <Link key="header-home" href="/" scroll={false}>
-          Home
-        </Link>
-
-        {userId ? (
-          <Link href="/polls/create">Create</Link>
-        ) : (
-          <SignInButton mode="modal">
-            <button className="transition-colors hovact:text-purple-500">
-              Create
-            </button>
-          </SignInButton>
-        )}
-
-        <ProfileLink />
+      <nav className="flex flex-row gap-4">
+        <DesktopHeader userId={userId} />
 
         {userId && <NotificationsBell />}
 
@@ -48,7 +33,9 @@ export function Header() {
             </button>
           </SignInButton>
         )}
-      </div>
+
+        <MobileHeader userId={userId} />
+      </nav>
     </header>
   );
 }

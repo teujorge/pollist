@@ -30,6 +30,8 @@ export function ChartDrawer({
         </Button>
       </DrawerTrigger>
       <DrawerContent>
+        <div className="mx-auto mt-3 h-1.5 w-24 rounded-full bg-accent" />
+
         <DrawerHeader>
           <DrawerTitle>Votes</DrawerTitle>
         </DrawerHeader>

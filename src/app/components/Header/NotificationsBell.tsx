@@ -38,12 +38,8 @@ export function NotificationsBell() {
               className="relative select-none outline-none
             [&>svg]:hovact:text-primary"
             >
-              <BellIcon
-                className="text-foreground transition-colors"
-                width={18}
-                height={18}
-              />
-              <div className="absolute -right-0.5 -top-0.5 flex h-2 w-2 items-center justify-center rounded-full bg-primary text-xs" />
+              <BellIcon className="text-foreground h-5 w-5 transition-colors" />
+              <div className="absolute -right-0.5 top-0.5 flex h-2 w-2 items-center justify-center rounded-full bg-primary text-xs" />
             </button>
           </PopoverTrigger>
           <PopoverContent align="end">
