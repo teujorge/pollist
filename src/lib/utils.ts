@@ -25,6 +25,6 @@ export function uppercaseFirstLetterOfEachSentence(str: string): string {
     str
       .match(regex)
       ?.map((sentence) => (sentence ? uppercaseFirstLetter(sentence) : ""))
-      .join("") ?? ""
+      .join("") ?? str
   );
 }
