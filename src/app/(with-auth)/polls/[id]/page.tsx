@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { getSinglePoll } from "@/app/components/InfinitePolls/actions";
 import { DeletePollForm } from "@/app/components/CrudPoll/DeletePollForm";
 import { PollCardActions } from "@/app/components/PollCard/PollCardActions";
+import { uppercaseFirstLetterOfEachSentence } from "@/lib/utils";
 import {
   AllComments,
   AllCommentsFallback,
@@ -28,8 +29,12 @@ export default async function PollPage({ params, searchParams }: Props) {
       {/* header */}
       <div className="flex flex-col items-start justify-start gap-1 sm:flex-row sm:justify-between">
         <div className="flex flex-col gap-1">
-          <h1 className="text-3xl">{poll.title}</h1>
-          <h2>{poll.description}</h2>
+          <h1 className="text-3xl">
+            {uppercaseFirstLetterOfEachSentence(poll.title)}
+          </h1>
+          {poll.description && (
+            <h2>{uppercaseFirstLetterOfEachSentence(poll.description)}</h2>
+          )}
           <span>
             Created by{" "}
             <Link href={`/users/${poll.author.username}`}>
@@ -62,10 +67,12 @@ export default async function PollPage({ params, searchParams }: Props) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const poll = await getSinglePoll({ pollId: params.id });
 
+  if (!poll) return {};
+
   const voteCounts: Record<string, number> = {};
 
   // Count votes for each option
-  poll?.votes.forEach((vote) => {
+  poll.votes.forEach((vote) => {
     voteCounts[vote.optionId] = (voteCounts[vote.optionId] ?? 0) + 1;
   });
 
@@ -79,12 +86,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
   }
 
-  const winningOption = poll?.options.find(
+  const winningOption = poll.options.find(
     (option) => option.id === winningOptionId,
   );
 
   return {
-    title: poll?.title,
-    description: `Winning choice: "${winningOption?.text}", showing the majority's preference.`,
+    title: uppercaseFirstLetterOfEachSentence(poll.title),
+    description: `Winning choice: "${winningOption?.text}"`,
   };
 }

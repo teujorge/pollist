@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { Tabs } from "@/app/(with-auth)/users/components/Tabs";
 import { Stat } from "@/app/(with-auth)/users/components/Stat";
 import { Loader } from "@/app/components/Loader";
+import { getUser } from "../actions";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ProfileImage } from "@/app/components/ProfileImage";
@@ -19,7 +20,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import type { ResolvingMetadata, Metadata } from "next";
-import { getUser } from "../actions";
 
 type Props = {
   params: { username: string };
@@ -107,22 +107,8 @@ export default async function UserPage({ params }: Props) {
         </p>
       ) : (
         <>
-          <Tabs />
-          <TabManagement tabKey="polls">
-            <Suspense
-              fallback={
-                <div className="flex w-full items-center justify-center pt-8">
-                  <Loader />
-                </div>
-              }
-            >
-              <InfinitePolls
-                idPrefix="my-polls"
-                query={{ authorId: user.id }}
-                highlightedUserId={undefined}
-              />
-            </Suspense>
-          </TabManagement>
+          <Tabs showPrivate={myId === user.id} />
+
           <TabManagement tabKey="votes">
             <Suspense
               fallback={
@@ -138,6 +124,40 @@ export default async function UserPage({ params }: Props) {
               />
             </Suspense>
           </TabManagement>
+
+          <TabManagement tabKey="polls">
+            <Suspense
+              fallback={
+                <div className="flex w-full items-center justify-center pt-8">
+                  <Loader />
+                </div>
+              }
+            >
+              <InfinitePolls
+                idPrefix="my-polls"
+                query={{ authorId: user.id }}
+                highlightedUserId={undefined}
+              />
+            </Suspense>
+          </TabManagement>
+
+          {myId === user.id && (
+            <TabManagement tabKey="private">
+              <Suspense
+                fallback={
+                  <div className="flex w-full items-center justify-center pt-8">
+                    <Loader />
+                  </div>
+                }
+              >
+                <InfinitePolls
+                  idPrefix="my-private-polls"
+                  query={{ authorId: user.id, private: true }}
+                  highlightedUserId={undefined}
+                />
+              </Suspense>
+            </TabManagement>
+          )}
         </>
       )}
     </>

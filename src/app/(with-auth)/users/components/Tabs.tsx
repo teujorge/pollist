@@ -1,34 +1,39 @@
 "use client";
 
-import { useUserPage } from "../context";
+import { tabs, useUserPage } from "../context";
+import { cn, uppercaseFirstLetter } from "@/lib/utils";
 
-export function Tabs() {
+export function Tabs({ showPrivate }: { showPrivate: boolean }) {
   const { tab, setTab } = useUserPage();
 
   return (
     <div className="sticky top-20 flex h-10 w-full flex-row justify-center">
-      <button
-        className={`z-10 w-40 rounded-lg p-2 transition-colors
-          ${tab === "polls" ? "cursor-default font-bold text-foreground" : "text-accent-foreground hovact:bg-accent/40"}
-        `}
-        onClick={() => setTab("polls")}
-      >
-        Polls
-      </button>
-
-      <button
-        className={`z-10 w-40 rounded-lg p-2 transition-colors
-          ${tab === "votes" ? "cursor-default font-bold text-foreground" : "text-accent-foreground hovact:bg-accent/40"}
-        `}
-        onClick={() => setTab("votes")}
-      >
-        Votes
-      </button>
+      {tabs.map(
+        (tabName) =>
+          ((tabName === "private" && showPrivate) || tabName !== "private") && (
+            <button
+              key={tabName}
+              className={`z-10 w-40 rounded-lg p-2 transition-colors
+                      ${tab === tabName ? "cursor-default font-bold text-foreground" : "text-accent-foreground hovact:bg-accent/40"}
+                    `}
+              onClick={() => setTab(tabName)}
+            >
+              {uppercaseFirstLetter(tabName)}
+            </button>
+          ),
+      )}
 
       <div
-        className={`absolute bottom-0 left-1/2 z-0 h-0.5 w-40 rounded-full bg-accent transition-all
-          ${tab === "polls" ? "-translate-x-full" : ""}
-        `}
+        className={cn(
+          "absolute bottom-0 left-1/2 z-0 hidden h-0.5 w-40 rounded-full bg-accent transition-all sm:flex",
+
+          showPrivate && tab === "votes" ? "-translate-x-60" : "",
+          showPrivate && tab === "polls" ? "-translate-x-20" : "",
+          showPrivate && tab === "private" ? "translate-x-20" : "",
+
+          !showPrivate && tab === "votes" ? "-translate-x-40" : "",
+          !showPrivate && tab === "polls" ? "translate-x-0" : "",
+        )}
       />
     </div>
   );

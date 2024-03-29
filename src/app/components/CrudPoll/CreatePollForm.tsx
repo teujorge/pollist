@@ -4,12 +4,14 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Loader } from "../Loader";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { useState } from "react";
 import { supabase } from "@/database/supabase";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input, InputFile } from "../Input";
 import { createPollSchema } from "./validation";
-import { useForm, useFieldArray } from "react-hook-form";
+import { Controller, useForm, useFieldArray } from "react-hook-form";
 import { PlusIcon, CrossCircledIcon, Cross2Icon } from "@radix-ui/react-icons";
 import {
   addImagePathToPollOption,
@@ -26,9 +28,16 @@ export function CreatePollForm({
 }) {
   const router = useRouter();
 
+  const [createPollSuccess, setCreatePollSuccess] = useState<
+    boolean | undefined
+  >(undefined);
+
   const form = useForm<CreatePollFields>({
     resolver: zodResolver(createPollSchema),
     mode: "onChange",
+    defaultValues: {
+      private: false,
+    },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -45,35 +54,47 @@ export function CreatePollForm({
       delete option.file;
     }
 
-    const newPoll = await createPoll(dataToSend);
+    setCreatePollSuccess(undefined);
 
-    if (!newPoll) {
-      toast.error("Failed to create poll");
-      return;
-    }
+    try {
+      const newPoll = await createPoll(dataToSend);
 
-    // upload poll option files match optionId from "newPoll" and "data" through option text (unique)
-    for (const option of newPoll?.options ?? []) {
-      const optionText = option.text;
-      const optionData = [
-        { value: data.option1, file: data.option1file as FileList },
-        { value: data.option2, file: data.option2file as FileList },
-        ...data.options,
-      ].find((o) => o.value === optionText);
-
-      if (!optionData?.file) {
-        continue;
+      if (!newPoll) {
+        toast.error("Failed to create poll");
+        return;
       }
 
-      const file = (optionData.file as FileList)[0];
-      if (!file) {
-        continue;
+      setCreatePollSuccess(true);
+
+      // upload poll option files match optionId from "newPoll" and "data" through option text (unique)
+      for (const option of newPoll?.options ?? []) {
+        const optionText = option.text;
+        const optionData = [
+          { value: data.option1, file: data.option1file as FileList },
+          { value: data.option2, file: data.option2file as FileList },
+          ...data.options,
+        ].find((o) => o.value === optionText);
+
+        if (!optionData?.file) {
+          continue;
+        }
+
+        const file = (optionData.file as FileList)[0];
+        if (!file) {
+          continue;
+        }
+
+        await uploadPollOptionFile(newPoll.id, option.id, file);
       }
 
-      await uploadPollOptionFile(newPoll.id, option.id, file);
-    }
+      await redirectToPoll(newPoll.id);
+    } catch (error) {
+      setCreatePollSuccess(false);
 
-    await redirectToPoll(newPoll.id);
+      const message =
+        error instanceof Error ? error.message : "Failed to create poll";
+      toast.error(message);
+    }
   }
 
   function addOption() {
@@ -118,7 +139,7 @@ export function CreatePollForm({
       <form
         className={cn(
           "flex w-[769px] max-w-full flex-col gap-4 p-2 transition-opacity",
-          (form.formState.isSubmitting || form.formState.isSubmitSuccessful) &&
+          (form.formState.isSubmitting || createPollSuccess) &&
             "pointer-events-none opacity-50",
         )}
         onSubmit={form.handleSubmit(onSubmit)}
@@ -233,8 +254,25 @@ export function CreatePollForm({
           <PlusIcon /> Add Option
         </Button>
 
+        <div className="flex flex-wrap gap-3 p-2 sm:gap-5 [&>div]:flex [&>div]:items-center [&>div]:space-x-2">
+          <div>
+            <Controller
+              name="private"
+              control={form.control}
+              render={({ field }) => (
+                <Switch
+                  id="private-poll"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
+            />
+            <label htmlFor="private-poll">Private Poll</label>
+          </div>
+        </div>
+
         <div className="flex h-12 items-center justify-center">
-          {form.formState.isSubmitting || form.formState.isSubmitSuccessful ? (
+          {form.formState.isSubmitting || createPollSuccess ? (
             <Loader />
           ) : (
             <Button type="submit" variant="secondary">

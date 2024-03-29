@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ProfileImage } from "../ProfileImage";
 import { PollCardActions } from "@/app/components/PollCard/PollCardActions";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
+import { uppercaseFirstLetterOfEachSentence } from "@/lib/utils";
 import type { PollsDetails } from "../InfinitePolls/actions";
 
 export type PollCardProps = {
@@ -38,7 +39,9 @@ export function PollCard({ poll, highlightedUserId }: PollCardProps) {
         </div>
       </Link>
       <Link href={`/polls/${poll.id}`} className="w-fit">
-        <h2 className="text-2xl font-bold">{poll.title}</h2>
+        <h2 className="text-2xl font-bold">
+          {uppercaseFirstLetterOfEachSentence(poll.title)}
+        </h2>
       </Link>
 
       <SignedIn>

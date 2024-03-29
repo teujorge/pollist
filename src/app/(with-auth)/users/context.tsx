@@ -8,10 +8,12 @@ import {
   type SetStateAction,
 } from "react";
 
-export type Tab = "polls" | "votes";
+export const tabs = ["votes", "polls", "private"] as const;
+
+export type Tab = (typeof tabs)[number];
 
 export function UserPageProvider({ children }: { children: React.ReactNode }) {
-  const [tab, setTab] = useState<Tab>("polls");
+  const [tab, setTab] = useState<Tab>("votes");
   return (
     <UserContext.Provider value={{ tab, setTab }}>
       {children}

@@ -23,6 +23,7 @@ export async function createPollsFromList() {
           authorId: process.env.ADMIN_ID,
           title: question,
           description: description,
+          private: false,
           options: {
             create: options.map((option) => ({ text: option })),
           },

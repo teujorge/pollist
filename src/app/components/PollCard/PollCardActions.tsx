@@ -2,14 +2,14 @@
 
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useApp } from "@/app/(with-auth)/app";
 import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/database/supabase";
-import { ThickArrowUpIcon } from "@radix-ui/react-icons";
 import { CircularProgress } from "../CircularProgress";
+import { CopyIcon, ThickArrowUpIcon } from "@radix-ui/react-icons";
 import { useEffect, useRef, useState } from "react";
+import { cn, uppercaseFirstLetterOfEachSentence } from "@/lib/utils";
 import {
   handleVote,
   handleLikePoll,
@@ -334,7 +334,7 @@ export function PollCardActions(props: PollCardActionsProps) {
                 )}
               </div>
               <div className="w-full flex-grow">
-                <p>{option.text}</p>
+                <p>{uppercaseFirstLetterOfEachSentence(option.text)}</p>
                 <p className="whitespace-nowrap text-xs text-accent-foreground">
                   {
                     optimisticPoll.votes.filter(
@@ -351,33 +351,46 @@ export function PollCardActions(props: PollCardActionsProps) {
         })}
       </ul>
 
-      <div
-        className={`relative w-fit rounded-full bg-opacity-20 px-2 py-1
+      <div className="flex w-full flex-wrap gap-2">
+        <div
+          className={`relative w-fit rounded-full bg-opacity-20 px-2 py-1
           ${pollNotification && "bg-primary"}
         `}
-      >
-        <button
-          className={`flex flex-row items-center justify-center gap-1 font-bold
-        ${optimisticPoll.likes.length > 0 ? "[&>*]:text-primary [&>*]:hovact:text-purple-400" : "[&>*]:text-accent-foreground [&>*]:hovact:text-foreground"}
-      `}
-          onClick={user ? handleLike : undefined}
         >
-          <ThickArrowUpIcon className="transition-colors" />
-          <span className="transition-colors">
-            {optimisticPoll._count.likes}
-          </span>
-        </button>
+          <button
+            className={`flex flex-row items-center justify-center gap-1 font-bold
+            ${optimisticPoll.likes.length > 0 ? "[&>*]:text-primary [&>*]:hovact:text-purple-400" : "[&>*]:text-accent-foreground [&>*]:hovact:text-foreground"}
+          `}
+            onClick={user ? handleLike : undefined}
+          >
+            <ThickArrowUpIcon className="transition-colors" />
+            <span className="transition-colors">
+              {optimisticPoll._count.likes}
+            </span>
+          </button>
 
-        {pollNotification && (
-          <TriggerNotificationSeen
-            className="absolute left-0 top-0"
-            acknowledgeFunction={async () => {
-              await acknowledgePollLike({
-                pollLikeId: optimisticPoll.likes[0]?.id ?? "",
-              });
-            }}
-          />
-        )}
+          {pollNotification && (
+            <TriggerNotificationSeen
+              className="absolute left-0 top-0"
+              acknowledgeFunction={async () => {
+                await acknowledgePollLike({
+                  pollLikeId: optimisticPoll.likes[0]?.id ?? "",
+                });
+              }}
+            />
+          )}
+        </div>
+        <button
+          className="flex flex-row items-center justify-center gap-1 font-bold [&>*]:text-accent-foreground [&>*]:hovact:text-foreground"
+          onClick={async () => {
+            await navigator.clipboard.writeText(
+              `pollist.org/polls/${props.poll.id}`,
+            );
+            toast.success("Link copied to clipboard");
+          }}
+        >
+          <CopyIcon className="transition-colors" />
+        </button>
       </div>
 
       {props.showChart && (
@@ -394,7 +407,7 @@ export function PollCardActions(props: PollCardActionsProps) {
 
             return {
               value: optionVoteCounts,
-              label: option.text,
+              label: uppercaseFirstLetterOfEachSentence(option.text),
             };
           })}
         />

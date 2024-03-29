@@ -15,6 +15,7 @@ export async function getInfinitePolls({
   category,
   authorId,
   voterId,
+  private: _private,
 }: PollQuery & { cursor: string | undefined }) {
   const { userId } = auth();
 
@@ -28,6 +29,7 @@ export async function getInfinitePolls({
     where: {
       title: search ? { contains: search, mode: "insensitive" } : undefined,
       authorId: authorId ? { contains: authorId } : undefined,
+      private: { equals: _private ?? false },
       votes: {
         // Filter by voterId
         ...(voterId

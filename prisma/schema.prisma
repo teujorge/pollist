@@ -86,6 +86,7 @@ model Poll {
   authorId      String
   title         String     @db.VarChar(200)
   description   String?    @db.VarChar(200)
+  private       Boolean
   controversial Boolean    @default(false)
   sensitive     Boolean    @default(false)
   author        User       @relation(fields: [authorId], references: [id], onDelete: Cascade)

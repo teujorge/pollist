@@ -14,3 +14,17 @@ export function formatNumber(num: number): string {
 
   return numberFormatter.format(num);
 }
+
+export function uppercaseFirstLetter(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function uppercaseFirstLetterOfEachSentence(str: string): string {
+  const regex = /([^.!?]+[.!?]\s*)/g;
+  return (
+    str
+      .match(regex)
+      ?.map((sentence) => (sentence ? uppercaseFirstLetter(sentence) : ""))
+      .join("") ?? ""
+  );
+}
