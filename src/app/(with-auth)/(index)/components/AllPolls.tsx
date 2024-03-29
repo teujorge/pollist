@@ -57,7 +57,7 @@ export function AllPolls({ query }: { query: PollQuery }) {
   useEffect(() => {
     function handleObserver(entities: IntersectionObserverEntry[]) {
       const target = entities[0];
-      if (!target || !target.isIntersecting) return;
+      if (!target?.isIntersecting) return;
 
       void fetchNextPage();
     }

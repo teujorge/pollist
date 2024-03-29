@@ -63,7 +63,7 @@ export function useInfiniteScroll<TItem extends { id: string }, TQuery>(props: {
       if (data.isLoading) return;
 
       const target = entities[0];
-      if (!target || !target.isIntersecting) return;
+      if (!target?.isIntersecting) return;
 
       void loadMore();
     }
