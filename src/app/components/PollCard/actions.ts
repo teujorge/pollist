@@ -142,12 +142,14 @@ export async function handleUnlikePoll({ pollId }: { pollId: string }) {
 }
 
 export async function getPoll(pollId: string) {
+  const { userId } = auth();
+
   const poll = await db.poll.findUnique({
     where: { id: pollId },
     include: { votes: true },
   });
 
-  if (poll?.anonymous) {
+  if (poll?.anonymous && poll.authorId !== userId) {
     poll.authorId = "Anon";
   }
 

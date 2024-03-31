@@ -88,7 +88,7 @@ export async function getInfinitePolls({
   for (const poll of polls) {
     poll.likes ??= [];
 
-    if (poll.anonymous) {
+    if (poll.anonymous && poll.authorId !== userId) {
       poll.authorId = "Anon";
       poll.author.imageUrl = "Anon";
       poll.author.username = "Anon";
@@ -130,7 +130,7 @@ export async function getSinglePoll({
     poll.likes ??= [];
   }
 
-  if (poll?.anonymous) {
+  if (poll?.anonymous && poll.authorId !== userId) {
     poll.authorId = "Anon";
     poll.author.imageUrl = "Anon";
     poll.author.username = "Anon";
