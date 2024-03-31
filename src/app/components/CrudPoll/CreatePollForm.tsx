@@ -281,7 +281,7 @@ export function CreatePollForm({
                   />
                 )}
               />
-              <label htmlFor="private-poll">Private Poll</label>
+              <label htmlFor="private-poll">Private Poll (beta)</label>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <InfoCircledIcon />
@@ -291,7 +291,7 @@ export function CreatePollForm({
                     <span className="font-semibold">Private Polls:</span> Only
                     visible on the creator&apos;s profile, these polls can be
                     easily shared with a select audience by distributing the
-                    poll&apos;s URL.{" "}
+                    poll&apos;s URL. Beta feature, please report any bugs.{" "}
                     <span className="text-yellow-500">
                       Note: Anyone with the poll&apos;s URL can access it.
                     </span>
@@ -314,7 +314,7 @@ export function CreatePollForm({
                   />
                 )}
               />
-              <label htmlFor="anonymous-poll">Anonymous Poll</label>
+              <label htmlFor="anonymous-poll">Anonymous Poll (beta)</label>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <InfoCircledIcon />
@@ -323,7 +323,7 @@ export function CreatePollForm({
                   <p>
                     <span className="font-semibold">Anonymous Polls:</span>{" "}
                     Display without linking to any author, perfect for posting
-                    questions anonymously.
+                    questions anonymously. Beta feature, please report any bugs.
                   </p>
                 </TooltipContent>
               </Tooltip>
