@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs";
 import { PollCard } from "../PollCard/PollCard";
 import { getInfinitePolls } from "./actions";
 import { InfinitelyMorePolls } from "./InfinitelyMorePolls";
@@ -10,6 +11,8 @@ export async function InfinitePolls(props: {
   highlightedUserId?: string;
   idPrefix: string;
 }) {
+  const { userId } = auth();
+
   const firstPolls = await getInfinitePolls({
     cursor: undefined,
     ...props.query,
@@ -21,11 +24,13 @@ export async function InfinitePolls(props: {
         <PollCard
           key={`${props.idPrefix}-poll-card-${poll.id}`}
           poll={poll}
+          userId={userId}
           highlightedUserId={props.highlightedUserId}
         />
       ))}
       <InfinitelyMorePolls
         idPrefix={props.idPrefix}
+        userId={userId}
         query={props.query}
         initialCursor={firstPolls[firstPolls.length - 1]?.id}
         highlightedUserId={props.highlightedUserId}

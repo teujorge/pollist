@@ -55,7 +55,7 @@ export default async function PollPage({ params, searchParams }: Props) {
         </div>
       </div>
 
-      <PollCardActions poll={poll} showChart />
+      <PollCardActions poll={poll} userId={userId} showChart />
 
       <Suspense fallback={<AllCommentsFallback />}>
         <AllComments

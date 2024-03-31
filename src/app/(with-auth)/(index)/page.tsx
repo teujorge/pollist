@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs";
 import { AllPolls } from "./components/AllPolls";
 import {
   dehydrate,
@@ -10,6 +11,8 @@ export default async function HomePage({
 }: {
   searchParams: Record<string, string | string[] | undefined>;
 }) {
+  const { userId } = auth();
+
   const search = searchParams?.search?.toString() ?? "";
   const category = searchParams?.category?.toString() ?? "";
 
@@ -28,7 +31,7 @@ export default async function HomePage({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <AllPolls query={{ search, category }} />
+      <AllPolls query={{ search, category }} userId={userId} />
     </HydrationBoundary>
   );
 }

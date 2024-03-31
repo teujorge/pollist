@@ -6,6 +6,7 @@ import { getInfinitePolls, type PollsDetails } from "./actions";
 import type { PollQuery } from "@/constants";
 
 export function InfinitelyMorePolls(props: {
+  userId: string | null;
   query: PollQuery;
   highlightedUserId?: string;
   idPrefix: string;
@@ -18,7 +19,11 @@ export function InfinitelyMorePolls(props: {
       getter={getInfinitePolls}
       initialCursor={props.initialCursor}
       ItemComponent={(poll) => (
-        <PollCard poll={poll} highlightedUserId={props.highlightedUserId} />
+        <PollCard
+          poll={poll}
+          userId={props.userId}
+          highlightedUserId={props.highlightedUserId}
+        />
       )}
     />
   );

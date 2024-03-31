@@ -7,24 +7,33 @@ import { cn, uppercaseFirstLetterOfEachSentence } from "@/lib/utils";
 import type { PollsDetails } from "../InfinitePolls/actions";
 
 export type PollCardProps = {
+  userId: string | null;
   poll: PollsDetails[number];
   highlightedUserId?: string;
 };
 
-export function PollCard({ poll, highlightedUserId }: PollCardProps) {
+export function PollCard({ userId, poll, highlightedUserId }: PollCardProps) {
   return (
     <div className="flex w-full flex-col gap-2 rounded-lg border border-accent bg-accent/10 p-6 shadow-md">
       <Link
         href={`/users/${poll.author.username}`}
         className={cn(
           "flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 pl-0 transition-all [&>div>p]:hovact:text-primary [&>div>span]:hovact:text-purple-600 [&>div]:hovact:border-[#d0b3f5]",
-          poll.anonymous && "pointer-events-none",
+          poll.anonymous && poll.authorId !== userId && "pointer-events-none",
         )}
       >
         <div className="rounded-full border-[3px] border-background transition-colors">
           <ProfileImage
-            src={poll.anonymous ? AnonProfileImage : poll.author.imageUrl}
-            username={poll.author.username}
+            src={
+              poll.anonymous && poll.authorId !== userId
+                ? AnonProfileImage
+                : poll.author.imageUrl
+            }
+            username={
+              poll.anonymous && poll.authorId === userId
+                ? `${poll.author.username} (Anon)`
+                : poll.author.username
+            }
             size={38}
           />
         </div>
@@ -49,13 +58,18 @@ export function PollCard({ poll, highlightedUserId }: PollCardProps) {
       </Link>
 
       <SignedIn>
-        <PollCardActions poll={poll} highlightedUserId={highlightedUserId} />
+        <PollCardActions
+          poll={poll}
+          userId={userId}
+          highlightedUserId={highlightedUserId}
+        />
       </SignedIn>
       <SignedOut>
         <SignInButton mode="modal">
           <button className="w-full text-left">
             <PollCardActions
               poll={poll}
+              userId={userId}
               highlightedUserId={highlightedUserId}
             />
           </button>

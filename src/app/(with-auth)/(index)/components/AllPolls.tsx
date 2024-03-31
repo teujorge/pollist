@@ -8,7 +8,13 @@ import { useEffect, useRef } from "react";
 import type { PollQuery } from "@/constants";
 import type { PollsDetails } from "@/app/components/InfinitePolls/actions";
 
-export function AllPolls({ query }: { query: PollQuery }) {
+export function AllPolls({
+  userId,
+  query,
+}: {
+  userId: string | null;
+  query: PollQuery;
+}) {
   async function _queryFn({ cursor }: { cursor: string }) {
     const cursorQuery = cursor === "" ? undefined : `cursor=${cursor}`;
     const searchQuery = query.search ? `search=${query.search}` : undefined;
@@ -79,7 +85,7 @@ export function AllPolls({ query }: { query: PollQuery }) {
       {data?.pages.map((pages, i) => (
         <>
           {pages.map((poll) => (
-            <PollCard key={keyGen(i, poll.id)} poll={poll} />
+            <PollCard key={keyGen(i, poll.id)} poll={poll} userId={userId} />
           ))}
         </>
       ))}
