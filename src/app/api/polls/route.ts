@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
     cursor,
     search,
     category,
+    anonymous: true,
   });
 
   return NextResponse.json({

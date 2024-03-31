@@ -147,6 +147,10 @@ export async function getPoll(pollId: string) {
     include: { votes: true },
   });
 
+  if (poll?.anonymous) {
+    poll.authorId = "Anon";
+  }
+
   return poll;
 }
 

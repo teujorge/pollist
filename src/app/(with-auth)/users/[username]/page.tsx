@@ -152,7 +152,7 @@ export default async function UserPage({ params }: Props) {
               >
                 <InfinitePolls
                   idPrefix="my-private-polls"
-                  query={{ authorId: user.id, private: true }}
+                  query={{ authorId: user.id, private: true, anonymous: true }}
                   highlightedUserId={undefined}
                 />
               </Suspense>

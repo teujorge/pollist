@@ -37,7 +37,10 @@ export default async function PollPage({ params, searchParams }: Props) {
           )}
           <span>
             Created by{" "}
-            <Link href={`/users/${poll.author.username}`}>
+            <Link
+              href={`/users/${poll.author.username}`}
+              className={poll.anonymous ? "pointer-events-none" : undefined}
+            >
               {poll.author.username}
             </Link>
           </span>
@@ -48,7 +51,7 @@ export default async function PollPage({ params, searchParams }: Props) {
             month: "long",
             day: "numeric",
           })}
-          {userId === poll.author.id && <DeletePollForm poll={poll} />}
+          {userId === poll.authorId && <DeletePollForm poll={poll} />}
         </div>
       </div>
 

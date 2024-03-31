@@ -4,14 +4,18 @@ import styles from "@/styles/modal.module.css";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useLockBodyScroll } from "@uidotdev/usehooks";
+import { forwardRef, useImperativeHandle, useRef } from "react";
 
-export function Modal({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
+const Modal = forwardRef(function _Modal(
+  {
+    children,
+    className,
+  }: {
+    children: React.ReactNode;
+    className?: string;
+  },
+  ref: React.ForwardedRef<HTMLElement>,
+) {
   useLockBodyScroll();
 
   const router = useRouter();
@@ -19,8 +23,12 @@ export function Modal({
   let bgMouseUp = false;
   let bgMouseDown = false;
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  useImperativeHandle(ref, () => containerRef.current!);
+
   return (
     <div
+      ref={containerRef}
       className="fixed inset-0 z-40 flex h-dvh w-dvw items-center justify-center overflow-y-auto bg-background bg-opacity-65 p-4 backdrop-blur-sm scrollbar-gutter"
       onMouseDown={() => {
         bgMouseUp = false;
@@ -56,4 +64,8 @@ export function Modal({
       </div>
     </div>
   );
-}
+});
+
+Modal.displayName = "Modal";
+
+export { Modal };

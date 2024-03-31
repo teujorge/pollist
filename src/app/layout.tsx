@@ -4,6 +4,7 @@ import { JsonLd, metadata, viewport } from "./seo";
 
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const nunito = Nunito_Sans({
   subsets: ["latin"],
@@ -20,7 +21,9 @@ export default function RootLayout({
       <JsonLd />
       <Analytics />
       <SpeedInsights />
-      <body className={`font-sans ${nunito.variable}`}>{children}</body>
+      <body className={`font-sans ${nunito.variable}`}>
+        <TooltipProvider>{children}</TooltipProvider>
+      </body>
     </html>
   );
 }

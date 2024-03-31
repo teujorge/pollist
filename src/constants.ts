@@ -10,6 +10,7 @@ export type PollQuery = {
   authorId?: string;
   voterId?: string;
   private?: boolean;
+  anonymous?: boolean;
 };
 
 // Max file size 5mb

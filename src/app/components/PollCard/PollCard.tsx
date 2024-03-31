@@ -1,8 +1,9 @@
 import Link from "next/link";
+import AnonProfileImage from "~/public/default-profile-icon.webp";
 import { ProfileImage } from "../ProfileImage";
 import { PollCardActions } from "@/app/components/PollCard/PollCardActions";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
-import { uppercaseFirstLetterOfEachSentence } from "@/lib/utils";
+import { cn, uppercaseFirstLetterOfEachSentence } from "@/lib/utils";
 import type { PollsDetails } from "../InfinitePolls/actions";
 
 export type PollCardProps = {
@@ -15,11 +16,14 @@ export function PollCard({ poll, highlightedUserId }: PollCardProps) {
     <div className="flex w-full flex-col gap-2 rounded-lg border border-accent bg-accent/10 p-6 shadow-md">
       <Link
         href={`/users/${poll.author.username}`}
-        className="flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 pl-0 transition-all [&>div>p]:hovact:text-primary [&>div>span]:hovact:text-purple-600 [&>div]:hovact:border-[#d0b3f5]"
+        className={cn(
+          "flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 pl-0 transition-all [&>div>p]:hovact:text-primary [&>div>span]:hovact:text-purple-600 [&>div]:hovact:border-[#d0b3f5]",
+          poll.anonymous && "pointer-events-none",
+        )}
       >
         <div className="rounded-full border-[3px] border-background transition-colors">
           <ProfileImage
-            src={poll.author.imageUrl}
+            src={poll.anonymous ? AnonProfileImage : poll.author.imageUrl}
             username={poll.author.username}
             size={38}
           />

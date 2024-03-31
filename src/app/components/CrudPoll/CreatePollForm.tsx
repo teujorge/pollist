@@ -12,19 +12,31 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input, InputFile } from "../Input";
 import { createPollSchema } from "./validation";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
-import { PlusIcon, CrossCircledIcon, Cross2Icon } from "@radix-ui/react-icons";
 import {
-  addImagePathToPollOption,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  PlusIcon,
+  Cross2Icon,
+  InfoCircledIcon,
+  CrossCircledIcon,
+} from "@radix-ui/react-icons";
+import {
   createPoll,
   redirectToPoll,
+  addImagePathToPollOption,
 } from "./actions";
 import type { Metadata } from "next";
 import type { CreatePollFields } from "./validation";
 
 export function CreatePollForm({
   showBackButton,
+  tooltipBoundary,
 }: {
   showBackButton?: boolean;
+  tooltipBoundary?: HTMLElement;
 }) {
   const router = useRouter();
 
@@ -254,20 +266,68 @@ export function CreatePollForm({
           <PlusIcon /> Add Option
         </Button>
 
-        <div className="flex flex-wrap gap-3 p-2 sm:gap-5 [&>div]:flex [&>div]:items-center [&>div]:space-x-2">
-          <div>
-            <Controller
-              name="private"
-              control={form.control}
-              render={({ field }) => (
-                <Switch
-                  id="private-poll"
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              )}
-            />
-            <label htmlFor="private-poll">Private Poll</label>
+        <div className="p-2">
+          <h3 className="py-1 text-lg font-semibold">Advanced Settings</h3>
+          <div className="flex flex-col items-center rounded-lg bg-accent/30 p-2 [&>div>label]:w-full [&>div>label]:text-end [&>div]:flex [&>div]:w-full [&>div]:items-center [&>div]:space-x-2 [&>div]:p-2">
+            <div>
+              <Controller
+                name="private"
+                control={form.control}
+                render={({ field }) => (
+                  <Switch
+                    id="private-poll"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
+              <label htmlFor="private-poll">Private Poll</label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <InfoCircledIcon />
+                </TooltipTrigger>
+                <TooltipContent align="end" collisionBoundary={tooltipBoundary}>
+                  <p>
+                    <span className="font-semibold">Private Polls:</span> Only
+                    visible on the creator&apos;s profile, these polls can be
+                    easily shared with a select audience by distributing the
+                    poll&apos;s URL.{" "}
+                    <span className="text-yellow-500">
+                      Note: Anyone with the poll&apos;s URL can access it.
+                    </span>
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+
+            <span className="h-0.5 w-full rounded-full bg-background" />
+
+            <div>
+              <Controller
+                name="anonymous"
+                control={form.control}
+                render={({ field }) => (
+                  <Switch
+                    id="anonymous-poll"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
+              <label htmlFor="anonymous-poll">Anonymous Poll</label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <InfoCircledIcon />
+                </TooltipTrigger>
+                <TooltipContent align="end" collisionBoundary={tooltipBoundary}>
+                  <p>
+                    <span className="font-semibold">Anonymous Polls:</span>{" "}
+                    Display without linking to any author, perfect for posting
+                    questions anonymously.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
           </div>
         </div>
 

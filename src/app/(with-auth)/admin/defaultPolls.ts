@@ -24,6 +24,7 @@ export async function createPollsFromList() {
           title: question,
           description: description,
           private: false,
+          anonymous: false,
           options: {
             create: options.map((option) => ({ text: option })),
           },

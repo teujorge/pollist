@@ -64,6 +64,7 @@ export const createPollSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   private: z.boolean(),
+  anonymous: z.boolean(),
   option1: z.string().min(1, "Option is required"),
   option1file: zFile,
   option2: z.string().min(1, "Option is required"),

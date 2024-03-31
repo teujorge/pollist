@@ -35,6 +35,10 @@ async function _CTA() {
     throw new Error("Error fetching a popular poll...");
   }
 
+  if (randomPopularPoll.anonymous) {
+    randomPopularPoll.authorId = "Anon";
+  }
+
   return (
     <Link
       href={`/polls/${randomPopularPoll.id}`}

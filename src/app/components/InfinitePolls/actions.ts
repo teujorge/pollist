@@ -16,6 +16,7 @@ export async function getInfinitePolls({
   authorId,
   voterId,
   private: _private,
+  anonymous,
 }: PollQuery & { cursor: string | undefined }) {
   const { userId } = auth();
 
@@ -30,6 +31,7 @@ export async function getInfinitePolls({
       title: search ? { contains: search, mode: "insensitive" } : undefined,
       authorId: authorId ? { contains: authorId } : undefined,
       private: { equals: _private ?? false },
+      anonymous: anonymous ? undefined : { equals: false },
       votes: {
         // Filter by voterId
         ...(voterId
@@ -65,7 +67,7 @@ export async function getInfinitePolls({
     skip: cursor ? 1 : undefined,
     take: PAGE_SIZE,
     include: {
-      author: true,
+      author: { select: { username: true, imageUrl: true } },
       votes: true,
       options: true,
       likes: userId
@@ -85,6 +87,12 @@ export async function getInfinitePolls({
 
   for (const poll of polls) {
     poll.likes ??= [];
+
+    if (poll.anonymous) {
+      poll.authorId = "Anon";
+      poll.author.imageUrl = "Anon";
+      poll.author.username = "Anon";
+    }
   }
 
   return polls;
@@ -100,7 +108,7 @@ export async function getSinglePoll({
   const poll = await db.poll.findUnique({
     where: { id: pollId },
     include: {
-      author: true,
+      author: { select: { username: true, imageUrl: true } },
       votes: true,
       options: true,
       likes: userId
@@ -120,6 +128,12 @@ export async function getSinglePoll({
 
   if (poll) {
     poll.likes ??= [];
+  }
+
+  if (poll?.anonymous) {
+    poll.authorId = "Anon";
+    poll.author.imageUrl = "Anon";
+    poll.author.username = "Anon";
   }
 
   return poll;

@@ -20,6 +20,7 @@ export async function createPoll(fields: CreatePollFields) {
       title: fields.title,
       description: fields.description,
       private: fields.private,
+      anonymous: fields.anonymous,
       options: {
         create: [
           { text: fields.option1 },
