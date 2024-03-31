@@ -40,7 +40,11 @@ export function PollCard({ userId, poll, highlightedUserId }: PollCardProps) {
 
         <div className="flex flex-col justify-center gap-0.5 border-0">
           <p className="text-foreground transition-colors">
-            {poll.author.username}
+            {poll.anonymous
+              ? poll.authorId === userId
+                ? `${poll.author.username} (Anon)`
+                : poll.author.username
+              : "Anon"}
           </p>
           <span className="text-xs text-accent-foreground transition-colors">
             {new Date(poll.createdAt).toLocaleDateString(undefined, {
