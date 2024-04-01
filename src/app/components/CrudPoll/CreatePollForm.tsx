@@ -49,6 +49,7 @@ export function CreatePollForm({
     mode: "onChange",
     defaultValues: {
       private: false,
+      anonymous: false,
     },
   });
 
@@ -276,6 +277,7 @@ export function CreatePollForm({
                 render={({ field }) => (
                   <Switch
                     id="private-poll"
+                    defaultChecked={false}
                     checked={field.value}
                     onCheckedChange={field.onChange}
                   />
@@ -309,6 +311,7 @@ export function CreatePollForm({
                 render={({ field }) => (
                   <Switch
                     id="anonymous-poll"
+                    defaultChecked={false}
                     checked={field.value}
                     onCheckedChange={field.onChange}
                   />
