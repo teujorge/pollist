@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
+import { multiVoteOn } from "./multiVoters";
 import { createPollsFromList, deleteAllPolls, testCron } from "./defaultPolls";
 
 export default async function UserPage() {
@@ -15,6 +16,26 @@ export default async function UserPage() {
     return notFound();
   }
 
+  async function handleMultiVoteAction(formData: FormData) {
+    "use server";
+
+    const pollId = formData.get("pollId") as string;
+    const voteCount = Number(formData.get("voteCount"));
+    const voteDistribution =
+      formData.get("voteDistribution") === ""
+        ? undefined
+        : (JSON.parse(formData.get("voteDistribution") as string) as Record<
+            string,
+            number
+          >);
+
+    await multiVoteOn({
+      pollId,
+      voteCount,
+      voteDistribution,
+    });
+  }
+
   return (
     <>
       <form className="italic text-green-500" action={createPollsFromList}>
@@ -25,6 +46,12 @@ export default async function UserPage() {
       </form>
       <form className="italic text-primary" action={testCron}>
         <button>test cron jobs</button>
+      </form>
+      <form className="italic" action={handleMultiVoteAction}>
+        <input name="pollId" placeholder="poll id" />
+        <input name="voteCount" placeholder="vote count" />
+        <input name="voteDistribution" placeholder="{id: count, id: count}" />
+        <button>test multi vote</button>
       </form>
     </>
   );
