@@ -30,8 +30,10 @@ export function PollCard({ userId, poll, highlightedUserId }: PollCardProps) {
                 : poll.author.imageUrl
             }
             username={
-              poll.anonymous && poll.authorId === userId
-                ? `${poll.author.username} (Anon)`
+              poll.anonymous
+                ? poll.authorId === userId
+                  ? `${poll.author.username} (Anon)`
+                  : "Anon"
                 : poll.author.username
             }
             size={38}
@@ -43,8 +45,8 @@ export function PollCard({ userId, poll, highlightedUserId }: PollCardProps) {
             {poll.anonymous
               ? poll.authorId === userId
                 ? `${poll.author.username} (Anon)`
-                : poll.author.username
-              : "Anon"}
+                : "Anon"
+              : poll.author.username}
           </p>
           <span className="text-xs text-accent-foreground transition-colors">
             {new Date(poll.createdAt).toLocaleDateString(undefined, {
