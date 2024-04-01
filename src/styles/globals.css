@@ -199,3 +199,7 @@ a:active {
     background-position-x: 0%;
   }
 }
+
+.cl-card {
+  border: rgb(var(--color-accent)) 2px solid;
+}
