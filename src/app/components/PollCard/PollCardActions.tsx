@@ -35,11 +35,15 @@ const TriggerNotificationSeen = dynamic(
   { ssr: false },
 );
 
-type PollCardActionsProps = PollCardProps & {
+type PollCardActionsProps = Omit<PollCardProps, "userId"> & {
   showChart?: boolean;
 };
 
-export function PollCardActions(props: PollCardActionsProps) {
+export function PollCardActions({
+  poll,
+  highlightedUserId,
+  showChart,
+}: PollCardActionsProps) {
   const { user } = useUser();
 
   const { notifications } = useApp();
@@ -47,9 +51,8 @@ export function PollCardActions(props: PollCardActionsProps) {
   const supabaseChannelRef: MutableRefObject<RealtimeChannel | undefined> =
     useRef();
 
-  const [optimisticPoll, setOptimisticPoll] = useState<PollsDetails[number]>(
-    props.poll,
-  );
+  const [optimisticPoll, setOptimisticPoll] =
+    useState<PollsDetails[number]>(poll);
 
   const userVote = optimisticPoll.votes.find(
     (vote) => vote.voterId === user?.id,
@@ -68,7 +71,7 @@ export function PollCardActions(props: PollCardActionsProps) {
           event: "INSERT",
           schema: "public",
           table: "Vote",
-          filter: `pollId=eq.${props.poll.id}`,
+          filter: `pollId=eq.${poll.id}`,
         },
         (payload) => {
           if (isVotePending) return;
@@ -95,7 +98,7 @@ export function PollCardActions(props: PollCardActionsProps) {
           event: "UPDATE",
           schema: "public",
           table: "Vote",
-          filter: `pollId=eq.${props.poll.id}`,
+          filter: `pollId=eq.${poll.id}`,
         },
         (payload) => {
           if (isVotePending) return;
@@ -122,7 +125,7 @@ export function PollCardActions(props: PollCardActionsProps) {
           event: "DELETE",
           schema: "public",
           table: "Vote",
-          filter: `pollId=eq.${props.poll.id}`,
+          filter: `pollId=eq.${poll.id}`,
         },
         (payload) => {
           if (isVotePending) return;
@@ -143,7 +146,7 @@ export function PollCardActions(props: PollCardActionsProps) {
       .subscribe();
 
     return () => void supabaseChannelRef.current?.unsubscribe();
-  }, [user, props.poll.id, isVotePending, optimisticPoll.votes]);
+  }, [user, poll.id, isVotePending, optimisticPoll.votes]);
 
   async function onVote(optionId: string) {
     if (!user?.id) return;
@@ -284,7 +287,7 @@ export function PollCardActions(props: PollCardActionsProps) {
   }
 
   const optionIdToHighlight = optimisticPoll.votes.find(
-    (vote) => vote.voterId === props.highlightedUserId,
+    (vote) => vote.voterId === highlightedUserId,
   )?.optionId;
 
   const pollNotification = notifications.pollLikes.some(
@@ -383,9 +386,7 @@ export function PollCardActions(props: PollCardActionsProps) {
         <button
           className="flex flex-row items-center justify-center gap-1 font-bold [&>*]:text-accent-foreground [&>*]:hovact:text-foreground"
           onClick={async () => {
-            await navigator.clipboard.writeText(
-              `pollist.org/polls/${props.poll.id}`,
-            );
+            await navigator.clipboard.writeText(`pollist.org/polls/${poll.id}`);
             toast.success("Link copied to clipboard");
           }}
         >
@@ -393,7 +394,7 @@ export function PollCardActions(props: PollCardActionsProps) {
         </button>
       </div>
 
-      {props.showChart && (
+      {showChart && (
         <ChartDrawer
           data={optimisticPoll.options.map((option) => {
             const optionVoteCounts =

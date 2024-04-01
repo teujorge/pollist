@@ -39,9 +39,16 @@ export default async function PollPage({ params, searchParams }: Props) {
             Created by{" "}
             <Link
               href={`/users/${poll.author.username}`}
-              className={poll.anonymous ? "pointer-events-none" : undefined}
+              className={
+                poll.anonymous && poll.authorId !== userId
+                  ? "pointer-events-none"
+                  : undefined
+              }
             >
               {poll.author.username}
+              {poll.anonymous && userId === poll.authorId && (
+                <span className="text-sm italic"> (Anonymous)</span>
+              )}
             </Link>
           </span>
         </div>
@@ -55,7 +62,7 @@ export default async function PollPage({ params, searchParams }: Props) {
         </div>
       </div>
 
-      <PollCardActions poll={poll} userId={userId} showChart />
+      <PollCardActions poll={poll} showChart />
 
       <Suspense fallback={<AllCommentsFallback />}>
         <AllComments

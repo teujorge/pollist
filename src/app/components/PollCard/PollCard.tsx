@@ -29,24 +29,17 @@ export function PollCard({ userId, poll, highlightedUserId }: PollCardProps) {
                 ? AnonProfileImage
                 : poll.author.imageUrl
             }
-            username={
-              poll.anonymous
-                ? poll.authorId === userId
-                  ? `${poll.author.username} (Anon)`
-                  : "Anon"
-                : poll.author.username
-            }
+            username={poll.author.username}
             size={38}
           />
         </div>
 
         <div className="flex flex-col justify-center gap-0.5 border-0">
           <p className="text-foreground transition-colors">
-            {poll.anonymous
-              ? poll.authorId === userId
-                ? `${poll.author.username} (Anon)`
-                : "Anon"
-              : poll.author.username}
+            {poll.author.username}
+            {poll.anonymous && userId === poll.authorId && (
+              <span className="text-sm italic"> (Anonymous)</span>
+            )}
           </p>
           <span className="text-xs text-accent-foreground transition-colors">
             {new Date(poll.createdAt).toLocaleDateString(undefined, {
@@ -64,18 +57,13 @@ export function PollCard({ userId, poll, highlightedUserId }: PollCardProps) {
       </Link>
 
       <SignedIn>
-        <PollCardActions
-          poll={poll}
-          userId={userId}
-          highlightedUserId={highlightedUserId}
-        />
+        <PollCardActions poll={poll} highlightedUserId={highlightedUserId} />
       </SignedIn>
       <SignedOut>
         <SignInButton mode="modal">
           <button className="w-full text-left">
             <PollCardActions
               poll={poll}
-              userId={userId}
               highlightedUserId={highlightedUserId}
             />
           </button>

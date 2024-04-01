@@ -87,12 +87,7 @@ export async function getInfinitePolls({
 
   for (const poll of polls) {
     poll.likes ??= [];
-
-    if (poll.anonymous && poll.authorId !== userId) {
-      poll.authorId = "Anon";
-      poll.author.imageUrl = "Anon";
-      poll.author.username = "Anon";
-    }
+    censorPollAuthor(poll, userId);
   }
 
   return polls;
@@ -128,13 +123,17 @@ export async function getSinglePoll({
 
   if (poll) {
     poll.likes ??= [];
-  }
-
-  if (poll?.anonymous && poll.authorId !== userId) {
-    poll.authorId = "Anon";
-    poll.author.imageUrl = "Anon";
-    poll.author.username = "Anon";
+    censorPollAuthor(poll, userId);
   }
 
   return poll;
+}
+
+function censorPollAuthor(poll: PollsDetails[number], userId: string | null) {
+  if (!poll.anonymous) return;
+  if (poll.authorId === userId) return;
+
+  poll.authorId = "Anonymous";
+  poll.author.imageUrl = "Anonymous";
+  poll.author.username = "Anonymous";
 }
