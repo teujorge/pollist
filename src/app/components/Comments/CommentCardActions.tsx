@@ -344,13 +344,12 @@ function CommentReplies({
         dateOrderBy: "asc",
       });
 
-      setData((prev) => ({
-        ...prev,
-        page: 2,
+      setData({
+        cursor: initialReplies[initialReplies.length - 1]?.id,
         replies: initialReplies,
         hasMore: initialReplies.length === PAGE_SIZE,
         isLoading: false,
-      }));
+      });
     }
 
     void fetchInitialComments();
