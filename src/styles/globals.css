@@ -72,7 +72,8 @@ textarea,
 select,
 option {
   color: rgb(var(--color-foreground));
-  background-color: rgba(var(--color-accent) / 0.5);
+  background-color: rgb(var(--color-accent));
+  filter: contrast(130%);
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
   padding-left: 0.5rem;
@@ -114,19 +115,8 @@ select:active,
 option:hover,
 option:focus,
 option:active {
-  border-color: rgba(var(--color-accent) / 0.8);
-  background-color: rgba(var(--color-accent) / 0.6);
-}
-
-input:focus,
-input:active,
-textarea:focus,
-textarea:active,
-select:focus,
-select:active,
-option:focus,
-option:active {
-  border-color: rgba(var(--color-accent) / 0.8);
+  border-color: rgb(var(--color-accent));
+  filter: contrast(115%);
 }
 
 button {
