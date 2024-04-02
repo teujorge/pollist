@@ -64,7 +64,7 @@ export async function AllComments({
         {userId ? (
           <CommentForm
             pollId={pollId}
-            parentId={parentId}
+            parentId={undefined}
             atUsername={undefined}
             label={undefined}
             placeholder="Write your comment here..."

@@ -278,7 +278,7 @@ export function CommentCardActions() {
       {isReplying && (
         <CommentForm
           pollId={comment.pollId}
-          parentId={comment.parentId ?? undefined}
+          parentId={comment.parentId ?? comment.id}
           atUsername={comment.author.username}
           label={undefined}
           placeholder="Write your reply here..."
@@ -382,20 +382,18 @@ function CommentReplies({
 
       {data.isLoading ? (
         <Loader className="mx-auto" />
-      ) : data.hasMore ? (
-        <button
-          className={cn(
-            buttonVariants({ variant: "ghost" }),
-            "w-fit items-center justify-center gap-2 [&>svg]:transition-transform [&>svg]:hovact:rotate-90",
-          )}
-          onClick={handleLoadMore}
-        >
-          <ArrowRightIcon className="h-5 w-5" /> Show More Replies
-        </button>
       ) : (
-        <p className="w-full text-center text-sm text-accent-foreground underline decoration-accent-foreground underline-offset-4">
-          end of reply thread
-        </p>
+        data.hasMore && (
+          <button
+            className={cn(
+              buttonVariants({ variant: "ghost" }),
+              "w-fit items-center justify-center gap-2 [&>svg]:transition-transform [&>svg]:hovact:rotate-90",
+            )}
+            onClick={handleLoadMore}
+          >
+            <ArrowRightIcon className="h-5 w-5" /> Show More Replies
+          </button>
+        )
       )}
     </div>
   );
