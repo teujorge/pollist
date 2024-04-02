@@ -341,6 +341,7 @@ function CommentReplies({
         cursor: undefined,
         pollId,
         parentId,
+        dateOrderBy: "asc",
       });
 
       setData((prev) => ({
@@ -360,11 +361,14 @@ function CommentReplies({
     if (!data.hasMore) return;
     if (data.isLoading) return;
 
+    setData((prev) => ({ ...prev, isLoading: true }));
+
     // TODO: need to handle error
     const newReplies = await getInfiniteComments({
       cursor: data.cursor,
       pollId,
       parentId,
+      dateOrderBy: "asc",
     });
 
     setData((prev) => ({
@@ -377,16 +381,16 @@ function CommentReplies({
 
   return (
     <div className={"flex w-full flex-col gap-2"}>
-      <NewComments parentId={parentId} />
       {data.replies.map((reply) => (
         <CommentCard
           key={`${pollId}-${parentId}-reply-${reply.id}`}
           comment={reply}
         />
       ))}
+      <NewComments parentId={parentId} />
 
       {data.isLoading ? (
-        <Loader className="mx-auto" />
+        <Loader className="ml-8 h-5 w-5 border-2" />
       ) : (
         data.hasMore && (
           <button
