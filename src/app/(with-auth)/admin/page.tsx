@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
-import { multiVoteOn } from "./multiVoters";
+import { delMultiUsers, multiVoteOn } from "./multiVoters";
 import { createPollsFromList, deleteAllPolls, testCron } from "./defaultPolls";
 
 export default async function UserPage() {
@@ -52,6 +52,9 @@ export default async function UserPage() {
         <input name="voteCount" placeholder="vote count" />
         <input name="voteDistribution" placeholder="{id: count, id: count}" />
         <button>test multi vote</button>
+      </form>
+      <form action={delMultiUsers}>
+        <button>del test users</button>
       </form>
     </>
   );

@@ -2,6 +2,26 @@
 
 import { db } from "@/database/prisma";
 
+export async function delMultiUsers() {
+  if (process.env.NODE_ENV !== "development") {
+    console.error("This function is only available in development mode.");
+    return;
+  }
+
+  if (process.env.ADMIN_ID === undefined) {
+    console.error("Bad ADMIN_ID.");
+    return;
+  }
+
+  console.log();
+  console.log("Deleting test users...");
+
+  await db.user.deleteMany({ where: { username: { startsWith: "user" } } });
+
+  console.log("Test users deleted!");
+  console.log();
+}
+
 async function createTestUsers(count: number) {
   const userPromises = [];
 
