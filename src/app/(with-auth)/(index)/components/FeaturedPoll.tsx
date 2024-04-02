@@ -43,7 +43,7 @@ async function _FeaturedPoll() {
 
   return (
     <>
-      <div className="relative">
+      <div className="relative w-full">
         <PollCard poll={randomFeaturedPoll} userId={userId} />
         <FeaturedPollIdHandler featuredPollId={randomFeaturedPoll.id} />
         <span className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/3 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
