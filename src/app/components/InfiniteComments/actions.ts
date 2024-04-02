@@ -12,12 +12,16 @@ export type GetPaginatedCommentsParams = {
   cursor: string | undefined;
   pollId: string;
   parentId: string | undefined;
+  dateOrderBy: "asc" | "desc";
+  orderByLikes?: boolean;
 };
 
 export async function getInfiniteComments({
   cursor,
   pollId,
   parentId,
+  dateOrderBy,
+  orderByLikes,
 }: GetPaginatedCommentsParams) {
   const { userId } = auth();
 
@@ -27,13 +31,15 @@ export async function getInfiniteComments({
       parentId: parentId ?? null,
     },
     orderBy: [
+      orderByLikes
+        ? {
+            likes: {
+              _count: "desc",
+            },
+          }
+        : {},
       {
-        likes: {
-          _count: "desc",
-        },
-      },
-      {
-        createdAt: "desc",
+        createdAt: dateOrderBy,
       },
     ],
     cursor: cursor ? { id: cursor } : undefined,
