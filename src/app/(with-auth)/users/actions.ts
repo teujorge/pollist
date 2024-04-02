@@ -258,7 +258,6 @@ export async function setPrivateAccount(isPrivate: boolean) {
   });
 
   revalidatePath(`/users/${newUser.username}`);
-  return newUser;
 }
 
 export async function setShowAds(showAds: boolean) {
@@ -275,5 +274,4 @@ export async function setShowAds(showAds: boolean) {
   });
 
   revalidatePath(`/users/${newUser.username}`);
-  return newUser;
 }

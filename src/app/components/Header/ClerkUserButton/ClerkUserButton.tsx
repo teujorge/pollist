@@ -4,11 +4,11 @@ import { auth } from "@clerk/nextjs";
 import { Loader } from "../../Loader";
 import { Suspense } from "react";
 import { ProfileLink } from "./ProfileLink";
-import { ProfileToggleAds } from "./settings/ProfileToggleAds";
+import { OptionToggle } from "./settings/OptionToggle";
 import { PricingTableEmbed } from "./settings/PricingTableEmbed";
-import { ProfileTogglePrivate } from "./settings/ProfileTogglePrivate";
 import { ClerkUserButtonClient } from "./ClerkUserButtonClient";
 import { ArrowRightIcon, ExternalLinkIcon } from "@radix-ui/react-icons";
+import { setPrivateAccount, setShowAds } from "@/app/(with-auth)/users/actions";
 
 export function ClerkUserButton() {
   return (
@@ -57,8 +57,17 @@ async function SettingsTab() {
             },
           )}
         >
-          <ProfileTogglePrivate isPrivate={user.private} />
-          <ProfileToggleAds showAds={user.ads} />
+          <OptionToggle
+            label={"Private Account"}
+            isEnabled={user.private}
+            onToggleOption={setPrivateAccount}
+          />
+          <OptionToggle
+            label={"Hide Ads"}
+            isEnabled={!user.ads}
+            onToggleOption={setShowAds}
+            invert={false}
+          />
         </div>
       </div>
 
