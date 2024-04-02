@@ -11,10 +11,8 @@ async function _FeaturedPoll() {
   const featuredPollsCount = await db.poll.count({
     where: { featured: true },
   });
-  console.log(featuredPollsCount);
 
   const randomOffset = Math.floor(Math.random() * featuredPollsCount);
-  console.log(randomOffset);
 
   const randomFeaturedPolls: PollsDetails = await db.poll.findMany({
     where: { featured: true },
@@ -38,17 +36,21 @@ async function _FeaturedPoll() {
       },
     },
   });
-  console.log(randomFeaturedPolls);
 
   const randomFeaturedPoll = randomFeaturedPolls[0];
-  console.log(randomFeaturedPoll);
 
   if (!randomFeaturedPoll) return null;
 
   return (
     <>
-      <PollCard poll={randomFeaturedPoll} userId={userId} />
-      <FeaturedPollIdHandler featuredPollId={randomFeaturedPoll.id} />
+      <div className="relative">
+        <PollCard poll={randomFeaturedPoll} userId={userId} />
+        <FeaturedPollIdHandler featuredPollId={randomFeaturedPoll.id} />
+        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/3 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
+          Featured
+        </span>
+      </div>
+      <div className="h-1" />
     </>
   );
 }
@@ -56,13 +58,7 @@ async function _FeaturedPoll() {
 export function FeaturedPoll() {
   return (
     <Suspense>
-      <div className="relative">
-        <_FeaturedPoll />
-        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/3 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
-          Featured
-        </span>
-      </div>
-      <div className="h-1" />
+      <_FeaturedPoll />
     </Suspense>
   );
 }
