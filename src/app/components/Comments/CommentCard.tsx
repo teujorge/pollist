@@ -87,12 +87,14 @@ export function CommentCard({
               </p>
             </div>
 
-            <div className="flex w-full flex-row gap-1">
+            <p className="break-words">
               {comment.at && (
-                <Link href={`/users/${comment.at}`}>@{comment.at}</Link>
+                <Link className="text-primary/85" href={`/users/${comment.at}`}>
+                  @{comment.at}{" "}
+                </Link>
               )}
-              <p className="break-words">{comment.text}</p>
-            </div>
+              {comment.text}
+            </p>
 
             <CommentCardActions />
 
