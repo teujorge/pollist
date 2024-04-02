@@ -376,7 +376,7 @@ export function PollCardActions({
             className={cn(
               buttonVariants({ variant: "ghost", size: "sm" }),
               "flex flex-row items-center justify-center gap-1 font-bold",
-              optimisticPoll.likes.length > 0
+              (optimisticPoll.likes?.length ?? 0) > 0
                 ? "[&>*]:text-primary [&>*]:hovact:text-purple-400"
                 : "[&>*]:text-accent-foreground [&>*]:hovact:text-foreground",
             )}
