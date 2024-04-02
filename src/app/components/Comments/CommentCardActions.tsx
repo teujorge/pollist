@@ -1,16 +1,16 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Loader } from "../Loader";
-import { Button } from "@/components/ui/button";
 import { PAGE_SIZE } from "@/constants";
 import { NewComments } from "./NewComments";
 import { CommentForm } from "./CommentForm";
 import { DeleteAlertDialog } from "../DeleteAlertDialog";
 import { useEffect, useState } from "react";
 import { getInfiniteComments } from "../InfiniteComments/actions";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { CommentCard, useCommentCard } from "./CommentCard";
-import { DotsHorizontalIcon, ThickArrowUpIcon } from "@radix-ui/react-icons";
 import { deleteComment, likeComment, unlikeComment } from "./actions";
 import { SignInButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import {
@@ -18,6 +18,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  ArrowRightIcon,
+  ThickArrowUpIcon,
+  TriangleDownIcon,
+  DotsHorizontalIcon,
+} from "@radix-ui/react-icons";
 import type { Comment } from "../InfiniteComments/actions";
 
 export function CommentCardActions() {
@@ -175,22 +181,18 @@ export function CommentCardActions() {
     await navigator.clipboard.writeText(
       window.location.href + "?parentId=" + comment.id,
     );
-    toast("Link copied to clipboard");
+    toast.success("Link copied to clipboard");
   }
-
-  const replyButtonComponent = (
-    <button onClick={user ? () => setIsReplying(!isReplying) : undefined}>
-      <span className="font-bold text-accent-foreground transition-colors hovact:text-foreground">
-        Reply
-      </span>
-    </button>
-  );
 
   const likeButtonComponent = (
     <button
-      className={`flex flex-row items-center justify-center gap-1 font-bold
-        ${comment.likes.length > 0 ? "[&>*]:text-primary [&>*]:hovact:text-purple-400" : "[&>*]:text-accent-foreground [&>*]:hovact:text-foreground"}
-      `}
+      className={cn(
+        buttonVariants({ variant: "ghost", size: "sm" }),
+        "gap-1 font-bold",
+        comment.likes.length > 0
+          ? "[&>*]:text-primary [&>*]:hovact:text-purple-400"
+          : "[&>*]:text-accent-foreground [&>*]:hovact:text-foreground",
+      )}
       onClick={user ? handleLike : undefined}
     >
       <ThickArrowUpIcon className="transition-colors" />
@@ -198,22 +200,34 @@ export function CommentCardActions() {
     </button>
   );
 
+  const replyButtonComponent = (
+    <button onClick={user ? () => setIsReplying(!isReplying) : undefined}>
+      <span
+        className={cn(
+          buttonVariants({ variant: "ghost", size: "sm" }),
+          "font-bold",
+        )}
+      >
+        Reply
+      </span>
+    </button>
+  );
+
   return (
     <>
-      <div className="flex-warp flex items-center justify-between gap-4">
-        <div className="flex-warp flex items-center gap-4">
-          <SignedIn>{replyButtonComponent}</SignedIn>
-          <SignedOut>
-            <SignInButton mode="modal">{replyButtonComponent}</SignInButton>
-          </SignedOut>
-
+      <div className="flex-warp flex items-center justify-between gap-2">
+        <div className="flex-warp flex items-center">
           <SignedIn>{likeButtonComponent}</SignedIn>
           <SignedOut>
             <SignInButton mode="modal">{likeButtonComponent}</SignInButton>
           </SignedOut>
+
+          <SignedIn>{replyButtonComponent}</SignedIn>
+          <SignedOut>
+            <SignInButton mode="modal">{replyButtonComponent}</SignInButton>
+          </SignedOut>
         </div>
 
-        {/* options popover */}
         <Popover>
           <PopoverTrigger>
             <Button
@@ -225,21 +239,36 @@ export function CommentCardActions() {
           </PopoverTrigger>
           <PopoverContent
             align="end"
-            className="flex flex-col bg-background p-4"
+            className="flex flex-col bg-background py-2"
           >
-            {/* copy link button */}
             <button
-              className="w-fit font-bold [&>span]:hovact:text-accent-foreground"
+              className={cn(
+                buttonVariants({ variant: "ghost" }),
+                "w-full justify-start rounded-none",
+              )}
               onClick={handleCopyThreadLink}
             >
-              <span className="transition-colors">Copy Link</span>
+              Copy Link
             </button>
 
-            {/* delete button */}
+            <button
+              className={cn(
+                buttonVariants({ variant: "ghost" }),
+                "w-full justify-start rounded-none",
+              )}
+              onClick={() => toast.warning("Feature coming soon")}
+            >
+              Report
+            </button>
+
             {user?.id === comment.authorId && (
               <DeleteAlertDialog
                 awaitType="promise"
                 onDelete={handleDeleteComment}
+                className={cn(
+                  buttonVariants({ variant: "ghost" }),
+                  "w-full justify-start rounded-none hovact:bg-destructive/20 hovact:text-destructive",
+                )}
               />
             )}
           </PopoverContent>
@@ -249,23 +278,32 @@ export function CommentCardActions() {
       {isReplying && (
         <CommentForm
           pollId={comment.pollId}
-          parentId={comment.id}
+          parentId={comment.parentId ?? undefined}
+          atUsername={comment.author.username}
           label={undefined}
           placeholder="Write your reply here..."
         />
       )}
 
-      <button
-        className="w-fit font-bold [&>span]:hovact:text-foreground"
-        onClick={() => setIsViewingReplies(!isViewingReplies)}
-      >
-        <span className="text-accent-foreground transition-colors">
-          View replies ({comment._count.replies})
-        </span>
-      </button>
-
       {(isReplying || isViewingReplies) && (
         <CommentReplies pollId={comment.pollId} parentId={comment.id} />
+      )}
+
+      {!isViewingReplies && (
+        <button
+          className={cn(
+            buttonVariants({ variant: "ghost" }),
+            "w-fit items-center justify-center gap-2 [&>svg]:transition-transform [&>svg]:hovact:-rotate-90",
+            comment.parentId && "hidden",
+            comment._count.replies === 0 && "hidden",
+          )}
+          onClick={() => setIsViewingReplies(!isViewingReplies)}
+        >
+          <>
+            <TriangleDownIcon className="h-5 w-5" /> {comment._count.replies}{" "}
+            Replies
+          </>
+        </button>
       )}
     </>
   );
@@ -333,7 +371,7 @@ function CommentReplies({
   }
 
   return (
-    <div className="flex w-full flex-col gap-2 p-2 pl-4">
+    <div className={"flex w-full flex-col gap-2"}>
       <NewComments parentId={parentId} />
       {data.replies.map((reply) => (
         <CommentCard
@@ -346,10 +384,13 @@ function CommentReplies({
         <Loader className="mx-auto" />
       ) : data.hasMore ? (
         <button
-          className="w-fit font-bold [&>span]:hovact:text-accent-foreground"
+          className={cn(
+            buttonVariants({ variant: "ghost" }),
+            "w-fit items-center justify-center gap-2 [&>svg]:transition-transform [&>svg]:hovact:rotate-90",
+          )}
           onClick={handleLoadMore}
         >
-          <span className="text-foreground transition-colors">load more</span>
+          <ArrowRightIcon className="h-5 w-5" /> Show More Replies
         </button>
       ) : (
         <p className="w-full text-center text-sm text-accent-foreground underline decoration-accent-foreground underline-offset-4">

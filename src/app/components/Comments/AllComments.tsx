@@ -32,6 +32,7 @@ export async function AllComments({
         parent: {
           select: {
             authorId: true,
+            author: { select: { username: true } },
           },
         },
         _count: {
@@ -64,6 +65,7 @@ export async function AllComments({
           <CommentForm
             pollId={pollId}
             parentId={parentId}
+            atUsername={undefined}
             label={undefined}
             placeholder="Write your comment here..."
           />

@@ -11,11 +11,13 @@ import { useRef, useState } from "react";
 export function CommentForm({
   pollId,
   parentId,
+  atUsername,
   label,
   placeholder,
 }: {
   pollId: string;
   parentId: string | undefined;
+  atUsername: string | undefined;
   label: string | undefined;
   placeholder: string | undefined;
 }) {
@@ -46,6 +48,7 @@ export function CommentForm({
         pollId,
         parentId: parentId ?? null,
         text,
+        at: atUsername ?? null,
         authorId: user?.id ?? "optimistic",
         author: {
           id: user?.id ?? "optimistic",
@@ -55,6 +58,7 @@ export function CommentForm({
         },
         parent: {
           authorId: "optimistic",
+          author: { username: "" },
         },
         poll: {
           authorId: "optimistic",
@@ -68,7 +72,12 @@ export function CommentForm({
     ]);
 
     try {
-      const newComment = await createComment({ pollId, parentId, text });
+      const newComment = await createComment({
+        pollId,
+        parentId,
+        atUsername,
+        text,
+      });
 
       // Replace the optimistic comment with the real one
       setNewReplies((replies) =>

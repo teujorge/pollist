@@ -7,10 +7,12 @@ import type { Comment } from "../InfiniteComments/actions";
 export async function createComment({
   pollId,
   parentId,
+  atUsername,
   text,
 }: {
   pollId: string;
   parentId: string | undefined;
+  atUsername: string | undefined;
   text: string | undefined;
 }): Promise<Comment> {
   if (!text) {
@@ -28,6 +30,7 @@ export async function createComment({
       pollId,
       parentId,
       text,
+      at: atUsername,
       authorId: userId,
     },
     select: {
@@ -35,6 +38,7 @@ export async function createComment({
       pollId: true,
       parentId: true,
       text: true,
+      at: true,
       authorId: true,
       createdAt: true,
       updatedAt: true,
@@ -43,6 +47,7 @@ export async function createComment({
       parent: {
         select: {
           authorId: true,
+          author: { select: { username: true } },
         },
       },
       poll: {

@@ -51,6 +51,7 @@ export async function getInfiniteComments({
       parent: {
         select: {
           authorId: true,
+          author: { select: { username: true } },
         },
       },
       likes: {
