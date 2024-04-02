@@ -49,6 +49,7 @@ export function CommentForm({
 
     // Add the optimistic comment to the state
     setNewReplies((replies) => [
+      ...replies,
       {
         id: tempId,
         pollId,
@@ -74,7 +75,6 @@ export function CommentForm({
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      ...replies,
     ]);
 
     try {
