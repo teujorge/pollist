@@ -1,15 +1,27 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { useApp } from "@/app/(with-auth)/app";
 import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/database/supabase";
+import { buttonVariants } from "@/components/ui/button";
 import { CircularProgress } from "../CircularProgress";
-import { CopyIcon, ThickArrowUpIcon } from "@radix-ui/react-icons";
 import { useEffect, useRef, useState } from "react";
 import { cn, uppercaseFirstLetterOfEachSentence } from "@/lib/utils";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  CopyIcon,
+  ChatBubbleIcon,
+  ThickArrowUpIcon,
+  DotsHorizontalIcon,
+} from "@radix-ui/react-icons";
 import {
   handleVote,
   handleLikePoll,
@@ -354,16 +366,20 @@ export function PollCardActions({
         })}
       </ul>
 
-      <div className="flex w-full flex-wrap gap-2">
+      <div className="flex w-full flex-wrap items-center justify-between gap-2">
         <div
           className={`relative w-fit rounded-full bg-opacity-20 px-2 py-1
           ${pollNotification && "bg-primary"}
         `}
         >
           <button
-            className={`flex flex-row items-center justify-center gap-1 font-bold
-            ${optimisticPoll.likes.length > 0 ? "[&>*]:text-primary [&>*]:hovact:text-purple-400" : "[&>*]:text-accent-foreground [&>*]:hovact:text-foreground"}
-          `}
+            className={cn(
+              buttonVariants({ variant: "ghost", size: "sm" }),
+              "flex flex-row items-center justify-center gap-1 font-bold",
+              optimisticPoll.likes.length > 0
+                ? "[&>*]:text-primary [&>*]:hovact:text-purple-400"
+                : "[&>*]:text-accent-foreground [&>*]:hovact:text-foreground",
+            )}
             onClick={user ? handleLike : undefined}
           >
             <ThickArrowUpIcon className="transition-colors" />
@@ -383,15 +399,65 @@ export function PollCardActions({
             />
           )}
         </div>
-        <button
-          className="flex flex-row items-center justify-center gap-1 font-bold [&>*]:text-accent-foreground [&>*]:hovact:text-foreground"
-          onClick={async () => {
-            await navigator.clipboard.writeText(`pollist.org/polls/${poll.id}`);
-            toast.success("Link copied to clipboard");
-          }}
-        >
-          <CopyIcon className="transition-colors" />
-        </button>
+
+        <div className="flex flex-row">
+          <Link
+            href={`/polls/${poll.id}`}
+            className={buttonVariants({ variant: "ghost", size: "sm" })}
+          >
+            <ChatBubbleIcon className="transition-colors" />
+          </Link>
+          <button
+            className={buttonVariants({ variant: "ghost", size: "sm" })}
+            onClick={async () => {
+              await navigator.clipboard.writeText(
+                `pollist.org/polls/${poll.id}`,
+              );
+              toast.success("Link copied to clipboard");
+            }}
+          >
+            <CopyIcon className="transition-colors" />
+          </button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button
+                className={buttonVariants({ variant: "ghost", size: "sm" })}
+              >
+                <DotsHorizontalIcon />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent>
+              <ul className="flex flex-col gap-1 py-2">
+                <li>
+                  <button
+                    className={cn(
+                      buttonVariants({ variant: "outline" }),
+                      "w-full justify-start rounded-none border-none text-left",
+                    )}
+                    onClick={() => {
+                      toast.warning("Feature coming soon");
+                    }}
+                  >
+                    Feature this poll
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className={cn(
+                      buttonVariants({ variant: "outline" }),
+                      "w-full justify-start rounded-none border-none text-left",
+                    )}
+                    onClick={() => {
+                      toast.warning("Feature coming soon");
+                    }}
+                  >
+                    Report
+                  </button>
+                </li>
+              </ul>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       {showChart && (
