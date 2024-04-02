@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 import { useApp } from "@/app/(with-auth)/app";
 import { useUser } from "@clerk/nextjs";
 import { ProfileImage } from "../ProfileImage";
 import { CommentCardActions } from "./CommentCardActions";
-import { createContext, useContext, useState } from "react";
-import type { Comment } from "../InfiniteComments/actions";
 import { TriggerNotificationSeen } from "../TriggerNotificationSeen";
+import { createContext, useContext, useState } from "react";
 import { acknowledgeCommentLike, acknowledgeCommentReply } from "./actions";
+import type { Comment } from "../InfiniteComments/actions";
 
 export function CommentCard({
   comment: _comment,
@@ -55,23 +56,29 @@ export function CommentCard({
     >
       {isCommentDeleted ? null : (
         <div
-          className={`flex w-full flex-col gap-2 rounded-lg border bg-accent/10 p-4
-        ${showPurpleForUnreadComment || showPurpleForUnreadLike ? "border-primary" : "border-accent"}
-        `}
+          className={cn(
+            "flex w-full flex-row items-start justify-start gap-2 rounded-lg border border-transparent p-2",
+            showPurpleForUnreadComment ||
+              (showPurpleForUnreadLike && "border-primary"),
+          )}
         >
-          <Link
-            href={`/users/${comment.author.username}`}
-            className="flex w-fit flex-row items-center gap-2"
-          >
+          <Link href={`/users/${comment.author.username}`}>
             <ProfileImage
               src={comment.author.imageUrl}
               username={comment.author.username}
-              size={40}
+              size={36}
             />
+          </Link>
 
-            <div>
-              <p className="text-sm font-bold">{comment.author.username}</p>
-              <p className="text-sm font-light">
+          <div className="flex w-full flex-col gap-1">
+            <div className="flex w-fit flex-row items-center justify-center gap-1">
+              <Link
+                href={`/users/${comment.author.username}`}
+                className="text-sm font-bold"
+              >
+                {comment.author.username}
+              </Link>
+              <p className="text-xs font-light">
                 {comment.updatedAt.toLocaleDateString(undefined, {
                   year: "numeric",
                   month: "short",
@@ -79,26 +86,31 @@ export function CommentCard({
                 })}
               </p>
             </div>
-          </Link>
 
-          <p className="break-words">{comment.text}</p>
+            <div className="flex w-full flex-row gap-1">
+              {comment.at && (
+                <Link href={`/users/${comment.at}`}>@{comment.at}</Link>
+              )}
+              <p className="break-words">{comment.text}</p>
+            </div>
 
-          <CommentCardActions />
+            <CommentCardActions />
 
-          {showPurpleForUnreadComment && (
-            <TriggerNotificationSeen
-              acknowledgeFunction={async () => {
-                await acknowledgeCommentReply({ commentId: comment.id });
-              }}
-            />
-          )}
-          {showPurpleForUnreadLike && (
-            <TriggerNotificationSeen
-              acknowledgeFunction={async () => {
-                await acknowledgeCommentLike({ commentId: comment.id });
-              }}
-            />
-          )}
+            {showPurpleForUnreadComment && (
+              <TriggerNotificationSeen
+                acknowledgeFunction={async () => {
+                  await acknowledgeCommentReply({ commentId: comment.id });
+                }}
+              />
+            )}
+            {showPurpleForUnreadLike && (
+              <TriggerNotificationSeen
+                acknowledgeFunction={async () => {
+                  await acknowledgeCommentLike({ commentId: comment.id });
+                }}
+              />
+            )}
+          </div>
         </div>
       )}
     </CommentCardContextProvider>

@@ -11,6 +11,8 @@ export async function InfiniteComments(props: {
     cursor: undefined,
     pollId: props.pollId,
     parentId: props.parentId,
+    dateOrderBy: "desc",
+    orderByLikes: true,
   });
 
   return (

@@ -11,13 +11,19 @@ import { useRef, useState } from "react";
 export function CommentForm({
   pollId,
   parentId,
+  atUsername,
   label,
   placeholder,
+  beforeSubmit,
+  afterSubmit,
 }: {
   pollId: string;
   parentId: string | undefined;
+  atUsername: string | undefined;
   label: string | undefined;
   placeholder: string | undefined;
+  beforeSubmit?: () => void;
+  afterSubmit?: () => void;
 }) {
   const { user } = useUser();
 
@@ -30,6 +36,8 @@ export function CommentForm({
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
+    if (beforeSubmit) beforeSubmit();
+
     setIsLoading(true);
 
     const text = (
@@ -41,11 +49,13 @@ export function CommentForm({
 
     // Add the optimistic comment to the state
     setNewReplies((replies) => [
+      ...replies,
       {
         id: tempId,
         pollId,
         parentId: parentId ?? null,
         text,
+        at: atUsername ?? null,
         authorId: user?.id ?? "optimistic",
         author: {
           id: user?.id ?? "optimistic",
@@ -55,6 +65,7 @@ export function CommentForm({
         },
         parent: {
           authorId: "optimistic",
+          author: { username: "" },
         },
         poll: {
           authorId: "optimistic",
@@ -64,11 +75,15 @@ export function CommentForm({
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      ...replies,
     ]);
 
     try {
-      const newComment = await createComment({ pollId, parentId, text });
+      const newComment = await createComment({
+        pollId,
+        parentId,
+        atUsername,
+        text,
+      });
 
       // Replace the optimistic comment with the real one
       setNewReplies((replies) =>
@@ -91,6 +106,8 @@ export function CommentForm({
     }
 
     setIsLoading(false);
+
+    if (afterSubmit) afterSubmit();
   }
 
   return (

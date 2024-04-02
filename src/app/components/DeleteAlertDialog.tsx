@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { Loader } from "./Loader";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -19,6 +20,7 @@ type DeleteAlertDialogProps = {
   description?: string;
   awaitType?: "none" | "promise" | "forever";
   onDelete: () => void | Promise<boolean | void>;
+  className?: string;
 };
 
 export function DeleteAlertDialog({
@@ -26,6 +28,7 @@ export function DeleteAlertDialog({
   description,
   awaitType = "none",
   onDelete,
+  className,
 }: DeleteAlertDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [awaiting, setAwaiting] = useState(false);
@@ -54,7 +57,12 @@ export function DeleteAlertDialog({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialogTrigger className="w-fit font-bold transition-colors hovact:text-destructive">
+      <AlertDialogTrigger
+        className={cn(
+          "w-fit font-bold transition-colors hovact:text-destructive",
+          className,
+        )}
+      >
         Delete
       </AlertDialogTrigger>
       <AlertDialogContent>

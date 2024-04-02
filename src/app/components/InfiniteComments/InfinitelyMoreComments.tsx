@@ -1,8 +1,9 @@
 "use client";
 
 import { CommentCard } from "../Comments/CommentCard";
+import { getInfiniteComments } from "./actions";
 import { InfinitelyMoreItems } from "../InfiniteScroll/InfinitelyMoreItems";
-import { type Comment, getInfiniteComments } from "./actions";
+import type { Comment, GetPaginatedCommentsParams } from "./actions";
 
 export function InfinitelyMoreComments(props: {
   pollId: string;
@@ -11,12 +12,14 @@ export function InfinitelyMoreComments(props: {
   initialCursor: string | undefined;
 }) {
   return (
-    <InfinitelyMoreItems<
-      Comment,
-      { pollId: string; parentId: string | undefined }
-    >
+    <InfinitelyMoreItems<Comment, Omit<GetPaginatedCommentsParams, "cursor">>
       idPrefix="comment"
-      query={{ pollId: props.pollId, parentId: props.parentId }}
+      query={{
+        pollId: props.pollId,
+        parentId: props.parentId,
+        dateOrderBy: "desc",
+        orderByLikes: true,
+      }}
       getter={getInfiniteComments}
       initialCursor={props.initialCursor}
       ItemComponent={(comment) => <CommentCard comment={comment} />}
