@@ -23,8 +23,8 @@ export async function getInfinitePolls({
   const isTrending = category === "trending";
   const isControversial = category === "controversial";
 
-  const currentDate = new Date();
-  const recentDate = new Date(currentDate.setDate(currentDate.getDate() - 7)); // last 7 days
+  // const currentDate = new Date();
+  // const recentDate = new Date(currentDate.setDate(currentDate.getDate() - 7)); // last 7 days
 
   const polls = await db.poll.findMany({
     where: {
@@ -42,16 +42,16 @@ export async function getInfinitePolls({
             }
           : {}),
 
-        // Filter by date
-        ...(isTrending
-          ? {
-              some: {
-                createdAt: {
-                  gte: recentDate,
-                },
-              },
-            }
-          : {}),
+        // // Filter by date -> temp disabled
+        // ...(isTrending
+        //   ? {
+        //       some: {
+        //         createdAt: {
+        //           gte: recentDate,
+        //         },
+        //       },
+        //     }
+        //   : {}),
       },
       ...(isControversial ? { controversial: true } : {}),
     },
