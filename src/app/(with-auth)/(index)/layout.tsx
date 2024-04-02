@@ -1,6 +1,8 @@
+import GlobalLoading from "../loading";
 import { Suspense } from "react";
 import { FilterBar } from "./components/FilterBar";
-import GlobalLoading from "../loading";
+import { FeaturedPoll } from "./components/FeaturedPoll";
+import { FeaturedPollProvider } from "./hooks/useFeaturedPoll";
 
 export default function HomePageLayout({
   children,
@@ -12,7 +14,10 @@ export default function HomePageLayout({
       <h1 className="pt-6 text-5xl font-bold">Polls</h1>
       <FilterBar />
       <div className="h-2" />
-      <Suspense fallback={<GlobalLoading />}>{children}</Suspense>
+      <FeaturedPollProvider>
+        <FeaturedPoll />
+        <Suspense fallback={<GlobalLoading />}>{children}</Suspense>
+      </FeaturedPollProvider>
     </main>
   );
 }
