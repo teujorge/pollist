@@ -14,12 +14,16 @@ export function CommentForm({
   atUsername,
   label,
   placeholder,
+  beforeSubmit,
+  afterSubmit,
 }: {
   pollId: string;
   parentId: string | undefined;
   atUsername: string | undefined;
   label: string | undefined;
   placeholder: string | undefined;
+  beforeSubmit?: () => void;
+  afterSubmit?: () => void;
 }) {
   const { user } = useUser();
 
@@ -31,6 +35,8 @@ export function CommentForm({
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    if (beforeSubmit) beforeSubmit();
 
     setIsLoading(true);
 
@@ -100,6 +106,8 @@ export function CommentForm({
     }
 
     setIsLoading(false);
+
+    if (afterSubmit) afterSubmit();
   }
 
   return (

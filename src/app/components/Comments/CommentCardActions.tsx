@@ -41,6 +41,10 @@ export function CommentCardActions() {
     setIsChangeProcessing,
   } = useCommentCard();
 
+  useEffect(() => {
+    if (isReplying) setIsViewingReplies(true);
+  }, [isReplying, setIsViewingReplies]);
+
   async function handleLike() {
     if (!user?.id) return;
 
@@ -279,13 +283,14 @@ export function CommentCardActions() {
         <CommentForm
           pollId={comment.pollId}
           parentId={comment.parentId ?? comment.id}
-          atUsername={comment.author.username}
+          atUsername={comment.parentId ? comment.author.username : undefined}
           label={undefined}
           placeholder="Write your reply here..."
+          beforeSubmit={() => setIsReplying(false)}
         />
       )}
 
-      {(isReplying || isViewingReplies) && (
+      {isViewingReplies && !comment.parentId && (
         <CommentReplies pollId={comment.pollId} parentId={comment.id} />
       )}
 
