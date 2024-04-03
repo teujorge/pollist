@@ -5,11 +5,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatNumber(num: number): string {
+export function formatNumber(num: number, sigFigs = 3): string {
   const numberFormatter = new Intl.NumberFormat(undefined, {
     style: "decimal",
     notation: "compact",
-    maximumSignificantDigits: 3,
+    maximumSignificantDigits: sigFigs,
   });
 
   return numberFormatter.format(num);
