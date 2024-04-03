@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useApp } from "@/app/(with-auth)/app";
 import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/database/supabase";
+import { SharePopOver } from "../SharePopOver";
 import { buttonVariants } from "@/components/ui/button";
 import { CircularProgress } from "../CircularProgress";
 import { useEffect, useRef, useState } from "react";
@@ -21,7 +22,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-  CopyIcon,
   ChatBubbleIcon,
   ThickArrowUpIcon,
   DotsHorizontalIcon,
@@ -419,17 +419,9 @@ export function PollCardActions({
               <ChatBubbleIcon className="transition-colors" />
             </Link>
           )}
-          <button
-            className={buttonVariants({ variant: "ghost", size: "sm" })}
-            onClick={async () => {
-              await navigator.clipboard.writeText(
-                `${window.location.host}/polls/${poll.id}`,
-              );
-              toast.success("Link copied to clipboard");
-            }}
-          >
-            <CopyIcon className="transition-colors" />
-          </button>
+
+          <SharePopOver text={poll.title} pathname={"/polls/" + poll.id} />
+
           <Popover>
             <PopoverTrigger asChild>
               <button
