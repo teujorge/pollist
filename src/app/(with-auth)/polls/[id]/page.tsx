@@ -3,7 +3,6 @@ import { auth } from "@clerk/nextjs/server";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { getSinglePoll } from "@/app/components/InfinitePolls/actions";
-import { DeletePollForm } from "@/app/components/CrudPoll/DeletePollForm";
 import { PollCardActions } from "@/app/components/PollCard/PollCardActions";
 import { uppercaseFirstLetterOfEachSentence } from "@/lib/utils";
 import {
@@ -27,14 +26,15 @@ export default async function PollPage({ params, searchParams }: Props) {
   return (
     <main className="relative flex min-h-[calc(100dvh-64px)] w-full flex-col gap-1">
       {/* header */}
-      <div className="flex flex-col items-start justify-start gap-1 sm:flex-row sm:justify-between">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-3xl">
-            {uppercaseFirstLetterOfEachSentence(poll.title)}
-          </h1>
-          {poll.description && (
-            <h2>{uppercaseFirstLetterOfEachSentence(poll.description)}</h2>
-          )}
+      <div className="flex flex-col items-start justify-start gap-1">
+        <h1 className="text-3xl">
+          {uppercaseFirstLetterOfEachSentence(poll.title)}
+        </h1>
+        {poll.description && (
+          <h2>{uppercaseFirstLetterOfEachSentence(poll.description)}</h2>
+        )}
+
+        <div className="flex flex-col sm:flex-row sm:items-center sm:gap-1">
           <span>
             Created by{" "}
             <Link
@@ -51,14 +51,14 @@ export default async function PollPage({ params, searchParams }: Props) {
               )}
             </Link>
           </span>
-        </div>
-        <div className="flex flex-col gap-1 text-sm text-accent-foreground sm:items-end">
-          {poll.createdAt.toLocaleDateString(undefined, {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-          {userId === poll.authorId && <DeletePollForm poll={poll} />}
+          <span className="text-sm text-accent-foreground">
+            on{" "}
+            {poll.createdAt.toLocaleDateString(undefined, {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </span>
         </div>
       </div>
 
