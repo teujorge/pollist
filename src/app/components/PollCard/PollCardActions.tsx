@@ -423,7 +423,7 @@ export function PollCardActions({
             className={buttonVariants({ variant: "ghost", size: "sm" })}
             onClick={async () => {
               await navigator.clipboard.writeText(
-                `pollist.org/polls/${poll.id}`,
+                `${window.location.host}/polls/${poll.id}`,
               );
               toast.success("Link copied to clipboard");
             }}
