@@ -7,9 +7,10 @@ import { toast } from "sonner";
 import { useApp } from "@/app/(with-auth)/app";
 import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/database/supabase";
-import { SharePopOver } from "../SharePopOver";
-import { buttonVariants } from "@/components/ui/button";
+import { SharePopover } from "../SharePopover";
+import { DeletePollForm } from "../CrudPoll/DeletePollForm";
 import { CircularProgress } from "../CircularProgress";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import {
   cn,
@@ -22,9 +23,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
+  StarIcon,
   ChatBubbleIcon,
   ThickArrowUpIcon,
   DotsHorizontalIcon,
+  ExclamationTriangleIcon,
 } from "@radix-ui/react-icons";
 import {
   handleVote,
@@ -379,9 +382,10 @@ export function PollCardActions({
           ${pollNotification && "bg-primary"}
         `}
         >
-          <button
+          <Button
+            size="sm"
+            variant="ghost"
             className={cn(
-              buttonVariants({ variant: "ghost", size: "sm" }),
               "flex flex-row items-center justify-center gap-1 font-bold",
               (optimisticPoll.likes?.length ?? 0) > 0 &&
                 "[&>*]:text-primary [&>*]:hovact:text-purple-400",
@@ -392,7 +396,7 @@ export function PollCardActions({
             <span className="transition-colors">
               {optimisticPoll._count.likes}
             </span>
-          </button>
+          </Button>
 
           {pollNotification && (
             <TriggerNotificationSeen
@@ -420,45 +424,40 @@ export function PollCardActions({
             </Link>
           )}
 
-          <SharePopOver text={poll.title} pathname={"/polls/" + poll.id} />
+          <SharePopover text={poll.title} pathname={"/polls/" + poll.id} />
 
           <Popover>
             <PopoverTrigger asChild>
-              <button
-                className={buttonVariants({ variant: "ghost", size: "sm" })}
-              >
+              <Button size="sm" variant="ghost">
                 <DotsHorizontalIcon />
-              </button>
+              </Button>
             </PopoverTrigger>
-            <PopoverContent>
-              <ul className="flex flex-col gap-1 py-2">
-                <li>
-                  <button
-                    className={cn(
-                      buttonVariants({ variant: "outline" }),
-                      "w-full justify-start rounded-none border-none text-left",
-                    )}
-                    onClick={() => {
-                      toast.warning("Feature coming soon");
-                    }}
-                  >
-                    Feature this poll
-                  </button>
-                </li>
-                <li>
-                  <button
-                    className={cn(
-                      buttonVariants({ variant: "outline" }),
-                      "w-full justify-start rounded-none border-none text-left",
-                    )}
-                    onClick={() => {
-                      toast.warning("Feature coming soon");
-                    }}
-                  >
-                    Report
-                  </button>
-                </li>
-              </ul>
+            <PopoverContent align="end" className="py-2">
+              <Button
+                variant="popover"
+                className="hovact:bg-primary/20 hovact:text-primary"
+                onClick={() => {
+                  toast.warning("Feature coming soon");
+                }}
+              >
+                <StarIcon />
+                Feature this poll
+              </Button>
+
+              {user?.id === poll.authorId ? (
+                <DeletePollForm poll={poll} />
+              ) : (
+                <Button
+                  variant="popover"
+                  className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
+                  onClick={() => {
+                    toast.warning("Feature coming soon");
+                  }}
+                >
+                  <ExclamationTriangleIcon />
+                  Report
+                </Button>
+              )}
             </PopoverContent>
           </Popover>
         </div>
