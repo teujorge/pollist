@@ -59,6 +59,7 @@ export function PollCardActions({
   poll,
   highlightedUserId,
   showChart,
+  showCommentsButton,
 }: PollCardActionsProps) {
   const { user } = useUser();
 
@@ -406,24 +407,26 @@ export function PollCardActions({
         </div>
 
         <div className="flex flex-row">
-          <Link
-            href={`/polls/${poll.id}`}
-            className={cn(
-              buttonVariants({ variant: "ghost", size: "sm" }),
-              "flex flex-row items-center justify-center gap-2 font-bold transition-colors",
-            )}
-          >
-            <span>
-              {formatNumber(
-                poll._count.comments +
-                  poll.comments.reduce(
-                    (acc, comment) => acc + comment._count.replies,
-                    0,
-                  ),
+          {showCommentsButton && (
+            <Link
+              href={`/polls/${poll.id}`}
+              className={cn(
+                buttonVariants({ variant: "ghost", size: "sm" }),
+                "flex flex-row items-center justify-center gap-2 font-bold transition-colors",
               )}
-            </span>
-            <ChatBubbleIcon className="transition-colors" />
-          </Link>
+            >
+              <span>
+                {formatNumber(
+                  poll._count.comments +
+                    poll.comments.reduce(
+                      (acc, comment) => acc + comment._count.replies,
+                      0,
+                    ),
+                )}
+              </span>
+              <ChatBubbleIcon className="transition-colors" />
+            </Link>
+          )}
           <button
             className={buttonVariants({ variant: "ghost", size: "sm" })}
             onClick={async () => {

@@ -10,9 +10,15 @@ export type PollCardProps = {
   userId: string | null;
   poll: PollsDetails[number];
   highlightedUserId?: string;
+  showCommentsButton?: boolean;
 };
 
-export function PollCard({ userId, poll, highlightedUserId }: PollCardProps) {
+export function PollCard({
+  userId,
+  poll,
+  highlightedUserId,
+  showCommentsButton = true,
+}: PollCardProps) {
   return (
     <div className="flex w-full flex-col gap-2 rounded-lg border border-accent bg-accent/10 p-6 shadow-md">
       <Link
@@ -57,7 +63,11 @@ export function PollCard({ userId, poll, highlightedUserId }: PollCardProps) {
       </Link>
 
       <SignedIn>
-        <PollCardActions poll={poll} highlightedUserId={highlightedUserId} />
+        <PollCardActions
+          poll={poll}
+          highlightedUserId={highlightedUserId}
+          showCommentsButton={showCommentsButton}
+        />
       </SignedIn>
       <SignedOut>
         <SignInButton mode="modal">
@@ -65,6 +75,7 @@ export function PollCard({ userId, poll, highlightedUserId }: PollCardProps) {
             <PollCardActions
               poll={poll}
               highlightedUserId={highlightedUserId}
+              showCommentsButton={showCommentsButton}
             />
           </button>
         </SignInButton>
