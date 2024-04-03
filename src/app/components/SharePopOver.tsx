@@ -3,7 +3,6 @@
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { WhatsAppSvg } from "../svgs/WhatsAppSvg";
-import { FacebookSvg } from "../svgs/FacebookSvg";
 import { buttonVariants } from "@/components/ui/button";
 import { CopyIcon, Share2Icon, TwitterLogoIcon } from "@radix-ui/react-icons";
 import {
@@ -16,7 +15,6 @@ export function SharePopOver({
   copy = true,
   twitter = true,
   whatsapp = true,
-  facebook = true,
 
   text,
   pathname,
@@ -24,7 +22,6 @@ export function SharePopOver({
   copy?: boolean;
   twitter?: boolean;
   whatsapp?: boolean;
-  facebook?: boolean;
 
   text: string;
   pathname: string;
@@ -88,17 +85,6 @@ export function SharePopOver({
           </a>
         )}
 
-        {facebook && (
-          <a
-            className={cnClassName}
-            target="_blank"
-            rel="noreferrer noopener"
-            href={`https://www.facebook.com/dialog/share?app_id=145634995501895&display=popup&href=${encodeURIComponent(url)}`}
-          >
-            <FacebookSvg className="h-[15px] w-[15px] stroke-foreground" />
-            Facebook
-          </a>
-        )}
       </PopoverContent>
     </Popover>
   );
