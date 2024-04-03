@@ -1,24 +1,20 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
+import { formatNumber } from "@/lib/utils";
 import { BarChartIcon } from "@radix-ui/react-icons";
 import {
   Drawer,
-  DrawerContent,
-  DrawerHeader,
   DrawerTitle,
+  DrawerHeader,
+  DrawerContent,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-
-const { Bar, BarChart, LabelList, ResponsiveContainer } = await import(
-  "recharts"
-);
 
 export function ChartDrawer({
   data,
 }: {
   data: { value: number; label: string }[];
 }) {
+  const maxValue = Math.max(...data.map((item) => item.value));
   return (
     <Drawer shouldScaleBackground>
       <DrawerTrigger asChild>
@@ -33,30 +29,28 @@ export function ChartDrawer({
         <DrawerHeader>
           <DrawerTitle>Votes</DrawerTitle>
         </DrawerHeader>
-
-        <div className="h-[60dvh] w-full p-4">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={data}
-              margin={{ top: 100, right: 30, bottom: 30, left: 30 }}
-            >
-              <Bar
-                className="fill-foreground"
-                dataKey="value"
-                label={{
-                  position: "insideTop",
-                  className: "text-base sm:text-2xl font-bold fill-background",
-                }}
+        <div className="flex w-full flex-col items-center p-8">
+          <div className="grid h-[60vh] w-full max-w-4xl grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-4 sm:w-11/12 sm:gap-8 lg:w-3/4">
+            {data.map((item, index) => (
+              <div
+                key={index}
+                className="relative flex w-full flex-col items-center justify-end"
               >
-                <LabelList
-                  dataKey="label"
-                  position="top"
-                  angle={0}
-                  className="fill-accent-foreground text-xs sm:text-base"
-                />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+                <div
+                  className="flex w-full transform-gpu flex-col items-center justify-between rounded-t-lg bg-foreground transition-all duration-300 ease-out"
+                  style={{ height: `${(item.value / maxValue) * 100}%` }}
+                >
+                  <span className="text-base font-bold text-black sm:text-xl">
+                    {formatNumber(item.value)}
+                  </span>
+                </div>
+                <span className="absolute bottom-1 w-11/12 rounded-lg border border-accent bg-black p-2 text-center text-xs font-bold shadow sm:w-3/4 md:text-sm lg:text-base">
+                  {item.label}
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className="h-0.5 w-full rounded-full bg-accent" />
         </div>
       </DrawerContent>
     </Drawer>

@@ -39,7 +39,6 @@
     "react-confetti": "^6.1.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.2",
-    "recharts": "^2.12.3",
     "schema-dts": "^1.1.2",
     "sharp": "^0.33.3",
     "sonner": "^1.4.41",
