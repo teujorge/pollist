@@ -415,14 +415,7 @@ export function PollCardActions({
                 "flex flex-row items-center justify-center gap-2 font-bold transition-colors",
               )}
             >
-              <span>
-                {formatNumber(
-                  poll.comments.reduce(
-                    (acc, comment) => acc + comment._count.replies,
-                    poll._count.comments,
-                  ),
-                )}
-              </span>
+              <span>{formatNumber(poll._count.comments)}</span>
               <ChatBubbleIcon className="transition-colors" />
             </Link>
           )}

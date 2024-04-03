@@ -10,13 +10,6 @@ export function pollInclude(userId: string | null) {
           },
         }
       : false,
-    comments: {
-      select: {
-        _count: {
-          select: { replies: true },
-        },
-      },
-    },
     _count: {
       select: {
         likes: true,
