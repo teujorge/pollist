@@ -38,7 +38,7 @@ export const JsonLd = () => (
 export const metadata: Metadata = {
   title: {
     template: "Pollist | %s",
-    default: "Pollist | Your Voice, Shaping the World's Next Distraction",
+    default: "Pollist | Your Voice",
   },
   description:
     "Discover and engage with a wide array of polls on Pollist. Share your opinions and explore what the world thinks on diverse topics.",
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     { name: "Davi Guimell" },
   ],
   openGraph: {
-    title: "Pollist | Your Voice, Shaping the World's Next Distraction",
+    title: "Pollist | Your Voice",
     description:
       "Join Pollist to vote on and create polls on any topic. Share your thoughts and see how they align with others globally.",
     url: "https://pollist.org",
@@ -78,8 +78,8 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
-    card: "summary_large_image",
-    title: "Pollist | Your Voice, Shaping the World's Next Distraction",
+    card: "summary",
+    title: "Pollist | Your Voice",
     description:
       "Explore global opinions with Pollist. Create, share, and vote on polls on any topic.",
     images: {
