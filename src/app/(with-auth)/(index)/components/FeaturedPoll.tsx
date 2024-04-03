@@ -2,6 +2,7 @@ import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs";
 import { Suspense } from "react";
 import { PollCard } from "@/app/components/PollCard/PollCard";
+import { pollInclude } from "@/app/components/InfinitePolls/utils";
 import { FeaturedPollIdHandler } from "./FeaturedPollIdHandler";
 import type { PollsDetails } from "@/app/components/InfinitePolls/actions";
 
@@ -18,23 +19,7 @@ async function _FeaturedPoll() {
     where: { featured: true },
     skip: randomOffset,
     take: 1,
-    include: {
-      author: { select: { username: true, imageUrl: true } },
-      votes: true,
-      options: true,
-      likes: userId
-        ? {
-            where: {
-              authorId: userId,
-            },
-          }
-        : false,
-      _count: {
-        select: {
-          likes: true,
-        },
-      },
-    },
+    include: pollInclude(userId),
   });
 
   const randomFeaturedPoll = randomFeaturedPolls[0];

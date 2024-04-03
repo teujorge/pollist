@@ -3,6 +3,7 @@
 import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs";
 import { PAGE_SIZE } from "@/constants";
+import { pollInclude } from "./utils";
 import type { PollQuery } from "@/constants";
 
 export type PollsDetails = NonNullable<
@@ -66,23 +67,7 @@ export async function getInfinitePolls({
     cursor: cursor ? { id: cursor } : undefined,
     skip: cursor ? 1 : undefined,
     take: PAGE_SIZE,
-    include: {
-      author: { select: { username: true, imageUrl: true } },
-      votes: true,
-      options: true,
-      likes: userId
-        ? {
-            where: {
-              authorId: userId,
-            },
-          }
-        : false,
-      _count: {
-        select: {
-          likes: true,
-        },
-      },
-    },
+    include: pollInclude(userId),
   });
 
   for (const poll of polls) {
@@ -102,23 +87,7 @@ export async function getSinglePoll({
 
   const poll = await db.poll.findUnique({
     where: { id: pollId },
-    include: {
-      author: { select: { username: true, imageUrl: true } },
-      votes: true,
-      options: true,
-      likes: userId
-        ? {
-            where: {
-              authorId: userId,
-            },
-          }
-        : false,
-      _count: {
-        select: {
-          likes: true,
-        },
-      },
-    },
+    include: pollInclude(userId),
   });
 
   if (poll) {
