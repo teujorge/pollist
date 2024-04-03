@@ -417,11 +417,10 @@ export function PollCardActions({
             >
               <span>
                 {formatNumber(
-                  poll._count.comments +
-                    poll.comments.reduce(
-                      (acc, comment) => acc + comment._count.replies,
-                      0,
-                    ),
+                  poll.comments.reduce(
+                    (acc, comment) => acc + comment._count.replies,
+                    poll._count.comments,
+                  ),
                 )}
               </span>
               <ChatBubbleIcon className="transition-colors" />
