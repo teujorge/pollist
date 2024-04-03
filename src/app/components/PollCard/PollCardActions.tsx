@@ -10,7 +10,11 @@ import { supabase } from "@/database/supabase";
 import { buttonVariants } from "@/components/ui/button";
 import { CircularProgress } from "../CircularProgress";
 import { useEffect, useRef, useState } from "react";
-import { cn, uppercaseFirstLetterOfEachSentence } from "@/lib/utils";
+import {
+  cn,
+  formatNumber,
+  uppercaseFirstLetterOfEachSentence,
+} from "@/lib/utils";
 import {
   Popover,
   PopoverContent,
@@ -266,6 +270,7 @@ export function PollCardActions({
           ]
         : [],
       _count: {
+        comments: prev._count.comments,
         likes: prev._count.likes + (isLiking ? 1 : -1),
       },
     }));
@@ -284,6 +289,7 @@ export function PollCardActions({
         ...prev,
         likes: originalLikes,
         _count: {
+          comments: prev._count.comments,
           likes: originalLikeCount,
         },
       }));
@@ -376,9 +382,8 @@ export function PollCardActions({
             className={cn(
               buttonVariants({ variant: "ghost", size: "sm" }),
               "flex flex-row items-center justify-center gap-1 font-bold",
-              (optimisticPoll.likes?.length ?? 0) > 0
-                ? "[&>*]:text-primary [&>*]:hovact:text-purple-400"
-                : "[&>*]:text-accent-foreground [&>*]:hovact:text-foreground",
+              (optimisticPoll.likes?.length ?? 0) > 0 &&
+                "[&>*]:text-primary [&>*]:hovact:text-purple-400",
             )}
             onClick={user ? handleLike : undefined}
           >
@@ -403,8 +408,20 @@ export function PollCardActions({
         <div className="flex flex-row">
           <Link
             href={`/polls/${poll.id}`}
-            className={buttonVariants({ variant: "ghost", size: "sm" })}
+            className={cn(
+              buttonVariants({ variant: "ghost", size: "sm" }),
+              "flex flex-row items-center justify-center gap-2 font-bold transition-colors",
+            )}
           >
+            <span>
+              {formatNumber(
+                poll._count.comments +
+                  poll.comments.reduce(
+                    (acc, comment) => acc + comment._count.replies,
+                    0,
+                  ),
+              )}
+            </span>
             <ChatBubbleIcon className="transition-colors" />
           </Link>
           <button
