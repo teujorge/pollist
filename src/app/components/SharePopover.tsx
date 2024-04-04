@@ -51,7 +51,10 @@ export function SharePopover({
 
         {twitter && (
           <a
-            className={cn(buttonVariants({ variant: "popover" }))}
+            className={cn(
+              buttonVariants({ variant: "popover" }),
+              "hovact:bg-[#1DA1F2]/20 hovact:text-[#1DA1F2]",
+            )}
             target="_blank"
             rel="noreferrer noopener"
             href={
@@ -72,7 +75,7 @@ export function SharePopover({
           <a
             className={cn(
               buttonVariants({ variant: "popover" }),
-              "[&>svg]:hovact:fill-accent-foreground",
+              "hovact:bg-[#25D366]/20 hovact:text-[#25D366] [&>svg]:hovact:fill-[#25D366]",
             )}
             target="_blank"
             rel="noreferrer noopener"
