@@ -102,3 +102,41 @@ export async function deletePoll(poll: PollsDetails[number]) {
 
   if (deletedPoll) redirect(`/users/${deletedPoll.author.username}`);
 }
+
+export async function featurePoll(pollId: string) {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("You must be logged in to feature a poll");
+  }
+
+  await db.user.update({
+    where: { id: userId },
+    data: {
+      feature: {
+        connect: { id: pollId },
+      },
+    },
+  });
+
+  redirect(`/polls/${pollId}`);
+}
+
+export async function unfeaturePoll(redirectPollId: string) {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("You must be logged in to unfeature a poll");
+  }
+
+  await db.user.update({
+    where: { id: userId },
+    data: {
+      feature: {
+        disconnect: true,
+      },
+    },
+  });
+
+  redirect(`/polls/${redirectPollId}`);
+}

@@ -23,23 +23,24 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
+  handleVote,
+  handleLikePoll,
+  handleUnlikePoll,
+  acknowledgePollLike,
+} from "./actions";
+import {
   StarIcon,
   ChatBubbleIcon,
   ThickArrowUpIcon,
   DotsHorizontalIcon,
   ExclamationTriangleIcon,
 } from "@radix-ui/react-icons";
-import {
-  handleVote,
-  handleLikePoll,
-  handleUnlikePoll,
-  acknowledgePollLike,
-} from "./actions";
 import type { Vote } from "@prisma/client";
 import type { PollsDetails } from "../InfinitePolls/actions";
 import type { PollCardProps } from "./PollCard";
 import type { RealtimeChannel } from "@supabase/realtime-js";
 import type { MutableRefObject } from "react";
+import { PopoverClose } from "@radix-ui/react-popover";
 
 const ChartDrawer = dynamic(
   () => import("./ChartDrawer").then((mod) => mod.ChartDrawer),
@@ -433,17 +434,18 @@ export function PollCardActions({
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end" className="py-2">
-              <Button
-                variant="popover"
-                className="hovact:bg-primary/20 hovact:text-primary"
-                onClick={() => {
-                  toast.warning("Feature coming soon");
-                }}
-              >
-                <StarIcon />
-                Feature this poll
-              </Button>
-
+              <PopoverClose asChild>
+                <Link
+                  href={`/polls/${poll.id}/feature`}
+                  className={cn(
+                    buttonVariants({ variant: "popover" }),
+                    "hovact:bg-primary/20 hovact:text-primary",
+                  )}
+                >
+                  <StarIcon />
+                  Feature this poll
+                </Link>
+              </PopoverClose>
               {user?.id === poll.authorId ? (
                 <DeletePollForm poll={poll} />
               ) : (

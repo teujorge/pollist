@@ -19,6 +19,14 @@ export function PollCard({
   highlightedUserId,
   showCommentsButton = true,
 }: PollCardProps) {
+  const pollCardActions = (
+    <PollCardActions
+      poll={poll}
+      highlightedUserId={highlightedUserId}
+      showCommentsButton={showCommentsButton}
+    />
+  );
+
   return (
     <div className="flex w-full flex-col gap-2 rounded-lg border border-accent bg-accent/10 p-6 shadow-md">
       <Link
@@ -62,22 +70,10 @@ export function PollCard({
         </h2>
       </Link>
 
-      <SignedIn>
-        <PollCardActions
-          poll={poll}
-          highlightedUserId={highlightedUserId}
-          showCommentsButton={showCommentsButton}
-        />
-      </SignedIn>
+      <SignedIn>{pollCardActions}</SignedIn>
       <SignedOut>
         <SignInButton mode="modal">
-          <button className="w-full text-left">
-            <PollCardActions
-              poll={poll}
-              highlightedUserId={highlightedUserId}
-              showCommentsButton={showCommentsButton}
-            />
-          </button>
+          <button className="w-full text-left">{pollCardActions}</button>
         </SignInButton>
       </SignedOut>
     </div>

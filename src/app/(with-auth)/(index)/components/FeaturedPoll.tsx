@@ -10,13 +10,13 @@ async function _FeaturedPoll() {
   const { userId } = auth();
 
   const featuredPollsCount = await db.poll.count({
-    where: { featured: true },
+    where: { featuredById: { not: null } },
   });
 
   const randomOffset = Math.floor(Math.random() * featuredPollsCount);
 
   const randomFeaturedPolls: PollsDetails = await db.poll.findMany({
-    where: { featured: true },
+    where: { featuredById: { not: null } },
     skip: randomOffset,
     take: 1,
     include: pollInclude(userId),

@@ -24,6 +24,7 @@ model User {
   tier                        SubTier                      @default(FREE)
   votes                       Vote[]
   polls                       Poll[]
+  feature                     Poll?                        @relation("Featured")
   pollLikes                   PollLike[]
   comments                    Comment[]
   commentLikes                CommentLike[]
@@ -88,7 +89,8 @@ model Poll {
   description   String?    @db.VarChar(200)
   private       Boolean
   anonymous     Boolean
-  featured      Boolean    @default(false)
+  featuredById  String?    @unique
+  featuredBy    User?      @relation("Featured", fields: [featuredById], references: [id])
   controversial Boolean    @default(false)
   sensitive     Boolean    @default(false)
   author        User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
