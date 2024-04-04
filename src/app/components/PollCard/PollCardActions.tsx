@@ -337,41 +337,48 @@ export function PollCardActions({
               key={option.id}
               onClick={user ? () => onVote(option.id) : undefined}
               className={cn(
-                "relative flex w-full cursor-pointer flex-row items-center gap-2 rounded-xl border px-4 py-2 transition-colors hovact:bg-accent/30",
+                "flex w-full cursor-pointer flex-col items-center gap-2 rounded-xl border p-2 transition-colors hovact:bg-accent/30 sm:p-4",
                 option.id === optionIdToHighlight
                   ? "border-primary"
                   : "border-transparent",
               )}
             >
-              <div
-                className={`max-h-4 min-h-4 min-w-4 max-w-4 rounded-full transition-colors
+              <div className="flex w-full flex-row items-center gap-2">
+                {/* user selection dot */}
+                <div
+                  className={`max-h-4 min-h-4 min-w-4 max-w-4 rounded-full transition-colors
                     ${userVote?.optionId === option.id ? "bg-primary" : "bg-accent"}
                   `}
-              />
+                />
 
-              <div className="h-8 w-8 overflow-hidden rounded-lg object-cover">
+                {/* option text */}
+                <div className="w-full flex-grow">
+                  <p>{uppercaseFirstLetterOfEachSentence(option.text)}</p>
+                  <p className="whitespace-nowrap text-xs text-accent-foreground">
+                    {
+                      optimisticPoll.votes.filter(
+                        (vote) => vote.optionId === option.id,
+                      ).length
+                    }{" "}
+                    Votes
+                  </p>
+                </div>
+
+                {/* vote percentage */}
+                <CircularProgress size={40} progress={votePercentage} />
+              </div>
+
+              {/* optional option image */}
+              <div className="overflow-hidden rounded-lg object-cover">
                 {option.imagePath && (
                   <Image
                     src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/polls/${option.imagePath}`}
                     alt="option-image"
-                    width={40}
-                    height={40}
+                    width={400}
+                    height={400}
                   />
                 )}
               </div>
-              <div className="w-full flex-grow">
-                <p>{uppercaseFirstLetterOfEachSentence(option.text)}</p>
-                <p className="whitespace-nowrap text-xs text-accent-foreground">
-                  {
-                    optimisticPoll.votes.filter(
-                      (vote) => vote.optionId === option.id,
-                    ).length
-                  }{" "}
-                  Votes
-                </p>
-              </div>
-
-              <CircularProgress size={40} progress={votePercentage} />
             </li>
           );
         })}
