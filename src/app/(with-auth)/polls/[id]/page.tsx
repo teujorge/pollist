@@ -1,10 +1,12 @@
 import Link from "next/link";
+import AnonProfileImage from "~/public/default-profile-icon.webp";
 import { auth } from "@clerk/nextjs/server";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import { ProfileImage } from "@/app/components/ProfileImage";
 import { getSinglePoll } from "@/app/components/InfinitePolls/actions";
 import { PollCardActions } from "@/app/components/PollCard/PollCardActions";
-import { uppercaseFirstLetterOfEachSentence } from "@/lib/utils";
+import { cn, uppercaseFirstLetterOfEachSentence } from "@/lib/utils";
 import {
   AllComments,
   AllCommentsFallback,
@@ -27,47 +29,62 @@ export default async function PollPage({ params, searchParams }: Props) {
     <main className="relative flex min-h-[calc(100dvh-64px)] w-full flex-col gap-1">
       {/* header */}
       <div className="flex flex-col items-start justify-start gap-1">
-        <h1 className="text-3xl">
-          {uppercaseFirstLetterOfEachSentence(poll.title)}
-        </h1>
-        {poll.description && (
-          <h2>{uppercaseFirstLetterOfEachSentence(poll.description)}</h2>
-        )}
-
-        <div className="flex flex-col sm:flex-row sm:items-center sm:gap-1">
-          <span>
-            Created by{" "}
-            <Link
-              href={`/users/${poll.author.username}`}
-              className={
+        {/* author profile link */}
+        <Link
+          href={`/users/${poll.author.username}`}
+          className={cn(
+            "flex w-fit flex-row items-center gap-2 rounded-lg !bg-opacity-25 p-2 pl-0 transition-all [&>div>p]:hovact:text-primary [&>div>span]:hovact:text-purple-600 [&>div]:hovact:border-[#d0b3f5]",
+            poll.anonymous && poll.authorId !== userId && "pointer-events-none",
+          )}
+        >
+          <div className="rounded-full border-[3px] border-background transition-colors">
+            <ProfileImage
+              src={
                 poll.anonymous && poll.authorId !== userId
-                  ? "pointer-events-none"
-                  : undefined
+                  ? AnonProfileImage
+                  : poll.author.imageUrl
               }
-            >
+              username={poll.author.username}
+              size={38}
+            />
+          </div>
+
+          <div className="flex flex-col justify-center gap-0.5 border-0">
+            <p className="text-foreground transition-colors">
               {poll.author.username}
               {poll.anonymous && userId === poll.authorId && (
                 <span className="text-sm italic"> (Anonymous)</span>
               )}
-            </Link>
-          </span>
-          <span className="text-sm text-accent-foreground">
-            on{" "}
-            {poll.createdAt.toLocaleDateString(undefined, {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </span>
-        </div>
+            </p>
+            <span className="text-xs text-accent-foreground transition-colors">
+              {new Date(poll.createdAt).toLocaleDateString(undefined, {
+                year: "2-digit",
+                month: "short",
+                day: "numeric",
+              })}
+            </span>
+          </div>
+        </Link>
+
+        {/* title & description */}
+        <h1 className="text-2xl font-semibold">
+          {uppercaseFirstLetterOfEachSentence(poll.title)}
+        </h1>
+        {poll.description && (
+          <h2 className="text-accent-foreground">
+            {uppercaseFirstLetterOfEachSentence(poll.description)}
+          </h2>
+        )}
       </div>
 
+      {/* poll interaction */}
       <PollCardActions
         poll={poll}
         showChart={true}
         showCommentsButton={false}
       />
 
+      {/* poll comments */}
       <Suspense fallback={<AllCommentsFallback />}>
         <AllComments
           pollId={params.id}
