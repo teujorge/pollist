@@ -9,8 +9,8 @@ export type PollQuery = {
   category?: Category;
   authorId?: string;
   voterId?: string;
-  private?: boolean;
-  anonymous?: boolean;
+  private?: boolean | "both";
+  anonymous?: boolean | "both";
 };
 
 // Max file size 5mb

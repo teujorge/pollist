@@ -16,10 +16,13 @@ export async function getInfinitePolls({
   category,
   authorId,
   voterId,
-  private: _private,
+  private: __private,
   anonymous,
 }: PollQuery & { cursor: string | undefined }) {
   const { userId } = auth();
+
+  const _private = __private ?? false;
+  const _anonymous = anonymous ?? false;
 
   const isTrending = category === "trending";
   const isControversial = category === "controversial";
@@ -30,9 +33,13 @@ export async function getInfinitePolls({
   const polls = await db.poll.findMany({
     where: {
       title: search ? { contains: search, mode: "insensitive" } : undefined,
+
       authorId: authorId ? { contains: authorId } : undefined,
-      private: { equals: _private ?? false },
-      anonymous: anonymous ? undefined : { equals: false },
+
+      ...(_private !== "both" ? { private: { equals: _private } } : {}),
+
+      ...(_anonymous !== "both" ? { anonymous: { equals: _anonymous } } : {}),
+
       votes: {
         // Filter by voterId
         ...(voterId
@@ -54,8 +61,10 @@ export async function getInfinitePolls({
         //     }
         //   : {}),
       },
+
       ...(isControversial ? { controversial: true } : {}),
     },
+
     orderBy: isTrending
       ? {
           votes: {

@@ -369,16 +369,16 @@ export function PollCardActions({
               </div>
 
               {/* optional option image */}
-              <div className="overflow-hidden rounded-lg object-cover">
-                {option.imagePath && (
+              {option.imagePath && (
+                <div className="overflow-hidden rounded-lg object-cover">
                   <Image
                     src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/polls/${option.imagePath}`}
                     alt="option-image"
                     width={400}
                     height={400}
                   />
-                )}
-              </div>
+                </div>
+              )}
             </li>
           );
         })}

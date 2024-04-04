@@ -119,7 +119,7 @@ export default async function UserPage({ params }: Props) {
             >
               <InfinitePolls
                 idPrefix="my-votes"
-                query={{ voterId: user.id }}
+                query={{ voterId: user.id, anonymous: "both" }}
                 highlightedUserId={user.id}
               />
             </Suspense>
@@ -135,7 +135,10 @@ export default async function UserPage({ params }: Props) {
             >
               <InfinitePolls
                 idPrefix="my-polls"
-                query={{ authorId: user.id }}
+                query={{
+                  authorId: user.id,
+                  anonymous: myId === user.id ? "both" : false,
+                }}
                 highlightedUserId={undefined}
               />
             </Suspense>
@@ -152,7 +155,7 @@ export default async function UserPage({ params }: Props) {
               >
                 <InfinitePolls
                   idPrefix="my-private-polls"
-                  query={{ authorId: user.id, private: true, anonymous: true }}
+                  query={{ authorId: user.id, private: true }}
                   highlightedUserId={undefined}
                 />
               </Suspense>
