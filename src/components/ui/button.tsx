@@ -19,6 +19,8 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground shadow-sm hovact:bg-secondary/80",
         ghost: "hovact:bg-accent hovact:text-accent-foreground",
         link: "text-primary underline-offset-4 hovact:underline",
+        popover:
+          "hovact:bg-accent hovact:text-accent-foreground w-full rounded-none flex justify-start gap-2 h-8 px-3 text-xs",
       },
       size: {
         default: "h-9 px-4 py-2",

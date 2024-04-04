@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { Loader } from "@/app/components/Loader";
-import { follow, unfollow } from "@/app/(with-auth)/users/actions";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { Loader } from "@/app/components/Loader";
+import { useState } from "react";
+import { follow, unfollow } from "@/app/(with-auth)/users/actions";
 
 export function FollowButtonClient({
   userId,
@@ -50,14 +49,13 @@ export function FollowButtonClient({
     );
 
   return (
-    <button
-      className={cn(
-        buttonVariants({ variant: "outline", size: "sm" }),
-        "h-7 w-14 px-2 py-1",
-      )}
+    <Button
+      size="sm"
+      variant="outline"
+      className="h-7 px-2 py-1"
       onClick={handleClick}
     >
       {isFollowing ? "unfollow" : "follow"}
-    </button>
+    </Button>
   );
 }

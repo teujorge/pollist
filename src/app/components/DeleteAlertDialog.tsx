@@ -2,18 +2,19 @@
 
 import { cn } from "@/lib/utils";
 import { Loader } from "./Loader";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   AlertDialog,
+  AlertDialogTitle,
+  AlertDialogHeader,
+  AlertDialogFooter,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   AlertDialogTrigger,
+  AlertDialogDescription,
 } from "@/components/ui/alert-dialog";
+import { TrashIcon } from "@radix-ui/react-icons";
 
 type DeleteAlertDialogProps = {
   title?: string;
@@ -59,11 +60,12 @@ export function DeleteAlertDialog({
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger
         className={cn(
-          "w-fit font-bold transition-colors hovact:text-destructive",
+          buttonVariants({ variant: "popover" }),
+          "hovact:bg-destructive/20 hovact:text-destructive",
           className,
         )}
       >
-        Delete
+        <TrashIcon /> Delete
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

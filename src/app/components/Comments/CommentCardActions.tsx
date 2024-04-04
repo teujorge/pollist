@@ -19,10 +19,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
+  CopyIcon,
   ArrowRightIcon,
   ThickArrowUpIcon,
   TriangleDownIcon,
   DotsHorizontalIcon,
+  ExclamationTriangleIcon,
 } from "@radix-ui/react-icons";
 import type { Comment } from "../InfiniteComments/actions";
 
@@ -185,13 +187,14 @@ export function CommentCardActions() {
     await navigator.clipboard.writeText(
       window.location.href + "?parentId=" + comment.id,
     );
-    toast.success("Link copied to clipboard");
+    toast.success("URL copied to clipboard");
   }
 
   const likeButtonComponent = (
-    <button
+    <Button
+      size="sm"
+      variant="ghost"
       className={cn(
-        buttonVariants({ variant: "ghost", size: "sm" }),
         "gap-1 font-bold",
         comment.likes.length > 0
           ? "[&>*]:text-primary [&>*]:hovact:text-purple-400"
@@ -201,7 +204,7 @@ export function CommentCardActions() {
     >
       <ThickArrowUpIcon className="transition-colors" />
       <span className="transition-colors">{comment._count.likes}</span>
-    </button>
+    </Button>
   );
 
   const replyButtonComponent = (
@@ -241,38 +244,24 @@ export function CommentCardActions() {
               <DotsHorizontalIcon />
             </Button>
           </PopoverTrigger>
-          <PopoverContent
-            align="end"
-            className="flex flex-col bg-background py-2"
-          >
-            <button
-              className={cn(
-                buttonVariants({ variant: "ghost" }),
-                "w-full justify-start rounded-none",
-              )}
-              onClick={handleCopyThreadLink}
-            >
-              Copy Link
-            </button>
+          <PopoverContent align="end" className="py-2">
+            <Button variant="popover" onClick={handleCopyThreadLink}>
+              <CopyIcon /> Copy
+            </Button>
 
-            <button
-              className={cn(
-                buttonVariants({ variant: "ghost" }),
-                "w-full justify-start rounded-none",
-              )}
+            <Button
+              variant="popover"
+              className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
               onClick={() => toast.warning("Feature coming soon")}
             >
+              <ExclamationTriangleIcon />
               Report
-            </button>
+            </Button>
 
             {user?.id === comment.authorId && (
               <DeleteAlertDialog
                 awaitType="promise"
                 onDelete={handleDeleteComment}
-                className={cn(
-                  buttonVariants({ variant: "ghost" }),
-                  "w-full justify-start rounded-none hovact:bg-destructive/20 hovact:text-destructive",
-                )}
               />
             )}
           </PopoverContent>
@@ -295,20 +284,18 @@ export function CommentCardActions() {
       )}
 
       {!isViewingReplies && (
-        <button
+        <Button
+          variant="ghost"
           className={cn(
-            buttonVariants({ variant: "ghost" }),
-            "w-fit items-center justify-center gap-2 [&>svg]:transition-transform [&>svg]:hovact:-rotate-90",
+            "w-fit items-center justify-center gap-1 [&>svg]:transition-transform [&>svg]:hovact:-rotate-90",
             comment.parentId && "hidden",
             comment._count.replies === 0 && "hidden",
           )}
           onClick={() => setIsViewingReplies(!isViewingReplies)}
         >
-          <>
-            <TriangleDownIcon className="h-5 w-5" /> {comment._count.replies}{" "}
-            Replies
-          </>
-        </button>
+          <TriangleDownIcon className="h-5 w-5" /> {comment._count.replies}{" "}
+          Replies
+        </Button>
       )}
     </>
   );
@@ -392,15 +379,13 @@ function CommentReplies({
         <Loader className="ml-8 h-5 w-5 border-2" />
       ) : (
         data.hasMore && (
-          <button
-            className={cn(
-              buttonVariants({ variant: "ghost" }),
-              "w-fit items-center justify-center gap-2 [&>svg]:transition-transform [&>svg]:hovact:rotate-90",
-            )}
+          <Button
+            variant="ghost"
+            className="w-fit items-center justify-center gap-1 [&>svg]:transition-transform [&>svg]:hovact:rotate-90"
             onClick={handleLoadMore}
           >
             <ArrowRightIcon className="h-5 w-5" /> Show More Replies
-          </button>
+          </Button>
         )
       )}
     </div>

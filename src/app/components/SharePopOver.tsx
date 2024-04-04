@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { WhatsAppSvg } from "../svgs/WhatsAppSvg";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { CopyIcon, Share2Icon, TwitterLogoIcon } from "@radix-ui/react-icons";
 import {
   Popover,
@@ -11,7 +11,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-export function SharePopOver({
+export function SharePopover({
   copy = true,
   twitter = true,
   whatsapp = true,
@@ -26,37 +26,32 @@ export function SharePopOver({
   text: string;
   pathname: string;
 }) {
-  const cnClassName = cn(
-    buttonVariants({ variant: "ghost", size: "sm" }),
-    "w-full rounded-none flex justify-start gap-2 ",
-  );
-
   const url = "https://pollist.org" + pathname;
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button className={buttonVariants({ variant: "ghost", size: "sm" })}>
+        <Button size="sm" variant="ghost">
           <Share2Icon />
-        </button>
+        </Button>
       </PopoverTrigger>
-      <PopoverContent className="py-2">
+      <PopoverContent align="end" className="py-2">
         {copy && (
-          <button
-            className={cnClassName}
+          <Button
+            variant="popover"
             onClick={async () => {
               await navigator.clipboard.writeText(url);
-              toast.success("Copied to clipboard");
+              toast.success("URL copied to clipboard");
             }}
           >
             <CopyIcon />
             Copy
-          </button>
+          </Button>
         )}
 
         {twitter && (
           <a
-            className={cnClassName}
+            className={cn(buttonVariants({ variant: "popover" }))}
             target="_blank"
             rel="noreferrer noopener"
             href={
@@ -75,16 +70,18 @@ export function SharePopOver({
 
         {whatsapp && (
           <a
-            className={cnClassName}
+            className={cn(
+              buttonVariants({ variant: "popover" }),
+              "[&>svg]:hovact:fill-accent-foreground",
+            )}
             target="_blank"
             rel="noreferrer noopener"
             href={`https://api.whatsapp.com/send?text=${text}${encodeURIComponent("\n" + url)}`}
           >
-            <WhatsAppSvg className="h-[15px] w-[15px] fill-foreground" />
+            <WhatsAppSvg className="h-[15px] w-[15px] fill-foreground transition-colors" />
             WhatsApp
           </a>
         )}
-
       </PopoverContent>
     </Popover>
   );
