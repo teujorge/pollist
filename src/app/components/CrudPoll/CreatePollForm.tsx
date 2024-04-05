@@ -59,6 +59,11 @@ export function CreatePollForm({
   });
 
   async function onSubmit(data: CreatePollFields) {
+    // TODO: temporary fix for empty options files
+    append({ value: "" });
+    remove(fields.length);
+    data.options = fields;
+
     // remove all files before sending to the server
     const dataToSend = { ...data };
     delete dataToSend.option1file;
@@ -238,6 +243,7 @@ export function CreatePollForm({
                     className: "w-full",
                     // register the 'file' field of each option object
                     ...form.register(`options.${index}.file`),
+                    type: "file",
                   }}
                   error={
                     form.formState.errors.options?.[index]?.file?.message as
