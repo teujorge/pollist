@@ -3,7 +3,7 @@
 import { Loader } from "@/app/components/Loader";
 import { PollCard } from "@/app/components/PollCard/PollCard";
 import { PAGE_SIZE } from "@/constants";
-import { useFeaturedPoll } from "../hooks/useFeaturedPoll";
+import { useBoostedPoll } from "../hooks/useBoostedPoll";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import type { PollQuery } from "@/constants";
@@ -16,7 +16,7 @@ export function AllPolls({
   userId: string | null;
   query: PollQuery;
 }) {
-  const { featuredPollId } = useFeaturedPoll();
+  const { boostedPollId } = useBoostedPoll();
 
   async function _queryFn({ cursor }: { cursor: string }) {
     const cursorQuery = cursor === "" ? undefined : `cursor=${cursor}`;
@@ -88,7 +88,7 @@ export function AllPolls({
       {data?.pages.map((pages, i) => (
         <>
           {pages.map((poll) =>
-            poll.id === featuredPollId ? null : (
+            poll.id === boostedPollId ? null : (
               <PollCard key={keyGen(i, poll.id)} poll={poll} userId={userId} />
             ),
           )}

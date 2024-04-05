@@ -11,7 +11,7 @@ Utilizing modern tech stack, Next.js, Prisma, Tailwind CSS, and Supabase, Pollis
 - [Next.js](https://nextjs.org) for robust frontend and server-side rendering capabilities.
 - [Prisma](https://prisma.io) as our next-gen ORM for seamless database management.
 - [Tailwind CSS](https://tailwindcss.com) for intuitive and responsive design.
-- [Supabase](https://supabase.com) as our scalable relational database service, replacing PlanetScale for improved real-time features and support.
+- [Supabase](https://supabase.com) as our scalable relational database service.
 - [Clerk](https://clerk.dev) for secure, hassle-free user authentication and management.
 
 ## Getting Started

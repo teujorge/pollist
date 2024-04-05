@@ -1,8 +1,8 @@
 import GlobalLoading from "../loading";
 import { Suspense } from "react";
 import { FilterBar } from "./components/FilterBar";
-import { FeaturedPoll } from "./components/FeaturedPoll";
-import { FeaturedPollProvider } from "./hooks/useFeaturedPoll";
+import { BoostedPoll } from "./components/BoostedPoll";
+import { BoostedPollProvider } from "./hooks/useBoostedPoll";
 
 export default function HomePageLayout({
   children,
@@ -14,10 +14,10 @@ export default function HomePageLayout({
       <h1 className="pt-6 text-5xl font-bold">Polls</h1>
       <FilterBar />
       <div className="h-2" />
-      <FeaturedPollProvider>
-        <FeaturedPoll />
+      <BoostedPollProvider>
+        <BoostedPoll />
         <Suspense fallback={<GlobalLoading />}>{children}</Suspense>
-      </FeaturedPollProvider>
+      </BoostedPollProvider>
     </main>
   );
 }

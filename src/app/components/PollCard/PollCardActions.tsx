@@ -443,14 +443,14 @@ export function PollCardActions({
             <PopoverContent align="end" className="py-2">
               <PopoverClose asChild>
                 <Link
-                  href={`/polls/${poll.id}/feature`}
+                  href={`/polls/${poll.id}/boost`}
                   className={cn(
                     buttonVariants({ variant: "popover" }),
                     "hovact:bg-primary/20 hovact:text-primary",
                   )}
                 >
                   <StarIcon />
-                  Feature this poll
+                  Boost this poll
                 </Link>
               </PopoverClose>
               {user?.id === poll.authorId ? (

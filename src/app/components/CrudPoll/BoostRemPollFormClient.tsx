@@ -4,10 +4,10 @@ import { Loader } from "../Loader";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { PollCard } from "../PollCard/PollCard";
-import { unfeaturePoll } from "./actions";
+import { unBoostPoll } from "./actions";
 import type { PollsDetails } from "../InfinitePolls/actions";
 
-export function UnfeaturePollFormClient({
+export function BoostRemPollFormClient({
   userId,
   poll,
   redirectPollId,
@@ -18,16 +18,16 @@ export function UnfeaturePollFormClient({
 }) {
   const [submitting, setSubmitting] = useState(false);
 
-  async function handleUnfeaturePoll() {
+  async function handleUnBoostPoll() {
     setSubmitting(true);
-    await unfeaturePoll(redirectPollId);
+    await unBoostPoll(redirectPollId);
   }
 
   return (
     <form>
       <p className="pt-2">
-        You can only feature one poll at a time. If you want to feature a
-        different poll, you can unfeature the current one.
+        You can only boost one poll at a time. If you want to boost a different
+        poll, you can unboost the current one.
       </p>
 
       <div className="p-2 sm:p-4">
@@ -38,8 +38,8 @@ export function UnfeaturePollFormClient({
         {submitting ? (
           <Loader className="h-5 w-5 border-2" />
         ) : (
-          <Button variant="outline" onClick={handleUnfeaturePoll}>
-            Unfeature This Poll
+          <Button variant="outline" onClick={handleUnBoostPoll}>
+            Unboost This Poll
           </Button>
         )}
       </div>

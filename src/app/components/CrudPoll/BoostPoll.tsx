@@ -1,8 +1,8 @@
 import { Loader } from "../Loader";
 import { Suspense } from "react";
-import { FeaturePollForm } from "./FeaturePollForm";
+import { BoostPollForm } from "./BoostPollForm";
 
-export function FeaturePoll({
+export function BoostPoll({
   userId,
   pollId,
 }: {
@@ -11,13 +11,13 @@ export function FeaturePoll({
 }) {
   return (
     <main>
-      <h1 className="text-xl font-bold">Feature A Poll</h1>
+      <h1 className="text-xl font-bold">Boost A Poll</h1>
       <p className="text-sm text-accent-foreground">
-        Featuring a poll on the homepage will make it more visible to other
+        Boosting a poll on the homepage will make it more visible to other
         users!
       </p>
       <Suspense fallback={<Loader className="mx-auto mt-4" />}>
-        <FeaturePollForm userId={userId} pollId={pollId} />
+        <BoostPollForm userId={userId} pollId={pollId} />
       </Suspense>
     </main>
   );

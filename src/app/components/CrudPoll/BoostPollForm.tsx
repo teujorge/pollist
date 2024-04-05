@@ -1,9 +1,9 @@
 import { db } from "@/database/prisma";
 import { pollInclude } from "../InfinitePolls/utils";
-import { FeaturePollFormClient } from "./FeaturePollFormClient";
-import { UnfeaturePollFormClient } from "./UnfeaturePollFormClient";
+import { BoostPollFormClient } from "./BoostPollFormClient";
+import { BoostRemPollFormClient } from "./BoostRemPollFormClient";
 
-export async function FeaturePollForm({
+export async function BoostPollForm({
   userId,
   pollId,
 }: {
@@ -17,19 +17,19 @@ export async function FeaturePollForm({
     }),
     db.user.findUnique({
       where: { id: userId },
-      select: { feature: { include: pollInclude(userId) } },
+      select: { boostedPoll: { include: pollInclude(userId) } },
     }),
   ]);
 
   if (!poll) return null;
 
-  return user?.feature ? (
-    <UnfeaturePollFormClient
+  return user?.boostedPoll ? (
+    <BoostRemPollFormClient
       userId={userId}
-      poll={user.feature}
+      poll={user.boostedPoll}
       redirectPollId={poll.id}
     />
   ) : (
-    <FeaturePollFormClient userId={userId} poll={poll} />
+    <BoostPollFormClient userId={userId} poll={poll} />
   );
 }

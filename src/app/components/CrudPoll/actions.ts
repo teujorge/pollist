@@ -103,17 +103,17 @@ export async function deletePoll(poll: PollsDetails[number]) {
   if (deletedPoll) redirect(`/users/${deletedPoll.author.username}`);
 }
 
-export async function featurePoll(pollId: string) {
+export async function boostPoll(pollId: string) {
   const { userId } = auth();
 
   if (!userId) {
-    throw new Error("You must be logged in to feature a poll");
+    throw new Error("You must be logged in to boost a poll");
   }
 
   await db.user.update({
     where: { id: userId },
     data: {
-      feature: {
+      boostedPoll: {
         connect: { id: pollId },
       },
     },
@@ -122,17 +122,17 @@ export async function featurePoll(pollId: string) {
   redirect(`/polls/${pollId}`);
 }
 
-export async function unfeaturePoll(redirectPollId: string) {
+export async function unBoostPoll(redirectPollId: string) {
   const { userId } = auth();
 
   if (!userId) {
-    throw new Error("You must be logged in to unfeature a poll");
+    throw new Error("You must be logged in to unboost a poll");
   }
 
   await db.user.update({
     where: { id: userId },
     data: {
-      feature: {
+      boostedPoll: {
         disconnect: true,
       },
     },

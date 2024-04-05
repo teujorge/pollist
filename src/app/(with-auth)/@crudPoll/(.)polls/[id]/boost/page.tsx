@@ -1,13 +1,13 @@
 import { auth } from "@clerk/nextjs";
 import { Modal } from "@/app/components/Modal";
-import { FeaturePoll } from "@/app/components/CrudPoll/FeaturePoll";
+import { BoostPoll } from "@/app/components/CrudPoll/BoostPoll";
 
 type Props = {
   params: { id: string };
   searchParams: Record<string, string | string[] | undefined>;
 };
 
-export default function FeaturePollPage(props: Props) {
+export default function BoostPollPage(props: Props) {
   const { userId } = auth();
 
   if (!userId) {
@@ -16,7 +16,7 @@ export default function FeaturePollPage(props: Props) {
 
   return (
     <Modal>
-      <FeaturePoll userId={userId} pollId={props.params.id} />
+      <BoostPoll userId={userId} pollId={props.params.id} />
     </Modal>
   );
 }

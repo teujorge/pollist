@@ -4,10 +4,10 @@ import { Loader } from "../Loader";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { PollCard } from "../PollCard/PollCard";
-import { featurePoll } from "./actions";
+import { boostPoll } from "./actions";
 import type { PollsDetails } from "../InfinitePolls/actions";
 
-export function FeaturePollFormClient({
+export function BoostPollFormClient({
   userId,
   poll,
 }: {
@@ -16,9 +16,9 @@ export function FeaturePollFormClient({
 }) {
   const [submitting, setSubmitting] = useState(false);
 
-  async function handleFeaturePoll() {
+  async function handleBoostPoll() {
     setSubmitting(true);
-    await featurePoll(poll.id);
+    await boostPoll(poll.id);
   }
 
   return (
@@ -31,8 +31,8 @@ export function FeaturePollFormClient({
         {submitting ? (
           <Loader className="h-5 w-5 border-2" />
         ) : (
-          <Button variant="secondary" onClick={handleFeaturePoll}>
-            Feature This Poll
+          <Button variant="secondary" onClick={handleBoostPoll}>
+            Boost This Poll
           </Button>
         )}
       </div>

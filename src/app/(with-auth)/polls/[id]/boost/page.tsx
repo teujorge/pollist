@@ -1,17 +1,17 @@
 import { auth } from "@clerk/nextjs";
-import { FeaturePoll } from "@/app/components/CrudPoll/FeaturePoll";
+import { BoostPoll } from "@/app/components/CrudPoll/BoostPoll";
 
 type Props = {
   params: { id: string };
   searchParams: Record<string, string | string[] | undefined>;
 };
 
-export default function FeaturePollPage(props: Props) {
+export default function BoostPollPage(props: Props) {
   const { userId } = auth();
 
   if (!userId) {
     return null;
   }
 
-  return <FeaturePoll userId={userId} pollId={props.params.id} />;
+  return <BoostPoll userId={userId} pollId={props.params.id} />;
 }
