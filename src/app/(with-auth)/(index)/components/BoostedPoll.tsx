@@ -2,8 +2,11 @@ import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs";
 import { Suspense } from "react";
 import { PollCard } from "@/app/components/PollCard/PollCard";
-import { pollInclude } from "@/app/components/InfinitePolls/utils";
 import { BoostedPollIdHandler } from "./BoostedPollIdHandler";
+import {
+  pollInclude,
+  censorPollAuthor,
+} from "@/app/components/InfinitePolls/utils";
 import type { PollsDetails } from "@/app/components/InfinitePolls/actions";
 
 async function _BoostedPoll() {
@@ -25,6 +28,10 @@ async function _BoostedPoll() {
   const randomBoostedPoll = randomBoostedPolls[0];
 
   if (!randomBoostedPoll) return null;
+
+  if (randomBoostedPoll.anonymous) {
+    censorPollAuthor(randomBoostedPoll, userId);
+  }
 
   return (
     <>
