@@ -3,7 +3,7 @@
 import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs";
 import { PAGE_SIZE } from "@/constants";
-import { pollInclude } from "./utils";
+import { censorPollAuthor, pollInclude } from "./utils";
 import type { PollQuery } from "@/constants";
 
 export type PollsDetails = NonNullable<
@@ -105,13 +105,4 @@ export async function getSinglePoll({
   }
 
   return poll;
-}
-
-function censorPollAuthor(poll: PollsDetails[number], userId: string | null) {
-  if (!poll.anonymous) return;
-  if (poll.authorId === userId) return;
-
-  poll.authorId = "Anonymous";
-  poll.author.imageUrl = "Anonymous";
-  poll.author.username = "Anonymous";
 }

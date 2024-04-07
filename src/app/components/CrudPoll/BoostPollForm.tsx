@@ -1,5 +1,5 @@
 import { db } from "@/database/prisma";
-import { pollInclude } from "../InfinitePolls/utils";
+import { censorPollAuthor, pollInclude } from "../InfinitePolls/utils";
 import { BoostPollFormClient } from "./BoostPollFormClient";
 import { BoostRemPollFormClient } from "./BoostRemPollFormClient";
 
@@ -22,6 +22,10 @@ export async function BoostPollForm({
   ]);
 
   if (!poll) return null;
+
+  if (poll.anonymous) {
+    censorPollAuthor(poll, userId);
+  }
 
   return user?.boostedPoll ? (
     <BoostRemPollFormClient

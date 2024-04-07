@@ -29,14 +29,11 @@ async function _CTA() {
     orderBy: {
       votes: { _count: "desc" },
     },
+    select: { id: true },
   });
 
   if (!randomPopularPoll) {
     throw new Error("Error fetching a popular poll...");
-  }
-
-  if (randomPopularPoll.anonymous) {
-    randomPopularPoll.authorId = "Anon";
   }
 
   return (

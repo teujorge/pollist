@@ -1,3 +1,5 @@
+import type { PollsDetails } from "./actions";
+
 export function pollInclude(userId: string | null) {
   return {
     author: { select: { username: true, imageUrl: true } },
@@ -17,4 +19,16 @@ export function pollInclude(userId: string | null) {
       },
     },
   };
+}
+
+export function censorPollAuthor(
+  poll: PollsDetails[number],
+  userId: string | null,
+) {
+  if (!poll.anonymous) return;
+  if (poll.authorId === userId) return;
+
+  poll.authorId = "Anonymous";
+  poll.author.imageUrl = "Anonymous";
+  poll.author.username = "Anonymous";
 }
