@@ -10,11 +10,13 @@ export function Input({
   labelProps,
   inputProps,
   error,
+  onChange,
 }: {
   wrapperProps?: React.ComponentProps<"div">;
   labelProps?: React.ComponentProps<"label"> & { text: string };
   inputProps?: React.ComponentProps<"input">;
   error?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
   return (
     <div
@@ -30,11 +32,15 @@ export function Input({
         id={inputProps?.name}
         autoComplete="off"
         {...inputProps}
+        onChange={(e) => {
+          onChange?.(e);
+          inputProps?.onChange?.(e);
+        }}
         className={cn(inputProps?.className, error && "!border-destructive")}
       />
       <span
         role="alert"
-        className={`text-destructive origin-top transform text-xs transition-all
+        className={`origin-top transform text-xs text-destructive transition-all
           ${error ? "h-5 scale-y-100 opacity-100" : "h-0 scale-y-75 opacity-0"}
         `}
       >
@@ -48,16 +54,19 @@ export function InputFile({
   wrapperProps,
   inputProps,
   error,
+  onChange,
 }: {
   wrapperProps?: React.ComponentProps<"div">;
   inputProps?: React.ComponentProps<"input">;
   error?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
   // State to store the selected file name
   const [fileName, setFileName] = useState<string>();
 
   // Handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange?.(e);
     setFileName(e.target.files?.[0]?.name);
     inputProps?.onChange?.(e);
   };
@@ -96,7 +105,7 @@ export function InputFile({
       </div>
       <span
         role="alert"
-        className={`text-destructive min-w-fit origin-top transform whitespace-nowrap text-xs transition-all
+        className={`min-w-fit origin-top transform whitespace-nowrap text-xs text-destructive transition-all
           ${error ? "h-5 scale-y-100 opacity-100" : "h-0 scale-y-75 opacity-0"}
         `}
       >

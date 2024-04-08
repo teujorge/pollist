@@ -5,12 +5,12 @@ import { toast } from "sonner";
 import { Loader } from "../Loader";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { useState } from "react";
 import { supabase } from "@/database/supabase";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input, InputFile } from "../Input";
 import { createPollSchema } from "./validation";
+import { useEffect, useState } from "react";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
 import {
   Tooltip,
@@ -58,6 +58,44 @@ export function CreatePollForm({
     control: form.control,
   });
 
+  const [options, setOptions] = useState<
+    Record<
+      string,
+      {
+        id: string;
+        value: string;
+        file: FileList | undefined;
+      }
+    >
+  >({});
+
+  useEffect(() => {
+    // Update field files when fields change
+    setOptions((prev) => {
+      const updatedFieldFiles = { ...prev };
+
+      // Add new entries for new fields
+      fields.forEach((field) => {
+        if (!updatedFieldFiles[field.id]) {
+          updatedFieldFiles[field.id] = {
+            id: field.id,
+            value: field.value,
+            file: undefined,
+          };
+        }
+      });
+
+      // Remove entries for fields that no longer exist
+      Object.keys(updatedFieldFiles).forEach((key) => {
+        if (!fields.some((field) => field.id === key)) {
+          delete updatedFieldFiles[key];
+        }
+      });
+
+      return updatedFieldFiles;
+    });
+  }, [fields]);
+
   async function onSubmit(data: CreatePollFields) {
     // remove all files before sending to the server
     const dataToSend = { ...data };
@@ -66,6 +104,8 @@ export function CreatePollForm({
     for (const option of dataToSend.options) {
       delete option.file;
     }
+
+    data.options = Object.values(options);
 
     setCreatePollSuccess(undefined);
 
@@ -230,10 +270,34 @@ export function CreatePollForm({
                     // register the 'value' field of each option object
                     ...form.register(`options.${index}.value`),
                   }}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setOptions((prev) => ({
+                      ...prev,
+                      [option.id]: {
+                        id: option.id,
+                        value,
+                        file: prev[option.id]?.file,
+                      },
+                    }));
+                  }}
                   error={form.formState.errors.options?.[index]?.value?.message}
                 />
-                {/* <InputFile
+                <InputFile
                   wrapperProps={{ className: "w-full" }}
+                  onChange={(e) => {
+                    const files = e.target.files;
+                    if (files) {
+                      setOptions((prev) => ({
+                        ...prev,
+                        [option.id]: {
+                          id: option.id,
+                          value: prev[option.id]?.value ?? option.value,
+                          file: files,
+                        },
+                      }));
+                    }
+                  }}
                   inputProps={{
                     className: "w-full",
                     // register the 'file' field of each option object
@@ -244,7 +308,7 @@ export function CreatePollForm({
                       | string
                       | undefined
                   }
-                /> */}
+                />
               </OptionWrapper>
               <button
                 type="button"
