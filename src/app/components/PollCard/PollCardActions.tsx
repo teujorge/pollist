@@ -314,7 +314,7 @@ export function PollCardActions({
   )?.optionId;
 
   const pollNotification = notifications.pollLikes.some(
-    (n) => n.pollLike.pollId === optimisticPoll.id,
+    (n) => n.pollLike.poll.id === optimisticPoll.id,
   );
 
   return (

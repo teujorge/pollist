@@ -1,10 +1,20 @@
-import { type ClassValue, clsx } from "clsx";
+import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { ClassValue } from "clsx";
 
+/**
+ * Merges the given class names and returns the resulting class name
+ */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/**
+ * Formats the given number to a string with the specified number of significant figures
+ * @param num
+ * @param sigFigs
+ * @returns e.g. 12345 => "12.3k"
+ */
 export function formatNumber(num: number, sigFigs = 3): string {
   const numberFormatter = new Intl.NumberFormat(undefined, {
     style: "decimal",
@@ -15,10 +25,20 @@ export function formatNumber(num: number, sigFigs = 3): string {
   return numberFormatter.format(num);
 }
 
+/**
+ * Capitalizes the first letter of the given string
+ * @param str
+ * @returns e.g. "hello world" => "Hello world"
+ */
 export function uppercaseFirstLetter(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+/**
+ * Capitalizes the first letter of each sentence in the given string
+ * @param str
+ * @returns e.g. "hello. how are you?" => "Hello. How are you?"
+ */
 export function uppercaseFirstLetterOfEachSentence(str: string): string {
   const regex = /([^.!?]+[.!?]\s*)/g;
   return (
@@ -27,4 +47,38 @@ export function uppercaseFirstLetterOfEachSentence(str: string): string {
       ?.map((sentence) => (sentence ? uppercaseFirstLetter(sentence) : ""))
       .join("") ?? uppercaseFirstLetter(str)
   );
+}
+
+/**
+ * Returns the time elapsed since the given date
+ * @param date
+ * @returns e.g. "2 days", "5 minutes", "1 year"
+ */
+export function timeElapsed(date: Date): string {
+  // Calculate the difference in seconds between the current date and the given date
+  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+
+  // Calculate the interval in years, months, days, hours, minutes, or seconds
+  let interval = seconds / 31536000;
+
+  if (interval > 1) {
+    return Math.floor(interval) + " years";
+  }
+  interval = seconds / 2592000;
+  if (interval > 1) {
+    return Math.floor(interval) + " months";
+  }
+  interval = seconds / 86400;
+  if (interval > 1) {
+    return Math.floor(interval) + " days";
+  }
+  interval = seconds / 3600;
+  if (interval > 1) {
+    return Math.floor(interval) + " hours";
+  }
+  interval = seconds / 60;
+  if (interval > 1) {
+    return Math.floor(interval) + " minutes";
+  }
+  return Math.floor(seconds) + " seconds";
 }

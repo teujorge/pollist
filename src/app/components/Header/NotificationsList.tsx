@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Loader } from "../Loader";
 import { useApp } from "@/app/(with-auth)/app";
 import { Cross2Icon } from "@radix-ui/react-icons";
+import { cn, timeElapsed } from "@/lib/utils";
 import { ProfileImage } from "../ProfileImage";
 import { useNotifications } from "./NotificationsBell";
 import { removeNotifications } from "./actions";
@@ -36,7 +37,7 @@ export function NotificationList() {
     // Group pollLikes by pollId and map them to the desired structure
     const groupedObject = notifications.pollLikes.reduce(
       (acc, notification) => {
-        const key = notification.pollLike.pollId;
+        const key = notification.pollLike.poll.id;
         if (!acc[key]) acc[key] = [];
         acc[key]?.push(notification);
         return acc;
@@ -62,7 +63,7 @@ export function NotificationList() {
     // Group comments by pollId and map them to the desired structure
     const groupedObject = notifications.comments.reduce(
       (acc, notification) => {
-        const key = notification.comment.pollId;
+        const key = notification.comment.poll.id;
         if (!acc[key]) acc[key] = [];
         acc[key]?.push(notification);
         return acc;
@@ -85,10 +86,10 @@ export function NotificationList() {
     type: "CommentLikeNotification";
     data: NotificationCommentLikeItem[];
   }[] {
-    // Group commentLikes by pollId and map them to the desired structure
+    // Group commentLikes by my commentId and map them to the desired structure
     const groupedObject = notifications.commentLikes.reduce(
       (acc, notification) => {
-        const key = notification.commentLike.comment.pollId;
+        const key = notification.commentLike.comment.id;
         if (!acc[key]) acc[key] = [];
         acc[key]?.push(notification);
         return acc;
@@ -326,15 +327,17 @@ function PollLikeNotificationCard({
         href={`/polls/${pollLikeNotifications[0]!.pollLike.poll.id}`}
         onClick={() => popover.setIsNotificationsOpen(false)}
       >
-        Liked Your Poll
+        People liked your poll:
+        <br />
+        <q className="text-sm font-light">
+          {pollLikeNotifications[0]!.pollLike.poll.title}
+        </q>
       </Link>
 
-      <NotificationInfo>
-        By:{" "}
+      <NotificationInfo className="pt-1">
+        Who:{" "}
         {notificationBy(
-          pollLikeNotifications.map(
-            (n) => n.pollLike.author.username ?? "Anon",
-          ),
+          pollLikeNotifications.map((n) => n.pollLike.author.username),
         )}
       </NotificationInfo>
 
@@ -354,21 +357,22 @@ function CommentNotificationCard({
 
   return (
     <div className="flex flex-col items-start justify-start gap-0.5">
-      {commentNotifications[0]!.comment.parentId ? (
+      {commentNotifications[0]!.comment.parent?.id ? (
         <>
           <Link
-            href={`/polls/${commentNotifications[0]!.comment.pollId}?parentId=${commentNotifications[0]!.comment.parentId}`}
+            href={`/polls/${commentNotifications[0]!.comment.poll.id}?parentId=${commentNotifications[0]!.comment.parent.id}`}
             onClick={() => popover.setIsNotificationsOpen(false)}
           >
-            Replied To Your Comment
+            People replied to your comment:{" "}
+            <q className="text-sm font-light">
+              {commentNotifications[0]!.comment.parent.text}
+            </q>
           </Link>
 
-          <NotificationInfo>
-            By:{" "}
+          <NotificationInfo className="pt-1">
+            Who:{" "}
             {notificationBy(
-              commentNotifications.map(
-                (n) => n.comment.author.username ?? "Anon",
-              ),
+              commentNotifications.map((n) => n.comment.author.username),
             )}
           </NotificationInfo>
 
@@ -379,14 +383,17 @@ function CommentNotificationCard({
       ) : (
         <>
           <Link
-            href={`/polls/${commentNotifications[0]!.comment.pollId}`}
+            href={`/polls/${commentNotifications[0]!.comment.poll.id}`}
             onClick={() => popover.setIsNotificationsOpen(false)}
           >
-            Commented On Your Poll
+            People commented on your poll:{" "}
+            <q className="text-sm font-light">
+              {commentNotifications[0]!.comment.poll.title}
+            </q>
           </Link>
 
-          <NotificationInfo>
-            By:{" "}
+          <NotificationInfo className="pt-1">
+            Who:{" "}
             {notificationBy(
               commentNotifications.map(
                 (n) => n.comment.author.username ?? "Anon",
@@ -413,11 +420,35 @@ function CommentLikeNotificationCard({
   return (
     <div className="flex flex-col items-start justify-start gap-0.5">
       <Link
-        href={`/polls/${likeNotifications[0]!.commentLike.comment.pollId}?parentId=${likeNotifications[0]!.commentLike.comment.id}`}
+        href={`/polls/${likeNotifications[0]!.commentLike.comment.poll.id}?parentId=${likeNotifications[0]!.commentLike.comment.id}`}
         onClick={() => popover.setIsNotificationsOpen(false)}
       >
-        {Array.from(likeNotifications).length} people liked your comment
+        People liked your comment:
+        <br />
+        <q className="text-sm font-light">
+          {likeNotifications[0]!.commentLike.comment.text}
+        </q>
+        <br />
+        On the poll:
+        <br />
+        <q className="text-sm font-light">
+          {likeNotifications[0]!.commentLike.comment.poll.title}
+        </q>
       </Link>
+
+      <NotificationInfo className="pt-1">
+        Who:{" "}
+        {notificationBy(
+          likeNotifications.map((n) => n.commentLike.author.username),
+        )}
+      </NotificationInfo>
+
+      <NotificationInfo>
+        {timeElapsed(
+          likeNotifications[likeNotifications.length - 1]!.createdAt,
+        )}{" "}
+        ago
+      </NotificationInfo>
     </div>
   );
 }
@@ -436,7 +467,7 @@ function FollowPendingNotificationCard({
   async function handleAccept() {
     setIsAccepting(true);
     try {
-      await acceptFollow(followNotification.follow.followerId);
+      await acceptFollow(followNotification.follow.follower.id);
     } catch (error) {
       setIsAccepting(false);
 
@@ -451,7 +482,7 @@ function FollowPendingNotificationCard({
   async function handleDecline() {
     setIsDeclining(true);
     try {
-      await declineFollow(followNotification.follow.followerId);
+      await declineFollow(followNotification.follow.follower.id);
     } catch (error) {
       setIsDeclining(false);
 
@@ -467,20 +498,20 @@ function FollowPendingNotificationCard({
     <div className="flex flex-col items-start justify-start gap-0.5">
       <Link
         href={`/users/${followNotification.follow.follower.username}`}
-        className="flex flex-row items-center justify-center gap-0.5"
+        className="flex flex-row items-center justify-center gap-1"
         onClick={() => popover.setIsNotificationsOpen(false)}
       >
         <ProfileImage
           src={followNotification.follow.follower.imageUrl}
           username={followNotification.follow.follower.username}
-          size={30}
+          size={24}
         />
         <span className="font-bold">
           {followNotification.follow.follower.username}
         </span>
       </Link>
 
-      <span>Requested To Follow You</span>
+      <span>Requested to follow you</span>
 
       <div className="flex flex-row gap-0.5">
         <button
@@ -503,7 +534,7 @@ function FollowPendingNotificationCard({
         </button>
       </div>
 
-      <NotificationInfo>
+      <NotificationInfo className="pt-1">
         {timeElapsed(followNotification.createdAt)} ago
       </NotificationInfo>
     </div>
@@ -530,22 +561,22 @@ function FollowAcceptedNotificationCard({
     <div className="flex flex-col items-start justify-start gap-0.5">
       <Link
         href={`/users/${followNotification.follow.followee.username}`}
-        className="flex flex-row items-center justify-center gap-0.5"
+        className="flex flex-row items-center justify-center gap-1"
         onClick={handleLinkClick}
       >
         <ProfileImage
           src={followNotification.follow.followee.imageUrl}
           username={followNotification.follow.followee.username}
-          size={30}
+          size={24}
         />
         <p className="font-bold">
           {followNotification.follow.followee.username}
         </p>
       </Link>
 
-      <span>Accepted Your Follow Request</span>
+      <span>Accepted your follow request</span>
 
-      <NotificationInfo>
+      <NotificationInfo className="pt-1">
         {timeElapsed(followNotification.createdAt)} ago
       </NotificationInfo>
     </div>
@@ -564,32 +595,16 @@ function notificationBy(usernames: string[]): string {
   return `${usernames[0]}, ${usernames[1]}, and ${usernames.length - 2} others`;
 }
 
-function timeElapsed(date: Date): string {
-  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
-  let interval = seconds / 31536000;
-
-  if (interval > 1) {
-    return Math.floor(interval) + " years";
-  }
-  interval = seconds / 2592000;
-  if (interval > 1) {
-    return Math.floor(interval) + " months";
-  }
-  interval = seconds / 86400;
-  if (interval > 1) {
-    return Math.floor(interval) + " days";
-  }
-  interval = seconds / 3600;
-  if (interval > 1) {
-    return Math.floor(interval) + " hours";
-  }
-  interval = seconds / 60;
-  if (interval > 1) {
-    return Math.floor(interval) + " minutes";
-  }
-  return Math.floor(seconds) + " seconds";
-}
-
-function NotificationInfo({ children }: { children: React.ReactNode }) {
-  return <span className="text-xs text-accent-foreground">{children}</span>;
+function NotificationInfo({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <span className={cn("px-1 text-xs text-accent-foreground", className)}>
+      {children}
+    </span>
+  );
 }

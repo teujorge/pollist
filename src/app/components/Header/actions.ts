@@ -25,10 +25,10 @@ export type NotificationFollowPendingItem =
 export type NotificationFollowAcceptedItem =
   NotificationItems["notificationsFollowAccepted"][number];
 
-const notificationsPollLikeInclude = {
+const notificationsPollLikeSelect = {
   pollLike: {
-    include: {
-      poll: { select: { id: true } },
+    select: {
+      poll: { select: { id: true, title: true } },
       author: { select: { username: true } },
     },
   },
@@ -37,28 +37,38 @@ const notificationsPollLikeInclude = {
 export async function getNotificationsPollLikeRelation(notificationId: string) {
   return await db.notificationPollLike.findUnique({
     where: { id: notificationId },
-    include: notificationsPollLikeInclude,
+    select: notificationsPollLikeSelect,
   });
 }
 
-const notificationsCommentInclude = {
+const notificationsCommentSelect = {
   comment: {
-    include: { author: { select: { username: true } } },
+    select: {
+      author: { select: { username: true } },
+      parent: { select: { id: true, text: true } },
+      poll: { select: { id: true, title: true } },
+    },
   },
 };
 
 export async function getNotificationsCommentRelation(notificationId: string) {
   return await db.notificationComment.findUnique({
     where: { id: notificationId },
-    include: notificationsCommentInclude,
+    select: notificationsCommentSelect,
   });
 }
 
-const notificationsCommentLikeInclude = {
+const notificationsCommentLikeSelect = {
   commentLike: {
-    include: {
+    select: {
       author: { select: { username: true } },
-      comment: { select: { id: true, pollId: true } },
+      comment: {
+        select: {
+          id: true,
+          text: true,
+          poll: { select: { id: true, title: true } },
+        },
+      },
     },
   },
 };
@@ -68,13 +78,17 @@ export async function getNotificationsCommentLikeRelation(
 ) {
   return await db.notificationCommentLike.findUnique({
     where: { id: notificationId },
-    include: notificationsCommentLikeInclude,
+    select: notificationsCommentLikeSelect,
   });
 }
 
-const notificationsFollowPendingInclude = {
+const notificationsFollowPendingSelect = {
   follow: {
-    include: { follower: true },
+    select: {
+      follower: {
+        select: { id: true, username: true, imageUrl: true },
+      },
+    },
   },
 };
 
@@ -83,13 +97,17 @@ export async function getNotificationsFollowPendingRelation(
 ) {
   return await db.notificationFollowPending.findUnique({
     where: { id: notificationId },
-    include: notificationsFollowPendingInclude,
+    select: notificationsFollowPendingSelect,
   });
 }
 
-const notificationsFollowAcceptedInclude = {
+const notificationsFollowAcceptedSelect = {
   follow: {
-    include: { followee: true },
+    select: {
+      followee: {
+        select: { id: true, username: true, imageUrl: true },
+      },
+    },
   },
 };
 
@@ -98,7 +116,7 @@ export async function getNotificationsFollowAcceptedRelation(
 ) {
   return await db.notificationFollowAccepted.findUnique({
     where: { id: notificationId },
-    include: notificationsFollowAcceptedInclude,
+    select: notificationsFollowAcceptedSelect,
   });
 }
 
@@ -111,19 +129,19 @@ export async function getNotificationsItems() {
     where: { id: userId },
     include: {
       notificationsPollLike: {
-        include: notificationsPollLikeInclude,
+        include: notificationsPollLikeSelect,
       },
       notificationsComment: {
-        include: notificationsCommentInclude,
+        include: notificationsCommentSelect,
       },
       notificationsCommentLike: {
-        include: notificationsCommentLikeInclude,
+        include: notificationsCommentLikeSelect,
       },
       notificationsFollowPending: {
-        include: notificationsFollowPendingInclude,
+        include: notificationsFollowPendingSelect,
       },
       notificationsFollowAccepted: {
-        include: notificationsFollowAcceptedInclude,
+        include: notificationsFollowAcceptedSelect,
       },
     },
   });

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn, timeElapsed } from "@/lib/utils";
 import { useApp } from "@/app/(with-auth)/app";
 import { useUser } from "@clerk/nextjs";
 import { ProfileImage } from "../ProfileImage";
@@ -34,7 +34,7 @@ export function CommentCard({
     (user && user.id === comment.parent?.authorId && isReplyUnread) ?? false;
 
   const isLikeUnread = notifications.commentLikes.some(
-    (n) => n.commentLike.commentId === comment.id,
+    (n) => n.commentLike.comment.id === comment.id,
   );
   const showPurpleForUnreadLike =
     (user && user.id === comment.authorId && isLikeUnread) ?? false;
@@ -78,12 +78,8 @@ export function CommentCard({
               >
                 {comment.author.username}
               </Link>
-              <p className="text-xs font-light">
-                {comment.updatedAt.toLocaleDateString(undefined, {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })}
+              <p className="text-xs text-accent-foreground">
+                {timeElapsed(comment.updatedAt)} ago
               </p>
             </div>
 

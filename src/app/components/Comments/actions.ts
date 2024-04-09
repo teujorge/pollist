@@ -3,6 +3,7 @@
 import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs/server";
 import type { Comment } from "../InfiniteComments/actions";
+import { currentUser } from "@clerk/nextjs";
 
 export async function createComment({
   pollId,
@@ -19,9 +20,9 @@ export async function createComment({
     throw new Error("You must provide a comment");
   }
 
-  const { userId } = auth();
+  const user = await currentUser();
 
-  if (!userId) {
+  if (!user?.id) {
     throw new Error("You must be logged in to comment");
   }
 
@@ -31,7 +32,7 @@ export async function createComment({
       parentId,
       text,
       at: atUsername,
-      authorId: userId,
+      authorId: user.id,
     },
     select: {
       id: true,
@@ -57,7 +58,7 @@ export async function createComment({
       },
       likes: {
         where: {
-          authorId: userId ?? undefined,
+          authorId: user.id ?? undefined,
         },
       },
       _count: {
@@ -66,21 +67,67 @@ export async function createComment({
     },
   });
 
-  if (newComment?.parent?.authorId) {
-    if (userId === newComment.parent.authorId) {
+  // Only a reply to a reply has an atUsername
+  // Ignore if the user is replying to their own reply
+  if (user.username === newComment.at) {
+    console.log("User is replying to their own reply");
+    return newComment;
+  }
+  // Comment on a poll or a reply to a comment
+  else {
+    // Ignore if the user is commenting on their own poll
+    if (newComment.parentId === null && user.id === newComment.poll.authorId) {
+      console.log("User is commenting to their own poll");
       return newComment;
     }
-    await db.notificationComment
-      .create({
-        data: {
-          notifyeeId: newComment.parent.authorId,
-          commentId: newComment.id,
-        },
-      })
-      .catch((error) => {
-        console.error("Error creating notification", error);
-      });
+
+    // Ignore if the user is replying to their own comment
+    if (newComment.at === null && user.id === newComment.parent?.authorId) {
+      console.log("User is replying to their own comment");
+      return newComment;
+    }
   }
+
+  let notifyeeId: string | undefined = undefined;
+
+  // Reply to a reply
+  if (newComment.at) {
+    const replyingToUser = await db.user.findUnique({
+      where: {
+        username: newComment.at,
+      },
+      select: { id: true },
+    });
+
+    notifyeeId = replyingToUser?.id;
+  }
+  // Poll comment or reply to a comment
+  else {
+    // Comment on a poll
+    if (newComment.parentId === null) {
+      notifyeeId = newComment.poll.authorId;
+    }
+    // Reply to a comment
+    else {
+      notifyeeId = newComment.parent?.authorId;
+    }
+  }
+
+  if (!notifyeeId) {
+    console.error("Error finding user to notify", newComment.at);
+    return newComment;
+  }
+
+  await db.notificationComment
+    .create({
+      data: {
+        notifyeeId: notifyeeId,
+        commentId: newComment.id,
+      },
+    })
+    .catch((error) => {
+      console.error("Error creating notification", error);
+    });
 
   return newComment;
 }
