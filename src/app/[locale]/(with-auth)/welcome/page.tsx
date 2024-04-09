@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CTA } from "../../components/CTA";
+import { CTA } from "@/app/components/CTA";
 import { BlobBg } from "@/app/components/BlobBg";
 import { Confetti } from "./Confetti";
 

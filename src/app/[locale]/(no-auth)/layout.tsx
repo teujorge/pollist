@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { IconSvg } from "../svgs/IconSvg";
+import { IconSvg } from "../../svgs/IconSvg";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (

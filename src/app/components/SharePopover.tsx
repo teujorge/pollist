@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { WhatsAppSvg } from "../svgs/WhatsAppSvg";
+import { WhatsAppSvg } from "@/app/svgs/WhatsAppSvg";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { CopyIcon, Share2Icon, TwitterLogoIcon } from "@radix-ui/react-icons";
 import {

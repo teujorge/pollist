@@ -1,18 +1,22 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs";
-import { IconSvg } from "../../svgs/IconSvg";
+import { IconSvg } from "@/app/svgs/IconSvg";
 import { ProfileLink } from "./ProfileLink";
 import { SignInButton } from "@clerk/nextjs";
+import { useTranslations } from "next-intl";
 import { ClerkUserButton } from "./ClerkUserButton/ClerkUserButton";
 import { NotificationsBell } from "./NotificationsBell";
 import { CardStackPlusIcon, HomeIcon } from "@radix-ui/react-icons";
+import { Suspense } from "react";
 
 export function Header() {
+  const t = useTranslations("header");
+
   const { userId } = auth();
 
   const CreateButtonContent = (
     <>
-      <span className="hidden sm:inline">Create</span>
+      <span className="hidden sm:inline">{t("create")}</span>
       <span className="sm:hidden">
         <CardStackPlusIcon className="h-6 w-6" />
       </span>
@@ -31,7 +35,7 @@ export function Header() {
 
       <div className="flex flex-row items-center justify-end gap-4">
         <Link key="header-home" href="/" scroll={false}>
-          <span className="hidden sm:inline">Home</span>
+          <span className="hidden sm:inline">{t("home")}</span>
           <span className="sm:hidden">
             <HomeIcon className="h-6 w-6" />
           </span>
@@ -47,7 +51,9 @@ export function Header() {
           </SignInButton>
         )}
 
-        <ProfileLink />
+        <Suspense>
+          <ProfileLink label={t("profile")} />
+        </Suspense>
 
         {userId && <NotificationsBell />}
 
@@ -56,7 +62,7 @@ export function Header() {
         ) : (
           <SignInButton mode="modal">
             <button className="transition-colors hovact:text-purple-500">
-              Sign in
+              {t("sign-in")}
             </button>
           </SignInButton>
         )}

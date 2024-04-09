@@ -1,7 +1,7 @@
 import GlobalLoading from "../loading";
 import { App } from "./app";
 import { dark } from "@clerk/themes";
-import { Header } from "../components/Header/Header";
+import { Header } from "@/app/components/Header/Header";
 import { Toaster } from "sonner";
 import { Suspense } from "react";
 import { ClerkProvider } from "@clerk/nextjs";

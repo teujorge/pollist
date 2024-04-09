@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { useApp } from "@/app/(with-auth)/app";
+import { useApp } from "@/app/[locale]/(with-auth)/app";
 import { useUser } from "@clerk/nextjs";
 import { ProfileImage } from "../ProfileImage";
 import { CommentCardActions } from "./CommentCardActions";

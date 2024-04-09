@@ -1,6 +1,6 @@
 "use client";
 
-import { useApp } from "@/app/(with-auth)/app";
+import { useApp } from "@/app/[locale]/(with-auth)/app";
 import { BellIcon } from "@radix-ui/react-icons";
 import { NotificationList } from "./NotificationsList";
 import { createContext, useContext, useMemo, useState } from "react";

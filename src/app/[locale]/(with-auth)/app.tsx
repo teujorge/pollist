@@ -20,7 +20,7 @@ import type {
   NotificationCommentLikeItem,
   NotificationFollowPendingItem,
   NotificationFollowAcceptedItem,
-} from "../components/Header/actions";
+} from "@/app/components/Header/actions";
 
 export type Notifications = {
   pollLikes: NotificationPollLikeItem[];

@@ -1,4 +1,4 @@
-import { Stat } from "@/app/(with-auth)/users/components/Stat";
+import { Stat } from "@/app/[locale]/(with-auth)/users/components/Stat";
 
 export default function UserPageLoading() {
   return (

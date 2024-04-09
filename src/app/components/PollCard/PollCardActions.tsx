@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { useApp } from "@/app/(with-auth)/app";
+import { useApp } from "@/app/[locale]/(with-auth)/app";
 import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/database/supabase";
 import { SharePopover } from "../SharePopover";

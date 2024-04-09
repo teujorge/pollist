@@ -1,13 +1,13 @@
 import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs/server";
-import { Tabs } from "@/app/(with-auth)/users/components/Tabs";
-import { Stat } from "@/app/(with-auth)/users/components/Stat";
+import { Tabs } from "@/app/[locale]/(with-auth)/users/components/Tabs";
+import { Stat } from "@/app/[locale]/(with-auth)/users/components/Stat";
 import { Loader } from "@/app/components/Loader";
 import { getUser } from "../actions";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ProfileImage } from "@/app/components/ProfileImage";
-import { FollowButton } from "@/app/(with-auth)/users/components/FollowButton";
+import { FollowButton } from "@/app/[locale]/(with-auth)/users/components/FollowButton";
 import { InfinitePolls } from "@/app/components/InfinitePolls/InfinitePolls";
 import { TabManagement } from "../components/TabManagement";
 import { FolloweesList } from "../components/user-followees/FolloweesList";

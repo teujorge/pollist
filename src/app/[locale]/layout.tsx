@@ -13,11 +13,13 @@ const nunito = Nunito_Sans({
 
 export default function RootLayout({
   children,
+  params: { locale },
 }: {
   children: React.ReactNode;
+  params: { locale: string };
 }) {
   return (
-    <html lang="en">
+    <html lang={locale}>
       <JsonLd />
       <Analytics />
       <SpeedInsights />

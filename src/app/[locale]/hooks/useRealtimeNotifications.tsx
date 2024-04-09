@@ -10,7 +10,7 @@ import {
   getNotificationsFollowPendingRelation,
   getNotificationsItems,
   getNotificationsPollLikeRelation,
-} from "../components/Header/actions";
+} from "@/app/components/Header/actions";
 import type { Notifications } from "../(with-auth)/app";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 

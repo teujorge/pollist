@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Loader } from "@/app/components/Loader";
 import { useState } from "react";
-import { follow, unfollow } from "@/app/(with-auth)/users/actions";
+import { follow, unfollow } from "@/app/[locale]/(with-auth)/users/actions";
 
 export function FollowButtonClient({
   userId,

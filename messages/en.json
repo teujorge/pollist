@@ -1,0 +1,10 @@
+{
+  "header": {
+    "create": "Create",
+    "home": "Home",
+    "sign-in": "Sign in",
+    "profile": "Profile",
+    "failed-to-remove-notification": "Failed to remove notification"
+  },
+  "failed-to-remove-notification": "Failed to remove notification"
+}

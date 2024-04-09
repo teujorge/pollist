@@ -7,6 +7,7 @@ export function BoostedPollIdHandler({
 }: {
   boostedPollId: string;
 }) {
-  useBoostedPoll().setBoostedPollId(boostedPollId);
+  const bp = useBoostedPoll();
+  bp.setBoostedPollId(boostedPollId);
   return null;
 }

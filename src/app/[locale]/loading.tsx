@@ -1,5 +1,5 @@
-import { Loader } from "./components/Loader";
 import styles from "@/styles/modal.module.css";
+import { Loader } from "@/app/components/Loader";
 
 export default function GlobalLoading() {
   return (

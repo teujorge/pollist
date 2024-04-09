@@ -8,7 +8,10 @@ import { OptionToggle } from "./settings/OptionToggle";
 import { PricingTableEmbed } from "./settings/PricingTableEmbed";
 import { ClerkUserButtonClient } from "./ClerkUserButtonClient";
 import { ArrowRightIcon, ExternalLinkIcon } from "@radix-ui/react-icons";
-import { setPrivateAccount, setShowAds } from "@/app/(with-auth)/users/actions";
+import {
+  setShowAds,
+  setPrivateAccount,
+} from "@/app/[locale]/(with-auth)/users/actions";
 
 export function ClerkUserButton() {
   return (

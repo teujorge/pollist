@@ -3,13 +3,16 @@
 import Link from "next/link";
 import { toast } from "sonner";
 import { Loader } from "../Loader";
-import { useApp } from "@/app/(with-auth)/app";
+import { useApp } from "@/app/[locale]/(with-auth)/app";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { ProfileImage } from "../ProfileImage";
 import { useNotifications } from "./NotificationsBell";
 import { removeNotifications } from "./actions";
 import { useEffect, useState } from "react";
-import { acceptFollow, declineFollow } from "@/app/(with-auth)/users/actions";
+import {
+  acceptFollow,
+  declineFollow,
+} from "@/app/[locale]/(with-auth)/users/actions";
 import type {
   NotificationType,
   NotificationPollLikeItem,
@@ -18,6 +21,7 @@ import type {
   NotificationFollowAcceptedItem,
   NotificationFollowPendingItem,
 } from "./actions";
+import { useTranslations } from "next-intl";
 
 type NotificationData =
   | NotificationPollLikeItem
@@ -27,6 +31,8 @@ type NotificationData =
   | NotificationFollowAcceptedItem;
 
 export function NotificationList() {
+  const t = useTranslations("header");
+
   const { notifications } = useApp();
 
   function groupedPollLikes(): {
@@ -198,7 +204,7 @@ function NotificationCard({
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error("Failed to remove notification");
+        toast.error(t("failed-to-remove-notification"));
       }
 
       setIsDragging(false);
