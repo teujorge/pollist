@@ -1,9 +1,16 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { useFilter } from "../hooks/useFilter";
 import { CATEGORIES } from "@/constants";
+import { ArrowUpIcon } from "@radix-ui/react-icons";
 import { useEffect, useRef, useState } from "react";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 
 export function FilterBar() {
   const filterRef = useRef<HTMLDivElement>(null);
@@ -12,6 +19,7 @@ export function FilterBar() {
 
   const { setSearch, setCategory } = useFilter();
   const [isVisible, setIsVisible] = useState(true);
+  const [showUpButton, setShowUpButton] = useState(false);
 
   // listen to scroll event
   useEffect(() => {
@@ -26,6 +34,7 @@ export function FilterBar() {
       if (currentScrollY < 500) {
         initialScrollUpY.current = undefined;
         setIsVisible(true);
+        setShowUpButton(false);
       }
       // Scrolling down
       else if (currentScrollY > lastScrollY.current) {
@@ -34,6 +43,8 @@ export function FilterBar() {
       }
       // Scrolling up
       else {
+        setShowUpButton(true);
+
         // First time scrolling up
         if (!initialScrollUpY.current) {
           initialScrollUpY.current = currentScrollY;
@@ -80,6 +91,19 @@ export function FilterBar() {
             </option>
           ))}
         </select>
+        <Tooltip>
+          <TooltipTrigger className={cn(!showUpButton && "hidden")}>
+            <Button
+              size="sm"
+              variant="outline"
+              className="flex h-8 w-8 items-center justify-center rounded-full p-0"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            >
+              <ArrowUpIcon />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">Back to top</TooltipContent>
+        </Tooltip>
       </div>
     </div>
   );
