@@ -17,12 +17,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  PlusIcon,
-  Cross2Icon,
-  InfoCircledIcon,
-  CrossCircledIcon,
-} from "@radix-ui/react-icons";
+
+import { Plus, XCircle, Info, X } from "@phosphor-icons/react";
 import {
   createPoll,
   redirectToPoll,
@@ -186,7 +182,7 @@ export function CreatePollForm({
           className="absolute right-4 top-4"
           onClick={() => router.back()}
         >
-          <Cross2Icon />
+          <X size={18} />
         </button>
       )}
       <form
@@ -315,7 +311,7 @@ export function CreatePollForm({
                 onClick={() => remove(index)}
                 className="mb-6 mt-2 flex max-h-8 min-h-8 min-w-8 max-w-8 items-center justify-center rounded-full transition-colors hovact:bg-destructive/20 hovact:text-destructive"
               >
-                <CrossCircledIcon />
+                <XCircle size={20} />
               </button>
             </div>
           ))}
@@ -328,7 +324,7 @@ export function CreatePollForm({
           size="sm"
           onClick={addOption}
         >
-          <PlusIcon /> Add Option
+          <Plus size={20} /> Add Option
         </Button>
 
         <div className="p-2">
@@ -350,7 +346,7 @@ export function CreatePollForm({
               <label htmlFor="private-poll">Private Poll</label>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <InfoCircledIcon />
+                  <Info size={20} />
                 </TooltipTrigger>
                 <TooltipContent align="end" collisionBoundary={tooltipBoundary}>
                   <p>
@@ -384,7 +380,7 @@ export function CreatePollForm({
               <label htmlFor="anonymous-poll">Anonymous Poll</label>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <InfoCircledIcon />
+                  <Info size={20} />
                 </TooltipTrigger>
                 <TooltipContent align="end" collisionBoundary={tooltipBoundary}>
                   <p>

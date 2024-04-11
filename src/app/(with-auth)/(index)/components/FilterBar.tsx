@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useFilter } from "../hooks/useFilter";
 import { CATEGORIES } from "@/constants";
-import { ArrowUpIcon } from "@radix-ui/react-icons";
+import { ArrowUp } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import {
   Tooltip,
@@ -99,7 +99,7 @@ export function FilterBar() {
               className="flex h-8 w-8 items-center justify-center rounded-full p-0"
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             >
-              <ArrowUpIcon />
+              <ArrowUp size={20} />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom">Back to top</TooltipContent>

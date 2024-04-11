@@ -4,7 +4,8 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { WhatsAppSvg } from "../svgs/WhatsAppSvg";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { CopyIcon, Share2Icon, TwitterLogoIcon } from "@radix-ui/react-icons";
+
+import { Copy, Export, TwitterLogo } from "@phosphor-icons/react";
 import {
   Popover,
   PopoverContent,
@@ -32,7 +33,7 @@ export function SharePopover({
     <Popover>
       <PopoverTrigger asChild>
         <Button size="sm" variant="ghost">
-          <Share2Icon />
+          <Export size={20} />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="py-2">
@@ -44,7 +45,7 @@ export function SharePopover({
               toast.success("URL copied to clipboard");
             }}
           >
-            <CopyIcon />
+            <Copy size={18} />
             Copy
           </Button>
         )}
@@ -66,7 +67,7 @@ export function SharePopover({
               `&url=${url}`
             }
           >
-            <TwitterLogoIcon />
+            <TwitterLogo size={18} />
             Twitter
           </a>
         )}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useApp } from "@/app/(with-auth)/app";
-import { BellIcon } from "@radix-ui/react-icons";
+import { Bell } from "@phosphor-icons/react";
 import { NotificationList } from "./NotificationsList";
 import { createContext, useContext, useMemo, useState } from "react";
 import {
@@ -38,11 +38,7 @@ export function NotificationsBell() {
               className="relative select-none outline-none
             [&>svg]:hovact:text-primary"
             >
-              <BellIcon
-                className="text-foreground transition-colors"
-                width={18}
-                height={18}
-              />
+              <Bell size={20} />
               <div className="absolute -right-0.5 -top-0.5 flex h-2 w-2 items-center justify-center rounded-full bg-primary text-xs" />
             </button>
           </PopoverTrigger>

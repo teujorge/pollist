@@ -1,6 +1,5 @@
 "use client";
-
-import { GearIcon } from "@radix-ui/react-icons";
+import { Gear } from "@phosphor-icons/react";
 import { UserButton } from "@clerk/nextjs";
 
 export function ClerkUserButtonClient({
@@ -12,7 +11,7 @@ export function ClerkUserButtonClient({
     <UserButton>
       <UserButton.UserProfilePage
         label="Settings"
-        labelIcon={<GearIcon />}
+        labelIcon={<Gear size={15} />}
         url="settings"
       >
         {settings}

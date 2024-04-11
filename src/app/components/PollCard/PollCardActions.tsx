@@ -29,12 +29,13 @@ import {
   acknowledgePollLike,
 } from "./actions";
 import {
-  StarIcon,
-  ChatBubbleIcon,
-  ThickArrowUpIcon,
-  DotsHorizontalIcon,
-  ExclamationTriangleIcon,
-} from "@radix-ui/react-icons";
+  Star,
+  ChatCenteredText,
+  DotsThree,
+  Warning,
+  ArrowFatUp,
+} from "@phosphor-icons/react";
+
 import type { Vote } from "@prisma/client";
 import type { PollsDetails } from "../InfinitePolls/actions";
 import type { PollCardProps } from "./PollCard";
@@ -400,7 +401,7 @@ export function PollCardActions({
             )}
             onClick={user ? handleLike : undefined}
           >
-            <ThickArrowUpIcon className="transition-colors" />
+            <ArrowFatUp size={18} />
             <span className="transition-colors">
               {optimisticPoll._count.likes}
             </span>
@@ -428,7 +429,7 @@ export function PollCardActions({
               )}
             >
               <span>{formatNumber(poll._count.comments)}</span>
-              <ChatBubbleIcon className="transition-colors" />
+              <ChatCenteredText size={20} />
             </Link>
           )}
 
@@ -437,7 +438,7 @@ export function PollCardActions({
           <Popover>
             <PopoverTrigger asChild>
               <Button size="sm" variant="ghost">
-                <DotsHorizontalIcon />
+                <DotsThree size={20} />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end" className="py-2">
@@ -449,7 +450,7 @@ export function PollCardActions({
                     "hovact:bg-primary/20 hovact:text-primary",
                   )}
                 >
-                  <StarIcon />
+                  <Star size={15} />
                   Boost this poll
                 </Link>
               </PopoverClose>
@@ -463,7 +464,7 @@ export function PollCardActions({
                     toast.warning("Feature coming soon");
                   }}
                 >
-                  <ExclamationTriangleIcon />
+                  <Warning size={15} />
                   Report
                 </Button>
               )}

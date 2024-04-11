@@ -19,13 +19,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-  CopyIcon,
   ArrowRightIcon,
   ThickArrowUpIcon,
   TriangleDownIcon,
-  DotsHorizontalIcon,
-  ExclamationTriangleIcon,
 } from "@radix-ui/react-icons";
+
+import { Copy, Warning, DotsThree } from "@phosphor-icons/react";
 import type { Comment } from "../InfiniteComments/actions";
 
 export function CommentCardActions() {
@@ -241,12 +240,12 @@ export function CommentCardActions() {
               variant="ghost"
               className="flex h-7 w-7 items-center justify-center rounded-full p-1.5"
             >
-              <DotsHorizontalIcon />
+              <DotsThree size={20} />
             </Button>
           </PopoverTrigger>
           <PopoverContent align="end" className="py-2">
             <Button variant="popover" onClick={handleCopyThreadLink}>
-              <CopyIcon /> Copy
+              <Copy size={15} /> Copy
             </Button>
 
             <Button
@@ -254,7 +253,7 @@ export function CommentCardActions() {
               className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
               onClick={() => toast.warning("Feature coming soon")}
             >
-              <ExclamationTriangleIcon />
+              <Warning size={15} />
               Report
             </Button>
 

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { formatNumber } from "@/lib/utils";
-import { BarChartIcon } from "@radix-ui/react-icons";
+import { ChartBar } from "@phosphor-icons/react";
 import {
   Drawer,
   DrawerTitle,
@@ -22,7 +22,7 @@ export function ChartDrawer({
           variant="outline"
           className="flex flex-row items-center justify-center gap-2"
         >
-          Chart <BarChartIcon />
+          Chart <ChartBar size={18} />
         </Button>
       </DrawerTrigger>
       <DrawerContent>

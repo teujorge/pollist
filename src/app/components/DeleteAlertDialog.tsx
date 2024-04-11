@@ -14,7 +14,7 @@ import {
   AlertDialogTrigger,
   AlertDialogDescription,
 } from "@/components/ui/alert-dialog";
-import { TrashIcon } from "@radix-ui/react-icons";
+import { Trash } from "@phosphor-icons/react/dist/ssr";
 
 type DeleteAlertDialogProps = {
   title?: string;
@@ -65,7 +65,7 @@ export function DeleteAlertDialog({
           className,
         )}
       >
-        <TrashIcon /> Delete
+        <Trash size={15} /> Delete
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

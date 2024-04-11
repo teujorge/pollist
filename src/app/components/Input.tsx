@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { UploadIcon } from "@radix-ui/react-icons";
+import { UploadSimple } from "@phosphor-icons/react";
 import { buttonVariants } from "@/components/ui/button";
 
 export function Input({
@@ -98,7 +98,7 @@ export function InputFile({
           ) : (
             <>
               Upload Image
-              <UploadIcon />
+              <UploadSimple size={15} />
             </>
           )}
         </label>

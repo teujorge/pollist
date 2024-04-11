@@ -5,8 +5,8 @@ import { ProfileLink } from "./ProfileLink";
 import { SignInButton } from "@clerk/nextjs";
 import { ClerkUserButton } from "./ClerkUserButton/ClerkUserButton";
 import { NotificationsBell } from "./NotificationsBell";
-import { CardStackPlusIcon, HomeIcon } from "@radix-ui/react-icons";
 
+import { StackPlus, House } from "@phosphor-icons/react/dist/ssr";
 export function Header() {
   const { userId } = auth();
 
@@ -14,7 +14,7 @@ export function Header() {
     <>
       <span className="hidden sm:inline">Create</span>
       <span className="sm:hidden">
-        <CardStackPlusIcon className="h-6 w-6" />
+        <StackPlus size={20} />
       </span>
     </>
   );
@@ -33,7 +33,7 @@ export function Header() {
         <Link key="header-home" href="/" scroll={false}>
           <span className="hidden sm:inline">Home</span>
           <span className="sm:hidden">
-            <HomeIcon className="h-6 w-6" />
+            <House size={20} />
           </span>
         </Link>
 

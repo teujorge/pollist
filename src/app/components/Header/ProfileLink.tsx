@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { Suspense } from "react";
-import { PersonIcon } from "@radix-ui/react-icons";
+import { User } from "@phosphor-icons/react";
 
 function _ProfileLink() {
   const { user } = useUser();
@@ -12,7 +12,7 @@ function _ProfileLink() {
     <Link href={`/users/${user.username}`}>
       <span className="hidden sm:inline">Profile</span>
       <span className="sm:hidden">
-        <PersonIcon className="h-6 w-6" />
+        <User size={20} />
       </span>
     </Link>
   );

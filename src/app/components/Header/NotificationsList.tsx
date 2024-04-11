@@ -4,7 +4,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Loader } from "../Loader";
 import { useApp } from "@/app/(with-auth)/app";
-import { Cross2Icon } from "@radix-ui/react-icons";
+import { X } from "@phosphor-icons/react";
 import { cn, timeElapsed } from "@/lib/utils";
 import { ProfileImage } from "../ProfileImage";
 import { useNotifications } from "./NotificationsBell";
@@ -308,7 +308,7 @@ function NotificationCard({
         className="absolute right-0 top-0 rounded-full p-1 text-foreground outline-none transition-colors hovact:text-destructive"
         onClick={handleRemove}
       >
-        <Cross2Icon />
+        <X size={15} />
       </button>
     </div>
   );
