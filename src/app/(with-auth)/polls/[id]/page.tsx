@@ -1,12 +1,17 @@
 import Link from "next/link";
 import AnonProfileImage from "~/public/default-profile-icon.webp";
 import { auth } from "@clerk/nextjs/server";
+import { getUser } from "../../users/actions";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ProfileImage } from "@/app/components/ProfileImage";
 import { getSinglePoll } from "@/app/components/InfinitePolls/actions";
 import { PollCardActions } from "@/app/components/PollCard/PollCardActions";
-import { cn, uppercaseFirstLetterOfEachSentence } from "@/lib/utils";
+import {
+  cn,
+  shouldShowSensitiveContent,
+  uppercaseFirstLetterOfEachSentence,
+} from "@/lib/utils";
 import {
   AllComments,
   AllCommentsFallback,
@@ -24,6 +29,15 @@ export default async function PollPage({ params, searchParams }: Props) {
   if (!poll) return notFound();
 
   const { userId } = auth();
+
+  const user = await getUser(undefined, userId ?? undefined);
+
+  const showContent = shouldShowSensitiveContent(
+    userId,
+    poll.authorId,
+    poll.sensitive,
+    user?.viewSensitive,
+  );
 
   return (
     <main className="relative flex min-h-[calc(100dvh-64px)] w-full flex-col gap-1">
@@ -67,11 +81,22 @@ export default async function PollPage({ params, searchParams }: Props) {
         </Link>
 
         {/* title & description */}
-        <h1 className="text-2xl font-semibold">
+        <h1
+          className={cn(
+            "text-2xl font-semibold",
+            !showContent && "pointer-events-none select-none blur-sm",
+          )}
+        >
           {uppercaseFirstLetterOfEachSentence(poll.title)}
         </h1>
+
         {poll.description && (
-          <h2 className="text-accent-foreground">
+          <h2
+            className={cn(
+              "text-accent-foreground",
+              !showContent && "pointer-events-none select-none blur-sm",
+            )}
+          >
             {uppercaseFirstLetterOfEachSentence(poll.description)}
           </h2>
         )}
@@ -80,6 +105,7 @@ export default async function PollPage({ params, searchParams }: Props) {
       {/* poll interaction */}
       <PollCardActions
         poll={poll}
+        blurContent={!showContent}
         showChart={true}
         showCommentsButton={false}
       />

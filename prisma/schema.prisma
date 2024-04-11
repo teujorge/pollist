@@ -20,6 +20,7 @@ model User {
   bio                         String?                      @db.VarChar(200)
   ads                         Boolean                      @default(true)
   private                     Boolean                      @default(false)
+  viewSensitive               Boolean                      @default(false)
   clerkId                     String?                      @unique
   tier                        SubTier                      @default(FREE)
   votes                       Vote[]

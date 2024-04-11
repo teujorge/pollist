@@ -1,5 +1,6 @@
 "use server";
 
+import OpenAI from "openai";
 import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
@@ -14,6 +15,23 @@ export async function createPoll(fields: CreatePollFields) {
     throw new Error("You must be logged in to create a poll");
   }
 
+  // --- get poll moderator results
+
+  const pollContent = `title: ${fields.title} | description: ${fields.description} | option1: ${fields.option1} | option2: ${fields.option2} | ${fields.options
+    .map(
+      (option, index) =>
+        "option" + (index + 3).toString() + ": " + option.value,
+    )
+    .join(" | ")}`;
+
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const moderationRes = await openai.moderations.create({ input: pollContent });
+  const modFlagged = moderationRes.results[0]?.flagged;
+
+  console.log(moderationRes);
+
+  // --- now we can create poll
+
   const createdPoll = await db.poll.create({
     data: {
       authorId: userId,
@@ -21,6 +39,7 @@ export async function createPoll(fields: CreatePollFields) {
       description: fields.description,
       private: fields.private,
       anonymous: fields.anonymous,
+      sensitive: modFlagged,
       options: {
         create: [
           { text: fields.option1 },

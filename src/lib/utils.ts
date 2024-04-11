@@ -82,3 +82,18 @@ export function timeElapsed(date: Date): string {
   }
   return Math.floor(seconds) + " seconds";
 }
+
+export function shouldShowSensitiveContent(
+  userId: string | undefined | null,
+  contentCreatorId: string,
+  isContentSensitive: boolean,
+  userViewsSensitiveContent: boolean | undefined | null,
+): boolean {
+  if (!isContentSensitive) return true;
+
+  if (userViewsSensitiveContent) return true;
+
+  if (userId === contentCreatorId) return true;
+
+  return false;
+}

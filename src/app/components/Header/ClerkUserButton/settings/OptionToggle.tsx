@@ -10,11 +10,13 @@ export function OptionToggle({
   isEnabled,
   label,
   onToggleOption,
+  hasAccess,
   invert = true,
 }: {
   isEnabled: boolean;
   label: string;
   onToggleOption: (optionEnabled: boolean) => Promise<void>;
+  hasAccess: boolean;
   invert?: boolean;
 }) {
   const [isChanging, setIsChanging] = useState(false);
@@ -24,6 +26,11 @@ export function OptionToggle({
   }, [isEnabled]);
 
   async function handleToggle() {
+    if (!hasAccess) {
+      toast.warning("Please subscribe to access this feature.");
+      return;
+    }
+
     setIsChanging(true);
 
     try {
@@ -45,6 +52,7 @@ export function OptionToggle({
         isChanging
           ? "pointer-events-none opacity-50"
           : "opacity-100 hovact:bg-accent/40",
+        !hasAccess && "opacity-50",
       )}
       onClick={handleToggle}
     >

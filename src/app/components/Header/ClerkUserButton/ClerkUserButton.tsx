@@ -1,4 +1,3 @@
-import { cn } from "@/lib/utils";
 import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs";
 import { Loader } from "../../Loader";
@@ -7,8 +6,12 @@ import { ProfileLink } from "./ProfileLink";
 import { OptionToggle } from "./settings/OptionToggle";
 import { PricingTableEmbed } from "./settings/PricingTableEmbed";
 import { ClerkUserButtonClient } from "./ClerkUserButtonClient";
-import { setPrivateAccount, setShowAds } from "@/app/(with-auth)/users/actions";
 import { ArrowRight, ArrowSquareOut } from "@phosphor-icons/react/dist/ssr";
+import {
+  setShowAds,
+  setPrivateAccount,
+  setShowSensitiveContent,
+} from "@/app/(with-auth)/users/actions";
 
 export function ClerkUserButton() {
   return (
@@ -45,28 +48,28 @@ async function SettingsTab() {
         <h2 className="font-medium">
           Preferences
           <span className="text-sm font-normal text-accent-foreground/80">
-            {user.tier === "FREE" && " (Upgrade to unlock)"}
+            {user.tier === "FREE" && " (Upgrade to unlock all features)"}
           </span>
         </h2>
-        <div
-          className={cn(
-            "flex flex-col gap-2 [&>form]:flex [&>form]:w-full [&>form]:flex-row [&>form]:items-center [&>form]:justify-between [&>form]:gap-2 [&>form]:transition-opacity",
-            {
-              "[&>form]:pointer-events-none [&>form]:select-none [&>form]:opacity-50":
-                user.tier === "FREE",
-            },
-          )}
-        >
+        <div className="flex flex-col gap-2 [&>form]:flex [&>form]:w-full [&>form]:flex-row [&>form]:items-center [&>form]:justify-between [&>form]:gap-2 [&>form]:transition-opacity">
           <OptionToggle
+            hasAccess={user.tier !== "FREE"}
             label={"Private Account"}
             isEnabled={user.private}
             onToggleOption={setPrivateAccount}
           />
           <OptionToggle
+            hasAccess={user.tier !== "FREE"}
             label={"Hide Ads"}
             isEnabled={!user.ads}
             onToggleOption={setShowAds}
             invert={false}
+          />
+          <OptionToggle
+            hasAccess={true}
+            label="Show Sensitive Content"
+            isEnabled={user.viewSensitive}
+            onToggleOption={setShowSensitiveContent}
           />
         </div>
       </div>

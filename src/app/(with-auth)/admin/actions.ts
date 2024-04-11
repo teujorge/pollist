@@ -1,5 +1,6 @@
 "use server";
 
+import OpenAI from "openai";
 import { db } from "@/database/prisma";
 
 export async function delMultiUsers() {
@@ -142,5 +143,54 @@ export async function multiVoteOn({
     console.log();
   } catch (error) {
     console.error(error);
+  }
+}
+
+export async function runModerator() {
+  if (process.env.NODE_ENV !== "development") {
+    console.error("This function is only available in development mode.");
+    return;
+  }
+
+  if (process.env.ADMIN_ID === undefined) {
+    console.error("Bad ADMIN_ID.");
+    return;
+  }
+
+  console.log();
+  console.log("Running moderator...");
+
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+  const polls = await db.poll.findMany({
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      options: { select: { text: true } },
+      sensitive: true,
+    },
+  });
+
+  for (const poll of polls) {
+    const content = `Title: ${poll.title}\nDescription: ${poll.description}\nOptions: ${poll.options.map((option) => option.text).join(", ")}`;
+
+    const moderationRes = await openai.moderations.create({
+      input: content,
+    });
+
+    const moderation = moderationRes.results[0]?.flagged;
+
+    console.log(`Poll: ${poll.title}`);
+    console.log(`Moderation: ${moderation}`);
+    if (poll.sensitive !== moderation) {
+      await db.poll.update({
+        where: { id: poll.id },
+        data: { sensitive: moderation },
+      });
+      console.log("Poll updated!");
+    }
+
+    console.log();
   }
 }

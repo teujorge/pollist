@@ -1,9 +1,17 @@
+"use client";
+
 import Link from "next/link";
 import AnonProfileImage from "~/public/default-profile-icon.webp";
+import { getUser } from "@/app/(with-auth)/users/actions";
+import { useQuery } from "@tanstack/react-query";
 import { ProfileImage } from "../ProfileImage";
 import { PollCardActions } from "@/app/components/PollCard/PollCardActions";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
-import { cn, uppercaseFirstLetterOfEachSentence } from "@/lib/utils";
+import {
+  cn,
+  shouldShowSensitiveContent,
+  uppercaseFirstLetterOfEachSentence,
+} from "@/lib/utils";
 import type { PollsDetails } from "../InfinitePolls/actions";
 
 export type PollCardProps = {
@@ -19,9 +27,22 @@ export function PollCard({
   highlightedUserId,
   showCommentsButton = true,
 }: PollCardProps) {
+  const { data: user } = useQuery({
+    queryKey: ["user", userId],
+    queryFn: async () => await getUser(undefined, userId ?? undefined),
+  });
+
+  const showContent = shouldShowSensitiveContent(
+    userId,
+    poll.authorId,
+    poll.sensitive,
+    user?.viewSensitive,
+  );
+
   const pollCardActions = (
     <PollCardActions
       poll={poll}
+      blurContent={!showContent}
       highlightedUserId={highlightedUserId}
       showCommentsButton={showCommentsButton}
     />
@@ -64,7 +85,14 @@ export function PollCard({
           </span>
         </div>
       </Link>
-      <Link href={`/polls/${poll.id}`} className="w-fit">
+
+      <Link
+        href={`/polls/${poll.id}`}
+        className={cn(
+          "w-fit",
+          !showContent && "pointer-events-none select-none blur-sm",
+        )}
+      >
         <h2 className="text-2xl font-bold">
           {uppercaseFirstLetterOfEachSentence(poll.title)}
         </h2>

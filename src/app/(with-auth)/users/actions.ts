@@ -2,15 +2,20 @@
 
 import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export type GetUser = NonNullable<Awaited<ReturnType<typeof getUser>>>;
 
-export async function getUser(username: string) {
+export async function getUser(username?: string, id?: string) {
+  if (!id && !username) {
+    return null;
+  }
+
   const { userId: myId } = auth();
 
   const user = await db.user.findUnique({
     where: {
+      id: id,
       username: username,
     },
     select: {
@@ -19,6 +24,7 @@ export async function getUser(username: string) {
       username: true,
       ads: true,
       private: true,
+      viewSensitive: true,
       tier: true,
       _count: {
         select: {
@@ -257,6 +263,7 @@ export async function setPrivateAccount(isPrivate: boolean) {
     data: { private: isPrivate },
   });
 
+  revalidateTag("user-sensitive");
   revalidatePath(`/users/${newUser.username}`);
 }
 
@@ -273,5 +280,20 @@ export async function setShowAds(showAds: boolean) {
     data: { ads: showAds },
   });
 
+  revalidateTag("user-sensitive");
+  revalidatePath(`/users/${newUser.username}`);
+}
+
+export async function setShowSensitiveContent(showSensitive: boolean) {
+  const { userId } = auth();
+
+  if (!userId) throw new Error("User not found");
+
+  const newUser = await db.user.update({
+    where: { id: userId },
+    data: { viewSensitive: showSensitive },
+  });
+
+  revalidateTag("user-sensitive");
   revalidatePath(`/users/${newUser.username}`);
 }
