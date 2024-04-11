@@ -3,8 +3,8 @@
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 
+import { X } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
-import { Cross2Icon } from "@radix-ui/react-icons";
 
 const Dialog = DialogPrimitive.Root;
 
@@ -45,7 +45,7 @@ const DialogContent = React.forwardRef<
     >
       {children}
       <DialogPrimitive.Close className="data-[state=open]:text-muted-foreground absolute right-4 top-4 rounded-full border border-transparent opacity-70 outline-none transition-opacity disabled:pointer-events-none data-[state=open]:bg-accent hovact:border-accent hovact:opacity-100">
-        <Cross2Icon />
+        <X />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>

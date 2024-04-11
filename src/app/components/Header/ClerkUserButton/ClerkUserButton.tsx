@@ -7,8 +7,8 @@ import { ProfileLink } from "./ProfileLink";
 import { OptionToggle } from "./settings/OptionToggle";
 import { PricingTableEmbed } from "./settings/PricingTableEmbed";
 import { ClerkUserButtonClient } from "./ClerkUserButtonClient";
-import { ArrowRightIcon, ExternalLinkIcon } from "@radix-ui/react-icons";
 import { setPrivateAccount, setShowAds } from "@/app/(with-auth)/users/actions";
+import { ArrowRight, ArrowSquareOut } from "@phosphor-icons/react/dist/ssr";
 
 export function ClerkUserButton() {
   return (
@@ -87,12 +87,12 @@ async function SettingsTab() {
               href={process.env.NEXT_PUBLIC_STRIPE_BILLING_URL ?? "/"}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex flex-row items-center justify-between gap-4 rounded-lg px-6 py-2 text-[0.8125rem] text-primary transition-colors hovact:bg-primary/35"
+              className="flex flex-row items-center justify-between gap-4 rounded-lg px-6 py-2 text-[0.8125rem] text-primary transition-colors hovact:bg-primary/35 [&>svg]:opacity-0 [&>svg]:transition-all [&>svg]:duration-200 [&>svg]:hovact:translate-x-2 [&>svg]:hovact:opacity-100"
             >
               <div className="flex flex-row items-center justify-center gap-4">
-                <ExternalLinkIcon /> Manage subscription through stripe
+                <ArrowSquareOut size={15} /> Manage subscription through stripe
               </div>
-              <ArrowRightIcon />
+              <ArrowRight size={15} />
             </a>
           </div>
         )}

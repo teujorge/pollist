@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
+import { ChartBar } from "@phosphor-icons/react/dist/ssr";
 import { formatNumber } from "@/lib/utils";
-import { ChartBar } from "@phosphor-icons/react";
 import {
   Drawer,
   DrawerTitle,

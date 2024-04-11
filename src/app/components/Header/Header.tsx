@@ -4,9 +4,9 @@ import { IconSvg } from "../../svgs/IconSvg";
 import { ProfileLink } from "./ProfileLink";
 import { SignInButton } from "@clerk/nextjs";
 import { ClerkUserButton } from "./ClerkUserButton/ClerkUserButton";
+import { StackPlus, House } from "@phosphor-icons/react/dist/ssr";
 import { NotificationsBell } from "./NotificationsBell";
 
-import { StackPlus, House } from "@phosphor-icons/react/dist/ssr";
 export function Header() {
   const { userId } = auth();
 

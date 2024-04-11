@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { X } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Loader } from "../Loader";
 import { useApp } from "@/app/(with-auth)/app";
-import { X } from "@phosphor-icons/react";
 import { cn, timeElapsed } from "@/lib/utils";
 import { ProfileImage } from "../ProfileImage";
 import { useNotifications } from "./NotificationsBell";

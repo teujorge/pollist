@@ -8,6 +8,7 @@ import { useApp } from "@/app/(with-auth)/app";
 import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/database/supabase";
 import { SharePopover } from "../SharePopover";
+import { PopoverClose } from "@radix-ui/react-popover";
 import { DeletePollForm } from "../CrudPoll/DeletePollForm";
 import { CircularProgress } from "../CircularProgress";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -30,18 +31,16 @@ import {
 } from "./actions";
 import {
   Star,
-  ChatCenteredText,
-  DotsThree,
   Warning,
+  DotsThree,
   ArrowFatUp,
+  ChatTeardropText,
 } from "@phosphor-icons/react";
-
 import type { Vote } from "@prisma/client";
 import type { PollsDetails } from "../InfinitePolls/actions";
 import type { PollCardProps } from "./PollCard";
 import type { RealtimeChannel } from "@supabase/realtime-js";
 import type { MutableRefObject } from "react";
-import { PopoverClose } from "@radix-ui/react-popover";
 
 const ChartDrawer = dynamic(
   () => import("./ChartDrawer").then((mod) => mod.ChartDrawer),
@@ -401,7 +400,7 @@ export function PollCardActions({
             )}
             onClick={user ? handleLike : undefined}
           >
-            <ArrowFatUp size={18} />
+            <ArrowFatUp size={20} />
             <span className="transition-colors">
               {optimisticPoll._count.likes}
             </span>
@@ -429,7 +428,7 @@ export function PollCardActions({
               )}
             >
               <span>{formatNumber(poll._count.comments)}</span>
-              <ChatCenteredText size={20} />
+              <ChatTeardropText size={20} />
             </Link>
           )}
 

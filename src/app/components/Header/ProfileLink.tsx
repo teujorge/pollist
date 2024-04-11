@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { User } from "@phosphor-icons/react";
 import { useUser } from "@clerk/nextjs";
 import { Suspense } from "react";
-import { User } from "@phosphor-icons/react";
 
 function _ProfileLink() {
   const { user } = useUser();

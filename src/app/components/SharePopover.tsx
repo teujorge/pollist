@@ -2,10 +2,8 @@
 
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { WhatsAppSvg } from "../svgs/WhatsAppSvg";
 import { Button, buttonVariants } from "@/components/ui/button";
-
-import { Copy, Export, TwitterLogo } from "@phosphor-icons/react";
+import { Copy, Export, TwitterLogo, WhatsappLogo } from "@phosphor-icons/react";
 import {
   Popover,
   PopoverContent,
@@ -45,7 +43,7 @@ export function SharePopover({
               toast.success("URL copied to clipboard");
             }}
           >
-            <Copy size={18} />
+            <Copy size={15} />
             Copy
           </Button>
         )}
@@ -67,7 +65,7 @@ export function SharePopover({
               `&url=${url}`
             }
           >
-            <TwitterLogo size={18} />
+            <TwitterLogo size={15} />
             Twitter
           </a>
         )}
@@ -76,13 +74,13 @@ export function SharePopover({
           <a
             className={cn(
               buttonVariants({ variant: "popover" }),
-              "hovact:bg-[#25D366]/20 hovact:text-[#25D366] [&>svg]:hovact:fill-[#25D366]",
+              "hovact:bg-[#25D366]/20 hovact:text-[#25D366]",
             )}
             target="_blank"
             rel="noreferrer noopener"
             href={`https://api.whatsapp.com/send?text=${text}${encodeURIComponent("\n" + url)}`}
           >
-            <WhatsAppSvg className="h-[15px] w-[15px] fill-foreground transition-colors" />
+            <WhatsappLogo size={15} />
             WhatsApp
           </a>
         )}

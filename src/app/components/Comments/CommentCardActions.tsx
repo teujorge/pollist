@@ -19,12 +19,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-  ArrowRightIcon,
-  ThickArrowUpIcon,
-  TriangleDownIcon,
-} from "@radix-ui/react-icons";
-
-import { Copy, Warning, DotsThree } from "@phosphor-icons/react";
+  Copy,
+  Warning,
+  Triangle,
+  DotsThree,
+  ArrowFatUp,
+  CaretDoubleRight,
+} from "@phosphor-icons/react";
 import type { Comment } from "../InfiniteComments/actions";
 
 export function CommentCardActions() {
@@ -201,7 +202,7 @@ export function CommentCardActions() {
       )}
       onClick={user ? handleLike : undefined}
     >
-      <ThickArrowUpIcon className="transition-colors" />
+      <ArrowFatUp className="transition-colors" />
       <span className="transition-colors">{comment._count.likes}</span>
     </Button>
   );
@@ -236,10 +237,7 @@ export function CommentCardActions() {
 
         <Popover>
           <PopoverTrigger>
-            <Button
-              variant="ghost"
-              className="flex h-7 w-7 items-center justify-center rounded-full p-1.5"
-            >
+            <Button size="sm" variant="ghost">
               <DotsThree size={20} />
             </Button>
           </PopoverTrigger>
@@ -286,14 +284,13 @@ export function CommentCardActions() {
         <Button
           variant="ghost"
           className={cn(
-            "w-fit items-center justify-center gap-1 [&>svg]:transition-transform [&>svg]:hovact:-rotate-90",
+            "w-fit items-center justify-center gap-1 [&>svg]:-rotate-180 [&>svg]:transition-transform [&>svg]:hovact:-rotate-90",
             comment.parentId && "hidden",
             comment._count.replies === 0 && "hidden",
           )}
           onClick={() => setIsViewingReplies(!isViewingReplies)}
         >
-          <TriangleDownIcon className="h-5 w-5" /> {comment._count.replies}{" "}
-          Replies
+          <Triangle className="h-5 w-5" /> {comment._count.replies} Replies
         </Button>
       )}
     </>
@@ -383,7 +380,7 @@ function CommentReplies({
             className="w-fit items-center justify-center gap-1 [&>svg]:transition-transform [&>svg]:hovact:rotate-90"
             onClick={handleLoadMore}
           >
-            <ArrowRightIcon className="h-5 w-5" /> Show More Replies
+            <CaretDoubleRight /> Show More Replies
           </Button>
         )
       )}

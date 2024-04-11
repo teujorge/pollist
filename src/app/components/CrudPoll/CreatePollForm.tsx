@@ -11,14 +11,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input, InputFile } from "../Input";
 import { createPollSchema } from "./validation";
 import { useEffect, useState } from "react";
+import { Plus, XCircle, Info, X } from "@phosphor-icons/react";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
-import { Plus, XCircle, Info, X } from "@phosphor-icons/react";
 import {
   createPoll,
   redirectToPoll,
@@ -182,7 +181,7 @@ export function CreatePollForm({
           className="absolute right-4 top-4"
           onClick={() => router.back()}
         >
-          <X size={18} />
+          <X size={20} />
         </button>
       )}
       <form
@@ -324,7 +323,7 @@ export function CreatePollForm({
           size="sm"
           onClick={addOption}
         >
-          <Plus size={20} /> Add Option
+          <Plus size={15} /> Add Option
         </Button>
 
         <div className="p-2">

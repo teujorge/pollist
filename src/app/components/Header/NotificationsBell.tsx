@@ -1,7 +1,7 @@
 "use client";
 
-import { useApp } from "@/app/(with-auth)/app";
 import { Bell } from "@phosphor-icons/react";
+import { useApp } from "@/app/(with-auth)/app";
 import { NotificationList } from "./NotificationsList";
 import { createContext, useContext, useMemo, useState } from "react";
 import {

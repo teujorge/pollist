@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { Trash } from "@phosphor-icons/react";
 import { Loader } from "./Loader";
 import { useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -14,7 +15,6 @@ import {
   AlertDialogTrigger,
   AlertDialogDescription,
 } from "@/components/ui/alert-dialog";
-import { Trash } from "@phosphor-icons/react/dist/ssr";
 
 type DeleteAlertDialogProps = {
   title?: string;
