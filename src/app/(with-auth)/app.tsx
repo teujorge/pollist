@@ -31,6 +31,12 @@ export type Notifications = {
 };
 
 type AppProviderValue = {
+  key: string;
+  setKey: React.Dispatch<React.SetStateAction<string>>;
+
+  ads: boolean;
+  setAds: React.Dispatch<React.SetStateAction<boolean>>;
+
   notifications: Notifications;
   setNotifications: React.Dispatch<React.SetStateAction<Notifications>>;
 };
@@ -40,7 +46,9 @@ export function App({ children }: { children: React.ReactNode }) {
 
   const { user } = useUser();
 
-  const [showAds, setShowAds] = useState(true);
+  const [key, setKey] = useState<string>(Math.random().toString());
+
+  const [ads, setAds] = useState(true);
 
   const [notifications, setNotifications] = useState<Notifications>({
     pollLikes: [],
@@ -56,15 +64,26 @@ export function App({ children }: { children: React.ReactNode }) {
     if (!user?.id) return;
 
     void getUserTier(user.id).then((tier) => {
-      if (tier === "FREE") setShowAds(true);
-      else setShowAds(false);
+      if (tier === "FREE") setAds(true);
+      else setAds(false);
     });
-  }, [user]);
+  }, [user, key]);
+
+  useEffect(() => console.log("showAds", ads), [ads]);
 
   return (
     <QueryProvider>
-      <AppProvider value={{ notifications, setNotifications }}>
-        {showAds && (
+      <AppProvider
+        value={{
+          key,
+          setKey,
+          ads,
+          setAds,
+          notifications,
+          setNotifications,
+        }}
+      >
+        {ads && (
           <Script
             async
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6132246468312218"

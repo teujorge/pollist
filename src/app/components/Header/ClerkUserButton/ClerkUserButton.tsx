@@ -4,8 +4,10 @@ import { Loader } from "../../Loader";
 import { Suspense } from "react";
 import { ProfileLink } from "./ProfileLink";
 import { OptionToggle } from "./settings/OptionToggle";
+import { OptionToggleAds } from "./settings/OptionToggleAds";
 import { PricingTableEmbed } from "./settings/PricingTableEmbed";
 import { ClerkUserButtonClient } from "./ClerkUserButtonClient";
+import { OptionToggleSensitive } from "./settings/OptionToggleSensitive";
 import { ArrowRight, ArrowSquareOut } from "@phosphor-icons/react/dist/ssr";
 import {
   setShowAds,
@@ -58,16 +60,12 @@ async function SettingsTab() {
             isEnabled={user.private}
             onToggleOption={setPrivateAccount}
           />
-          <OptionToggle
+          <OptionToggleAds
             hasAccess={user.tier !== "FREE"}
-            label={"Hide Ads"}
             isEnabled={!user.ads}
             onToggleOption={setShowAds}
-            invert={false}
           />
-          <OptionToggle
-            hasAccess={true}
-            label="Show Sensitive Content"
+          <OptionToggleSensitive
             isEnabled={user.viewSensitive}
             onToggleOption={setShowSensitiveContent}
           />

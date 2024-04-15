@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import AnonProfileImage from "~/public/default-profile-icon.webp";
+import { useApp } from "@/app/(with-auth)/app";
 import { getUser } from "@/app/(with-auth)/users/actions";
 import { useQuery } from "@tanstack/react-query";
 import { ProfileImage } from "../ProfileImage";
@@ -27,8 +28,10 @@ export function PollCard({
   highlightedUserId,
   showCommentsButton = true,
 }: PollCardProps) {
+  const { key } = useApp();
+
   const { data: user } = useQuery({
-    queryKey: ["user", userId],
+    queryKey: ["user", userId, key],
     queryFn: async () => await getUser(undefined, userId ?? undefined),
   });
 
