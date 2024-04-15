@@ -1,0 +1,30 @@
+export const commentSelect = (userId: string | undefined) => {
+  return {
+    id: true,
+    pollId: true,
+    parentId: true,
+    text: true,
+    at: true,
+    authorId: true,
+    createdAt: true,
+    updatedAt: true,
+    author: { select: { username: true, imageUrl: true } },
+    parent: {
+      select: {
+        authorId: true,
+        author: { select: { username: true } },
+      },
+    },
+    poll: {
+      select: {
+        authorId: true,
+      },
+    },
+    likes: {
+      where: { authorId: userId ?? undefined },
+    },
+    _count: {
+      select: { likes: true, replies: true },
+    },
+  };
+};

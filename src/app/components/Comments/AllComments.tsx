@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import { CommentForm } from "./CommentForm";
 import { CommentCard } from "./CommentCard";
 import { SignInButton } from "@clerk/nextjs";
+import { commentSelect } from "../InfiniteComments/commentSelect";
 import { InfiniteComments } from "@/app/components/InfiniteComments/InfiniteComments";
 import { NewCommentsProvider } from "./NewCommentsProvider";
 
@@ -22,23 +23,7 @@ export async function AllComments({
   if (parentId) {
     const parentComment = await db.comment.findUnique({
       where: { id: parentId },
-      include: {
-        author: true,
-        likes: {
-          where: {
-            authorId: userId ?? undefined,
-          },
-        },
-        parent: {
-          select: {
-            authorId: true,
-            author: { select: { username: true } },
-          },
-        },
-        _count: {
-          select: { likes: true, replies: true },
-        },
-      },
+      select: commentSelect(userId ?? undefined),
     });
 
     if (parentComment) {

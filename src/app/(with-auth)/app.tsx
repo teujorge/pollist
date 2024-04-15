@@ -69,8 +69,6 @@ export function App({ children }: { children: React.ReactNode }) {
     });
   }, [user, key]);
 
-  useEffect(() => console.log("showAds", ads), [ads]);
-
   return (
     <QueryProvider>
       <AppProvider
