@@ -83,6 +83,14 @@ export function timeElapsed(date: Date): string {
   return Math.floor(seconds) + " seconds";
 }
 
+/**
+ * Returns whether the given content should be shown to the user
+ * @param userId
+ * @param contentCreatorId
+ * @param isContentSensitive
+ * @param userViewsSensitiveContent
+ * @returns boolean
+ */
 export function shouldShowSensitiveContent(
   userId: string | undefined | null,
   contentCreatorId: string,

@@ -21,8 +21,8 @@ import {
 import {
   Copy,
   Warning,
-  Triangle,
   DotsThree,
+  CaretDown,
   ArrowFatUp,
   CaretDoubleRight,
 } from "@phosphor-icons/react";
@@ -284,13 +284,13 @@ export function CommentCardActions() {
         <Button
           variant="ghost"
           className={cn(
-            "w-fit items-center justify-center gap-1 [&>svg]:-rotate-180 [&>svg]:transition-transform [&>svg]:hovact:-rotate-90",
+            "w-fit items-center justify-center gap-1 [&>svg]:transition-transform [&>svg]:hovact:-rotate-90",
             comment.parentId && "hidden",
             comment._count.replies === 0 && "hidden",
           )}
           onClick={() => setIsViewingReplies(!isViewingReplies)}
         >
-          <Triangle className="h-5 w-5" /> {comment._count.replies} Replies
+          <CaretDown size={15} /> {comment._count.replies} Replies
         </Button>
       )}
     </>
