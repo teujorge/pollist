@@ -5,6 +5,7 @@ import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { supabase } from "@/database/supabase";
+import { handlePrismaError } from "@/database/error";
 import type { PollsDetails } from "@/app/components/InfinitePolls/actions";
 import type { CreatePollFields } from "./validation";
 
@@ -28,32 +29,34 @@ export async function createPoll(fields: CreatePollFields) {
   const moderationRes = await openai.moderations.create({ input: pollContent });
   const modFlagged = moderationRes.results[0]?.flagged;
 
-  console.log(moderationRes);
-
   // --- now we can create poll
 
-  const createdPoll = await db.poll.create({
-    data: {
-      authorId: userId,
-      title: fields.title,
-      description: fields.description,
-      private: fields.private,
-      anonymous: fields.anonymous,
-      sensitive: modFlagged,
-      options: {
-        create: [
-          { text: fields.option1 },
-          { text: fields.option2 },
-          ...fields.options.map((option) => ({ text: option.value })),
-        ],
+  try {
+    const createdPoll = await db.poll.create({
+      data: {
+        authorId: userId,
+        title: fields.title,
+        description: fields.description,
+        private: fields.private,
+        anonymous: fields.anonymous,
+        sensitive: modFlagged,
+        options: {
+          create: [
+            { text: fields.option1 },
+            { text: fields.option2 },
+            ...fields.options.map((option) => ({ text: option.value })),
+          ],
+        },
       },
-    },
-    include: {
-      options: true,
-    },
-  });
+      include: {
+        options: true,
+      },
+    });
 
-  return createdPoll;
+    return createdPoll;
+  } catch (error) {
+    throw handlePrismaError(error);
+  }
 }
 
 export async function addImagePathToPollOption(optionId: string, path: string) {
@@ -112,50 +115,62 @@ export async function deletePoll(poll: PollsDetails[number]) {
     }
   }
 
-  const deletedPoll = await db.poll.delete({
-    where: { id: poll.id },
-    include: {
-      author: { select: { username: true } },
-    },
-  });
+  try {
+    const deletedPoll = await db.poll.delete({
+      where: { id: poll.id },
+      include: {
+        author: { select: { username: true } },
+      },
+    });
 
-  if (deletedPoll) redirect(`/users/${deletedPoll.author.username}`);
+    if (deletedPoll) redirect(`/users/${deletedPoll.author.username}`);
+  } catch (error) {
+    throw handlePrismaError(error);
+  }
 }
 
 export async function boostPoll(pollId: string) {
-  const { userId } = auth();
+  try {
+    const { userId } = auth();
 
-  if (!userId) {
-    throw new Error("You must be logged in to boost a poll");
-  }
+    if (!userId) {
+      throw new Error("You must be logged in to boost a poll");
+    }
 
-  await db.user.update({
-    where: { id: userId },
-    data: {
-      boostedPoll: {
-        connect: { id: pollId },
+    await db.user.update({
+      where: { id: userId },
+      data: {
+        boostedPoll: {
+          connect: { id: pollId },
+        },
       },
-    },
-  });
+    });
 
-  redirect(`/polls/${pollId}`);
+    redirect(`/polls/${pollId}`);
+  } catch (error) {
+    handlePrismaError(error);
+  }
 }
 
 export async function unBoostPoll(redirectPollId: string) {
-  const { userId } = auth();
+  try {
+    const { userId } = auth();
 
-  if (!userId) {
-    throw new Error("You must be logged in to unboost a poll");
-  }
+    if (!userId) {
+      throw new Error("You must be logged in to unboost a poll");
+    }
 
-  await db.user.update({
-    where: { id: userId },
-    data: {
-      boostedPoll: {
-        disconnect: true,
+    await db.user.update({
+      where: { id: userId },
+      data: {
+        boostedPoll: {
+          disconnect: true,
+        },
       },
-    },
-  });
+    });
 
-  redirect(`/polls/${redirectPollId}`);
+    redirect(`/polls/${redirectPollId}`);
+  } catch (error) {
+    handlePrismaError(error);
+  }
 }

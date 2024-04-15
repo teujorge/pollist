@@ -2,8 +2,9 @@
 
 import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs/server";
-import type { Comment } from "../InfiniteComments/actions";
 import { currentUser } from "@clerk/nextjs";
+import { commentSelect } from "../InfiniteComments/commentSelect";
+import { handlePrismaError } from "@/database/error";
 
 export async function createComment({
   pollId,
@@ -15,121 +16,98 @@ export async function createComment({
   parentId: string | undefined;
   atUsername: string | undefined;
   text: string | undefined;
-}): Promise<Comment> {
-  if (!text) {
-    throw new Error("You must provide a comment");
-  }
-
-  const user = await currentUser();
-
-  if (!user?.id) {
-    throw new Error("You must be logged in to comment");
-  }
-
-  const newComment = await db.comment.create({
-    data: {
-      pollId,
-      parentId,
-      text,
-      at: atUsername,
-      authorId: user.id,
-    },
-    select: {
-      id: true,
-      pollId: true,
-      parentId: true,
-      text: true,
-      at: true,
-      authorId: true,
-      createdAt: true,
-      updatedAt: true,
-
-      author: true,
-      parent: {
-        select: {
-          authorId: true,
-          author: { select: { username: true } },
-        },
-      },
-      poll: {
-        select: {
-          authorId: true,
-        },
-      },
-      likes: {
-        where: {
-          authorId: user.id ?? undefined,
-        },
-      },
-      _count: {
-        select: { likes: true, replies: true },
-      },
-    },
-  });
-
-  // Only a reply to a reply has an atUsername
-  // Ignore if the user is replying to their own reply
-  if (user.username === newComment.at) {
-    console.log("User is replying to their own reply");
-    return newComment;
-  }
-  // Comment on a poll or a reply to a comment
-  else {
-    // Ignore if the user is commenting on their own poll
-    if (newComment.parentId === null && user.id === newComment.poll.authorId) {
-      console.log("User is commenting to their own poll");
-      return newComment;
+}) {
+  try {
+    if (!text) {
+      throw new Error("You must provide a comment");
     }
 
-    // Ignore if the user is replying to their own comment
-    if (newComment.at === null && user.id === newComment.parent?.authorId) {
-      console.log("User is replying to their own comment");
-      return newComment;
+    const user = await currentUser();
+
+    if (!user?.id) {
+      throw new Error("You must be logged in to comment");
     }
-  }
 
-  let notifyeeId: string | undefined = undefined;
-
-  // Reply to a reply
-  if (newComment.at) {
-    const replyingToUser = await db.user.findUnique({
-      where: {
-        username: newComment.at,
-      },
-      select: { id: true },
-    });
-
-    notifyeeId = replyingToUser?.id;
-  }
-  // Poll comment or reply to a comment
-  else {
-    // Comment on a poll
-    if (newComment.parentId === null) {
-      notifyeeId = newComment.poll.authorId;
-    }
-    // Reply to a comment
-    else {
-      notifyeeId = newComment.parent?.authorId;
-    }
-  }
-
-  if (!notifyeeId) {
-    console.error("Error finding user to notify", newComment.at);
-    return newComment;
-  }
-
-  await db.notificationComment
-    .create({
+    const newComment = await db.comment.create({
       data: {
-        notifyeeId: notifyeeId,
-        commentId: newComment.id,
+        pollId,
+        parentId,
+        text,
+        at: atUsername,
+        authorId: user.id,
       },
-    })
-    .catch((error) => {
-      console.error("Error creating notification", error);
+      select: commentSelect(user.id ?? undefined),
     });
 
-  return newComment;
+    // Only a reply to a reply has an atUsername
+    // Ignore if the user is replying to their own reply
+    if (user.username === newComment.at) {
+      console.log("User is replying to their own reply");
+      return newComment;
+    }
+    // Comment on a poll or a reply to a comment
+    else {
+      // Ignore if the user is commenting on their own poll
+      if (
+        newComment.parentId === null &&
+        user.id === newComment.poll.authorId
+      ) {
+        console.log("User is commenting to their own poll");
+        return newComment;
+      }
+
+      // Ignore if the user is replying to their own comment
+      if (newComment.at === null && user.id === newComment.parent?.authorId) {
+        console.log("User is replying to their own comment");
+        return newComment;
+      }
+    }
+
+    let notifyeeId: string | undefined = undefined;
+
+    // Reply to a reply
+    if (newComment.at) {
+      const replyingToUser = await db.user.findUnique({
+        where: {
+          username: newComment.at,
+        },
+        select: { id: true },
+      });
+
+      notifyeeId = replyingToUser?.id;
+    }
+    // Poll comment or reply to a comment
+    else {
+      // Comment on a poll
+      if (newComment.parentId === null) {
+        notifyeeId = newComment.poll.authorId;
+      }
+      // Reply to a comment
+      else {
+        notifyeeId = newComment.parent?.authorId;
+      }
+    }
+
+    if (!notifyeeId) {
+      console.error("Error finding user to notify", newComment.at);
+      return newComment;
+    }
+
+    await db.notificationComment
+      .create({
+        data: {
+          notifyeeId: notifyeeId,
+          commentId: newComment.id,
+        },
+      })
+      .catch((error) => {
+        console.error("Error creating notification", error);
+      });
+
+    return newComment;
+  } catch (error) {
+    throw handlePrismaError(error);
+  }
 }
 
 export async function acknowledgeCommentReply({
@@ -137,20 +115,24 @@ export async function acknowledgeCommentReply({
 }: {
   commentId: string;
 }) {
-  const { userId } = auth();
+  try {
+    const { userId } = auth();
 
-  if (!userId) {
-    throw new Error("You must be logged in to acknowledge a reply");
+    if (!userId) {
+      throw new Error("You must be logged in to acknowledge a reply");
+    }
+
+    const notification = await db.notificationComment.deleteMany({
+      where: {
+        commentId: commentId,
+        notifyeeId: userId,
+      },
+    });
+
+    return notification;
+  } catch (error) {
+    handlePrismaError(error);
   }
-
-  const notification = await db.notificationComment.deleteMany({
-    where: {
-      commentId: commentId,
-      notifyeeId: userId,
-    },
-  });
-
-  return notification;
 }
 
 export async function acknowledgeCommentLike({
@@ -158,22 +140,26 @@ export async function acknowledgeCommentLike({
 }: {
   commentId: string;
 }) {
-  const { userId } = auth();
+  try {
+    const { userId } = auth();
 
-  if (!userId) {
-    throw new Error("You must be logged in to acknowledge a like");
-  }
+    if (!userId) {
+      throw new Error("You must be logged in to acknowledge a like");
+    }
 
-  const notification = await db.notificationCommentLike.deleteMany({
-    where: {
-      commentLike: {
-        commentId: commentId,
+    const notification = await db.notificationCommentLike.deleteMany({
+      where: {
+        commentLike: {
+          commentId: commentId,
+        },
+        notifyeeId: userId,
       },
-      notifyeeId: userId,
-    },
-  });
+    });
 
-  return notification;
+    return notification;
+  } catch (error) {
+    handlePrismaError(error);
+  }
 }
 
 export async function likeComment({
@@ -183,40 +169,44 @@ export async function likeComment({
   commentId: string;
   userId: string;
 }) {
-  const like = await db.commentLike.create({
-    data: {
-      author: {
-        connect: {
-          id: userId,
+  try {
+    const like = await db.commentLike.create({
+      data: {
+        author: {
+          connect: {
+            id: userId,
+          },
+        },
+        comment: {
+          connect: {
+            id: commentId,
+          },
         },
       },
-      comment: {
-        connect: {
-          id: commentId,
+      include: {
+        comment: {
+          select: { authorId: true },
         },
       },
-    },
-    include: {
-      comment: {
-        select: { authorId: true },
-      },
-    },
-  });
+    });
 
-  if (like && like.comment.authorId !== userId) {
-    await db.notificationCommentLike
-      .create({
-        data: {
-          commentLikeId: like.id,
-          notifyeeId: like.comment.authorId,
-        },
-      })
-      .catch((error) => {
-        console.error("Error creating notification", error);
-      });
+    if (like && like.comment.authorId !== userId) {
+      await db.notificationCommentLike
+        .create({
+          data: {
+            commentLikeId: like.id,
+            notifyeeId: like.comment.authorId,
+          },
+        })
+        .catch((error) => {
+          console.error("Error creating notification", error);
+        });
+    }
+
+    return like;
+  } catch (error) {
+    throw handlePrismaError(error);
   }
-
-  return like;
 }
 
 export async function unlikeComment({
@@ -226,51 +216,59 @@ export async function unlikeComment({
   commentId: string;
   userId: string;
 }) {
-  const unlike = await db.commentLike.delete({
-    where: {
-      authorId_commentId: {
-        authorId: userId,
-        commentId: commentId,
+  try {
+    const unlike = await db.commentLike.delete({
+      where: {
+        authorId_commentId: {
+          authorId: userId,
+          commentId: commentId,
+        },
       },
-    },
-  });
+    });
 
-  if (unlike) {
-    await db.notificationCommentLike
-      .deleteMany({
-        where: { commentLikeId: unlike.id },
-      })
-      .catch((error) => {
-        console.error("Error deleting notification", error);
-      });
+    if (unlike) {
+      await db.notificationCommentLike
+        .deleteMany({
+          where: { commentLikeId: unlike.id },
+        })
+        .catch((error) => {
+          console.error("Error deleting notification", error);
+        });
+    }
+
+    return unlike;
+  } catch (error) {
+    handlePrismaError(error);
   }
-
-  return unlike;
 }
 
 export async function deleteComment({ commentId }: { commentId: string }) {
-  const { userId } = auth();
+  try {
+    const { userId } = auth();
 
-  if (!userId) {
-    throw new Error("You must be logged in to delete a comment");
+    if (!userId) {
+      throw new Error("You must be logged in to delete a comment");
+    }
+
+    const deletedComment = await db.comment.delete({
+      where: {
+        id: commentId,
+        authorId: userId,
+      },
+    });
+
+    if (deletedComment) {
+      await db.notificationComment
+        .deleteMany({
+          where: { commentId: commentId },
+        })
+        .catch((error) => {
+          console.error("Error deleting COMMENT_REPLY notifications", error);
+        });
+    }
+
+    return deletedComment;
+  } catch (error) {
+    handlePrismaError(error);
   }
-
-  const deletedComment = await db.comment.delete({
-    where: {
-      id: commentId,
-      authorId: userId,
-    },
-  });
-
-  if (deletedComment) {
-    await db.notificationComment
-      .deleteMany({
-        where: { commentId: commentId },
-      })
-      .catch((error) => {
-        console.error("Error deleting COMMENT_REPLY notifications", error);
-      });
-  }
-
-  return deletedComment;
 }

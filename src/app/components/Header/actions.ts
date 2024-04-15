@@ -2,6 +2,7 @@
 
 import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs/server";
+import { handlePrismaError } from "@/database/error";
 
 export type NotificationType =
   | "PollLikeNotification"
@@ -35,10 +36,14 @@ const notificationsPollLikeSelect = {
 };
 
 export async function getNotificationsPollLikeRelation(notificationId: string) {
-  return await db.notificationPollLike.findUnique({
-    where: { id: notificationId },
-    select: notificationsPollLikeSelect,
-  });
+  try {
+    return await db.notificationPollLike.findUnique({
+      where: { id: notificationId },
+      select: notificationsPollLikeSelect,
+    });
+  } catch (error) {
+    throw handlePrismaError(error);
+  }
 }
 
 const notificationsCommentSelect = {
@@ -52,10 +57,14 @@ const notificationsCommentSelect = {
 };
 
 export async function getNotificationsCommentRelation(notificationId: string) {
-  return await db.notificationComment.findUnique({
-    where: { id: notificationId },
-    select: notificationsCommentSelect,
-  });
+  try {
+    return await db.notificationComment.findUnique({
+      where: { id: notificationId },
+      select: notificationsCommentSelect,
+    });
+  } catch (error) {
+    throw handlePrismaError(error);
+  }
 }
 
 const notificationsCommentLikeSelect = {
@@ -76,10 +85,14 @@ const notificationsCommentLikeSelect = {
 export async function getNotificationsCommentLikeRelation(
   notificationId: string,
 ) {
-  return await db.notificationCommentLike.findUnique({
-    where: { id: notificationId },
-    select: notificationsCommentLikeSelect,
-  });
+  try {
+    return await db.notificationCommentLike.findUnique({
+      where: { id: notificationId },
+      select: notificationsCommentLikeSelect,
+    });
+  } catch (error) {
+    throw handlePrismaError(error);
+  }
 }
 
 const notificationsFollowPendingSelect = {
@@ -95,10 +108,14 @@ const notificationsFollowPendingSelect = {
 export async function getNotificationsFollowPendingRelation(
   notificationId: string,
 ) {
-  return await db.notificationFollowPending.findUnique({
-    where: { id: notificationId },
-    select: notificationsFollowPendingSelect,
-  });
+  try {
+    return await db.notificationFollowPending.findUnique({
+      where: { id: notificationId },
+      select: notificationsFollowPendingSelect,
+    });
+  } catch (error) {
+    throw handlePrismaError(error);
+  }
 }
 
 const notificationsFollowAcceptedSelect = {
@@ -114,41 +131,49 @@ const notificationsFollowAcceptedSelect = {
 export async function getNotificationsFollowAcceptedRelation(
   notificationId: string,
 ) {
-  return await db.notificationFollowAccepted.findUnique({
-    where: { id: notificationId },
-    select: notificationsFollowAcceptedSelect,
-  });
+  try {
+    return await db.notificationFollowAccepted.findUnique({
+      where: { id: notificationId },
+      select: notificationsFollowAcceptedSelect,
+    });
+  } catch (error) {
+    throw handlePrismaError(error);
+  }
 }
 
 export async function getNotificationsItems() {
-  const { userId } = auth();
+  try {
+    const { userId } = auth();
 
-  if (!userId) return null;
+    if (!userId) return null;
 
-  const userNotifications = await db.user.findUnique({
-    where: { id: userId },
-    include: {
-      notificationsPollLike: {
-        include: notificationsPollLikeSelect,
+    const userNotifications = await db.user.findUnique({
+      where: { id: userId },
+      include: {
+        notificationsPollLike: {
+          include: notificationsPollLikeSelect,
+        },
+        notificationsComment: {
+          include: notificationsCommentSelect,
+        },
+        notificationsCommentLike: {
+          include: notificationsCommentLikeSelect,
+        },
+        notificationsFollowPending: {
+          include: notificationsFollowPendingSelect,
+        },
+        notificationsFollowAccepted: {
+          include: notificationsFollowAcceptedSelect,
+        },
       },
-      notificationsComment: {
-        include: notificationsCommentSelect,
-      },
-      notificationsCommentLike: {
-        include: notificationsCommentLikeSelect,
-      },
-      notificationsFollowPending: {
-        include: notificationsFollowPendingSelect,
-      },
-      notificationsFollowAccepted: {
-        include: notificationsFollowAcceptedSelect,
-      },
-    },
-  });
+    });
 
-  if (!userNotifications) return null;
+    if (!userNotifications) return null;
 
-  return userNotifications;
+    return userNotifications;
+  } catch (error) {
+    throw handlePrismaError(error);
+  }
 }
 
 export async function removeNotifications({
@@ -158,33 +183,37 @@ export async function removeNotifications({
   ids: string[];
   type: NotificationType;
 }) {
-  switch (type) {
-    case "PollLikeNotification":
-      return await db.notificationPollLike.deleteMany({
-        where: { id: { in: ids } },
-      });
+  try {
+    switch (type) {
+      case "PollLikeNotification":
+        return await db.notificationPollLike.deleteMany({
+          where: { id: { in: ids } },
+        });
 
-    case "FollowPendingNotification":
-      return await db.notificationFollowPending.deleteMany({
-        where: { id: { in: ids } },
-      });
+      case "FollowPendingNotification":
+        return await db.notificationFollowPending.deleteMany({
+          where: { id: { in: ids } },
+        });
 
-    case "FollowAcceptedNotification":
-      return await db.notificationFollowAccepted.deleteMany({
-        where: { id: { in: ids } },
-      });
+      case "FollowAcceptedNotification":
+        return await db.notificationFollowAccepted.deleteMany({
+          where: { id: { in: ids } },
+        });
 
-    case "CommentNotification":
-      return await db.notificationComment.deleteMany({
-        where: { id: { in: ids } },
-      });
+      case "CommentNotification":
+        return await db.notificationComment.deleteMany({
+          where: { id: { in: ids } },
+        });
 
-    case "CommentLikeNotification":
-      return await db.notificationCommentLike.deleteMany({
-        where: { id: { in: ids } },
-      });
+      case "CommentLikeNotification":
+        return await db.notificationCommentLike.deleteMany({
+          where: { id: { in: ids } },
+        });
 
-    default:
-      throw new Error("Unknown notification type");
+      default:
+        throw new Error("Unknown notification type");
+    }
+  } catch (error) {
+    throw handlePrismaError(error);
   }
 }

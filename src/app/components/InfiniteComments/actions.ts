@@ -3,6 +3,8 @@
 import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs";
 import { PAGE_SIZE } from "@/constants";
+import { commentSelect } from "./commentSelect";
+import { handlePrismaError } from "@/database/error";
 
 export type Comment = NonNullable<
   Awaited<ReturnType<typeof getInfiniteComments>>[number]
@@ -23,53 +25,34 @@ export async function getInfiniteComments({
   dateOrderBy,
   orderByLikes,
 }: GetPaginatedCommentsParams) {
-  const { userId } = auth();
+  try {
+    const { userId } = auth();
 
-  const comments = await db.comment.findMany({
-    where: {
-      pollId: pollId,
-      parentId: parentId ?? null,
-    },
-    orderBy: [
-      orderByLikes
-        ? {
-            likes: {
-              _count: "desc",
-            },
-          }
-        : {},
-      {
-        createdAt: dateOrderBy,
+    const comments = await db.comment.findMany({
+      where: {
+        pollId: pollId,
+        parentId: parentId ?? null,
       },
-    ],
-    cursor: cursor ? { id: cursor } : undefined,
-    skip: cursor ? 1 : undefined,
-    take: PAGE_SIZE,
-    include: {
-      author: {
-        select: {
-          id: true,
-          username: true,
-          imageUrl: true,
-          tier: true,
+      orderBy: [
+        orderByLikes
+          ? {
+              likes: {
+                _count: "desc",
+              },
+            }
+          : {},
+        {
+          createdAt: dateOrderBy,
         },
-      },
-      parent: {
-        select: {
-          authorId: true,
-          author: { select: { username: true } },
-        },
-      },
-      likes: {
-        where: {
-          authorId: userId ?? undefined,
-        },
-      },
-      _count: {
-        select: { likes: true, replies: true },
-      },
-    },
-  });
+      ],
+      cursor: cursor ? { id: cursor } : undefined,
+      skip: cursor ? 1 : undefined,
+      take: PAGE_SIZE,
+      select: commentSelect(userId ?? undefined),
+    });
 
-  return comments;
+    return comments;
+  } catch (error) {
+    throw handlePrismaError(error);
+  }
 }
