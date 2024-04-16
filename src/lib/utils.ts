@@ -105,3 +105,24 @@ export function shouldShowSensitiveContent(
 
   return false;
 }
+
+/**
+ * Returns the string representation of the given poll
+ */
+export function pollToString({
+  title,
+  description,
+  option1,
+  option2,
+  options,
+}: {
+  title: string;
+  description: string | undefined | null;
+  option1: string;
+  option2: string;
+  options: string[];
+}) {
+  return `title: ${title} | description: ${description} | option1: ${option1} | option2: ${option2} | ${options
+    .map((option, index) => "option" + (index + 3).toString() + ": " + option)
+    .join(" | ")}`;
+}

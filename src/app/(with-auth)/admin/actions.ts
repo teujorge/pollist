@@ -1,7 +1,8 @@
 "use server";
 
-import OpenAI from "openai";
 import { db } from "@/database/prisma";
+import { moderate } from "./moderation";
+import { pollToString } from "@/lib/utils";
 
 export async function delMultiUsers() {
   if (process.env.NODE_ENV !== "development") {
@@ -160,8 +161,6 @@ export async function runModerator() {
   console.log();
   console.log("Running moderator...");
 
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
   const polls = await db.poll.findMany({
     select: {
       id: true,
@@ -173,20 +172,21 @@ export async function runModerator() {
   });
 
   for (const poll of polls) {
-    const content = `Title: ${poll.title}\nDescription: ${poll.description}\nOptions: ${poll.options.map((option) => option.text).join(", ")}`;
-
-    const moderationRes = await openai.moderations.create({
-      input: content,
+    const pollContent = pollToString({
+      title: poll.title,
+      description: poll.description,
+      option1: poll.options[0]?.text ?? "",
+      option2: poll.options[1]?.text ?? "",
+      options: poll.options.slice(2).map((option) => option.text),
     });
-
-    const moderation = moderationRes.results[0]?.flagged;
+    const modFlagged = await moderate(pollContent);
 
     console.log(`Poll: ${poll.title}`);
-    console.log(`Moderation: ${moderation}`);
-    if (poll.sensitive !== moderation) {
+    console.log(`Moderation: ${modFlagged}`);
+    if (poll.sensitive !== modFlagged) {
       await db.poll.update({
         where: { id: poll.id },
-        data: { sensitive: moderation },
+        data: { sensitive: modFlagged },
       });
       console.log("Poll updated!");
     }

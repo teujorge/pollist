@@ -1,10 +1,11 @@
 "use server";
 
-import OpenAI from "openai";
 import { db } from "@/database/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { supabase } from "@/database/supabase";
+import { moderate } from "@/app/(with-auth)/admin/moderation";
+import { pollToString } from "@/lib/utils";
 import { handlePrismaError } from "@/database/error";
 import type { PollsDetails } from "@/app/components/InfinitePolls/actions";
 import type { CreatePollFields } from "./validation";
@@ -16,20 +17,14 @@ export async function createPoll(fields: CreatePollFields) {
     throw new Error("You must be logged in to create a poll");
   }
 
-  // --- get poll moderator results
-
-  const pollContent = `title: ${fields.title} | description: ${fields.description} | option1: ${fields.option1} | option2: ${fields.option2} | ${fields.options
-    .map(
-      (option, index) =>
-        "option" + (index + 3).toString() + ": " + option.value,
-    )
-    .join(" | ")}`;
-
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-  const moderationRes = await openai.moderations.create({ input: pollContent });
-  const modFlagged = moderationRes.results[0]?.flagged;
-
-  // --- now we can create poll
+  const pollContent = pollToString({
+    title: fields.title,
+    description: fields.description,
+    option1: fields.option1,
+    option2: fields.option2,
+    options: fields.options.map((option) => option.value),
+  });
+  const modFlagged = await moderate(pollContent);
 
   try {
     const createdPoll = await db.poll.create({
