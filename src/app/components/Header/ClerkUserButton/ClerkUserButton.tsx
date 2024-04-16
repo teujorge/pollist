@@ -4,8 +4,8 @@ import { Loader } from "../../Loader";
 import { Suspense } from "react";
 import { ProfileLink } from "./ProfileLink";
 import { OptionToggle } from "./settings/OptionToggle";
+import { PricingTable } from "./settings/PricingTable";
 import { OptionToggleAds } from "./settings/OptionToggleAds";
-import { PricingTableEmbed } from "./settings/PricingTableEmbed";
 import { ClerkUserButtonClient } from "./ClerkUserButtonClient";
 import { OptionToggleSensitive } from "./settings/OptionToggleSensitive";
 import { ArrowRight, ArrowSquareOut } from "@phosphor-icons/react/dist/ssr";
@@ -75,9 +75,7 @@ async function SettingsTab() {
       <div className="flex flex-col gap-4">
         <h2 className="font-medium">Billing</h2>
         {user.tier === "FREE" ? (
-          <div>
-            <PricingTableEmbed userId={user.id} />
-          </div>
+          <PricingTable userId={user.id} />
         ) : (
           <div className="flex flex-col gap-2">
             <p className="px-4 text-sm">

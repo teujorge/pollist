@@ -204,6 +204,7 @@ function newUserData(tier: SubTier): Partial<User> {
   if (tier === "FREE") {
     return {
       tier: tier,
+      ads: true,
       private: false,
     };
   }

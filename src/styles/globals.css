@@ -160,6 +160,8 @@ a:active {
 }
 
 .shimmer {
+  width: fit-content;
+  color: transparent;
   user-select: none;
   border-radius: 0.5rem;
   background: linear-gradient(
