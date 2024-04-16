@@ -81,6 +81,7 @@ export function FilterBar() {
           className="w-full sm:w-fit"
           onChange={(event) => setSearch(event.target.value)}
         />
+
         <select
           className="w-full sm:w-fit"
           onChange={(event) => setCategory(event.target.value)}
@@ -91,15 +92,21 @@ export function FilterBar() {
             </option>
           ))}
         </select>
+
         <Tooltip>
-          <TooltipTrigger className={cn(!showUpButton && "hidden")}>
+          <TooltipTrigger
+            className={cn(
+              "absolute -bottom-2 translate-y-full",
+              (!isVisible || !showUpButton) && "hidden",
+            )}
+          >
             <Button
               size="sm"
               variant="outline"
-              className="flex h-8 w-8 items-center justify-center rounded-full p-0"
+              className="flex items-center justify-center gap-1 rounded-full"
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             >
-              <ArrowUp />
+              Top <ArrowUp />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom">Back to top</TooltipContent>
