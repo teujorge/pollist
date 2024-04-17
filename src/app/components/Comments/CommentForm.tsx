@@ -28,6 +28,7 @@ export function CommentForm({
   const { user } = useUser();
 
   const formRef = useRef<HTMLFormElement>(null);
+  const commentTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { setNewReplies } = useNewComments();
 
@@ -111,6 +112,9 @@ export function CommentForm({
     }
 
     setIsLoading(false);
+    if (commentTextareaRef.current) {
+      commentTextareaRef.current.style.height = "36px";
+    }
 
     if (afterSubmit) afterSubmit();
   }
@@ -126,6 +130,7 @@ export function CommentForm({
       {label && <label>{label}</label>}
       <div className="flex w-full flex-row items-end gap-2">
         <textarea
+          ref={commentTextareaRef}
           required
           disabled={isLoading}
           name="comment"
