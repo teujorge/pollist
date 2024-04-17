@@ -21,38 +21,31 @@ export function FilterBar() {
   const [isVisible, setIsVisible] = useState(true);
   const [showUpButton, setShowUpButton] = useState(false);
 
-  // listen to scroll event
   useEffect(() => {
-    lastScrollY.current = window.scrollY;
-
+    // Determine when to show or hide the button
     const handleScroll = () => {
-      if (filterRef.current === null) return;
-
       const currentScrollY = window.scrollY;
 
-      // Close to the top of the page
+      // Near the top of the page
       if (currentScrollY < 500) {
-        initialScrollUpY.current = undefined;
         setIsVisible(true);
         setShowUpButton(false);
       }
       // Scrolling down
       else if (currentScrollY > lastScrollY.current) {
-        initialScrollUpY.current = undefined;
         setIsVisible(false);
+        setShowUpButton(false);
       }
       // Scrolling up
       else {
-        setShowUpButton(true);
-
-        // First time scrolling up
         if (!initialScrollUpY.current) {
           initialScrollUpY.current = currentScrollY;
         }
 
-        // Scrolling up by a minimum amount
-        if (initialScrollUpY.current - currentScrollY > 50) {
+        // Show button when scrolled up significantly
+        if (currentScrollY < initialScrollUpY.current - 50) {
           setIsVisible(true);
+          setShowUpButton(true);
         }
       }
 
@@ -93,25 +86,26 @@ export function FilterBar() {
           ))}
         </select>
 
-        <Tooltip>
-          <TooltipTrigger
-            className={cn(
-              "absolute -bottom-2 translate-y-full",
-              "hidden",
-              isVisible && showUpButton && "block",
-            )}
-          >
-            <Button
-              size="sm"
-              variant="outline"
-              className="flex items-center justify-center gap-1 rounded-full"
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        {filterRef.current && (
+          <Tooltip>
+            <TooltipTrigger
+              className={cn(
+                "invisible absolute -bottom-2 translate-y-full scale-50 opacity-0 transition-all",
+                showUpButton && "visible scale-100 opacity-100",
+              )}
             >
-              Top <ArrowUp />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">Back to top</TooltipContent>
-        </Tooltip>
+              <Button
+                size="sm"
+                variant="outline"
+                className="flex items-center justify-center gap-1 rounded-full"
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              >
+                Top <ArrowUp />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Back to top</TooltipContent>
+          </Tooltip>
+        )}
       </div>
     </div>
   );
