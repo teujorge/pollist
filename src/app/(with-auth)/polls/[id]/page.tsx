@@ -101,7 +101,6 @@ export default async function PollPage({ params, searchParams }: Props) {
           </h2>
         )}
       </div>
-
       {/* poll interaction */}
       <PollCardActions
         poll={poll}
@@ -109,7 +108,6 @@ export default async function PollPage({ params, searchParams }: Props) {
         showChart={true}
         showCommentsButton={false}
       />
-
       {/* poll comments */}
       <Suspense fallback={<AllCommentsFallback />}>
         <AllComments
