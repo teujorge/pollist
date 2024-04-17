@@ -1,10 +1,10 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { ArrowUp } from "@phosphor-icons/react";
 import { useFilter } from "../hooks/useFilter";
 import { CATEGORIES } from "@/constants";
+import { buttonVariants } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import {
   Tooltip,
@@ -92,18 +92,13 @@ export function FilterBar() {
           <Tooltip>
             <TooltipTrigger
               className={cn(
-                "invisible absolute -bottom-2 translate-y-full scale-50 opacity-0 transition-all",
+                buttonVariants({ size: "sm", variant: "outline" }),
+                "invisible absolute -bottom-2 flex translate-y-full scale-50 items-center justify-center gap-1 rounded-full opacity-0 transition-all",
                 showUpButton && "visible scale-100 opacity-100",
               )}
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             >
-              <Button
-                size="sm"
-                variant="outline"
-                className="flex items-center justify-center gap-1 rounded-full"
-                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              >
-                Top <ArrowUp />
-              </Button>
+              Top <ArrowUp />
             </TooltipTrigger>
             <TooltipContent side="bottom">Back to top</TooltipContent>
           </Tooltip>
