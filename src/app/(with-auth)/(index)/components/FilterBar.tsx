@@ -21,29 +21,31 @@ export function FilterBar() {
   const [isVisible, setIsVisible] = useState(true);
   const [showUpButton, setShowUpButton] = useState(false);
 
+  // listen to scroll event
   useEffect(() => {
-    // Determine when to show or hide the button
+    lastScrollY.current = window.scrollY;
+
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
-      // Near the top of the page
+      // Close to the top of the page
       if (currentScrollY < 500) {
+        initialScrollUpY.current = undefined;
         setIsVisible(true);
         setShowUpButton(false);
       }
       // Scrolling down
       else if (currentScrollY > lastScrollY.current) {
+        initialScrollUpY.current = undefined;
         setIsVisible(false);
         setShowUpButton(false);
       }
       // Scrolling up
       else {
-        if (!initialScrollUpY.current) {
-          initialScrollUpY.current = currentScrollY;
-        }
+        initialScrollUpY.current ??= currentScrollY;
 
-        // Show button when scrolled up significantly
-        if (currentScrollY < initialScrollUpY.current - 50) {
+        // Scrolling up by a minimum amount
+        if (initialScrollUpY.current - currentScrollY > 50) {
           setIsVisible(true);
           setShowUpButton(true);
         }
