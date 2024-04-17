@@ -85,15 +85,13 @@ export function AllPolls({
 
   return (
     <div className="flex w-full flex-col gap-4">
-      {data?.pages.map((pages, i) => (
-        <>
-          {pages.map((poll) =>
-            poll.id === boostedPollId ? null : (
-              <PollCard key={keyGen(i, poll.id)} poll={poll} userId={userId} />
-            ),
-          )}
-        </>
-      ))}
+      {data?.pages.map((pages, i) =>
+        pages.map((poll) =>
+          poll.id === boostedPollId ? null : (
+            <PollCard key={keyGen(i, poll.id)} poll={poll} userId={userId} />
+          ),
+        ),
+      )}
 
       <div
         ref={loaderRef}
