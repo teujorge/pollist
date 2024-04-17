@@ -405,18 +405,32 @@ export function PollCardActions({
                   {/* option text */}
                   <div className="w-full flex-grow">
                     <p>{uppercaseFirstLetterOfEachSentence(option.text)}</p>
-                    <p className="whitespace-nowrap text-xs text-accent-foreground">
-                      {
-                        optimisticPoll.votes.filter(
-                          (vote) => vote.optionId === option.id,
-                        ).length
-                      }{" "}
+                    <p
+                      className={cn(
+                        "whitespace-nowrap text-xs text-accent-foreground transition-all",
+                        userVote
+                          ? "h-4 scale-100 opacity-100"
+                          : "h-0 scale-50 opacity-0",
+                      )}
+                    >
+                      {userVote
+                        ? optimisticPoll.votes.filter(
+                            (vote) => vote.optionId === option.id,
+                          ).length
+                        : 0}{" "}
                       Votes
                     </p>
                   </div>
 
                   {/* vote percentage */}
-                  <CircularProgress size={40} progress={votePercentage} />
+                  <CircularProgress
+                    size={40}
+                    progress={userVote ? votePercentage : 0}
+                    className={cn(
+                      "transition-all",
+                      userVote ? "scale-100 opacity-100" : "scale-50 opacity-0",
+                    )}
+                  />
                 </div>
 
                 {/* optional option image */}
