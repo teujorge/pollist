@@ -135,7 +135,7 @@ export function CommentForm({
           disabled={isLoading}
           name="comment"
           placeholder={placeholder}
-          className="h-9 max-h-[50dvh] min-h-9 flex-grow resize-none transition-colors"
+          className="h-9 max-h-[50svh] min-h-9 flex-grow resize-none transition-colors"
           onChange={(e) => {
             e.currentTarget.style.height = "36px";
             e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
