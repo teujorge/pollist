@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
 import styles from "@/styles/progress.module.css";
+import { cn } from "@/lib/utils";
 import { useEffect, useRef } from "react";
 
 export function CircularProgress({

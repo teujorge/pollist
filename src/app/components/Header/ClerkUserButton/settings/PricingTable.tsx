@@ -88,7 +88,6 @@ async function SubscriptionCard({
   if (priceId) {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
     const priceRes = await stripe.prices.retrieve(priceId);
-    console.log(priceRes);
     price = (priceRes.unit_amount ?? 0) / 100;
   }
 
