@@ -83,7 +83,7 @@ export function CommentCard({
               </p>
             </div>
 
-            <p className="break-words">
+            <p className="break-words break-all">
               {comment.at && (
                 <Link className="text-primary/85" href={`/users/${comment.at}`}>
                   @{comment.at}{" "}

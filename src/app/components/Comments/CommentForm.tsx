@@ -130,7 +130,11 @@ export function CommentForm({
           disabled={isLoading}
           name="comment"
           placeholder={placeholder}
-          className="h-20 flex-grow resize-none"
+          className="h-9 max-h-[50dvh] min-h-9 flex-grow resize-none transition-colors"
+          onChange={(e) => {
+            e.currentTarget.style.height = "36px";
+            e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
+          }}
         />
         <div className="flex w-20 items-center justify-center">
           {isLoading ? (
