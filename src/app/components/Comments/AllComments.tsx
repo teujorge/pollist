@@ -83,7 +83,7 @@ export function AllCommentsFallback() {
               disabled
               name="comment"
               placeholder="Loading..."
-              className="h-20 flex-grow"
+              className="h-9 flex-grow"
             />
             <div className="flex w-20 items-center justify-center">
               <Button variant="outline" className="ml-auto">
