@@ -97,7 +97,8 @@ export function FilterBar() {
           <TooltipTrigger
             className={cn(
               "absolute -bottom-2 translate-y-full",
-              (!isVisible || !showUpButton) && "hidden",
+              "hidden",
+              isVisible && showUpButton && "block",
             )}
           >
             <Button
