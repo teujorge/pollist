@@ -40,7 +40,7 @@ export function DeleteAlertDialog({
       setAwaiting(true);
       const success = await onDelete();
 
-      if (awaitType === "forever") return;
+      if (success && awaitType === "forever") return;
 
       if (success === undefined || success === true) {
         setIsOpen(false);
@@ -81,7 +81,7 @@ export function DeleteAlertDialog({
           <AlertDialogCancel disabled={awaiting}>Cancel</AlertDialogCancel>
           <div className="flex h-9 w-full items-center justify-center sm:w-24">
             {awaiting ? (
-              <Loader />
+              <Loader className="h-5 w-5 border-2" />
             ) : (
               <Button
                 disabled={awaiting}
