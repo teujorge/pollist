@@ -15,11 +15,6 @@ export async function getUserTier(userId: string): Promise<SubTier> {
 
     return user?.tier ?? "FREE";
   } catch (e) {
-    try {
-      handlePrismaError(e);
-    } catch (e) {
-      return "FREE";
-    }
-    return "FREE";
+    throw new Error(handlePrismaError(e));
   }
 }

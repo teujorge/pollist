@@ -66,7 +66,7 @@ export async function handleVote({
       });
     }
   } catch (error) {
-    throw handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -120,7 +120,7 @@ export async function handleLikePoll({
       });
     }
   } catch (error) {
-    throw handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -150,7 +150,7 @@ export async function handleUnlikePoll({ pollId }: { pollId: string }) {
       });
     }
   } catch (error) {
-    throw handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -169,7 +169,7 @@ export async function getPoll(pollId: string) {
 
     return poll;
   } catch (error) {
-    throw handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -194,6 +194,6 @@ export async function acknowledgePollLike({
 
     return notifications;
   } catch (error) {
-    throw handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }

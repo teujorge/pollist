@@ -42,7 +42,7 @@ export async function getNotificationsPollLikeRelation(notificationId: string) {
       select: notificationsPollLikeSelect,
     });
   } catch (error) {
-    throw handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -63,7 +63,7 @@ export async function getNotificationsCommentRelation(notificationId: string) {
       select: notificationsCommentSelect,
     });
   } catch (error) {
-    throw handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -91,7 +91,7 @@ export async function getNotificationsCommentLikeRelation(
       select: notificationsCommentLikeSelect,
     });
   } catch (error) {
-    throw handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -114,7 +114,7 @@ export async function getNotificationsFollowPendingRelation(
       select: notificationsFollowPendingSelect,
     });
   } catch (error) {
-    throw handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -137,7 +137,7 @@ export async function getNotificationsFollowAcceptedRelation(
       select: notificationsFollowAcceptedSelect,
     });
   } catch (error) {
-    throw handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -172,7 +172,7 @@ export async function getNotificationsItems() {
 
     return userNotifications;
   } catch (error) {
-    throw handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -214,6 +214,6 @@ export async function removeNotifications({
         throw new Error("Unknown notification type");
     }
   } catch (error) {
-    throw handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }

@@ -49,7 +49,7 @@ export async function getUser(username?: string, id?: string) {
 
     return user;
   } catch (error) {
-    handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -87,7 +87,7 @@ export async function follow(userId: string) {
     revalidatePath(`/users/${newFollow.follower.username}`);
     return newFollow;
   } catch (error) {
-    handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -114,7 +114,7 @@ export async function unfollow(userId: string) {
 
     return deletedFollow;
   } catch (error) {
-    handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -131,7 +131,7 @@ export async function getFollowing() {
 
     return following;
   } catch (error) {
-    handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -148,7 +148,7 @@ export async function getFollowers() {
 
     return followers;
   } catch (error) {
-    handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -183,7 +183,7 @@ export async function declineFollow(followerId: string) {
     revalidatePath(`/users/${declinedFollow.followee.username}`);
     return declinedFollow;
   } catch (error) {
-    handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -236,7 +236,7 @@ export async function acceptFollow(followerId: string) {
     revalidatePath(`/users/${updatedFollow.follower.username}`);
     return updatedFollow;
   } catch (error) {
-    handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -260,7 +260,7 @@ export async function cancelFollow(followeeId: string) {
     revalidatePath(`/users/${cancelledFollow.follower.username}`);
     return cancelledFollow;
   } catch (error) {
-    handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -283,7 +283,7 @@ export async function getPendingFollows(userId: string) {
 
     return pendingFollows;
   } catch (error) {
-    handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -304,7 +304,7 @@ export async function setPrivateAccount(isPrivate: boolean) {
     revalidateTag("user-sensitive");
     revalidatePath(`/users/${newUser.username}`);
   } catch (error) {
-    handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -325,7 +325,7 @@ export async function setShowAds(showAds: boolean) {
     revalidateTag("user-sensitive");
     revalidatePath(`/users/${newUser.username}`);
   } catch (error) {
-    handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -343,6 +343,6 @@ export async function setShowSensitiveContent(showSensitive: boolean) {
     revalidateTag("user-sensitive");
     revalidatePath(`/users/${newUser.username}`);
   } catch (error) {
-    handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }

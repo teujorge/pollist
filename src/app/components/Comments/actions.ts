@@ -106,7 +106,7 @@ export async function createComment({
 
     return newComment;
   } catch (error) {
-    throw handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -131,7 +131,7 @@ export async function acknowledgeCommentReply({
 
     return notification;
   } catch (error) {
-    handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -158,7 +158,7 @@ export async function acknowledgeCommentLike({
 
     return notification;
   } catch (error) {
-    handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -205,7 +205,7 @@ export async function likeComment({
 
     return like;
   } catch (error) {
-    throw handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -238,7 +238,7 @@ export async function unlikeComment({
 
     return unlike;
   } catch (error) {
-    handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -269,6 +269,6 @@ export async function deleteComment({ commentId }: { commentId: string }) {
 
     return deletedComment;
   } catch (error) {
-    handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }

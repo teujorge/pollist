@@ -50,7 +50,7 @@ export async function createPoll(fields: CreatePollFields) {
 
     return createdPoll;
   } catch (error) {
-    throw handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
 
@@ -110,18 +110,25 @@ export async function deletePoll(poll: PollsDetails[number]) {
     }
   }
 
-  try {
+  async function deletePoll() {
     const deletedPoll = await db.poll.delete({
       where: { id: poll.id },
       include: {
         author: { select: { username: true } },
       },
     });
-
-    if (deletedPoll) redirect(`/users/${deletedPoll.author.username}`);
-  } catch (error) {
-    throw handlePrismaError(error);
+    return deletedPoll;
   }
+
+  let deletedPoll: Awaited<ReturnType<typeof deletePoll>>;
+
+  try {
+    deletedPoll = await deletePoll();
+  } catch (error) {
+    throw new Error(handlePrismaError(error));
+  }
+
+  redirect(`/users/${deletedPoll.author.username}`);
 }
 
 export async function boostPoll(pollId: string) {
@@ -140,11 +147,11 @@ export async function boostPoll(pollId: string) {
         },
       },
     });
-
-    redirect(`/polls/${pollId}`);
   } catch (error) {
-    handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
+
+  redirect(`/polls/${pollId}`);
 }
 
 export async function unBoostPoll(redirectPollId: string) {
@@ -163,9 +170,9 @@ export async function unBoostPoll(redirectPollId: string) {
         },
       },
     });
-
-    redirect(`/polls/${redirectPollId}`);
   } catch (error) {
-    handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
+
+  redirect(`/polls/${redirectPollId}`);
 }

@@ -53,6 +53,6 @@ export async function getInfiniteComments({
 
     return comments;
   } catch (error) {
-    throw handlePrismaError(error);
+    throw new Error(handlePrismaError(error));
   }
 }
