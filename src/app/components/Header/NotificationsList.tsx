@@ -218,7 +218,6 @@ function NotificationCard({
 
   const onDrag = (x: number) => {
     if (!isDragging) return;
-    if (startX > currentX) return;
     setCurrentX(x);
   };
 
@@ -290,7 +289,7 @@ function NotificationCard({
 
   return (
     <div
-      className={`relative flex w-full select-none flex-row gap-2 rounded-md border border-accent bg-accent/10 p-2 transition-all duration-200
+      className={`relative flex w-full select-none flex-row gap-2 rounded-md bg-accent/40 p-4 transition-all duration-200
         ${isRemoving && "translate-x-full opacity-0"}
         ${hasBeenRemoved && "hidden"}
       `}
