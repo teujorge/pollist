@@ -4,7 +4,8 @@ import Script from "next/script";
 import GlobalLoading from "../loading";
 import { useUser } from "@clerk/nextjs";
 import { getUserTier } from "./actions";
-import { QueryProvider } from "./QueryProvider";
+import { QueryProvider } from "./_providers/QueryProvider";
+import { CSPostHogProvider } from "./_providers/PosthogProvider";
 import { useCustomScrollbar } from "../hooks/useCustomScrollbar";
 import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
 import {
@@ -70,28 +71,30 @@ export function App({ children }: { children: React.ReactNode }) {
   }, [user, key]);
 
   return (
-    <QueryProvider>
-      <AppProvider
-        value={{
-          key,
-          setKey,
-          ads,
-          setAds,
-          notifications,
-          setNotifications,
-        }}
-      >
-        {ads && (
-          <Script
-            async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6132246468312218"
-            crossOrigin="anonymous"
-            strategy="lazyOnload"
-          />
-        )}
-        <Suspense fallback={<GlobalLoading />}>{children}</Suspense>
-      </AppProvider>
-    </QueryProvider>
+    <CSPostHogProvider>
+      <QueryProvider>
+        <AppProvider
+          value={{
+            key,
+            setKey,
+            ads,
+            setAds,
+            notifications,
+            setNotifications,
+          }}
+        >
+          {ads && (
+            <Script
+              async
+              src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6132246468312218"
+              crossOrigin="anonymous"
+              strategy="lazyOnload"
+            />
+          )}
+          <Suspense fallback={<GlobalLoading />}>{children}</Suspense>
+        </AppProvider>
+      </QueryProvider>
+    </CSPostHogProvider>
   );
 }
 
