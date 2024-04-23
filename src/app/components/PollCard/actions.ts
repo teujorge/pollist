@@ -2,6 +2,7 @@
 
 import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
+import { defaultRatelimit } from "@/server/ratelimit";
 import { handlePrismaError } from "@/server/error";
 
 export async function handleVote({
@@ -15,6 +16,8 @@ export async function handleVote({
   optionId: string | undefined;
   voteId: string | undefined;
 }) {
+  await defaultRatelimit(userId);
+
   try {
     // user has already voted
     if (voteId) {
@@ -77,13 +80,13 @@ export async function handleLikePoll({
   pollId: string;
   pollAuthorId: string;
 }) {
+  const { userId } = auth();
+
+  if (!userId) throw new Error("User not found");
+
+  await defaultRatelimit(userId);
+
   try {
-    const { userId } = auth();
-
-    if (!userId) {
-      throw new Error("User not found");
-    }
-
     const pollLike = await db.pollLike.create({
       data: {
         poll: {
@@ -125,13 +128,13 @@ export async function handleLikePoll({
 }
 
 export async function handleUnlikePoll({ pollId }: { pollId: string }) {
+  const { userId } = auth();
+
+  if (!userId) throw new Error("User not found");
+
+  await defaultRatelimit(userId);
+
   try {
-    const { userId } = auth();
-
-    if (!userId) {
-      throw new Error("User not found");
-    }
-
     const unlikes = await db.pollLike.deleteMany({
       where: {
         pollId,
@@ -178,13 +181,13 @@ export async function acknowledgePollLike({
 }: {
   pollLikeId: string;
 }) {
+  const { userId } = auth();
+
+  if (!userId) throw new Error("User not found");
+
+  await defaultRatelimit(userId);
+
   try {
-    const { userId } = auth();
-
-    if (!userId) {
-      throw new Error("User not found");
-    }
-
     const notifications = await db.notificationPollLike.deleteMany({
       where: {
         pollLikeId: pollLikeId,

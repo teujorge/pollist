@@ -2,6 +2,7 @@
 
 import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
+import { defaultRatelimit } from "@/server/ratelimit";
 import { handlePrismaError } from "@/server/error";
 import { revalidatePath, revalidateTag } from "next/cache";
 
@@ -55,8 +56,10 @@ export async function getUser(username?: string, id?: string) {
 
 // myId asks to follow userId
 export async function follow(userId: string) {
+  const { userId: myId } = auth();
+  await defaultRatelimit(myId);
+
   try {
-    const { userId: myId } = auth();
     if (!myId) return;
     if (myId === userId) return;
 
@@ -93,8 +96,10 @@ export async function follow(userId: string) {
 
 // myId unfollows userId
 export async function unfollow(userId: string) {
+  const { userId: myId } = auth();
+  await defaultRatelimit(myId);
+
   try {
-    const { userId: myId } = auth();
     if (!myId) return;
     if (myId === userId) return;
 
@@ -119,8 +124,9 @@ export async function unfollow(userId: string) {
 }
 
 export async function getFollowing() {
+  const { userId: myId } = auth();
+
   try {
-    const { userId: myId } = auth();
     if (!myId) return;
 
     const following = await db.follow.findMany({
@@ -136,8 +142,9 @@ export async function getFollowing() {
 }
 
 export async function getFollowers() {
+  const { userId: myId } = auth();
+
   try {
-    const { userId: myId } = auth();
     if (!myId) return;
 
     const followers = await db.follow.findMany({
@@ -153,8 +160,10 @@ export async function getFollowers() {
 }
 
 export async function declineFollow(followerId: string) {
+  const { userId: myId } = auth();
+  await defaultRatelimit(myId);
+
   try {
-    const { userId: myId } = auth();
     if (!myId) return;
 
     const declinedFollow = await db.follow.delete({
@@ -188,8 +197,10 @@ export async function declineFollow(followerId: string) {
 }
 
 export async function acceptFollow(followerId: string) {
+  const { userId: myId } = auth();
+  await defaultRatelimit(myId);
+
   try {
-    const { userId: myId } = auth();
     if (!myId) return;
 
     const updatedFollow = await db.follow.update({
@@ -241,8 +252,10 @@ export async function acceptFollow(followerId: string) {
 }
 
 export async function cancelFollow(followeeId: string) {
+  const { userId: myId } = auth();
+  await defaultRatelimit(myId);
+
   try {
-    const { userId: myId } = auth();
     if (!myId) return;
 
     const cancelledFollow = await db.follow.delete({
@@ -265,6 +278,8 @@ export async function cancelFollow(followeeId: string) {
 }
 
 export async function getPendingFollows(userId: string) {
+  await defaultRatelimit();
+
   try {
     const pendingFollows = await db.follow.findMany({
       where: {
@@ -288,11 +303,11 @@ export async function getPendingFollows(userId: string) {
 }
 
 export async function setPrivateAccount(isPrivate: boolean) {
+  const { userId } = auth();
+  if (!userId) throw new Error("User not found");
+  await defaultRatelimit(userId);
+
   try {
-    const { userId } = auth();
-
-    if (!userId) throw new Error("User not found");
-
     const newUser = await db.user.update({
       where: {
         id: userId,
@@ -309,11 +324,11 @@ export async function setPrivateAccount(isPrivate: boolean) {
 }
 
 export async function setShowAds(showAds: boolean) {
+  const { userId } = auth();
+  if (!userId) throw new Error("User not found");
+  await defaultRatelimit(userId);
+
   try {
-    const { userId } = auth();
-
-    if (!userId) throw new Error("User not found");
-
     const newUser = await db.user.update({
       where: {
         id: userId,
@@ -330,11 +345,11 @@ export async function setShowAds(showAds: boolean) {
 }
 
 export async function setShowSensitiveContent(showSensitive: boolean) {
+  const { userId } = auth();
+  if (!userId) throw new Error("User not found");
+  await defaultRatelimit(userId);
+
   try {
-    const { userId } = auth();
-
-    if (!userId) throw new Error("User not found");
-
     const newUser = await db.user.update({
       where: { id: userId },
       data: { viewSensitive: showSensitive },

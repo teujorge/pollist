@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { supabase } from "@/server/supabase";
 import { moderate } from "@/app/(with-auth)/admin/moderation";
 import { pollToString } from "@/lib/utils";
+import { defaultRatelimit } from "@/server/ratelimit";
 import { handlePrismaError } from "@/server/error";
 import { analyticsServerClient } from "@/server/analytics";
 import type { PollsDetails } from "@/app/components/InfinitePolls/actions";
@@ -14,9 +15,9 @@ import type { CreatePollFields } from "./validation";
 export async function createPoll(fields: CreatePollFields) {
   const { userId } = auth();
 
-  if (!userId) {
-    throw new Error("You must be logged in to create a poll");
-  }
+  if (!userId) throw new Error("You must be logged in to create a poll");
+
+  await defaultRatelimit(userId);
 
   const pollContent = pollToString({
     title: fields.title,
@@ -79,13 +80,12 @@ export async function redirectToPoll(pollId: string) {
 export async function deletePoll(poll: PollsDetails[number]) {
   const { userId } = auth();
 
-  if (userId !== poll.authorId) {
+  if (userId !== poll.authorId)
     throw new Error("You are not authorized to delete this poll");
-  }
 
-  if (!supabase) {
-    throw new Error("Supabase not found");
-  }
+  if (!supabase) throw new Error("Supabase not found");
+
+  await defaultRatelimit(userId);
 
   const imagePaths = poll.options
     .map((option) => option.imagePath)
@@ -150,13 +150,13 @@ export async function deletePoll(poll: PollsDetails[number]) {
 }
 
 export async function boostPoll(pollId: string) {
+  const { userId } = auth();
+
+  if (!userId) throw new Error("You must be logged in to boost a poll");
+
+  await defaultRatelimit(userId);
+
   try {
-    const { userId } = auth();
-
-    if (!userId) {
-      throw new Error("You must be logged in to boost a poll");
-    }
-
     await db.user.update({
       where: { id: userId },
       data: {
@@ -173,13 +173,13 @@ export async function boostPoll(pollId: string) {
 }
 
 export async function unBoostPoll(redirectPollId: string) {
+  const { userId } = auth();
+
+  if (!userId) throw new Error("You must be logged in to unboost a poll");
+
+  await defaultRatelimit(userId);
+
   try {
-    const { userId } = auth();
-
-    if (!userId) {
-      throw new Error("You must be logged in to unboost a poll");
-    }
-
     await db.user.update({
       where: { id: userId },
       data: {

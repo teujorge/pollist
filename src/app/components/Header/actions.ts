@@ -142,11 +142,10 @@ export async function getNotificationsFollowAcceptedRelation(
 }
 
 export async function getNotificationsItems() {
+  const { userId } = auth();
+  if (!userId) return null;
+
   try {
-    const { userId } = auth();
-
-    if (!userId) return null;
-
     const userNotifications = await db.user.findUnique({
       where: { id: userId },
       include: {

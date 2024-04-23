@@ -25,9 +25,9 @@ export async function getInfiniteComments({
   dateOrderBy,
   orderByLikes,
 }: GetPaginatedCommentsParams) {
-  try {
-    const { userId } = auth();
+  const { userId } = auth();
 
+  try {
     const comments = await db.comment.findMany({
       where: {
         pollId: pollId,

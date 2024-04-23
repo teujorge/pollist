@@ -4,6 +4,7 @@ import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { currentUser } from "@clerk/nextjs";
 import { commentSelect } from "../InfiniteComments/commentSelect";
+import { defaultRatelimit } from "@/server/ratelimit";
 import { handlePrismaError } from "@/server/error";
 
 export async function createComment({
@@ -17,17 +18,15 @@ export async function createComment({
   atUsername: string | undefined;
   text: string | undefined;
 }) {
+  if (!text) throw new Error("You must provide a comment");
+
+  const user = await currentUser();
+
+  if (!user?.id) throw new Error("You must be logged in to comment");
+
+  await defaultRatelimit(user.id);
+
   try {
-    if (!text) {
-      throw new Error("You must provide a comment");
-    }
-
-    const user = await currentUser();
-
-    if (!user?.id) {
-      throw new Error("You must be logged in to comment");
-    }
-
     const newComment = await db.comment.create({
       data: {
         pollId,
@@ -115,13 +114,13 @@ export async function acknowledgeCommentReply({
 }: {
   commentId: string;
 }) {
+  const { userId } = auth();
+
+  if (!userId) throw new Error("You must be logged in to acknowledge a reply");
+
+  await defaultRatelimit(userId);
+
   try {
-    const { userId } = auth();
-
-    if (!userId) {
-      throw new Error("You must be logged in to acknowledge a reply");
-    }
-
     const notification = await db.notificationComment.deleteMany({
       where: {
         commentId: commentId,
@@ -140,13 +139,13 @@ export async function acknowledgeCommentLike({
 }: {
   commentId: string;
 }) {
+  const { userId } = auth();
+
+  if (!userId) throw new Error("You must be logged in to acknowledge a like");
+
+  await defaultRatelimit(userId);
+
   try {
-    const { userId } = auth();
-
-    if (!userId) {
-      throw new Error("You must be logged in to acknowledge a like");
-    }
-
     const notification = await db.notificationCommentLike.deleteMany({
       where: {
         commentLike: {
@@ -169,6 +168,8 @@ export async function likeComment({
   commentId: string;
   userId: string;
 }) {
+  await defaultRatelimit(userId);
+
   try {
     const like = await db.commentLike.create({
       data: {
@@ -216,6 +217,8 @@ export async function unlikeComment({
   commentId: string;
   userId: string;
 }) {
+  await defaultRatelimit(userId);
+
   try {
     const unlike = await db.commentLike.delete({
       where: {
@@ -243,13 +246,13 @@ export async function unlikeComment({
 }
 
 export async function deleteComment({ commentId }: { commentId: string }) {
+  const { userId } = auth();
+
+  if (!userId) throw new Error("You must be logged in to delete a comment");
+
+  await defaultRatelimit(userId);
+
   try {
-    const { userId } = auth();
-
-    if (!userId) {
-      throw new Error("You must be logged in to delete a comment");
-    }
-
     const deletedComment = await db.comment.delete({
       where: {
         id: commentId,
