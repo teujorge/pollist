@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { db } from "@/database/prisma";
+import { db } from "@/server/prisma";
 import { Webhook } from "svix";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";

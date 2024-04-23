@@ -1,10 +1,10 @@
 "use server";
 
-import { db } from "@/database/prisma";
+import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs";
 import { PAGE_SIZE } from "@/constants";
 import { commentSelect } from "./commentSelect";
-import { handlePrismaError } from "@/database/error";
+import { handlePrismaError } from "@/server/error";
 
 export type Comment = NonNullable<
   Awaited<ReturnType<typeof getInfiniteComments>>[number]

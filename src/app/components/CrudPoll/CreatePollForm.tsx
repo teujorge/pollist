@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Loader } from "../Loader";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { supabase } from "@/database/supabase";
+import { supabase } from "@/server/supabase";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input, InputFile } from "../Input";

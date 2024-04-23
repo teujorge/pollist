@@ -5,14 +5,14 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { useApp } from "@/app/(with-auth)/app";
-import { SignedIn, SignedOut, SignInButton, useUser } from "@clerk/nextjs";
-import { supabase } from "@/database/supabase";
+import { supabase } from "@/server/supabase";
 import { SharePopover } from "../SharePopover";
 import { PopoverClose } from "@radix-ui/react-popover";
 import { DeletePollForm } from "../CrudPoll/DeletePollForm";
 import { CircularProgress } from "../CircularProgress";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
+import { SignedIn, SignedOut, SignInButton, useUser } from "@clerk/nextjs";
 import {
   cn,
   formatNumber,

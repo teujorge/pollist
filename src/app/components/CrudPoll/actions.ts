@@ -1,12 +1,13 @@
 "use server";
 
-import { db } from "@/database/prisma";
+import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { supabase } from "@/database/supabase";
+import { supabase } from "@/server/supabase";
 import { moderate } from "@/app/(with-auth)/admin/moderation";
 import { pollToString } from "@/lib/utils";
-import { handlePrismaError } from "@/database/error";
+import { handlePrismaError } from "@/server/error";
+import { analyticsServerClient } from "@/server/analytics";
 import type { PollsDetails } from "@/app/components/InfinitePolls/actions";
 import type { CreatePollFields } from "./validation";
 
@@ -45,6 +46,14 @@ export async function createPoll(fields: CreatePollFields) {
       },
       include: {
         options: true,
+      },
+    });
+
+    analyticsServerClient.capture({
+      distinctId: userId,
+      event: "poll created",
+      properties: {
+        pollId: createdPoll.id,
       },
     });
 
@@ -117,6 +126,15 @@ export async function deletePoll(poll: PollsDetails[number]) {
         author: { select: { username: true } },
       },
     });
+
+    analyticsServerClient.capture({
+      distinctId: userId!,
+      event: "poll deleted",
+      properties: {
+        pollId: deletedPoll.id,
+      },
+    });
+
     return deletedPoll;
   }
 

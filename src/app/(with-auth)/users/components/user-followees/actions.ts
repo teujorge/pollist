@@ -1,7 +1,7 @@
 "use server";
 
+import { db } from "@/server/prisma";
 import { PAGE_SIZE } from "@/constants";
-import { db } from "@/database/prisma";
 
 export type Followees = NonNullable<
   Awaited<ReturnType<typeof getMoreFollowees>>

@@ -1,4 +1,4 @@
-import { db } from "@/database/prisma";
+import { db } from "@/server/prisma";
 import { Stripe } from "stripe";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";

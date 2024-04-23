@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/database/prisma";
+import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs";
 import { PAGE_SIZE } from "@/constants";
 import { censorPollAuthor, pollInclude } from "./utils";

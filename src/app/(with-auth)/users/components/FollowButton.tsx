@@ -1,4 +1,4 @@
-import { db } from "@/database/prisma";
+import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { FollowButtonClient } from "./FollowButtonClient";
 

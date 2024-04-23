@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/database/prisma";
+import { db } from "@/server/prisma";
 import { moderate } from "./moderation";
 import { pollToString } from "@/lib/utils";
 

@@ -1,4 +1,4 @@
-import { db } from "@/database/prisma";
+import { db } from "@/server/prisma";
 import { censorPollAuthor, pollInclude } from "../InfinitePolls/utils";
 import { BoostPollFormClient } from "./BoostPollFormClient";
 import { BoostRemPollFormClient } from "./BoostRemPollFormClient";

@@ -1,10 +1,10 @@
 "use server";
 
-import { db } from "@/database/prisma";
+import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { currentUser } from "@clerk/nextjs";
 import { commentSelect } from "../InfiniteComments/commentSelect";
-import { handlePrismaError } from "@/database/error";
+import { handlePrismaError } from "@/server/error";
 
 export async function createComment({
   pollId,

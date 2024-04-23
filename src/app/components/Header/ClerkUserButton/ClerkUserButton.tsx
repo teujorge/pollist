@@ -1,4 +1,4 @@
-import { db } from "@/database/prisma";
+import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs";
 import { Loader } from "../../Loader";
 import { Suspense } from "react";

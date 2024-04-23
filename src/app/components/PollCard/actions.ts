@@ -1,8 +1,8 @@
 "use server";
 
-import { db } from "@/database/prisma";
+import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
-import { handlePrismaError } from "@/database/error";
+import { handlePrismaError } from "@/server/error";
 
 export async function handleVote({
   userId,

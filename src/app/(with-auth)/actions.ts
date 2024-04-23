@@ -1,7 +1,7 @@
 "use server";
 
-import { db } from "@/database/prisma";
-import { handlePrismaError } from "@/database/error";
+import { db } from "@/server/prisma";
+import { handlePrismaError } from "@/server/error";
 import type { SubTier } from "@prisma/client";
 
 export async function getUserTier(userId: string): Promise<SubTier> {
