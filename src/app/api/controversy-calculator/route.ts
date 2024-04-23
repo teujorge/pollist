@@ -59,7 +59,7 @@ function isControversial(votes: Vote[]): boolean {
   const voteCounts: Record<string, number> = {};
   for (const vote of votes) {
     if (vote.optionId in voteCounts) {
-      voteCounts[vote.optionId]++;
+      voteCounts[vote.optionId] = (voteCounts[vote.optionId] ?? 0) + 1;
     } else {
       voteCounts[vote.optionId] = 1;
     }
