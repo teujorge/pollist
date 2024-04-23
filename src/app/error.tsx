@@ -1,26 +1,21 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import * as Sentry from "@sentry/nextjs";
+import ErrorComponent from "next/error";
+import { useEffect } from "react";
 
-export default function Error({
-  error,
-  reset,
-}: {
-  error: Error & { digest?: string };
-  reset: () => void;
-}) {
+export default function GlobalError({ error }: { error: unknown }) {
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
+
   return (
     <main className="flex h-[calc(100dvh-64px)] w-full items-center justify-center">
       <div className="flex w-fit flex-col items-center justify-center gap-2">
-        <h2 className="text-2xl">Oops, something went wrong!</h2>
-
-        <p>
-          {error.name}: {error.message}
-        </p>
-
-        <Button variant="outline" onClick={() => reset()}>
-          Try again
-        </Button>
+        <ErrorComponent
+          statusCode={500}
+          title={"An unexpected error has occurred"}
+        />
       </div>
     </main>
   );
