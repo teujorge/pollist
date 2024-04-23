@@ -36,12 +36,8 @@ export function OptionToggle({
     try {
       await onToggleOption(invert ? !isEnabled : isEnabled);
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An error occurred while updating your account settings.");
-      }
       setIsChanging(false);
+      toast.error("Failed to update account settings");
     }
   }
 

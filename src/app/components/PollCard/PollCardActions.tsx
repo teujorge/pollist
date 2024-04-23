@@ -235,13 +235,8 @@ export function PollCardActions({
         return { ...prev, votes: newVotes };
       });
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An error occurred while voting. Please try again.");
-      }
-
       setOptimisticPoll(prevPoll);
+      toast.error("Failed to vote");
     } finally {
       setIsVotePending(false);
     }
@@ -301,11 +296,7 @@ export function PollCardActions({
         },
       }));
 
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An error occurred while liking. Please try again.");
-      }
+      toast.error("Failed to like poll");
     }
 
     setIsLikePending(false);

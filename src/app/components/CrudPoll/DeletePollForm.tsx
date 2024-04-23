@@ -11,13 +11,7 @@ export function DeletePollForm({ poll }: { poll: PollsDetails[number] }) {
       await deletePoll(poll);
       return true;
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error(
-          "An unknown error occurred while deleting the poll. Please try again.",
-        );
-      }
+      toast.error("Failed to delete poll");
     }
 
     return false;

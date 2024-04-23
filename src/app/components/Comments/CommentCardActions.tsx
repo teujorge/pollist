@@ -89,11 +89,7 @@ export function CommentCardActions() {
           },
         }));
 
-        if (error instanceof Error) {
-          toast.error(error.message);
-        } else {
-          toast.error("Failed to unlike comment");
-        }
+        toast.error("Failed to unlike comment");
       }
     }
 
@@ -143,11 +139,7 @@ export function CommentCardActions() {
           },
         }));
 
-        if (error instanceof Error) {
-          toast.error(error.message);
-        } else {
-          toast.error("Failed to like comment");
-        }
+        toast.error("Failed to like comment");
       }
     }
 
@@ -172,12 +164,7 @@ export function CommentCardActions() {
     } catch (error) {
       // put back original if the request fails
       setIsCommentDeleted(false);
-
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Failed to delete comment, please try again");
-      }
+      toast.error("Failed to delete comment");
     }
 
     setIsChangeProcessing(false);

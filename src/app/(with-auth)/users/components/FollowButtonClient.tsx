@@ -22,21 +22,13 @@ export function FollowButtonClient({
       try {
         await unfollow(userId);
       } catch (error) {
-        if (error instanceof Error) {
-          toast.error(error.message);
-        } else {
-          toast.error("Failed to unfollow");
-        }
+        toast.error("Failed to unfollow");
       }
     } else {
       try {
         await follow(userId);
       } catch (error) {
-        if (error instanceof Error) {
-          toast.error(error.message);
-        } else {
-          toast.error("Failed to follow");
-        }
+        toast.error("Failed to follow");
       }
     }
   }

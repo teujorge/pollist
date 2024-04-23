@@ -15,12 +15,7 @@ export function ActiveFollowerCardActions({ follower }: { follower: User }) {
       await declineFollow(follower.id);
     } catch (error) {
       setIsDeclining(false);
-
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Failed to decline follow");
-      }
+      toast.error("Failed to decline follow");
     }
   }
 

@@ -1,9 +1,10 @@
 "use client";
 
 import { PollCard } from "../PollCard/PollCard";
+import { getInfinitePolls } from "./actions";
 import { InfinitelyMoreItems } from "../InfiniteScroll/InfinitelyMoreItems";
-import { getInfinitePolls, type PollsDetails } from "./actions";
 import type { PollQuery } from "@/constants";
+import type { PollsDetails } from "./actions";
 
 export function InfinitelyMorePolls(props: {
   userId: string | null;

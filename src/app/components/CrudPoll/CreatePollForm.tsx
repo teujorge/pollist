@@ -135,13 +135,14 @@ export function CreatePollForm({
         await uploadPollOptionFile(newPoll.id, option.id, file);
       }
 
-      await redirectToPoll(newPoll.id);
+      try {
+        await redirectToPoll(newPoll.id);
+      } catch (error) {
+        toast.error("Failed to redirect to created poll");
+      }
     } catch (error) {
       setCreatePollSuccess(false);
-
-      const message =
-        error instanceof Error ? error.message : "Failed to create poll";
-      toast.error(message);
+      toast.error("Failed to create poll");
     }
   }
 

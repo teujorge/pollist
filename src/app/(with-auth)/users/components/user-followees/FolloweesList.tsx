@@ -2,8 +2,8 @@ import { auth } from "@clerk/nextjs/server";
 import { Loader } from "@/app/components/Loader";
 import { Suspense } from "react";
 import { PAGE_SIZE } from "@/constants";
-import { getMoreFollowees } from "./actions";
 import { MoreFollowees } from "./MoreFollowees";
+import { getMoreFollowees } from "./actions";
 import { ActiveFolloweeCard } from "./ActiveFolloweeCard";
 
 type FolloweesListProps = {

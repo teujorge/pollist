@@ -196,11 +196,7 @@ function NotificationCard({
         ids: item.data.map((d) => d.id),
       });
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Failed to remove notification");
-      }
+      toast.error("Failed to remove notification");
 
       setIsDragging(false);
       setStartX(0);
@@ -469,12 +465,7 @@ function FollowPendingNotificationCard({
       await acceptFollow(followNotification.follow.follower.id);
     } catch (error) {
       setIsAccepting(false);
-
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Failed to accept follow");
-      }
+      toast.error("Failed to accept follow request");
     }
   }
 
@@ -484,12 +475,7 @@ function FollowPendingNotificationCard({
       await declineFollow(followNotification.follow.follower.id);
     } catch (error) {
       setIsDeclining(false);
-
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Failed to decline follow");
-      }
+      toast.error("Failed to decline follow request");
     }
   }
 
@@ -550,10 +536,14 @@ function FollowAcceptedNotificationCard({
 
   async function handleLinkClick() {
     popover.setIsNotificationsOpen(false);
-    await removeNotifications({
-      type: "FollowAcceptedNotification",
-      ids: [followNotification.id],
-    });
+    try {
+      await removeNotifications({
+        type: "FollowAcceptedNotification",
+        ids: [followNotification.id],
+      });
+    } catch (e) {
+      toast.error("Failed to remove notification");
+    }
   }
 
   return (

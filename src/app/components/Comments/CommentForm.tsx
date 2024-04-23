@@ -102,13 +102,7 @@ export function CommentForm({
         replies.filter((reply) => reply.id !== tempId),
       );
 
-      if (e instanceof Error) {
-        toast.error(e.message);
-      } else {
-        toast.error(
-          "An error occurred while submitting your comment, please try again",
-        );
-      }
+      toast.error("Failed to submit comment");
     }
 
     setIsLoading(false);

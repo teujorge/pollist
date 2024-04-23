@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "sonner";
 import { Loader } from "../Loader";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -18,7 +19,13 @@ export function BoostPollFormClient({
 
   async function handleBoostPoll() {
     setSubmitting(true);
-    await boostPoll(poll.id);
+
+    try {
+      await boostPoll(poll.id);
+    } catch (error) {
+      setSubmitting(false);
+      toast.error("Failed to boost poll");
+    }
   }
 
   return (

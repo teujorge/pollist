@@ -4,12 +4,12 @@ import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/server/supabase";
 import { useEffect, useRef } from "react";
 import {
-  getNotificationsCommentLikeRelation,
-  getNotificationsCommentRelation,
-  getNotificationsFollowAcceptedRelation,
-  getNotificationsFollowPendingRelation,
   getNotificationsItems,
+  getNotificationsCommentRelation,
   getNotificationsPollLikeRelation,
+  getNotificationsCommentLikeRelation,
+  getNotificationsFollowPendingRelation,
+  getNotificationsFollowAcceptedRelation,
 } from "../components/Header/actions";
 import type { Notifications } from "../(with-auth)/app";
 import type { RealtimeChannel } from "@supabase/supabase-js";

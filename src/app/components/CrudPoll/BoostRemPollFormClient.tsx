@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "sonner";
 import { Loader } from "../Loader";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -20,7 +21,13 @@ export function BoostRemPollFormClient({
 
   async function handleUnBoostPoll() {
     setSubmitting(true);
-    await unBoostPoll(redirectPollId);
+
+    try {
+      await unBoostPoll(redirectPollId);
+    } catch (error) {
+      setSubmitting(false);
+      toast.error("Failed to unboost poll");
+    }
   }
 
   return (

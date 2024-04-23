@@ -2,9 +2,9 @@ import { auth } from "@clerk/nextjs/server";
 import { Loader } from "@/app/components/Loader";
 import { Suspense } from "react";
 import { PAGE_SIZE } from "@/constants";
-import { ActiveFollowerCard } from "./ActiveFollowerCard";
-import { getMoreFollowers } from "./actions";
 import { MoreFollowers } from "./MoreFollowers";
+import { getMoreFollowers } from "./actions";
+import { ActiveFollowerCard } from "./ActiveFollowerCard";
 
 type FollowersListProps = {
   userId: string;
