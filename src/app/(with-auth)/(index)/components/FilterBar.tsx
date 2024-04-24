@@ -5,6 +5,7 @@ import { ArrowUp } from "@phosphor-icons/react";
 import { useFilter } from "../hooks/useFilter";
 import { CATEGORIES } from "@/constants";
 import { buttonVariants } from "@/components/ui/button";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
   Tooltip,
@@ -13,6 +14,8 @@ import {
 } from "@/components/ui/tooltip";
 
 export function FilterBar() {
+  const params = useSearchParams();
+
   const filterRef = useRef<HTMLDivElement>(null);
   const initialScrollUpY = useRef<number | undefined>(undefined);
   const lastScrollY = useRef<number>(0);
@@ -20,6 +23,15 @@ export function FilterBar() {
   const { setSearch, setCategory } = useFilter();
   const [isVisible, setIsVisible] = useState(true);
   const [showUpButton, setShowUpButton] = useState(false);
+
+  // save the source param ->
+  useEffect(() => {
+    for (const [key, value] of params.entries()) {
+      if (key === "source" && value === "iosWebView") {
+        localStorage.setItem("source", value);
+      }
+    }
+  }, [params]);
 
   // listen to scroll event
   useEffect(() => {
