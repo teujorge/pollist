@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { PollCard } from "../PollCard/PollCard";
 import { getInfinitePolls } from "./actions";
 import { InfinitelyMorePolls } from "./InfinitelyMorePolls";

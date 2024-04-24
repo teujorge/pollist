@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { BoostPoll } from "@/app/components/CrudPoll/BoostPoll";
 
 type Props = {

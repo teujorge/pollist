@@ -1,10 +1,14 @@
-import { authMiddleware } from "@clerk/nextjs";
+import { NextResponse } from "next/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-// docs : https://clerk.com/docs/references/nextjs/auth-middleware
+const isProtectedRoute = createRouteMatcher(["/admin(.*)"]);
 
-export default authMiddleware({
-  publicRoutes: () => true,
-  ignoredRoutes: ["/api/sitemap.xml"],
+export default clerkMiddleware((auth, request) => {
+  if (isProtectedRoute(request)) {
+    auth().protect();
+  }
+
+  return NextResponse.next();
 });
 
 export const config = {

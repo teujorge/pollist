@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { db } from "@/server/prisma";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { Loader } from "../Loader";
 import { Button } from "@/components/ui/button";
 import { notFound } from "next/navigation";

@@ -1,6 +1,6 @@
-import { auth } from "@clerk/nextjs";
 import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
+import { currentUser } from "@clerk/nextjs/server";
 
 export const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -13,7 +13,7 @@ export async function defaultRatelimit(userId?: string | undefined | null) {
   let _userId = userId;
 
   if (!userId) {
-    const { user } = auth();
+    const user = await currentUser();
     _userId = user?.id;
   }
 

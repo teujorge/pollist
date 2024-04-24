@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { IconSvg } from "../../svgs/IconSvg";
-import { ProfileLink } from "./ProfileLink";
 import { SignInButton } from "@clerk/nextjs";
 import { ClerkUserButton } from "./ClerkUserButton/ClerkUserButton";
 import { StackPlus, House } from "@phosphor-icons/react/dist/ssr";
@@ -46,8 +45,6 @@ export function Header() {
             </button>
           </SignInButton>
         )}
-
-        <ProfileLink />
 
         {userId && <NotificationsBell />}
 

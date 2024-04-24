@@ -1,5 +1,5 @@
 import { db } from "@/server/prisma";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { Suspense } from "react";
 import { PollCard } from "@/app/components/PollCard/PollCard";
 import { BoostedPollIdHandler } from "./BoostedPollIdHandler";

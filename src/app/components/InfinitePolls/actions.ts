@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/server/prisma";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { PAGE_SIZE } from "@/constants";
 import { censorPollAuthor, pollInclude } from "./utils";
 import type { PollQuery } from "@/constants";
