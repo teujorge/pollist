@@ -28,12 +28,17 @@ export function ProfileImage(props: ProfileImageProps) {
         alt={`${props.username} profile image`}
         width={props.size}
         height={props.size}
-        className={cn(props.className, "rounded-full object-cover")}
+        className={cn(
+          props.className,
+          "rounded-full object-cover object-center",
+        )}
         style={{
           width: props.size,
           minWidth: props.size,
+          maxWidth: props.size,
           height: props.size,
           minHeight: props.size,
+          maxHeight: props.size,
         }}
       />
     </div>
