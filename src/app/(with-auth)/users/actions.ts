@@ -361,3 +361,45 @@ export async function setShowSensitiveContent(showSensitive: boolean) {
     throw new Error(handlePrismaError(error));
   }
 }
+
+export async function blockUser(userId: string) {
+  const { userId: myId } = auth();
+  await defaultRatelimit(myId);
+
+  try {
+    if (!myId) return;
+
+    const blockedUser = await db.block.create({
+      data: {
+        blockerId: myId,
+        blockeeId: userId,
+      },
+    });
+
+    return blockedUser;
+  } catch (error) {
+    throw new Error(handlePrismaError(error));
+  }
+}
+
+export async function unblockUser(userId: string) {
+  const { userId: myId } = auth();
+  await defaultRatelimit(myId);
+
+  try {
+    if (!myId) return;
+
+    const unblockedUser = await db.block.delete({
+      where: {
+        blockerId_blockeeId: {
+          blockerId: myId,
+          blockeeId: userId,
+        },
+      },
+    });
+
+    return unblockedUser;
+  } catch (error) {
+    throw new Error(handlePrismaError(error));
+  }
+}

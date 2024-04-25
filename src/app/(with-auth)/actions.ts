@@ -4,16 +4,28 @@ import { db } from "@/server/prisma";
 import { handlePrismaError } from "@/server/error";
 import type { SubTier } from "@prisma/client";
 
-export async function getUserTier(userId: string): Promise<SubTier> {
+export async function getUserSettings(userId: string) {
+  if (!userId) {
+    return {
+      tier: "FREE" as SubTier,
+      blockerUsers: [],
+    };
+  }
+
   try {
-    if (!userId) return "FREE";
-
-    const user = await db.user.findUnique({
+    return await db.user.findUnique({
       where: { id: userId },
-      select: { tier: true },
+      select: {
+        tier: true,
+        blockerUsers: {
+          select: {
+            blockee: {
+              select: { id: true, username: true, imageUrl: true },
+            },
+          },
+        },
+      },
     });
-
-    return user?.tier ?? "FREE";
   } catch (e) {
     throw new Error(handlePrismaError(e));
   }

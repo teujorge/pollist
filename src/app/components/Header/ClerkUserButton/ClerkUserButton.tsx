@@ -6,6 +6,7 @@ import { OptionToggle } from "./settings/OptionToggle";
 import { PricingTable } from "./settings/PricingTable";
 import { HideInWebView } from "../../HideInWebView";
 import { OptionToggleAds } from "./settings/OptionToggleAds";
+import { BlockedUsersList } from "./settings/BlockedUsersList";
 import { ClerkUserButtonClient } from "./ClerkUserButtonClient";
 import { OptionToggleSensitive } from "./settings/OptionToggleSensitive";
 import { ArrowRight, ArrowSquareOut } from "@phosphor-icons/react/dist/ssr";
@@ -56,7 +57,7 @@ async function SettingsTab() {
             </span>
           </HideInWebView>
         </h2>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1">
           <HideInWebView shouldHideInWebView={user.tier === "FREE"}>
             <OptionToggle
               hasAccess={user.tier !== "FREE"}
@@ -81,6 +82,12 @@ async function SettingsTab() {
         </div>
       </div>
 
+      {/* blocked users */}
+      <div className="flex flex-col gap-4">
+        <h2 className="font-medium">Blocked Users</h2>
+        <BlockedUsersList />
+      </div>
+
       {/* subscription */}
       <HideInWebView>
         <div className="flex flex-col gap-4">
@@ -97,9 +104,9 @@ async function SettingsTab() {
                 href={process.env.NEXT_PUBLIC_STRIPE_BILLING_URL ?? "/"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-row items-center justify-between gap-4 rounded-lg px-6 py-2 text-[0.8125rem] text-primary transition-colors hovact:bg-primary/35 [&>svg]:opacity-0 [&>svg]:transition-all [&>svg]:duration-200 [&>svg]:hovact:translate-x-2 [&>svg]:hovact:opacity-100"
+                className="flex flex-row items-center rounded-md px-3 py-2 text-xs text-primary transition-colors hovact:bg-accent/30 [&>svg]:opacity-0 [&>svg]:transition-all [&>svg]:duration-200 [&>svg]:hovact:translate-x-2 [&>svg]:hovact:opacity-100"
               >
-                <div className="flex flex-row items-center justify-center gap-4">
+                <div className="flex flex-row items-center justify-center gap-2">
                   <ArrowSquareOut size={15} /> Manage subscription through
                   stripe
                 </div>

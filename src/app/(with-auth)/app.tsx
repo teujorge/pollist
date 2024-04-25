@@ -2,22 +2,23 @@
 
 import Script from "next/script";
 import GlobalLoading from "../loading";
+import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
-import { getUserTier } from "./actions";
 import { QueryProvider } from "./_providers/QueryProvider";
+import { getUserSettings } from "./actions";
 import { CSPostHogProvider } from "./_providers/PosthogProvider";
 import { useCustomScrollbar } from "../hooks/useCustomScrollbar";
 import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
 import {
+  Suspense,
   useState,
+  useEffect,
   useContext,
   createContext,
-  useEffect,
-  Suspense,
 } from "react";
 import type {
-  NotificationPollLikeItem,
   NotificationCommentItem,
+  NotificationPollLikeItem,
   NotificationCommentLikeItem,
   NotificationFollowPendingItem,
   NotificationFollowAcceptedItem,
@@ -31,12 +32,22 @@ export type Notifications = {
   followsAccepted: NotificationFollowAcceptedItem[];
 };
 
+type BlockedUser = {
+  id: string;
+  username: string;
+  imageUrl: string | null;
+};
+
 type AppProviderValue = {
   key: string;
   setKey: React.Dispatch<React.SetStateAction<string>>;
 
   ads: boolean;
   setAds: React.Dispatch<React.SetStateAction<boolean>>;
+
+  blockedUsers: BlockedUser[];
+  setBlockedUsers: React.Dispatch<React.SetStateAction<BlockedUser[]>>;
+  isUserBlocked: (userId: string) => boolean;
 
   notifications: Notifications;
   setNotifications: React.Dispatch<React.SetStateAction<Notifications>>;
@@ -51,6 +62,8 @@ export function App({ children }: { children: React.ReactNode }) {
 
   const [ads, setAds] = useState(true);
 
+  const [blockedUsers, setBlockedUsers] = useState<BlockedUser[]>([]);
+
   const [notifications, setNotifications] = useState<Notifications>({
     pollLikes: [],
     comments: [],
@@ -64,8 +77,15 @@ export function App({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!user?.id) return;
 
-    void getUserTier(user.id).then((tier) => {
-      if (tier === "FREE") setAds(true);
+    void getUserSettings(user.id).then((user) => {
+      if (!user) {
+        toast.error("Failed to get user settings");
+        return;
+      }
+
+      setBlockedUsers(user.blockerUsers.map((u) => u.blockee));
+
+      if (user.tier === "FREE") setAds(true);
       else setAds(false);
     });
   }, [user, key]);
@@ -79,6 +99,10 @@ export function App({ children }: { children: React.ReactNode }) {
             setKey,
             ads,
             setAds,
+            blockedUsers,
+            setBlockedUsers,
+            isUserBlocked: (userId) =>
+              blockedUsers.some((user) => user.id === userId),
             notifications,
             setNotifications,
           }}

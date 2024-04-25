@@ -37,7 +37,21 @@ model User {
   notificationsFollowAccepted NotificationFollowAccepted[] @relation("NotifyeeRelation")
   notificationsPollLike       NotificationPollLike[]
 
+  blockerUsers Block[] @relation("Blocker")
+  blockeeUsers Block[] @relation("Blockee")
+
   @@index([username])
+}
+
+model Block {
+  blockerId String
+  blockeeId String
+  createdAt DateTime @default(now())
+  blocker   User     @relation("Blocker", fields: [blockerId], references: [id])
+  blockee   User     @relation("Blockee", fields: [blockeeId], references: [id])
+
+  @@id([blockerId, blockeeId])
+  @@map("UserBlock")
 }
 
 model Follow {

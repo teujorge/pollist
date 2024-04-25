@@ -19,7 +19,7 @@ export function CommentCard({
   isViewingReplies?: boolean;
 }) {
   const { user } = useUser();
-  const { notifications } = useApp();
+  const { notifications, isUserBlocked } = useApp();
 
   const [comment, setComment] = useState(_comment);
   const [isReplying, setIsReplying] = useState(_isViewingReplies);
@@ -89,7 +89,14 @@ export function CommentCard({
                   @{comment.at}{" "}
                 </Link>
               )}
-              {comment.text}
+              <span
+                className={cn(
+                  isUserBlocked(comment.authorId) &&
+                    "line-through decoration-accent-foreground decoration-8",
+                )}
+              >
+                {comment.text}
+              </span>
             </p>
 
             <CommentCardActions />

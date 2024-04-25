@@ -28,7 +28,7 @@ export function PollCard({
   highlightedUserId,
   showCommentsButton = true,
 }: PollCardProps) {
-  const { key } = useApp();
+  const { key, isUserBlocked } = useApp();
 
   const { data: user } = useQuery({
     queryKey: ["user", userId, key],
@@ -93,7 +93,8 @@ export function PollCard({
         href={`/polls/${poll.id}`}
         className={cn(
           "w-fit",
-          !showContent && "pointer-events-none select-none blur-sm",
+          (!showContent || isUserBlocked(poll.authorId)) &&
+            "pointer-events-none select-none blur-sm",
         )}
       >
         <h2 className="text-2xl font-bold">

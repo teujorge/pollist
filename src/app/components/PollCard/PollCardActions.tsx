@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { useApp } from "@/app/(with-auth)/app";
 import { supabase } from "@/server/supabase";
+import { blockUser } from "@/app/(with-auth)/users/actions";
 import { SharePopover } from "../SharePopover";
 import { PopoverClose } from "@radix-ui/react-popover";
 import { DeletePollForm } from "../CrudPoll/DeletePollForm";
@@ -69,7 +70,8 @@ export function PollCardActions({
 }: PollCardActionsProps) {
   const { user } = useUser();
 
-  const { notifications } = useApp();
+  const { notifications, setBlockedUsers, isUserBlocked } = useApp();
+  const isBlocked = isUserBlocked(poll.authorId);
 
   const supabaseChannelRef: MutableRefObject<RealtimeChannel | undefined> =
     useRef();
@@ -315,12 +317,14 @@ export function PollCardActions({
       <div
         className={cn(
           "absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-2 rounded-lg border border-accent bg-background p-2 text-center sm:gap-4 sm:p-4",
-          !blurContent && "hidden",
+          !isBlocked && !blurContent && "hidden",
         )}
       >
         <SignedIn>
           <p className="text-sm text-accent-foreground">
-            This poll contains sensitive content.
+            {isBlocked
+              ? "This user is blocked"
+              : "This poll contains sensitive content"}
           </p>
           <Button
             variant="secondary"
@@ -340,7 +344,7 @@ export function PollCardActions({
               }
             }}
           >
-            Show content
+            {isBlocked ? "Unblock user" : "Show content"}
           </Button>
         </SignedIn>
         <SignedOut>
@@ -358,7 +362,8 @@ export function PollCardActions({
       <div
         className={cn(
           "relative flex h-full w-full flex-grow flex-col gap-2 pt-2",
-          blurContent && "pointer-events-none select-none blur-sm",
+          (isBlocked || blurContent) &&
+            "pointer-events-none select-none blur-sm",
         )}
       >
         <ul>
@@ -512,16 +517,33 @@ export function PollCardActions({
                 {user?.id === poll.authorId ? (
                   <DeletePollForm poll={poll} />
                 ) : (
-                  <Button
-                    variant="popover"
-                    className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
-                    onClick={() => {
-                      toast.warning("Feature coming soon");
-                    }}
-                  >
-                    <Warning size={15} />
-                    Report
-                  </Button>
+                  <PopoverClose asChild>
+                    <Button
+                      variant="popover"
+                      className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
+                      onClick={async () => {
+                        setBlockedUsers((prev) => [
+                          ...prev,
+                          {
+                            id: poll.authorId,
+                            username: poll.author.username,
+                            imageUrl: poll.author.imageUrl,
+                          },
+                        ]);
+                        try {
+                          await blockUser(poll.authorId);
+                        } catch (error) {
+                          toast.error("Failed to block user");
+                          setBlockedUsers((prev) =>
+                            prev.filter((user) => user.id !== poll.authorId),
+                          );
+                        }
+                      }}
+                    >
+                      <Warning size={15} />
+                      Block user
+                    </Button>
+                  </PopoverClose>
                 )}
               </PopoverContent>
             </Popover>

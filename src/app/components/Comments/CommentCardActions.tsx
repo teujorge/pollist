@@ -3,9 +3,12 @@
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Loader } from "../Loader";
+import { useApp } from "@/app/(with-auth)/app";
 import { PAGE_SIZE } from "@/constants";
+import { blockUser } from "@/app/(with-auth)/users/actions";
 import { NewComments } from "./NewComments";
 import { CommentForm } from "./CommentForm";
+import { PopoverClose } from "@radix-ui/react-popover";
 import { DeleteAlertDialog } from "../DeleteAlertDialog";
 import { useEffect, useState } from "react";
 import { getInfiniteComments } from "../InfiniteComments/actions";
@@ -29,6 +32,8 @@ import {
 import type { Comment } from "../InfiniteComments/actions";
 
 export function CommentCardActions() {
+  const { setBlockedUsers } = useApp();
+
   const { user } = useUser();
 
   const {
@@ -233,14 +238,35 @@ export function CommentCardActions() {
               <Copy size={15} /> Copy
             </Button>
 
-            <Button
-              variant="popover"
-              className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
-              onClick={() => toast.warning("Feature coming soon")}
-            >
-              <Warning size={15} />
-              Report
-            </Button>
+            {user?.id !== comment.authorId && (
+              <PopoverClose asChild>
+                <Button
+                  variant="popover"
+                  className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
+                  onClick={async () => {
+                    setBlockedUsers((prev) => [
+                      ...prev,
+                      {
+                        id: comment.authorId,
+                        username: comment.author.username,
+                        imageUrl: comment.author.imageUrl,
+                      },
+                    ]);
+                    try {
+                      await blockUser(comment.authorId);
+                    } catch (error) {
+                      toast.error("Failed to block user");
+                      setBlockedUsers((prev) =>
+                        prev.filter((user) => user.id !== comment.authorId),
+                      );
+                    }
+                  }}
+                >
+                  <Warning size={15} />
+                  Block user
+                </Button>
+              </PopoverClose>
+            )}
 
             {user?.id === comment.authorId && (
               <DeleteAlertDialog
