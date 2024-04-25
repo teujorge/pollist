@@ -1,4 +1,5 @@
 import { Stat } from "@/app/(with-auth)/users/components/Stat";
+import { Loader } from "@/app/components/Loader";
 
 export default function UserPageLoading() {
   return (
@@ -6,7 +7,7 @@ export default function UserPageLoading() {
       <div className="flex w-full flex-row gap-8 px-3 py-3">
         <div className="shimmer min-h-[100px] min-w-[100px] !rounded-full" />
 
-        <div className="flex flex-col justify-around">
+        <div className="flex flex-col justify-around gap-2">
           <div className="flex items-center gap-2">
             <h1 className="shimmer text-transparent">username</h1>
           </div>
@@ -18,7 +19,10 @@ export default function UserPageLoading() {
           </div>
         </div>
       </div>
-      <div className="h-10 w-full" />
+
+      <div className="flex w-full items-center justify-center pt-8">
+        <Loader />
+      </div>
     </>
   );
 }

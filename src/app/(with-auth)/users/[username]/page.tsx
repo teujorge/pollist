@@ -61,7 +61,7 @@ export default async function UserPage({ params }: Props) {
       <div className="flex w-full flex-row gap-8 px-3 py-3">
         <ProfileImage src={user.imageUrl} username={user.username} size={100} />
 
-        <div className="flex flex-col justify-around">
+        <div className="flex flex-col justify-around gap-2">
           <div className="flex items-center gap-2">
             <h1>{user.username}</h1>
             {myId && <FollowButton userId={user.id} />}
