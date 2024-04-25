@@ -192,6 +192,13 @@ a:active {
   }
 }
 
-.cl-card {
+/* CLERK */
+
+.cl-button {
+  box-shadow: none !important;
+}
+
+.cl-cardBox,
+.cl-userButton-popover {
   border: rgb(var(--color-accent)) 2px solid;
 }
