@@ -40,54 +40,49 @@ async function SettingsTab() {
 
   return (
     <div className="flex flex-col gap-10">
+      {/* heading */}
       <div className="flex flex-col gap-1">
         <h1 className="text-[2rem] font-semibold">Settings</h1>
         <p>Manage your preferences</p>
       </div>
-      <HideInWebView
-        fallback={
-          <div className="flex h-full w-full flex-col items-center justify-center py-6">
-            <div>
-              Please visit our{" "}
-              <a
-                href="https://pollist.org?target=_blank"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline underline-offset-2 transition-all hovact:underline-offset-4"
-              >
-                website
-              </a>{" "}
-              to manage your settings
-            </div>
-          </div>
-        }
-      >
-        <div className="flex flex-col gap-4">
-          <h2 className="font-medium">
-            Preferences
+
+      {/* user toggles */}
+      <div className="flex flex-col gap-4">
+        <h2 className="font-medium">
+          Preferences
+          <HideInWebView>
             <span className="text-sm font-normal text-accent-foreground/80">
               {user.tier === "FREE" && " (Upgrade to unlock all features)"}
             </span>
-          </h2>
-          <div className="flex flex-col gap-2">
+          </HideInWebView>
+        </h2>
+        <div className="flex flex-col gap-2">
+          <HideInWebView hideConditional={user.tier === "FREE"}>
             <OptionToggle
               hasAccess={user.tier !== "FREE"}
               label={"Private Account"}
               isEnabled={user.private}
               onToggleOption={setPrivateAccount}
             />
+          </HideInWebView>
+
+          <HideInWebView hideConditional={user.tier === "FREE"}>
             <OptionToggleAds
               hasAccess={user.tier !== "FREE"}
               isEnabled={!user.ads}
               onToggleOption={setShowAds}
             />
-            <OptionToggleSensitive
-              isEnabled={user.viewSensitive}
-              onToggleOption={setShowSensitiveContent}
-            />
-          </div>
-        </div>
+          </HideInWebView>
 
+          <OptionToggleSensitive
+            isEnabled={user.viewSensitive}
+            onToggleOption={setShowSensitiveContent}
+          />
+        </div>
+      </div>
+
+      {/* subscription */}
+      <HideInWebView>
         <div className="flex flex-col gap-4">
           <h2 className="font-medium">Billing</h2>
           {user.tier === "FREE" ? (
@@ -114,6 +109,25 @@ async function SettingsTab() {
           )}
         </div>
       </HideInWebView>
+
+      <HideInWebView
+        fallback={
+          <div className="flex h-full w-full flex-col items-center justify-center px-4 py-6">
+            <div className="text-center">
+              Please visit our{" "}
+              <a
+                href="https://pollist.org?target=_blank"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-2 transition-all hovact:underline-offset-4"
+              >
+                website
+              </a>{" "}
+              to manage all settings
+            </div>
+          </div>
+        }
+      />
     </div>
   );
 }
