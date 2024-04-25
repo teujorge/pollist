@@ -57,7 +57,7 @@ async function SettingsTab() {
           </HideInWebView>
         </h2>
         <div className="flex flex-col gap-2">
-          <HideInWebView hideConditional={user.tier === "FREE"}>
+          <HideInWebView shouldHideInWebView={user.tier === "FREE"}>
             <OptionToggle
               hasAccess={user.tier !== "FREE"}
               label={"Private Account"}
@@ -66,7 +66,7 @@ async function SettingsTab() {
             />
           </HideInWebView>
 
-          <HideInWebView hideConditional={user.tier === "FREE"}>
+          <HideInWebView shouldHideInWebView={user.tier === "FREE"}>
             <OptionToggleAds
               hasAccess={user.tier !== "FREE"}
               isEnabled={!user.ads}
