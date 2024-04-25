@@ -8,14 +8,14 @@ import { ProfileImage } from "@/app/components/ProfileImage";
 import { getSinglePoll } from "@/app/components/InfinitePolls/actions";
 import { PollCardActions } from "@/app/components/PollCard/PollCardActions";
 import {
+  AllComments,
+  AllCommentsFallback,
+} from "@/app/components/Comments/AllComments";
+import {
   cn,
   shouldShowSensitiveContent,
   uppercaseFirstLetterOfEachSentence,
 } from "@/lib/utils";
-import {
-  AllComments,
-  AllCommentsFallback,
-} from "@/app/components/Comments/AllComments";
 import type { Metadata } from "next";
 
 type Props = {
@@ -64,7 +64,7 @@ export default async function PollPage({ params, searchParams }: Props) {
           </div>
 
           <div className="flex flex-col justify-center gap-0.5 border-0">
-            <p className="text-foreground transition-colors">
+            <p className="hyphens-auto break-words text-foreground transition-colors">
               {poll.author.username}
               {poll.anonymous && userId === poll.authorId && (
                 <span className="text-sm italic"> (Anonymous)</span>
@@ -83,7 +83,7 @@ export default async function PollPage({ params, searchParams }: Props) {
         {/* title & description */}
         <h1
           className={cn(
-            "text-2xl font-semibold",
+            "hyphens-auto break-words text-2xl font-semibold",
             !showContent && "pointer-events-none select-none blur-sm",
           )}
         >
@@ -93,7 +93,7 @@ export default async function PollPage({ params, searchParams }: Props) {
         {poll.description && (
           <h2
             className={cn(
-              "text-accent-foreground",
+              "hyphens-auto break-words text-accent-foreground",
               !showContent && "pointer-events-none select-none blur-sm",
             )}
           >
@@ -101,6 +101,7 @@ export default async function PollPage({ params, searchParams }: Props) {
           </h2>
         )}
       </div>
+
       {/* poll interaction */}
       <PollCardActions
         poll={poll}
@@ -108,6 +109,7 @@ export default async function PollPage({ params, searchParams }: Props) {
         showChart={true}
         showCommentsButton={false}
       />
+
       {/* poll comments */}
       <Suspense fallback={<AllCommentsFallback />}>
         <AllComments
