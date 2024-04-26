@@ -32,11 +32,9 @@ export type Notifications = {
   followsAccepted: NotificationFollowAcceptedItem[];
 };
 
-type BlockedUser = {
-  id: string;
-  username: string;
-  imageUrl: string | null;
-};
+type BlockedUser = NonNullable<
+  Awaited<ReturnType<typeof getUserSettings>>
+>["blockerUsers"][0]["blockee"];
 
 type AppProviderValue = {
   key: string;

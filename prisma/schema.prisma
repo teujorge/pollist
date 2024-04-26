@@ -31,14 +31,13 @@ model User {
   commentLikes                CommentLike[]
   followees                   Follow[]                     @relation("Followee")
   followers                   Follow[]                     @relation("Follower")
+  blockerUsers                Block[]                      @relation("Blocker")
+  blockeeUsers                Block[]                      @relation("Blockee")
   notificationsComment        NotificationComment[]
   notificationsCommentLike    NotificationCommentLike[]
   notificationsFollowPending  NotificationFollowPending[]  @relation("NotifyeeRelation")
   notificationsFollowAccepted NotificationFollowAccepted[] @relation("NotifyeeRelation")
   notificationsPollLike       NotificationPollLike[]
-
-  blockerUsers Block[] @relation("Blocker")
-  blockeeUsers Block[] @relation("Blockee")
 
   @@index([username])
 }
