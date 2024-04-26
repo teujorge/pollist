@@ -2,7 +2,6 @@ import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/server/supabase";
 import { useEffect, useRef } from "react";
 import {
-  getNotificationsItems,
   getNotificationsCommentRelation,
   getNotificationsPollLikeRelation,
   getNotificationsCommentLikeRelation,
@@ -80,19 +79,6 @@ export function useRealtimeNotifications({
 
     async function handleInitNotifications() {
       if (!user) return;
-
-      // get initial notifications
-      const notifications = await getNotificationsItems();
-
-      if (notifications) {
-        setNotifications({
-          pollLikes: notifications.notificationsPollLike,
-          comments: notifications.notificationsComment,
-          commentLikes: notifications.notificationsCommentLike,
-          followsPending: notifications.notificationsFollowPending,
-          followsAccepted: notifications.notificationsFollowAccepted,
-        });
-      }
 
       // notification subscription for subsequent changes
       notificationsSubscriptionRef.current = supabase

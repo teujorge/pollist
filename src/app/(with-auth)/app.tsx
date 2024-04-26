@@ -8,6 +8,7 @@ import { QueryProvider } from "./_providers/QueryProvider";
 import { getUserSettings } from "./actions";
 import { CSPostHogProvider } from "./_providers/PosthogProvider";
 import { useCustomScrollbar } from "../hooks/useCustomScrollbar";
+import { getNotificationsItems } from "../components/Header/actions";
 import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
 import {
   Suspense,
@@ -52,8 +53,6 @@ type AppProviderValue = {
 };
 
 export function App({ children }: { children: React.ReactNode }) {
-  useCustomScrollbar();
-
   const { user } = useUser();
 
   const [key, setKey] = useState<string>(Math.random().toString());
@@ -73,23 +72,93 @@ export function App({ children }: { children: React.ReactNode }) {
     followsAccepted: [],
   });
 
+  useCustomScrollbar();
   useRealtimeNotifications({ setNotifications, isUserBlocked });
 
+  // Init user
   useEffect(() => {
-    if (!user?.id) return;
+    async function init() {
+      if (!user?.id) return;
 
-    void getUserSettings(user.id).then((user) => {
-      if (!user) {
+      // Get user settings
+      const userSettings = await getUserSettings(user.id);
+      if (!userSettings) {
         toast.error("Failed to get user settings");
         return;
       }
-
-      setBlockedUsers(user.blockerUsers.map((u) => u.blockee));
-
-      if (user.tier === "FREE") setAds(true);
+      setBlockedUsers(userSettings.blockerUsers.map((u) => u.blockee));
+      if (userSettings.tier === "FREE") setAds(true);
       else setAds(false);
-    });
+
+      // Get notifications
+      const notifications = await getNotificationsItems();
+      if (notifications) {
+        setNotifications({
+          pollLikes: notifications.notificationsPollLike.filter(
+            (notification) => !isUserBlocked(notification.pollLike.author.id),
+          ),
+          comments: notifications.notificationsComment.filter(
+            (notification) => !isUserBlocked(notification.comment.author.id),
+          ),
+          commentLikes: notifications.notificationsCommentLike.filter(
+            (notification) =>
+              !isUserBlocked(notification.commentLike.author.id),
+          ),
+          followsPending: notifications.notificationsFollowPending.filter(
+            (notification) => !isUserBlocked(notification.follow.follower.id),
+          ),
+          followsAccepted: notifications.notificationsFollowAccepted.filter(
+            (notification) => !isUserBlocked(notification.follow.followee.id),
+          ),
+        });
+      }
+    }
+
+    void init();
   }, [user, key]);
+
+  // Remove blocked users from notifications
+  useEffect(() => {
+    // Check if notifications exist from blocked users
+    const hasBlockedNotifications = (notifications: Notifications): boolean =>
+      notifications.pollLikes.some((notification) =>
+        isUserBlocked(notification.pollLike.author.id),
+      ) ||
+      notifications.comments.some((notification) =>
+        isUserBlocked(notification.comment.author.id),
+      ) ||
+      notifications.commentLikes.some((notification) =>
+        isUserBlocked(notification.commentLike.author.id),
+      ) ||
+      notifications.followsPending.some((notification) =>
+        isUserBlocked(notification.follow.follower.id),
+      ) ||
+      notifications.followsAccepted.some((notification) =>
+        isUserBlocked(notification.follow.followee.id),
+      );
+
+    if (!hasBlockedNotifications(notifications)) return;
+
+    // Remove blocked users from notifications
+    setNotifications((prev) => ({
+      ...prev,
+      pollLikes: prev.pollLikes.filter(
+        (notification) => !isUserBlocked(notification.pollLike.author.id),
+      ),
+      comments: prev.comments.filter(
+        (notification) => !isUserBlocked(notification.comment.author.id),
+      ),
+      commentLikes: prev.commentLikes.filter(
+        (notification) => !isUserBlocked(notification.commentLike.author.id),
+      ),
+      followsPending: prev.followsPending.filter(
+        (notification) => !isUserBlocked(notification.follow.follower.id),
+      ),
+      followsAccepted: prev.followsAccepted.filter(
+        (notification) => !isUserBlocked(notification.follow.followee.id),
+      ),
+    }));
+  }, [notifications, blockedUsers]);
 
   return (
     <CSPostHogProvider>
