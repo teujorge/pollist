@@ -62,6 +62,9 @@ export function App({ children }: { children: React.ReactNode }) {
 
   const [blockedUsers, setBlockedUsers] = useState<BlockedUser[]>([]);
 
+  const isUserBlocked = (userId: string) =>
+    blockedUsers.some((user) => user.id === userId);
+
   const [notifications, setNotifications] = useState<Notifications>({
     pollLikes: [],
     comments: [],
@@ -70,7 +73,7 @@ export function App({ children }: { children: React.ReactNode }) {
     followsAccepted: [],
   });
 
-  useRealtimeNotifications({ setNotifications });
+  useRealtimeNotifications({ setNotifications, isUserBlocked });
 
   useEffect(() => {
     if (!user?.id) return;
@@ -99,8 +102,7 @@ export function App({ children }: { children: React.ReactNode }) {
             setAds,
             blockedUsers,
             setBlockedUsers,
-            isUserBlocked: (userId) =>
-              blockedUsers.some((user) => user.id === userId),
+            isUserBlocked,
             notifications,
             setNotifications,
           }}

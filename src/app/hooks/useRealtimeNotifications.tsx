@@ -1,5 +1,3 @@
-"use client";
-
 import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/server/supabase";
 import { useEffect, useRef } from "react";
@@ -15,8 +13,10 @@ import type { Notifications } from "../(with-auth)/app";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
 export function useRealtimeNotifications({
+  isUserBlocked,
   setNotifications,
 }: {
+  isUserBlocked: (userId: string) => boolean;
   setNotifications: React.Dispatch<React.SetStateAction<Notifications>>;
 }) {
   const { user } = useUser();
@@ -113,6 +113,9 @@ export function useRealtimeNotifications({
 
             getNotificationsPollLikeRelation(newPayload.id)
               .then((payloadRelations) => {
+                if (isUserBlocked(payloadRelations?.pollLike?.author?.id ?? ""))
+                  return;
+
                 handleOnNotificationInsert({
                   type: "pollLikes",
                   payload: {
@@ -144,6 +147,9 @@ export function useRealtimeNotifications({
 
             getNotificationsPollLikeRelation(newPayload.id)
               .then((payloadRelations) => {
+                if (isUserBlocked(payloadRelations?.pollLike?.author?.id ?? ""))
+                  return;
+
                 handleOnNotificationUpdate({
                   type: "pollLikes",
                   payload: {
@@ -194,6 +200,9 @@ export function useRealtimeNotifications({
 
             getNotificationsCommentRelation(newPayload.id)
               .then((payloadRelations) => {
+                if (isUserBlocked(payloadRelations?.comment?.author?.id ?? ""))
+                  return;
+
                 handleOnNotificationInsert({
                   type: "comments",
                   payload: {
@@ -225,6 +234,9 @@ export function useRealtimeNotifications({
 
             getNotificationsCommentRelation(newPayload.id)
               .then((payloadRelations) => {
+                if (isUserBlocked(payloadRelations?.comment?.author?.id ?? ""))
+                  return;
+
                 handleOnNotificationUpdate({
                   type: "comments",
                   payload: {
@@ -275,6 +287,11 @@ export function useRealtimeNotifications({
 
             getNotificationsCommentLikeRelation(newPayload.id)
               .then((payloadRelations) => {
+                if (
+                  isUserBlocked(payloadRelations?.commentLike?.author?.id ?? "")
+                )
+                  return;
+
                 handleOnNotificationInsert({
                   type: "commentLikes",
                   payload: {
@@ -306,6 +323,11 @@ export function useRealtimeNotifications({
 
             getNotificationsCommentLikeRelation(newPayload.id)
               .then((payloadRelations) => {
+                if (
+                  isUserBlocked(payloadRelations?.commentLike?.author?.id ?? "")
+                )
+                  return;
+
                 handleOnNotificationUpdate({
                   type: "commentLikes",
                   payload: {
@@ -356,6 +378,9 @@ export function useRealtimeNotifications({
 
             getNotificationsFollowPendingRelation(newPayload.id)
               .then((payloadRelations) => {
+                if (isUserBlocked(payloadRelations?.follow?.follower?.id ?? ""))
+                  return;
+
                 handleOnNotificationInsert({
                   type: "followsPending",
                   payload: {
@@ -387,6 +412,9 @@ export function useRealtimeNotifications({
 
             getNotificationsFollowPendingRelation(newPayload.id)
               .then((payloadRelations) => {
+                if (isUserBlocked(payloadRelations?.follow?.follower?.id ?? ""))
+                  return;
+
                 handleOnNotificationUpdate({
                   type: "followsPending",
                   payload: {
@@ -437,6 +465,9 @@ export function useRealtimeNotifications({
 
             getNotificationsFollowAcceptedRelation(newPayload.id)
               .then((payloadRelations) => {
+                if (isUserBlocked(payloadRelations?.follow?.followee?.id ?? ""))
+                  return;
+
                 handleOnNotificationInsert({
                   type: "followsAccepted",
                   payload: {
@@ -468,6 +499,9 @@ export function useRealtimeNotifications({
 
             getNotificationsFollowAcceptedRelation(newPayload.id)
               .then((payloadRelations) => {
+                if (isUserBlocked(payloadRelations?.follow?.followee?.id ?? ""))
+                  return;
+
                 handleOnNotificationUpdate({
                   type: "followsAccepted",
                   payload: {
@@ -516,5 +550,5 @@ export function useRealtimeNotifications({
     void handleInitNotifications();
 
     return () => void notificationsSubscriptionRef.current?.unsubscribe();
-  }, [setNotifications, user]);
+  }, [setNotifications, isUserBlocked, user]);
 }

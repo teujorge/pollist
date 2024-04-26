@@ -30,7 +30,7 @@ const notificationsPollLikeSelect = {
   pollLike: {
     select: {
       poll: { select: { id: true, title: true } },
-      author: { select: { username: true } },
+      author: { select: { id: true, username: true } },
     },
   },
 };
@@ -49,7 +49,7 @@ export async function getNotificationsPollLikeRelation(notificationId: string) {
 const notificationsCommentSelect = {
   comment: {
     select: {
-      author: { select: { username: true } },
+      author: { select: { id: true, username: true } },
       parent: { select: { id: true, text: true } },
       poll: { select: { id: true, title: true } },
     },
@@ -70,7 +70,7 @@ export async function getNotificationsCommentRelation(notificationId: string) {
 const notificationsCommentLikeSelect = {
   commentLike: {
     select: {
-      author: { select: { username: true } },
+      author: { select: { id: true, username: true } },
       comment: {
         select: {
           id: true,
