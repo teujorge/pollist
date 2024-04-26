@@ -550,5 +550,5 @@ export function useRealtimeNotifications({
     void handleInitNotifications();
 
     return () => void notificationsSubscriptionRef.current?.unsubscribe();
-  }, [setNotifications, isUserBlocked, user]);
+  }, [user]);
 }
