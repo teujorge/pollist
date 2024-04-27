@@ -4,6 +4,7 @@ import { useEffect } from "react";
 
 export function useCustomScrollbar() {
   useEffect(() => {
+    return;
     const isSafariMac = /Macintosh.*Safari/.test(navigator.userAgent);
     if (isSafariMac) return;
 
