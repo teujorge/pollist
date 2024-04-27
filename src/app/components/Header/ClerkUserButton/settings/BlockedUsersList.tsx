@@ -2,12 +2,18 @@
 
 import styles from "@/styles/clerk.module.css";
 import { cn } from "@/lib/utils";
+import { Info } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { useApp } from "@/app/(with-auth)/app";
 import { Button } from "@/components/ui/button";
-import { useEffect, useRef, useState } from "react";
 import { unblockUser } from "@/app/(with-auth)/users/actions";
 import { ProfileImage } from "@/app/components/ProfileImage";
+import { useEffect, useRef, useState } from "react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function BlockedUsersList() {
   const initedRef = useRef(false);
@@ -38,8 +44,21 @@ export function BlockedUsersList() {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between gap-2 text-sm">
-        You can block users to prevent them from interacting with you.
+      <div className="flex items-center gap-2 text-sm">
+        You can block users to prevent you from seeing their content.
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Info size={20} />
+          </TooltipTrigger>
+          <TooltipContent>
+            <span className="font-semibold">Blocked Users:</span> Their content
+            will be obscured and you will not receive notifications from them.{" "}
+            <span className="text-yellow-500">
+              Note: Blocked users can still see your content and interact with
+              it as usual.
+            </span>
+          </TooltipContent>
+        </Tooltip>
       </div>
 
       <Button
@@ -64,7 +83,7 @@ export function BlockedUsersList() {
           styles.animatedDiv,
         )}
       >
-        <div className="h-full max-h-[50dvh] w-full overflow-y-auto rounded-lg border border-accent p-4 transition-all duration-300">
+        <div className="h-full max-h-[50dvh] w-full gap-2 divide-y divide-accent overflow-y-auto rounded-lg border border-accent px-4 py-2 transition-all duration-300">
           {blockedUsers.length === 0 ? (
             <p className="text-xs text-accent-foreground">
               You haven&apos;t blocked anyone yet
@@ -73,9 +92,9 @@ export function BlockedUsersList() {
             blockedUsers.map((blockedUser) => (
               <div
                 key={`blocked-user-${blockedUser.id}`}
-                className="flex flex-row items-center gap-2"
+                className="flex flex-row items-center gap-2 p-2"
               >
-                <div className="flex flex-row items-center justify-between gap-2">
+                <div className="flex w-full flex-row items-center justify-between gap-2">
                   <div className="flex flex-row items-center gap-2">
                     <ProfileImage
                       src={blockedUser.imageUrl}
