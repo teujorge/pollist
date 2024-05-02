@@ -320,51 +320,6 @@ export function PollCardActions({
     <div className="relative">
       <div
         className={cn(
-          "absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-2 rounded-lg border border-accent bg-background bg-opacity-100 p-2 text-center sm:gap-4 sm:p-4",
-          !isBlockedUser && !isSensitiveContent && "hidden",
-        )}
-      >
-        <SignedIn>
-          <p className="text-sm text-accent-foreground">
-            {isBlockedUser
-              ? "This user is blocked"
-              : "This poll contains sensitive content"}
-          </p>
-          <Button
-            variant="secondary"
-            onClick={async () => {
-              const userButton = document.querySelector(
-                "button.cl-userButtonTrigger",
-              );
-              if (userButton) (userButton as HTMLButtonElement).click();
-
-              await new Promise((resolve) => setTimeout(resolve, 200));
-
-              const manageAccountButton = document.querySelector(
-                "button.cl-userButtonPopoverActionButton__manageAccount",
-              );
-              if (manageAccountButton) {
-                (manageAccountButton as HTMLButtonElement).click();
-              }
-            }}
-          >
-            {isBlockedUser ? "Unblock user" : "Show content"}
-          </Button>
-        </SignedIn>
-        <SignedOut>
-          <p className="text-sm text-accent-foreground">
-            This poll contains sensitive content.{" "}
-            <span className="font-semibold text-foreground">Sign in</span> to
-            view the content.
-          </p>
-          <SignInButton mode="modal">
-            <Button variant="secondary">Show content</Button>
-          </SignInButton>
-        </SignedOut>
-      </div>
-
-      <div
-        className={cn(
           "relative flex h-full w-full flex-grow flex-col gap-2 pt-2",
           (isBlockedUser || isSensitiveContent) &&
             "pointer-events-none select-none line-through decoration-accent-foreground decoration-8 opacity-50",
@@ -575,6 +530,51 @@ export function PollCardActions({
             })}
           />
         )}
+      </div>
+
+      <div
+        className={cn(
+          "absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-2 rounded-lg border border-accent bg-background bg-opacity-100 p-2 text-center sm:gap-4 sm:p-4",
+          !isBlockedUser && !isSensitiveContent && "hidden",
+        )}
+      >
+        <SignedIn>
+          <p className="text-sm text-accent-foreground">
+            {isBlockedUser
+              ? "This user is blocked"
+              : "This poll contains sensitive content"}
+          </p>
+          <Button
+            variant="secondary"
+            onClick={async () => {
+              const userButton = document.querySelector(
+                "button.cl-userButtonTrigger",
+              );
+              if (userButton) (userButton as HTMLButtonElement).click();
+
+              await new Promise((resolve) => setTimeout(resolve, 200));
+
+              const manageAccountButton = document.querySelector(
+                "button.cl-userButtonPopoverActionButton__manageAccount",
+              );
+              if (manageAccountButton) {
+                (manageAccountButton as HTMLButtonElement).click();
+              }
+            }}
+          >
+            {isBlockedUser ? "Unblock user" : "Show content"}
+          </Button>
+        </SignedIn>
+        <SignedOut>
+          <p className="text-sm text-accent-foreground">
+            This poll contains sensitive content.{" "}
+            <span className="font-semibold text-foreground">Sign in</span> to
+            view the content.
+          </p>
+          <SignInButton mode="modal">
+            <Button variant="secondary">Show content</Button>
+          </SignInButton>
+        </SignedOut>
       </div>
     </div>
   );
