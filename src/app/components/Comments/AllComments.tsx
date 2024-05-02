@@ -8,6 +8,7 @@ import { CommentForm } from "./CommentForm";
 import { CommentCard } from "./CommentCard";
 import { SignInButton } from "@clerk/nextjs";
 import { commentSelect } from "../InfiniteComments/commentSelect";
+import { ScrollToComments } from "./ScrollToComments";
 import { InfiniteComments } from "@/app/components/InfiniteComments/InfiniteComments";
 import { NewCommentsProvider } from "./NewCommentsProvider";
 
@@ -29,8 +30,11 @@ export async function AllComments({
     if (parentComment) {
       return (
         <NewCommentsProvider>
+          <ScrollToComments />
           <div className="flex flex-row flex-wrap items-center gap-2 pb-2 pt-16">
-            <h2 className="text-2xl">Comment Thread</h2>
+            <h2 id="all-comments-title" className="text-2xl">
+              Comment Thread
+            </h2>
             <Link href={`/polls/${pollId}`}>Back to Main Poll Discussion</Link>
           </div>
           <CommentCard comment={parentComment} isViewingReplies={true} />
@@ -43,7 +47,10 @@ export async function AllComments({
 
   return (
     <NewCommentsProvider>
-      <h2 className="pb-2 pt-16 text-2xl">Comments</h2>
+      <ScrollToComments />
+      <h2 id="all-comments-title" className="pb-2 pt-16 text-2xl">
+        Comments
+      </h2>
       <InfiniteComments pollId={pollId} parentId={parentId} />
       <div className="sticky bottom-0 bg-gradient-to-t from-background from-80%">
         {userId ? (
