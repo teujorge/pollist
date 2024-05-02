@@ -320,7 +320,7 @@ export function PollCardActions({
     <div className="relative">
       <div
         className={cn(
-          "absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-2 rounded-lg border border-accent bg-background p-2 text-center sm:gap-4 sm:p-4",
+          "absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-2 rounded-lg border border-accent bg-background bg-opacity-100 p-2 text-center sm:gap-4 sm:p-4",
           !isBlockedUser && !isSensitiveContent && "hidden",
         )}
       >
