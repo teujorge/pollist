@@ -52,7 +52,10 @@ export function Header() {
           <ClerkUserButton />
         ) : (
           <SignInButton mode="modal">
-            <button className="transition-colors hovact:text-purple-500">
+            <button
+              id="header-sign-in-button"
+              className="transition-colors hovact:text-purple-500"
+            >
               Sign in
             </button>
           </SignInButton>

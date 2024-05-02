@@ -7,7 +7,6 @@ import { getUser } from "@/app/(with-auth)/users/actions";
 import { useQuery } from "@tanstack/react-query";
 import { ProfileImage } from "../ProfileImage";
 import { PollCardActions } from "@/app/components/PollCard/PollCardActions";
-import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import {
   cn,
   shouldShowSensitiveContent,
@@ -40,15 +39,6 @@ export function PollCard({
     poll.authorId,
     poll.sensitive,
     user?.viewSensitive,
-  );
-
-  const pollCardActions = (
-    <PollCardActions
-      poll={poll}
-      blurContent={!showContent}
-      highlightedUserId={highlightedUserId}
-      showCommentsButton={showCommentsButton}
-    />
   );
 
   return (
@@ -102,12 +92,12 @@ export function PollCard({
         </h2>
       </Link>
 
-      <SignedIn>{pollCardActions}</SignedIn>
-      <SignedOut>
-        <SignInButton mode="modal">
-          <button className="w-full text-left">{pollCardActions}</button>
-        </SignInButton>
-      </SignedOut>
+      <PollCardActions
+        poll={poll}
+        blurContent={!showContent}
+        highlightedUserId={highlightedUserId}
+        showCommentsButton={showCommentsButton}
+      />
     </div>
   );
 }

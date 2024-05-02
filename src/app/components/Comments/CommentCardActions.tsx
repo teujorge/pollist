@@ -238,35 +238,37 @@ export function CommentCardActions() {
               <Copy size={15} /> Copy
             </Button>
 
-            {user?.id !== comment.authorId && (
-              <PopoverClose asChild>
-                <Button
-                  variant="popover"
-                  className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
-                  onClick={async () => {
-                    setBlockedUsers((prev) => [
-                      ...prev,
-                      {
-                        id: comment.authorId,
-                        username: comment.author.username,
-                        imageUrl: comment.author.imageUrl,
-                      },
-                    ]);
-                    try {
-                      await blockUser(comment.authorId);
-                    } catch (error) {
-                      toast.error("Failed to block user");
-                      setBlockedUsers((prev) =>
-                        prev.filter((user) => user.id !== comment.authorId),
-                      );
-                    }
-                  }}
-                >
-                  <Warning size={15} />
-                  Block user
-                </Button>
-              </PopoverClose>
-            )}
+            <SignedIn>
+              {user?.id !== comment.authorId && (
+                <PopoverClose asChild>
+                  <Button
+                    variant="popover"
+                    className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
+                    onClick={async () => {
+                      setBlockedUsers((prev) => [
+                        ...prev,
+                        {
+                          id: comment.authorId,
+                          username: comment.author.username,
+                          imageUrl: comment.author.imageUrl,
+                        },
+                      ]);
+                      try {
+                        await blockUser(comment.authorId);
+                      } catch (error) {
+                        toast.error("Failed to block user");
+                        setBlockedUsers((prev) =>
+                          prev.filter((user) => user.id !== comment.authorId),
+                        );
+                      }
+                    }}
+                  >
+                    <Warning size={15} />
+                    Block user
+                  </Button>
+                </PopoverClose>
+              )}
+            </SignedIn>
 
             {user?.id === comment.authorId && (
               <DeleteAlertDialog

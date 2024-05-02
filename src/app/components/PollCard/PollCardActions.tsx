@@ -304,6 +304,10 @@ export function PollCardActions({
     setIsLikePending(false);
   }
 
+  function handleSignInModal() {
+    document.getElementById("header-sign-in-button")?.click();
+  }
+
   const optionIdToHighlight = optimisticPoll.votes.find(
     (vote) => vote.voterId === highlightedUserId,
   )?.optionId;
@@ -366,7 +370,7 @@ export function PollCardActions({
             "pointer-events-none select-none blur-sm",
         )}
       >
-        <ul>
+        <ul onClick={user ? undefined : handleSignInModal}>
           {optimisticPoll.options.map((option) => {
             const votePercentage =
               optimisticPoll.votes.length === 0
@@ -459,7 +463,7 @@ export function PollCardActions({
                 (optimisticPoll.likes?.length ?? 0) > 0 &&
                   "[&>*]:text-primary [&>*]:hovact:text-purple-400",
               )}
-              onClick={user ? handleLike : undefined}
+              onClick={user ? handleLike : handleSignInModal}
             >
               <ArrowFatUp size={20} />
               <span className="transition-colors">
@@ -482,7 +486,7 @@ export function PollCardActions({
           <div className="flex flex-row">
             {showCommentsButton && (
               <Link
-                href={`/polls/${poll.id}`}
+                href={`/polls/${poll.id}?comments=true`}
                 className={cn(
                   buttonVariants({ variant: "ghost", size: "sm" }),
                   "flex flex-row items-center justify-center gap-2 font-bold transition-colors",
@@ -495,58 +499,60 @@ export function PollCardActions({
 
             <SharePopover text={poll.title} pathname={"/polls/" + poll.id} />
 
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button size="sm" variant="ghost">
-                  <DotsThree size={20} />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent align="end" className="py-2">
-                <PopoverClose asChild>
-                  <Link
-                    href={`/polls/${poll.id}/boost`}
-                    className={cn(
-                      buttonVariants({ variant: "popover" }),
-                      "hovact:bg-primary/20 hovact:text-primary",
-                    )}
-                  >
-                    <Star size={15} />
-                    Boost this poll
-                  </Link>
-                </PopoverClose>
-                {user?.id === poll.authorId ? (
-                  <DeletePollForm poll={poll} />
-                ) : (
+            <SignedIn>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button size="sm" variant="ghost">
+                    <DotsThree size={20} />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="py-2">
                   <PopoverClose asChild>
-                    <Button
-                      variant="popover"
-                      className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
-                      onClick={async () => {
-                        setBlockedUsers((prev) => [
-                          ...prev,
-                          {
-                            id: poll.authorId,
-                            username: poll.author.username,
-                            imageUrl: poll.author.imageUrl,
-                          },
-                        ]);
-                        try {
-                          await blockUser(poll.authorId);
-                        } catch (error) {
-                          toast.error("Failed to block user");
-                          setBlockedUsers((prev) =>
-                            prev.filter((user) => user.id !== poll.authorId),
-                          );
-                        }
-                      }}
+                    <Link
+                      href={`/polls/${poll.id}/boost`}
+                      className={cn(
+                        buttonVariants({ variant: "popover" }),
+                        "hovact:bg-primary/20 hovact:text-primary",
+                      )}
                     >
-                      <Warning size={15} />
-                      Block user
-                    </Button>
+                      <Star size={15} />
+                      Boost this poll
+                    </Link>
                   </PopoverClose>
-                )}
-              </PopoverContent>
-            </Popover>
+                  {user?.id === poll.authorId ? (
+                    <DeletePollForm poll={poll} />
+                  ) : (
+                    <PopoverClose asChild>
+                      <Button
+                        variant="popover"
+                        className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
+                        onClick={async () => {
+                          setBlockedUsers((prev) => [
+                            ...prev,
+                            {
+                              id: poll.authorId,
+                              username: poll.author.username,
+                              imageUrl: poll.author.imageUrl,
+                            },
+                          ]);
+                          try {
+                            await blockUser(poll.authorId);
+                          } catch (error) {
+                            toast.error("Failed to block user");
+                            setBlockedUsers((prev) =>
+                              prev.filter((user) => user.id !== poll.authorId),
+                            );
+                          }
+                        }}
+                      >
+                        <Warning size={15} />
+                        Block user
+                      </Button>
+                    </PopoverClose>
+                  )}
+                </PopoverContent>
+              </Popover>
+            </SignedIn>
           </div>
         </div>
 
