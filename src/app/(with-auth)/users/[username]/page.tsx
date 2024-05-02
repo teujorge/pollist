@@ -6,6 +6,7 @@ import { Loader } from "@/app/components/Loader";
 import { getUser } from "../actions";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import { BlockButton } from "../components/BlockButton";
 import { ProfileImage } from "@/app/components/ProfileImage";
 import { FollowButton } from "@/app/(with-auth)/users/components/FollowButton";
 import { InfinitePolls } from "@/app/components/InfinitePolls/InfinitePolls";
@@ -64,7 +65,12 @@ export default async function UserPage({ params }: Props) {
         <div className="flex flex-col justify-around gap-2">
           <div className="flex items-center gap-2">
             <h1>{user.username}</h1>
-            {myId && <FollowButton userId={user.id} />}
+            {myId && (
+              <>
+                <FollowButton userId={user.id} />
+                <BlockButton user={user} />
+              </>
+            )}
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-4">
             <Stat label="polls" count={user._count.polls} />
