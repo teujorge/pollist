@@ -3,13 +3,13 @@
 import Script from "next/script";
 import GlobalLoading from "../loading";
 import { toast } from "sonner";
-import { useUser } from "@clerk/nextjs";
 import { QueryProvider } from "./_providers/QueryProvider";
 import { getUserSettings } from "./actions";
 import { CSPostHogProvider } from "./_providers/PosthogProvider";
 import { useCustomScrollbar } from "../hooks/useCustomScrollbar";
 import { getNotificationsItems } from "../components/Header/actions";
 import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
+import { ClerkLoaded, ClerkLoading, useUser } from "@clerk/nextjs";
 import {
   Suspense,
   useState,
@@ -184,7 +184,12 @@ export function App({ children }: { children: React.ReactNode }) {
               strategy="lazyOnload"
             />
           )}
-          <Suspense fallback={<GlobalLoading />}>{children}</Suspense>
+          <Suspense fallback={<GlobalLoading />}>
+            <ClerkLoading>
+              <GlobalLoading />
+            </ClerkLoading>
+            <ClerkLoaded>{children}</ClerkLoaded>
+          </Suspense>
         </AppProvider>
       </QueryProvider>
     </CSPostHogProvider>
