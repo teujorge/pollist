@@ -83,8 +83,7 @@ export function PollCard({
         href={`/polls/${poll.id}`}
         className={cn(
           "w-fit",
-          (!showContent || isUserBlocked(poll.authorId)) &&
-            "pointer-events-none select-none line-through decoration-accent-foreground decoration-[14px] opacity-50",
+          (!showContent || isUserBlocked(poll.authorId)) && "redacted",
         )}
       >
         <h2 className="text-2xl font-bold">

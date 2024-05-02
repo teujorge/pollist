@@ -321,8 +321,7 @@ export function PollCardActions({
       <div
         className={cn(
           "relative flex h-full w-full flex-grow flex-col gap-2 pt-2",
-          (isBlockedUser || isSensitiveContent) &&
-            "pointer-events-none select-none line-through decoration-accent-foreground decoration-8 opacity-50",
+          (isBlockedUser || isSensitiveContent) && "redacted",
         )}
       >
         <ul onClick={user ? undefined : handleSignInModal}>

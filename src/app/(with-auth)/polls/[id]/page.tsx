@@ -84,8 +84,7 @@ export default async function PollPage({ params, searchParams }: Props) {
         <h1
           className={cn(
             "hyphens-auto break-words text-2xl font-semibold",
-            !showContent &&
-              "pointer-events-none select-none line-through decoration-accent-foreground decoration-[14px] opacity-50",
+            !showContent && "redacted",
           )}
         >
           {uppercaseFirstLetterOfEachSentence(poll.title)}
@@ -95,8 +94,7 @@ export default async function PollPage({ params, searchParams }: Props) {
           <h2
             className={cn(
               "hyphens-auto break-words text-accent-foreground",
-              !showContent &&
-                "pointer-events-none select-none line-through decoration-accent-foreground decoration-[9px] opacity-50",
+              !showContent && "redacted",
             )}
           >
             {uppercaseFirstLetterOfEachSentence(poll.description)}

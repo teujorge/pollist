@@ -90,10 +90,7 @@ export function CommentCard({
                 </Link>
               )}
               <span
-                className={cn(
-                  isUserBlocked(comment.authorId) &&
-                    "select-none line-through decoration-accent-foreground decoration-8 opacity-50",
-                )}
+                className={cn(isUserBlocked(comment.authorId) && "redacted")}
               >
                 {comment.text}
               </span>

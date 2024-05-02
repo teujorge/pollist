@@ -159,6 +159,13 @@ a:active {
   }
 }
 
+.redacted {
+  position: relative;
+  color: transparent;
+  user-select: none;
+  background-color: rgb(var(--color-accent));
+}
+
 .shimmer {
   width: fit-content;
   color: transparent;
