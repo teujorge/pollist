@@ -92,7 +92,7 @@ export function CommentCard({
               <span
                 className={cn(
                   isUserBlocked(comment.authorId) &&
-                    "line-through decoration-accent-foreground decoration-8",
+                    "select-none line-through decoration-accent-foreground decoration-8 opacity-50",
                 )}
               >
                 {comment.text}

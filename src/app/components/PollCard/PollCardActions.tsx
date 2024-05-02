@@ -58,12 +58,12 @@ const TriggerNotificationSeen = dynamic(
 
 type PollCardActionsProps = Omit<PollCardProps, "userId"> & {
   showChart?: boolean;
-  blurContent: boolean;
+  isSensitiveContent: boolean;
 };
 
 export function PollCardActions({
   poll,
-  blurContent,
+  isSensitiveContent,
   highlightedUserId,
   showChart,
   showCommentsButton,
@@ -71,7 +71,7 @@ export function PollCardActions({
   const { user } = useUser();
 
   const { notifications, setBlockedUsers, isUserBlocked } = useApp();
-  const isBlocked = isUserBlocked(poll.authorId);
+  const isBlockedUser = isUserBlocked(poll.authorId);
 
   const supabaseChannelRef: MutableRefObject<RealtimeChannel | undefined> =
     useRef();
@@ -321,12 +321,12 @@ export function PollCardActions({
       <div
         className={cn(
           "absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-2 rounded-lg border border-accent bg-background p-2 text-center sm:gap-4 sm:p-4",
-          !isBlocked && !blurContent && "hidden",
+          !isBlockedUser && !isSensitiveContent && "hidden",
         )}
       >
         <SignedIn>
           <p className="text-sm text-accent-foreground">
-            {isBlocked
+            {isBlockedUser
               ? "This user is blocked"
               : "This poll contains sensitive content"}
           </p>
@@ -348,7 +348,7 @@ export function PollCardActions({
               }
             }}
           >
-            {isBlocked ? "Unblock user" : "Show content"}
+            {isBlockedUser ? "Unblock user" : "Show content"}
           </Button>
         </SignedIn>
         <SignedOut>
@@ -366,8 +366,8 @@ export function PollCardActions({
       <div
         className={cn(
           "relative flex h-full w-full flex-grow flex-col gap-2 pt-2",
-          (isBlocked || blurContent) &&
-            "pointer-events-none select-none blur-sm",
+          (isBlockedUser || isSensitiveContent) &&
+            "pointer-events-none select-none line-through decoration-accent-foreground decoration-8 opacity-50",
         )}
       >
         <ul onClick={user ? undefined : handleSignInModal}>
@@ -434,7 +434,7 @@ export function PollCardActions({
                 </div>
 
                 {/* optional option image */}
-                {option.imagePath && (
+                {option.imagePath && !isBlockedUser && !isSensitiveContent && (
                   <div className="overflow-hidden rounded-lg object-cover">
                     <Image
                       src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/polls/${option.imagePath}`}

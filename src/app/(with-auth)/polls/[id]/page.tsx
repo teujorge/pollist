@@ -84,7 +84,8 @@ export default async function PollPage({ params, searchParams }: Props) {
         <h1
           className={cn(
             "hyphens-auto break-words text-2xl font-semibold",
-            !showContent && "pointer-events-none select-none blur-sm",
+            !showContent &&
+              "pointer-events-none select-none line-through decoration-accent-foreground decoration-[14px] opacity-50",
           )}
         >
           {uppercaseFirstLetterOfEachSentence(poll.title)}
@@ -94,7 +95,8 @@ export default async function PollPage({ params, searchParams }: Props) {
           <h2
             className={cn(
               "hyphens-auto break-words text-accent-foreground",
-              !showContent && "pointer-events-none select-none blur-sm",
+              !showContent &&
+                "pointer-events-none select-none line-through decoration-accent-foreground decoration-[9px] opacity-50",
             )}
           >
             {uppercaseFirstLetterOfEachSentence(poll.description)}
@@ -105,7 +107,7 @@ export default async function PollPage({ params, searchParams }: Props) {
       {/* poll interaction */}
       <PollCardActions
         poll={poll}
-        blurContent={!showContent}
+        isSensitiveContent={!showContent}
         showChart={true}
         showCommentsButton={false}
       />

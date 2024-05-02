@@ -84,7 +84,7 @@ export function PollCard({
         className={cn(
           "w-fit",
           (!showContent || isUserBlocked(poll.authorId)) &&
-            "pointer-events-none select-none blur-sm",
+            "pointer-events-none select-none line-through decoration-accent-foreground decoration-[14px] opacity-50",
         )}
       >
         <h2 className="text-2xl font-bold">
@@ -94,7 +94,7 @@ export function PollCard({
 
       <PollCardActions
         poll={poll}
-        blurContent={!showContent}
+        isSensitiveContent={!showContent}
         highlightedUserId={highlightedUserId}
         showCommentsButton={showCommentsButton}
       />
