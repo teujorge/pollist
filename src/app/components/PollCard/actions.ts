@@ -2,6 +2,7 @@
 
 import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
+import { sendAPN } from "@/app/(with-auth)/actions";
 import { defaultRatelimit } from "@/server/ratelimit";
 import { handlePrismaError } from "@/server/error";
 
@@ -100,6 +101,10 @@ export async function handleLikePoll({
           },
         },
       },
+      select: {
+        id: true,
+        author: { select: { username: true } },
+      },
     });
 
     if (pollLike) {
@@ -107,20 +112,28 @@ export async function handleLikePoll({
         return;
       }
 
-      await db.notificationPollLike.create({
-        data: {
-          pollLike: {
-            connect: {
-              id: pollLike.id,
+      await db.notificationPollLike
+        .create({
+          data: {
+            pollLike: {
+              connect: {
+                id: pollLike.id,
+              },
+            },
+            notifyee: {
+              connect: {
+                id: pollAuthorId,
+              },
             },
           },
-          notifyee: {
-            connect: {
-              id: pollAuthorId,
-            },
-          },
-        },
-      });
+        })
+        .then(async () => {
+          await sendAPN({
+            userId: pollAuthorId,
+            title: "Your Poll Got a Like! 👍",
+            body: `${pollLike.author.username} liked your poll.`,
+          });
+        });
     }
   } catch (error) {
     throw new Error(handlePrismaError(error));

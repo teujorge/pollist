@@ -2,6 +2,7 @@
 
 import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
+import { sendAPN } from "@/app/(with-auth)/actions";
 import { currentUser } from "@clerk/nextjs/server";
 import { commentSelect } from "../InfiniteComments/commentSelect";
 import { defaultRatelimit } from "@/server/ratelimit";
@@ -99,6 +100,13 @@ export async function createComment({
           commentId: newComment.id,
         },
       })
+      .then(async () => {
+        await sendAPN({
+          userId: notifyeeId,
+          title: "New Comment on Your Poll 📝",
+          body: `${user.username} left a comment on your poll.`,
+        });
+      })
       .catch((error) => {
         console.error("Error creating notification", error);
       });
@@ -184,10 +192,12 @@ export async function likeComment({
           },
         },
       },
-      include: {
+      select: {
+        id: true,
         comment: {
           select: { authorId: true },
         },
+        author: { select: { username: true } },
       },
     });
 
@@ -198,6 +208,13 @@ export async function likeComment({
             commentLikeId: like.id,
             notifyeeId: like.comment.authorId,
           },
+        })
+        .then(async () => {
+          await sendAPN({
+            userId: like.comment.authorId,
+            title: "Your Comment was Liked! ❤️",
+            body: `${like.author.username} liked your comment.`,
+          });
         })
         .catch((error) => {
           console.error("Error creating notification", error);

@@ -86,8 +86,8 @@ export async function follow(userId: string) {
         .then(async () => {
           await sendAPN({
             userId: userId,
-            title: "Follow Request",
-            body: `${newFollow.follower.username} wants to follow you.`,
+            title: "New Follow Request 🌟",
+            body: `${newFollow.follower.username} wants to connect with you!`,
           });
         })
         .catch((error) => {
@@ -248,7 +248,7 @@ export async function acceptFollow(followerId: string) {
           .then(async () => {
             await sendAPN({
               userId: followerId,
-              title: "New Follower",
+              title: "Follow Request Accepted! 🎉",
               body: `${updatedFollow.followee.username} accepted your follow request.`,
             });
           })
