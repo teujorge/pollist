@@ -30,6 +30,7 @@ export type NotificationFollowAcceptedItem =
 const notificationsPollLikeSelect = {
   pollLike: {
     select: {
+      createdAt: true,
       poll: { select: { id: true, title: true } },
       author: { select: { id: true, username: true } },
     },
@@ -50,6 +51,7 @@ export async function getNotificationsPollLikeRelation(notificationId: string) {
 const notificationsCommentSelect = {
   comment: {
     select: {
+      createdAt: true,
       author: { select: { id: true, username: true } },
       parent: { select: { id: true, text: true } },
       poll: { select: { id: true, title: true } },
@@ -71,6 +73,7 @@ export async function getNotificationsCommentRelation(notificationId: string) {
 const notificationsCommentLikeSelect = {
   commentLike: {
     select: {
+      createdAt: true,
       author: { select: { id: true, username: true } },
       comment: {
         select: {
@@ -99,6 +102,7 @@ export async function getNotificationsCommentLikeRelation(
 const notificationsFollowPendingSelect = {
   follow: {
     select: {
+      createdAt: true,
       follower: {
         select: { id: true, username: true, imageUrl: true },
       },
@@ -122,6 +126,7 @@ export async function getNotificationsFollowPendingRelation(
 const notificationsFollowAcceptedSelect = {
   follow: {
     select: {
+      createdAt: true,
       followee: {
         select: { id: true, username: true, imageUrl: true },
       },
