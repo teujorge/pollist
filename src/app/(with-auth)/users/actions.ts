@@ -2,6 +2,7 @@
 
 import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
+import { sendAPN } from "../actions";
 import { defaultRatelimit } from "@/server/ratelimit";
 import { handlePrismaError } from "@/server/error";
 import { revalidatePath, revalidateTag } from "next/cache";
@@ -75,12 +76,19 @@ export async function follow(userId: string) {
     });
 
     if (newFollow) {
-      await db.notificationFollowPending
+      db.notificationFollowPending
         .create({
           data: {
             followId: newFollow.id,
             notifyeeId: userId,
           },
+        })
+        .then(async () => {
+          await sendAPN({
+            userId: userId,
+            title: "Follow Request",
+            body: `${newFollow.follower.username} wants to follow you.`,
+          });
         })
         .catch((error) => {
           console.error("Error creating follow notification", error);
@@ -180,7 +188,7 @@ export async function declineFollow(followerId: string) {
     });
 
     if (declinedFollow) {
-      await db.notificationFollowPending
+      db.notificationFollowPending
         .deleteMany({
           where: { followId: declinedFollow.id },
         })
@@ -230,12 +238,19 @@ export async function acceptFollow(followerId: string) {
         });
 
       if (removedPendingFollow) {
-        await db.notificationFollowAccepted
+        db.notificationFollowAccepted
           .create({
             data: {
               followId: updatedFollow.id,
               notifyeeId: followerId,
             },
+          })
+          .then(async () => {
+            await sendAPN({
+              userId: followerId,
+              title: "New Follower",
+              body: `${updatedFollow.followee.username} accepted your follow request.`,
+            });
           })
           .catch((error) => {
             console.error("Error creating follow accept notification", error);
