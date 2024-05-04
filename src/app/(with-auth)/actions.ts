@@ -116,8 +116,7 @@ export async function sendAPN({
     );
 
     const notification = new apn.Notification();
-    notification.alert = title;
-    notification.payload = { message: body };
+    notification.alert = { title, body };
     notification.sound = "default";
     notification.badge = notificationCount;
     notification.topic = process.env.APNS_BUNDLE_ID!;
