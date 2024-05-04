@@ -26,8 +26,6 @@ export function BlockedUsersList() {
   useEffect(() => {
     if (!initedRef.current) return;
 
-    console.log("here yo!");
-
     const div = animatedDivRef.current;
     if (!div) return;
     if (!styles.hiding) return;
