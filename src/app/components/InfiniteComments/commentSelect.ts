@@ -5,10 +5,9 @@ export const commentSelect = (userId: string | undefined) => {
     parentId: true,
     text: true,
     at: true,
-    authorId: true,
     createdAt: true,
     updatedAt: true,
-    author: { select: { username: true, imageUrl: true } },
+    author: { select: { id: true, username: true, imageUrl: true } },
     parent: {
       select: {
         authorId: true,

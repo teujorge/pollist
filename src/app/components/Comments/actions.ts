@@ -194,9 +194,12 @@ export async function likeComment({
       },
       select: {
         id: true,
+        createdAt: true,
+        commentId: true,
         comment: {
           select: { authorId: true },
         },
+        authorId: true,
         author: { select: { username: true } },
       },
     });

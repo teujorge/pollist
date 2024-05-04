@@ -37,7 +37,7 @@ export function CommentCard({
     (n) => n.commentLike.comment.id === comment.id,
   );
   const showPurpleForUnreadLike =
-    (user && user.id === comment.authorId && isLikeUnread) ?? false;
+    (user && user.id === comment.author.id && isLikeUnread) ?? false;
 
   return (
     <CommentCardContextProvider
@@ -90,7 +90,7 @@ export function CommentCard({
                 </Link>
               )}
               <span
-                className={cn(isUserBlocked(comment.authorId) && "redacted")}
+                className={cn(isUserBlocked(comment.author.id) && "redacted")}
               >
                 {comment.text}
               </span>

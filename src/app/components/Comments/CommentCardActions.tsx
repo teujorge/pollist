@@ -239,7 +239,7 @@ export function CommentCardActions() {
             </Button>
 
             <SignedIn>
-              {user?.id !== comment.authorId && (
+              {user?.id !== comment.author.id && (
                 <PopoverClose asChild>
                   <Button
                     variant="popover"
@@ -248,17 +248,17 @@ export function CommentCardActions() {
                       setBlockedUsers((prev) => [
                         ...prev,
                         {
-                          id: comment.authorId,
+                          id: comment.author.id,
                           username: comment.author.username,
                           imageUrl: comment.author.imageUrl,
                         },
                       ]);
                       try {
-                        await blockUser(comment.authorId);
+                        await blockUser(comment.author.id);
                       } catch (error) {
                         toast.error("Failed to block user");
                         setBlockedUsers((prev) =>
-                          prev.filter((user) => user.id !== comment.authorId),
+                          prev.filter((user) => user.id !== comment.author.id),
                         );
                       }
                     }}
@@ -270,7 +270,7 @@ export function CommentCardActions() {
               )}
             </SignedIn>
 
-            {user?.id === comment.authorId && (
+            {user?.id === comment.author.id && (
               <DeleteAlertDialog
                 awaitType="promise"
                 onDelete={handleDeleteComment}
