@@ -68,9 +68,13 @@ export async function sendAPN({
 }) {
   const { userId: myId } = auth();
 
+  console.log("Sending APN notification");
+
   if (!myId) {
     throw new Error("Unauthorized");
   }
+
+  console.log("Creating APN provider object");
 
   const apnProvider = new apn.Provider({
     token: {
@@ -80,6 +84,8 @@ export async function sendAPN({
     },
     production: true,
   });
+
+  console.log("Created APN notification object");
 
   const notification = new apn.Notification({
     alert: {
@@ -92,10 +98,14 @@ export async function sendAPN({
   });
 
   try {
+    console.log("Getting notification recipient device token");
+
     const user = await db.user.findUnique({
       where: { id: userId },
       select: { deviceToken: true },
     });
+
+    console.log("Sending APN notification to device token:", user?.deviceToken);
 
     if (!user?.deviceToken) return;
 
