@@ -78,7 +78,7 @@ export async function sendAPN({
       keyId: process.env.APNS_KEY_ID!,
       teamId: process.env.APNS_TEAM_ID!,
     },
-    production: process.env.NODE_ENV === "production" ? true : false,
+    production: true,
   });
 
   const notification = new apn.Notification({
@@ -88,7 +88,7 @@ export async function sendAPN({
     },
     sound: "default",
     badge: 1,
-    topic: "com.mjorge.ipollist", // Your app bundle identifier
+    topic: process.env.APNS_BUNDLE_ID!,
   });
 
   try {
@@ -104,6 +104,7 @@ export async function sendAPN({
     console.log("Failed:", response.failed.length);
     console.log(response.failed);
   } catch (e) {
+    console.error("Error sending APN notification");
     console.error(e);
   }
 
