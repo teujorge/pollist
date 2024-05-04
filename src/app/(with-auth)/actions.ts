@@ -74,18 +74,18 @@ export async function sendAPN({
     throw new Error("Unauthorized");
   }
 
-  console.log("Creating APN provider object");
+  const key = Buffer.from(process.env.APNS_KEY!, "base64").toString("ascii");
+  console.log("APN key:", key);
 
+  console.log("Creating APN provider object");
   const apnProvider = new apn.Provider({
     token: {
-      key: Buffer.from(process.env.APNS_KEY!, "base64").toString("ascii"),
+      key: key,
       keyId: process.env.APNS_KEY_ID!,
       teamId: process.env.APNS_TEAM_ID!,
     },
     production: process.env.NODE_ENV === "production",
   });
-
-  console.log("Created APN notification object");
 
   const notification = new apn.Notification({
     alert: {
@@ -96,6 +96,7 @@ export async function sendAPN({
     badge: 1,
     topic: process.env.APNS_BUNDLE_ID!,
   });
+  console.log("Created APN notification object", notification);
 
   try {
     console.log("Getting notification recipient device token");
