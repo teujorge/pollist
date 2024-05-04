@@ -2,9 +2,9 @@
 
 import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
-import { sendAPN } from "../actions";
 import { defaultRatelimit } from "@/server/ratelimit";
 import { handlePrismaError } from "@/server/error";
+import { sendAPN, silentlyUpdateAPN } from "../actions";
 import { revalidatePath, revalidateTag } from "next/cache";
 
 export type GetUser = NonNullable<Awaited<ReturnType<typeof getUser>>>;
@@ -191,6 +191,9 @@ export async function declineFollow(followerId: string) {
       db.notificationFollowPending
         .deleteMany({
           where: { followId: declinedFollow.id },
+        })
+        .then(async () => {
+          await silentlyUpdateAPN();
         })
         .catch((error) => {
           console.error("Error deleting follow notification", error);

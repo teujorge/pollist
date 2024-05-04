@@ -2,11 +2,11 @@
 
 import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
-import { sendAPN } from "@/app/(with-auth)/actions";
 import { currentUser } from "@clerk/nextjs/server";
 import { commentSelect } from "../InfiniteComments/commentSelect";
 import { defaultRatelimit } from "@/server/ratelimit";
 import { handlePrismaError } from "@/server/error";
+import { sendAPN, silentlyUpdateAPN } from "@/app/(with-auth)/actions";
 
 export async function createComment({
   pollId,
@@ -136,6 +136,8 @@ export async function acknowledgeCommentReply({
       },
     });
 
+    await silentlyUpdateAPN();
+
     return notification;
   } catch (error) {
     throw new Error(handlePrismaError(error));
@@ -162,6 +164,8 @@ export async function acknowledgeCommentLike({
         notifyeeId: userId,
       },
     });
+
+    await silentlyUpdateAPN();
 
     return notification;
   } catch (error) {
@@ -254,6 +258,9 @@ export async function unlikeComment({
         .deleteMany({
           where: { commentLikeId: unlike.id },
         })
+        .then(async () => {
+          await silentlyUpdateAPN();
+        })
         .catch((error) => {
           console.error("Error deleting notification", error);
         });
@@ -284,6 +291,9 @@ export async function deleteComment({ commentId }: { commentId: string }) {
       await db.notificationComment
         .deleteMany({
           where: { commentId: commentId },
+        })
+        .then(async () => {
+          await silentlyUpdateAPN();
         })
         .catch((error) => {
           console.error("Error deleting COMMENT_REPLY notifications", error);

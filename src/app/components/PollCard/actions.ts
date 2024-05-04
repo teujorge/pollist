@@ -2,9 +2,9 @@
 
 import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
-import { sendAPN } from "@/app/(with-auth)/actions";
 import { defaultRatelimit } from "@/server/ratelimit";
 import { handlePrismaError } from "@/server/error";
+import { sendAPN, silentlyUpdateAPN } from "@/app/(with-auth)/actions";
 
 export async function handleVote({
   userId,
@@ -164,6 +164,7 @@ export async function handleUnlikePoll({ pollId }: { pollId: string }) {
           },
         },
       });
+      await silentlyUpdateAPN();
     }
   } catch (error) {
     throw new Error(handlePrismaError(error));
@@ -207,6 +208,8 @@ export async function acknowledgePollLike({
         notifyeeId: userId,
       },
     });
+
+    await silentlyUpdateAPN();
 
     return notifications;
   } catch (error) {

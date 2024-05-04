@@ -3,6 +3,7 @@
 import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { handlePrismaError } from "@/server/error";
+import { silentlyUpdateAPN } from "@/app/(with-auth)/actions";
 
 export type NotificationType =
   | "PollLikeNotification"
@@ -183,35 +184,44 @@ export async function removeNotifications({
   type: NotificationType;
 }) {
   try {
+    let batch;
+
     switch (type) {
       case "PollLikeNotification":
-        return await db.notificationPollLike.deleteMany({
+        batch = await db.notificationPollLike.deleteMany({
           where: { id: { in: ids } },
         });
+        break;
 
       case "FollowPendingNotification":
-        return await db.notificationFollowPending.deleteMany({
+        batch = await db.notificationFollowPending.deleteMany({
           where: { id: { in: ids } },
         });
+        break;
 
       case "FollowAcceptedNotification":
-        return await db.notificationFollowAccepted.deleteMany({
+        batch = await db.notificationFollowAccepted.deleteMany({
           where: { id: { in: ids } },
         });
+        break;
 
       case "CommentNotification":
-        return await db.notificationComment.deleteMany({
+        batch = await db.notificationComment.deleteMany({
           where: { id: { in: ids } },
         });
+        break;
 
       case "CommentLikeNotification":
-        return await db.notificationCommentLike.deleteMany({
+        batch = await db.notificationCommentLike.deleteMany({
           where: { id: { in: ids } },
         });
+        break;
 
       default:
         throw new Error("Unknown notification type");
     }
+    await silentlyUpdateAPN();
+    return batch;
   } catch (error) {
     throw new Error(handlePrismaError(error));
   }
