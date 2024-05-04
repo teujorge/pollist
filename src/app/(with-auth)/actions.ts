@@ -87,28 +87,41 @@ export async function sendAPN({
     production: process.env.NODE_ENV === "production",
   });
 
-  const notification = new apn.Notification({
-    alert: {
-      title: title,
-      body: body,
-    },
-    sound: "default",
-    badge: 1,
-    topic: process.env.APNS_BUNDLE_ID!,
-  });
-  console.log("Created APN notification object", notification);
-
   try {
     console.log("Getting notification recipient device token");
 
     const user = await db.user.findUnique({
       where: { id: userId },
-      select: { deviceToken: true },
+      select: {
+        deviceToken: true,
+        _count: {
+          select: {
+            notificationsComment: true,
+            notificationsCommentLike: true,
+            notificationsFollowAccepted: true,
+            notificationsFollowPending: true,
+            notificationsPollLike: true,
+          },
+        },
+      },
     });
 
     console.log("Sending APN notification to device token:", user?.deviceToken);
 
     if (!user?.deviceToken) return;
+
+    const notificationCount = Object.values(user._count).reduce(
+      (acc, count) => acc + count,
+      0,
+    );
+
+    const notification = new apn.Notification();
+    notification.alert = title;
+    notification.payload = { message: body };
+    notification.sound = "default";
+    notification.badge = notificationCount;
+    notification.topic = process.env.APNS_BUNDLE_ID!;
+    console.log("Created APN notification object", notification);
 
     const response = await apnProvider.send(notification, user.deviceToken);
     console.log("Sent:", response.sent.length);
