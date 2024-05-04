@@ -27,8 +27,11 @@ export function FilterBar() {
   // save the source param ->
   useEffect(() => {
     for (const [key, value] of params.entries()) {
-      if (key === "source" && value === "iosWebView") {
+      if (key === "source") {
         localStorage.setItem("source", value);
+      }
+      if (key === "deviceToken") {
+        localStorage.setItem("deviceToken", value);
       }
     }
   }, [params]);

@@ -22,6 +22,7 @@ model User {
   private                     Boolean                      @default(false)
   viewSensitive               Boolean                      @default(false)
   clerkId                     String?                      @unique
+  deviceToken                 String?
   tier                        SubTier                      @default(FREE)
   votes                       Vote[]
   polls                       Poll[]

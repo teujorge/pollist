@@ -4,12 +4,12 @@ import Script from "next/script";
 import GlobalLoading from "../loading";
 import { toast } from "sonner";
 import { QueryProvider } from "./_providers/QueryProvider";
-import { getUserSettings } from "./actions";
 import { CSPostHogProvider } from "./_providers/PosthogProvider";
 import { useCustomScrollbar } from "../hooks/useCustomScrollbar";
 import { getNotificationsItems } from "../components/Header/actions";
 import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
 import { ClerkLoaded, ClerkLoading, useUser } from "@clerk/nextjs";
+import { getUserSettings, updateUserDeviceToken } from "./actions";
 import {
   Suspense,
   useState,
@@ -86,6 +86,7 @@ export function App({ children }: { children: React.ReactNode }) {
         toast.error("Failed to get user settings");
         return;
       }
+
       setBlockedUsers(userSettings.blockerUsers.map((u) => u.blockee));
       if (userSettings.tier === "FREE") setAds(true);
       else setAds(false);
@@ -111,6 +112,21 @@ export function App({ children }: { children: React.ReactNode }) {
             (notification) => !isUserBlocked(notification.follow.followee.id),
           ),
         });
+      }
+
+      // Ensure deviceToken is up to date
+      const currentDeviceToken = localStorage.getItem("deviceToken");
+      if (
+        currentDeviceToken !== null &&
+        currentDeviceToken !== userSettings.deviceToken
+      ) {
+        updateUserDeviceToken(user.id, currentDeviceToken)
+          .then((user) => {
+            console.log("Device token updated:", user);
+          })
+          .catch((e) => {
+            console.error(e);
+          });
       }
     }
 
