@@ -42,10 +42,7 @@ export async function updateUserDeviceToken(
   deviceToken: string,
 ) {
   const { userId: myId } = auth();
-
-  if (!myId || myId !== userId) {
-    throw new Error("Unauthorized");
-  }
+  if (!myId || myId !== userId) throw new Error("Unauthorized");
 
   try {
     return await db.user.update({
@@ -67,12 +64,7 @@ export async function sendAPN({
   body: string;
 }) {
   const { userId: myId } = auth();
-
-  console.log("Sending APN notification");
-
-  if (!myId) {
-    throw new Error("Unauthorized");
-  }
+  if (!myId) throw new Error("Unauthorized");
 
   const apnProvider = new apn.Provider({
     token: {
@@ -84,10 +76,11 @@ export async function sendAPN({
   });
 
   try {
-    const user = await db.user.findUnique({
+    const recipientUser = await db.user.findUnique({
       where: { id: userId },
       select: {
         deviceToken: true,
+        blockerUsers: { where: { blockeeId: myId } },
         _count: {
           select: {
             notificationsComment: true,
@@ -100,9 +93,10 @@ export async function sendAPN({
       },
     });
 
-    if (!user?.deviceToken) return;
+    if (!recipientUser?.deviceToken) return;
+    if (recipientUser.blockerUsers.length > 0) return;
 
-    const notificationCount = Object.values(user._count).reduce(
+    const notificationCount = Object.values(recipientUser._count).reduce(
       (acc, count) => acc + count,
       0,
     );
@@ -113,7 +107,7 @@ export async function sendAPN({
     notification.badge = notificationCount;
     notification.topic = process.env.APNS_BUNDLE_ID!;
 
-    await apnProvider.send(notification, user.deviceToken);
+    await apnProvider.send(notification, recipientUser.deviceToken);
   } catch (e) {
     console.error("Error sending APN notification:", e);
   }
@@ -122,52 +116,45 @@ export async function sendAPN({
 }
 
 export async function silentlyUpdateAPN() {
-  const { userId: myId } = auth();
-
-  if (!myId) {
-    throw new Error("Unauthorized");
-  }
-
-  try {
-    const user = await db.user.findUnique({
-      where: { id: myId },
-      select: {
-        deviceToken: true,
-        _count: {
-          select: {
-            notificationsComment: true,
-            notificationsCommentLike: true,
-            notificationsFollowAccepted: true,
-            notificationsFollowPending: true,
-            notificationsPollLike: true,
-          },
-        },
-      },
-    });
-
-    if (!user?.deviceToken) return;
-
-    const notificationCount = Object.values(user._count).reduce(
-      (acc, count) => acc + count,
-      0,
-    );
-
-    const silentNotification = new apn.Notification({
-      contentAvailable: 1, // Indicates no alert, sound, or message will be displayed
-      badge: notificationCount,
-    });
-
-    const apnProvider = new apn.Provider({
-      token: {
-        key: Buffer.from(process.env.APNS_KEY!, "base64").toString("ascii"),
-        keyId: process.env.APNS_KEY_ID!,
-        teamId: process.env.APNS_TEAM_ID!,
-      },
-      production: process.env.NODE_ENV === "production",
-    });
-
-    await apnProvider.send(silentNotification, user.deviceToken);
-  } catch (e) {
-    throw new Error(handlePrismaError(e));
-  }
+  // TODO: Implement this function later, currently notifications are reset on app open (SWIFT code)
+  // const { userId: myId } = auth();
+  // if (!myId) throw new Error("Unauthorized");
+  // try {
+  //   const user = await db.user.findUnique({
+  //     where: { id: myId },
+  //     select: {
+  //       deviceToken: true,
+  //       _count: {
+  //         select: {
+  //           notificationsComment: true,
+  //           notificationsCommentLike: true,
+  //           notificationsFollowAccepted: true,
+  //           notificationsFollowPending: true,
+  //           notificationsPollLike: true,
+  //         },
+  //       },
+  //     },
+  //   });
+  //   if (!user?.deviceToken) return;
+  //   const notificationCount = Object.values(user._count).reduce(
+  //     (acc, count) => acc + count,
+  //     0,
+  //   );
+  //   const silentNotification = new apn.Notification({
+  //     contentAvailable: 1, // Indicates no alert, sound, or message will be displayed
+  //     badge: notificationCount,
+  //   });
+  //   const apnProvider = new apn.Provider({
+  //     token: {
+  //       key: Buffer.from(process.env.APNS_KEY!, "base64").toString("ascii"),
+  //       keyId: process.env.APNS_KEY_ID!,
+  //       teamId: process.env.APNS_TEAM_ID!,
+  //     },
+  //     production: process.env.NODE_ENV === "production",
+  //   });
+  //   await apnProvider.send(silentNotification, user.deviceToken);
+  //   apnProvider.shutdown();
+  // } catch (e) {
+  //   throw new Error(handlePrismaError(e));
+  // }
 }
