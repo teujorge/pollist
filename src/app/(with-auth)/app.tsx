@@ -81,7 +81,7 @@ export function App({ children }: { children: React.ReactNode }) {
       if (!user?.id) return;
 
       // Get user settings
-      const userSettings = await getUserSettings(user.id);
+      const userSettings = await getUserSettings();
       if (!userSettings) {
         toast.error("Failed to get user settings");
         return;

@@ -6,10 +6,10 @@ import { auth } from "@clerk/nextjs/server";
 import { handlePrismaError } from "@/server/error";
 import type { SubTier } from "@prisma/client";
 
-export async function getUserSettings(userId: string) {
+export async function getUserSettings() {
   const { userId: myId } = auth();
 
-  if (!myId || myId !== userId) {
+  if (!myId) {
     return {
       tier: "FREE" as SubTier,
       deviceToken: null,
@@ -19,7 +19,7 @@ export async function getUserSettings(userId: string) {
 
   try {
     return await db.user.findUnique({
-      where: { id: userId },
+      where: { id: myId },
       select: {
         tier: true,
         deviceToken: true,
