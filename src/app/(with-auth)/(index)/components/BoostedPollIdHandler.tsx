@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useBoostedPoll } from "../hooks/useBoostedPoll";
 
 export function BoostedPollIdHandler({
@@ -7,6 +8,9 @@ export function BoostedPollIdHandler({
 }: {
   boostedPollId: string;
 }) {
-  useBoostedPoll().setBoostedPollId(boostedPollId);
+  const { setBoostedPollId } = useBoostedPoll();
+  useEffect(() => {
+    setBoostedPollId(boostedPollId);
+  }, [setBoostedPollId, boostedPollId]);
   return null;
 }

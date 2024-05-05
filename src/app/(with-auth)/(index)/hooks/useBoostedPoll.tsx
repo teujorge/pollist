@@ -16,11 +16,21 @@ export function BoostedPollProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [boostedPollId, setBoostedPollId] = useState<string | null>(null);
+  const [boostedPollId, _setBoostedPollId] = useState<string | null>(null);
+
+  function setBoostedPollId(pollId: string) {
+    const ogId = sessionStorage.getItem("boostedPollId");
+    if (ogId) return;
+    _setBoostedPollId(pollId);
+    sessionStorage.setItem("boostedPollId", pollId);
+  }
 
   return (
     <BoostedPollContext.Provider
-      value={{ boostedPollId, setBoostedPollId: setBoostedPollId }}
+      value={{
+        boostedPollId,
+        setBoostedPollId,
+      }}
     >
       {children}
     </BoostedPollContext.Provider>
