@@ -29,7 +29,7 @@ export function useRealtimeNotifications({
       payload,
     }: {
       type: keyof Notifications;
-      payload: Record<string, string>;
+      payload: Record<string, unknown>;
     }) {
       setNotifications((prev) => {
         return {
@@ -44,7 +44,7 @@ export function useRealtimeNotifications({
       payload,
     }: {
       type: keyof Notifications;
-      payload: Record<string, string>;
+      payload: Record<string, unknown>;
     }) {
       setNotifications((prev) => {
         const updatedNotifications = prev[type].map((notification) =>
@@ -64,7 +64,7 @@ export function useRealtimeNotifications({
       payload,
     }: {
       type: keyof Notifications;
-      payload: Record<string, string>;
+      payload: Record<string, unknown>;
     }) {
       setNotifications((prev) => {
         const updatedNotifications = prev[type].filter(
@@ -93,9 +93,9 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
-            const newPayload: Record<string, string> = payload.new;
+            const newPayload = payload.new;
 
-            if (!newPayload.id) return;
+            if (typeof newPayload.id !== "string") return;
 
             getNotificationsPollLikeRelation(newPayload.id)
               .then((payloadRelations) => {
@@ -106,7 +106,7 @@ export function useRealtimeNotifications({
                   type: "pollLikes",
                   payload: {
                     ...newPayload,
-                    ...(payloadRelations as unknown as Record<string, string>),
+                    ...payloadRelations,
                   },
                 });
               })
@@ -127,9 +127,9 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
-            const newPayload: Record<string, string> = payload.new;
+            const newPayload = payload.new;
 
-            if (!newPayload.id) return;
+            if (typeof newPayload.id !== "string") return;
 
             getNotificationsPollLikeRelation(newPayload.id)
               .then((payloadRelations) => {
@@ -140,7 +140,7 @@ export function useRealtimeNotifications({
                   type: "pollLikes",
                   payload: {
                     ...newPayload,
-                    ...(payloadRelations as unknown as Record<string, string>),
+                    ...payloadRelations,
                   },
                 });
               })
@@ -161,11 +161,9 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
-            const oldPayload: Record<string, string> = payload.old;
-
             handleOnNotificationDelete({
               type: "pollLikes",
-              payload: oldPayload,
+              payload: payload.old,
             });
           },
         )
@@ -180,9 +178,9 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
-            const newPayload: Record<string, string> = payload.new;
+            const newPayload = payload.new;
 
-            if (!newPayload.id) return;
+            if (typeof newPayload.id !== "string") return;
 
             getNotificationsCommentRelation(newPayload.id)
               .then((payloadRelations) => {
@@ -193,7 +191,7 @@ export function useRealtimeNotifications({
                   type: "comments",
                   payload: {
                     ...newPayload,
-                    ...(payloadRelations as unknown as Record<string, string>),
+                    ...payloadRelations,
                   },
                 });
               })
@@ -214,9 +212,9 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
-            const newPayload: Record<string, string> = payload.new;
+            const newPayload = payload.new;
 
-            if (!newPayload.id) return;
+            if (typeof newPayload.id !== "string") return;
 
             getNotificationsCommentRelation(newPayload.id)
               .then((payloadRelations) => {
@@ -227,7 +225,7 @@ export function useRealtimeNotifications({
                   type: "comments",
                   payload: {
                     ...newPayload,
-                    ...(payloadRelations as unknown as Record<string, string>),
+                    ...payloadRelations,
                   },
                 });
               })
@@ -248,11 +246,9 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
-            const oldPayload: Record<string, string> = payload.old;
-
             handleOnNotificationDelete({
               type: "comments",
-              payload: oldPayload,
+              payload: payload.old,
             });
           },
         )
@@ -267,9 +263,9 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
-            const newPayload: Record<string, string> = payload.new;
+            const newPayload = payload.new;
 
-            if (!newPayload.id) return;
+            if (typeof newPayload.id !== "string") return;
 
             getNotificationsCommentLikeRelation(newPayload.id)
               .then((payloadRelations) => {
@@ -282,7 +278,7 @@ export function useRealtimeNotifications({
                   type: "commentLikes",
                   payload: {
                     ...newPayload,
-                    ...(payloadRelations as unknown as Record<string, string>),
+                    ...payloadRelations,
                   },
                 });
               })
@@ -303,9 +299,9 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
-            const newPayload: Record<string, string> = payload.new;
+            const newPayload = payload.new;
 
-            if (!newPayload.id) return;
+            if (typeof newPayload.id !== "string") return;
 
             getNotificationsCommentLikeRelation(newPayload.id)
               .then((payloadRelations) => {
@@ -318,7 +314,7 @@ export function useRealtimeNotifications({
                   type: "commentLikes",
                   payload: {
                     ...newPayload,
-                    ...(payloadRelations as unknown as Record<string, string>),
+                    ...payloadRelations,
                   },
                 });
               })
@@ -339,11 +335,9 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
-            const oldPayload: Record<string, string> = payload.old;
-
             handleOnNotificationDelete({
               type: "commentLikes",
-              payload: oldPayload,
+              payload: payload.old,
             });
           },
         )
@@ -358,9 +352,9 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
-            const newPayload: Record<string, string> = payload.new;
+            const newPayload = payload.new;
 
-            if (!newPayload.id) return;
+            if (typeof newPayload.id !== "string") return;
 
             getNotificationsFollowPendingRelation(newPayload.id)
               .then((payloadRelations) => {
@@ -371,7 +365,7 @@ export function useRealtimeNotifications({
                   type: "followsPending",
                   payload: {
                     ...newPayload,
-                    ...(payloadRelations as unknown as Record<string, string>),
+                    ...payloadRelations,
                   },
                 });
               })
@@ -392,9 +386,9 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
-            const newPayload: Record<string, string> = payload.new;
+            const newPayload = payload.new;
 
-            if (!newPayload.id) return;
+            if (typeof newPayload.id !== "string") return;
 
             getNotificationsFollowPendingRelation(newPayload.id)
               .then((payloadRelations) => {
@@ -405,7 +399,7 @@ export function useRealtimeNotifications({
                   type: "followsPending",
                   payload: {
                     ...newPayload,
-                    ...(payloadRelations as unknown as Record<string, string>),
+                    ...payloadRelations,
                   },
                 });
               })
@@ -426,11 +420,9 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
-            const oldPayload: Record<string, string> = payload.old;
-
             handleOnNotificationDelete({
               type: "followsPending",
-              payload: oldPayload,
+              payload: payload.old,
             });
           },
         )
@@ -445,9 +437,9 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
-            const newPayload: Record<string, string> = payload.new;
+            const newPayload = payload.new;
 
-            if (!newPayload.id) return;
+            if (typeof newPayload.id !== "string") return;
 
             getNotificationsFollowAcceptedRelation(newPayload.id)
               .then((payloadRelations) => {
@@ -458,7 +450,7 @@ export function useRealtimeNotifications({
                   type: "followsAccepted",
                   payload: {
                     ...newPayload,
-                    ...(payloadRelations as unknown as Record<string, string>),
+                    ...payloadRelations,
                   },
                 });
               })
@@ -479,9 +471,9 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
-            const newPayload: Record<string, string> = payload.new;
+            const newPayload = payload.new;
 
-            if (!newPayload.id) return;
+            if (typeof newPayload.id !== "string") return;
 
             getNotificationsFollowAcceptedRelation(newPayload.id)
               .then((payloadRelations) => {
@@ -492,7 +484,7 @@ export function useRealtimeNotifications({
                   type: "followsAccepted",
                   payload: {
                     ...newPayload,
-                    ...(payloadRelations as unknown as Record<string, string>),
+                    ...payloadRelations,
                   },
                 });
               })
@@ -513,11 +505,9 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
-            const oldPayload: Record<string, string> = payload.old;
-
             handleOnNotificationDelete({
               type: "followsAccepted",
-              payload: oldPayload,
+              payload: payload.old,
             });
           },
         )

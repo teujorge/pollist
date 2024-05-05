@@ -28,7 +28,7 @@ export function CommentCard({
   const [isChangeProcessing, setIsChangeProcessing] = useState(false);
 
   const isReplyUnread = notifications.comments.some(
-    (n) => n.commentId === comment.id,
+    (n) => n.comment.id === comment.id,
   );
   const showPurpleForUnreadComment =
     (user && user.id === comment.parent?.authorId && isReplyUnread) ?? false;

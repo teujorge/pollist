@@ -28,9 +28,10 @@ export type NotificationFollowAcceptedItem =
   NotificationItems["notificationsFollowAccepted"][number];
 
 const notificationsPollLikeSelect = {
+  id: true,
+  createdAt: true,
   pollLike: {
     select: {
-      createdAt: true,
       poll: { select: { id: true, title: true } },
       author: { select: { id: true, username: true } },
     },
@@ -49,9 +50,11 @@ export async function getNotificationsPollLikeRelation(notificationId: string) {
 }
 
 const notificationsCommentSelect = {
+  id: true,
+  createdAt: true,
   comment: {
     select: {
-      createdAt: true,
+      id: true,
       author: { select: { id: true, username: true } },
       parent: { select: { id: true, text: true } },
       poll: { select: { id: true, title: true } },
@@ -71,9 +74,10 @@ export async function getNotificationsCommentRelation(notificationId: string) {
 }
 
 const notificationsCommentLikeSelect = {
+  id: true,
+  createdAt: true,
   commentLike: {
     select: {
-      createdAt: true,
       author: { select: { id: true, username: true } },
       comment: {
         select: {
@@ -100,9 +104,10 @@ export async function getNotificationsCommentLikeRelation(
 }
 
 const notificationsFollowPendingSelect = {
+  id: true,
+  createdAt: true,
   follow: {
     select: {
-      createdAt: true,
       follower: {
         select: { id: true, username: true, imageUrl: true },
       },
@@ -124,9 +129,10 @@ export async function getNotificationsFollowPendingRelation(
 }
 
 const notificationsFollowAcceptedSelect = {
+  id: true,
+  createdAt: true,
   follow: {
     select: {
-      createdAt: true,
       followee: {
         select: { id: true, username: true, imageUrl: true },
       },
@@ -154,21 +160,21 @@ export async function getNotificationsItems() {
   try {
     const userNotifications = await db.user.findUnique({
       where: { id: userId },
-      include: {
+      select: {
         notificationsPollLike: {
-          include: notificationsPollLikeSelect,
+          select: notificationsPollLikeSelect,
         },
         notificationsComment: {
-          include: notificationsCommentSelect,
+          select: notificationsCommentSelect,
         },
         notificationsCommentLike: {
-          include: notificationsCommentLikeSelect,
+          select: notificationsCommentLikeSelect,
         },
         notificationsFollowPending: {
-          include: notificationsFollowPendingSelect,
+          select: notificationsFollowPendingSelect,
         },
         notificationsFollowAccepted: {
-          include: notificationsFollowAcceptedSelect,
+          select: notificationsFollowAcceptedSelect,
         },
       },
     });
