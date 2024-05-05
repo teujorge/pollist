@@ -65,7 +65,7 @@ export default async function UserPage({ params }: Props) {
         <div className="flex flex-col justify-around gap-2">
           <div className="flex items-center gap-2">
             <h1>{user.username}</h1>
-            {myId && (
+            {myId && myId !== user.id && (
               <>
                 <FollowButton userId={user.id} />
                 <BlockButton user={user} />
