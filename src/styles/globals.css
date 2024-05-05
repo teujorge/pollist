@@ -163,7 +163,11 @@ a:active {
   position: relative;
   color: transparent;
   user-select: none;
+  pointer-events: none;
   background-color: rgb(var(--color-accent));
+}
+.redacted * {
+  opacity: 0;
 }
 
 .shimmer {
