@@ -160,6 +160,6 @@ export async function silentlyUpdateAPN() {
     await apnProvider.send(silentNotification, user.deviceToken);
     apnProvider.shutdown();
   } catch (e) {
-    throw new Error(handlePrismaError(e));
+    console.error("Error sending silent APN notification:", e);
   }
 }
