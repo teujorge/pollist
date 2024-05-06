@@ -116,45 +116,50 @@ export async function sendAPN({
 }
 
 export async function silentlyUpdateAPN() {
-  // TODO: Implement this function later, currently notifications are reset on app open (SWIFT code)
-  // const { userId: myId } = auth();
-  // if (!myId) throw new Error("Unauthorized");
-  // try {
-  //   const user = await db.user.findUnique({
-  //     where: { id: myId },
-  //     select: {
-  //       deviceToken: true,
-  //       _count: {
-  //         select: {
-  //           notificationsComment: true,
-  //           notificationsCommentLike: true,
-  //           notificationsFollowAccepted: true,
-  //           notificationsFollowPending: true,
-  //           notificationsPollLike: true,
-  //         },
-  //       },
-  //     },
-  //   });
-  //   if (!user?.deviceToken) return;
-  //   const notificationCount = Object.values(user._count).reduce(
-  //     (acc, count) => acc + count,
-  //     0,
-  //   );
-  //   const silentNotification = new apn.Notification({
-  //     contentAvailable: 1, // Indicates no alert, sound, or message will be displayed
-  //     badge: notificationCount,
-  //   });
-  //   const apnProvider = new apn.Provider({
-  //     token: {
-  //       key: Buffer.from(process.env.APNS_KEY!, "base64").toString("ascii"),
-  //       keyId: process.env.APNS_KEY_ID!,
-  //       teamId: process.env.APNS_TEAM_ID!,
-  //     },
-  //     production: process.env.NODE_ENV === "production",
-  //   });
-  //   await apnProvider.send(silentNotification, user.deviceToken);
-  //   apnProvider.shutdown();
-  // } catch (e) {
-  //   throw new Error(handlePrismaError(e));
-  // }
+  const { userId: myId } = auth();
+  if (!myId) throw new Error("Unauthorized");
+  try {
+    const user = await db.user.findUnique({
+      where: { id: myId },
+      select: {
+        deviceToken: true,
+        _count: {
+          select: {
+            notificationsComment: true,
+            notificationsCommentLike: true,
+            notificationsFollowAccepted: true,
+            notificationsFollowPending: true,
+            notificationsPollLike: true,
+          },
+        },
+      },
+    });
+
+    if (!user?.deviceToken) return;
+
+    const notificationCount = Object.values(user._count).reduce(
+      (acc, count) => acc + count,
+      0,
+    );
+
+    const silentNotification = new apn.Notification();
+    silentNotification.contentAvailable = false;
+    silentNotification.badge = notificationCount;
+    silentNotification.topic = process.env.APNS_BUNDLE_ID!;
+    console.log("silentNotification", silentNotification);
+
+    const apnProvider = new apn.Provider({
+      token: {
+        key: Buffer.from(process.env.APNS_KEY!, "base64").toString("ascii"),
+        keyId: process.env.APNS_KEY_ID!,
+        teamId: process.env.APNS_TEAM_ID!,
+      },
+      production: process.env.NODE_ENV === "production",
+    });
+
+    await apnProvider.send(silentNotification, user.deviceToken);
+    apnProvider.shutdown();
+  } catch (e) {
+    throw new Error(handlePrismaError(e));
+  }
 }
