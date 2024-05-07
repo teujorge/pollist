@@ -11,6 +11,13 @@ import { cn, timeElapsed } from "@/lib/utils";
 import { removeNotifications } from "./actions";
 import { useEffect, useState } from "react";
 import { acceptFollow, declineFollow } from "@/app/(with-auth)/users/actions";
+import {
+  groupedPollLikes,
+  groupedComments,
+  groupedCommentLikes,
+  groupedFollowPending,
+  groupedFollowAccepted,
+} from "./utils";
 import type {
   NotificationType,
   NotificationPollLikeItem,
@@ -29,84 +36,6 @@ type NotificationData =
 
 export function NotificationList() {
   const { notifications } = useApp();
-
-  function groupedPollLikes(): {
-    type: "PollLikeNotification";
-    data: NotificationPollLikeItem[];
-  }[] {
-    // Group pollLikes by pollId and map them to the desired structure
-    const groupedObject = notifications.pollLikes.reduce(
-      (acc, notification) => {
-        const key = notification.pollLike.poll.id;
-        if (!acc[key]) acc[key] = [];
-        acc[key]?.push(notification);
-        return acc;
-      },
-      {} as Record<string, NotificationPollLikeItem[]>,
-    );
-
-    const groupedArray = Object.values(groupedObject).map((group) => ({
-      type: "PollLikeNotification" as const,
-      data: group.sort(
-        (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-      ),
-    }));
-
-    return groupedArray;
-  }
-
-  function groupedComments(): {
-    type: "CommentNotification";
-    data: NotificationCommentItem[];
-  }[] {
-    // Group comments by pollId and map them to the desired structure
-    const groupedObject = notifications.comments.reduce(
-      (acc, notification) => {
-        const key = notification.comment.poll.id;
-        if (!acc[key]) acc[key] = [];
-        acc[key]?.push(notification);
-        return acc;
-      },
-      {} as Record<string, NotificationCommentItem[]>,
-    );
-
-    const groupedArray = Object.values(groupedObject).map((group) => ({
-      type: "CommentNotification" as const,
-      data: group.sort(
-        (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-      ),
-    }));
-
-    return groupedArray;
-  }
-
-  function groupedCommentLikes(): {
-    type: "CommentLikeNotification";
-    data: NotificationCommentLikeItem[];
-  }[] {
-    // Group commentLikes by my commentId and map them to the desired structure
-    const groupedObject = notifications.commentLikes.reduce(
-      (acc, notification) => {
-        const key = notification.commentLike.comment.id;
-        if (!acc[key]) acc[key] = [];
-        acc[key]?.push(notification);
-        return acc;
-      },
-      {} as Record<string, NotificationCommentLikeItem[]>,
-    );
-
-    const groupedArray = Object.values(groupedObject).map((group) => ({
-      type: "CommentLikeNotification" as const,
-      data: group.sort(
-        (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-      ),
-    }));
-
-    return groupedArray;
-  }
 
   const notificationList: (
     | {
@@ -130,17 +59,11 @@ export function NotificationList() {
         data: NotificationFollowAcceptedItem[];
       }
   )[] = [
-    ...groupedPollLikes(),
-    ...groupedComments(),
-    ...groupedCommentLikes(),
-    ...notifications.followsPending.map((notification) => ({
-      type: "FollowPendingNotification" as const,
-      data: [notification],
-    })),
-    ...notifications.followsAccepted.map((notification) => ({
-      type: "FollowAcceptedNotification" as const,
-      data: [notification],
-    })),
+    ...groupedPollLikes(notifications),
+    ...groupedComments(notifications),
+    ...groupedCommentLikes(notifications),
+    ...groupedFollowPending(notifications),
+    ...groupedFollowAccepted(notifications),
   ].sort(
     (a, b) =>
       new Date(a.data[0]?.createdAt ?? new Date()).getTime() -

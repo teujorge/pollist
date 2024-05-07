@@ -11,16 +11,23 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  groupedPollLikes,
+  groupedComments,
+  groupedCommentLikes,
+  groupedFollowPending,
+  groupedFollowAccepted,
+} from "./utils";
 
 export function NotificationsBell() {
   const { notifications } = useApp();
 
   const notificationsCount =
-    notifications.pollLikes.length +
-    notifications.comments.length +
-    notifications.commentLikes.length +
-    notifications.followsPending.length +
-    notifications.followsAccepted.length;
+    groupedPollLikes(notifications).length +
+    groupedComments(notifications).length +
+    groupedCommentLikes(notifications).length +
+    groupedFollowPending(notifications).length +
+    groupedFollowAccepted(notifications).length;
 
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
