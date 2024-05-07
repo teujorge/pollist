@@ -13,26 +13,26 @@ export function Header() {
     <>
       <span className="hidden sm:inline">Create</span>
       <span className="sm:hidden">
-        <StackPlus size={20} />
+        <StackPlus size={26} />
       </span>
     </>
   );
 
   return (
-    <header className="sticky left-0 right-0 top-0 z-40 flex w-full flex-row justify-between bg-gradient-to-b from-background from-60% px-5 py-4">
+    <header className="flex w-full flex-row justify-between px-5 py-4">
       <Link
         href="/"
         scroll={false}
-        className="h-8 w-8 [&>*]:font-semibold [&>svg>path]:transition-all [&>svg>path]:hovact:fill-primary [&>svg>path]:hovact:stroke-primary"
+        className="hidden h-8 w-8 sm:block [&>*]:font-semibold [&>svg>path]:transition-all [&>svg>path]:hovact:fill-primary [&>svg>path]:hovact:stroke-primary"
       >
         <IconSvg className="h-full w-full" />
       </Link>
 
-      <div className="flex flex-row items-center justify-end gap-4">
+      <div className="flex w-full flex-row items-center justify-around gap-4 sm:w-fit sm:justify-end">
         <Link key="header-home" href="/" scroll={false}>
           <span className="hidden sm:inline">Home</span>
           <span className="sm:hidden">
-            <House size={20} />
+            <House size={26} />
           </span>
         </Link>
 

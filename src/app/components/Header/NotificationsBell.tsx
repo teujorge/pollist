@@ -25,29 +25,29 @@ export function NotificationsBell() {
   const memoizedNotificationsList = useMemo(() => <NotificationList />, []);
 
   return (
-    notificationsExist && (
-      <NotificationsProvider
-        value={{ isNotificationsOpen, setIsNotificationsOpen }}
-      >
-        <Popover
-          open={isNotificationsOpen}
-          onOpenChange={setIsNotificationsOpen}
-        >
-          <PopoverTrigger asChild>
-            <button
-              className="relative select-none outline-none
+    <NotificationsProvider
+      value={{ isNotificationsOpen, setIsNotificationsOpen }}
+    >
+      <Popover open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
+        <PopoverTrigger asChild>
+          <button
+            className="relative select-none outline-none
             [&>svg]:hovact:text-primary"
-            >
-              <Bell size={20} />
+          >
+            <span className="block sm:hidden">
+              <Bell size={26} />
+            </span>
+            <span className="hidden sm:block">
+              <Bell size={22} />
+            </span>
+            {notificationsExist && (
               <div className="absolute -right-0.5 -top-0.5 flex h-2 w-2 items-center justify-center rounded-full bg-primary text-xs" />
-            </button>
-          </PopoverTrigger>
-          <PopoverContent align="end">
-            {memoizedNotificationsList}
-          </PopoverContent>
-        </Popover>
-      </NotificationsProvider>
-    )
+            )}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent align="end">{memoizedNotificationsList}</PopoverContent>
+      </Popover>
+    </NotificationsProvider>
   );
 }
 
