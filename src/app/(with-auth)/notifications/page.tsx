@@ -1,3 +1,5 @@
+"use client";
+
 import { PopoverProvider } from "@/app/hooks/usePopover";
 import { NotificationList } from "@/app/components/Header/NotificationsList";
 
