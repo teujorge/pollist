@@ -19,7 +19,7 @@ export function Header() {
   );
 
   return (
-    <header className="flex w-full flex-row justify-between px-5 py-4">
+    <header className="flex w-full flex-row items-center justify-between px-5 py-4">
       <Link
         href="/"
         scroll={false}

@@ -50,7 +50,7 @@ export default function RootLayout({
         <App>
           <div
             className={cn(
-              "left-0 right-0 z-40 h-fit w-full",
+              "left-0 right-0 z-40 flex h-fit w-full items-center justify-center",
               "fixed bottom-0 border-t border-accent bg-black",
               "sm:sticky sm:top-0 sm:border-0 sm:bg-transparent sm:bg-gradient-to-b sm:from-background sm:from-60%",
             )}
