@@ -152,12 +152,18 @@ export function NotificationList() {
       className="flex min-w-fit flex-col items-center gap-2 overflow-y-auto overflow-x-hidden overscroll-y-contain p-2"
       style={{ maxHeight: "calc(100dvh - 100px)" }}
     >
-      {notificationList.map((group) => (
-        <NotificationCard
-          key={`${group.type}-${group.data[0]?.id}`}
-          item={group}
-        />
-      ))}
+      {notificationList.length > 0 ? (
+        notificationList.map((group) => (
+          <NotificationCard
+            key={`${group.type}-${group.data[0]?.id}`}
+            item={group}
+          />
+        ))
+      ) : (
+        <div className="w-full px-3 py-2 text-left text-sm text-accent-foreground">
+          No new notifications
+        </div>
+      )}
     </div>
   );
 }
