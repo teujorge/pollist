@@ -1,8 +1,8 @@
 import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { Suspense } from "react";
-import { PollCard } from "@/app/components/PollCard/PollCard";
-import { BoostedPollIdHandler } from "./BoostedPollIdHandler";
+import { BoostedPollCard } from "./BoostedPollCard";
+import { BoostedPollPersistanceHandler } from "./BoostedPollPersistanceHandler";
 import {
   pollInclude,
   censorPollAuthor,
@@ -36,8 +36,8 @@ async function _BoostedPoll() {
   return (
     <>
       <div className="relative w-full">
-        <PollCard poll={randomBoostedPoll} userId={userId} />
-        <BoostedPollIdHandler boostedPollId={randomBoostedPoll.id} />
+        <BoostedPollCard poll={randomBoostedPoll} userId={userId} />
+        <BoostedPollPersistanceHandler boostedPoll={randomBoostedPoll} />
         <span className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/3 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
           Boosted
         </span>

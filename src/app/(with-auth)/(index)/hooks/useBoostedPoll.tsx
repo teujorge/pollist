@@ -1,10 +1,11 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
+import type { PollsDetails } from "@/app/components/InfinitePolls/actions";
 
 type BoostedPollContextType = {
-  boostedPollId: string | null;
-  setBoostedPollId: (pollId: string) => void;
+  boostedPoll: PollsDetails[number] | undefined;
+  setBoostedPoll: (poll: PollsDetails[number]) => void;
 };
 
 const BoostedPollContext = createContext<BoostedPollContextType | undefined>(
@@ -16,20 +17,13 @@ export function BoostedPollProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [boostedPollId, _setBoostedPollId] = useState<string | null>(null);
-
-  function setBoostedPollId(pollId: string) {
-    const ogId = sessionStorage.getItem("boostedPollId");
-    if (ogId) return;
-    _setBoostedPollId(pollId);
-    sessionStorage.setItem("boostedPollId", pollId);
-  }
+  const [boostedPoll, setBoostedPoll] = useState<PollsDetails[number]>();
 
   return (
     <BoostedPollContext.Provider
       value={{
-        boostedPollId,
-        setBoostedPollId,
+        boostedPoll,
+        setBoostedPoll,
       }}
     >
       {children}

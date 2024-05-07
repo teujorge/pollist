@@ -16,7 +16,7 @@ export function AllPolls({
   userId: string | null;
   query: PollQuery;
 }) {
-  const { boostedPollId } = useBoostedPoll();
+  const { boostedPoll } = useBoostedPoll();
 
   async function _queryFn({ cursor }: { cursor: string }) {
     const cursorQuery = cursor === "" ? undefined : `cursor=${cursor}`;
@@ -87,7 +87,7 @@ export function AllPolls({
     <div className="flex w-full flex-col gap-4">
       {data?.pages.map((pages, i) =>
         pages.map((poll) =>
-          poll.id === boostedPollId ? null : (
+          poll.id === boostedPoll?.id ? null : (
             <PollCard key={keyGen(i, poll.id)} poll={poll} userId={userId} />
           ),
         ),
