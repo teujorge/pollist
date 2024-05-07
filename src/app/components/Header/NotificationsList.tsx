@@ -5,9 +5,9 @@ import { X } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Loader } from "../Loader";
 import { useApp } from "@/app/(with-auth)/app";
-import { cn, timeElapsed } from "@/lib/utils";
+import { usePopover } from "@/app/hooks/usePopover";
 import { ProfileImage } from "../ProfileImage";
-import { useNotifications } from "./NotificationsBell";
+import { cn, timeElapsed } from "@/lib/utils";
 import { removeNotifications } from "./actions";
 import { useEffect, useState } from "react";
 import { acceptFollow, declineFollow } from "@/app/(with-auth)/users/actions";
@@ -320,13 +320,13 @@ function PollLikeNotificationCard({
 }: {
   pollLikeNotifications: NotificationPollLikeItem[];
 }) {
-  const popover = useNotifications();
+  const popover = usePopover();
 
   return (
     <div className="flex flex-col items-start justify-start gap-0.5">
       <Link
         href={`/polls/${pollLikeNotifications[0]!.pollLike.poll.id}`}
-        onClick={() => popover.setIsNotificationsOpen(false)}
+        onClick={() => popover.setIsNotificationsOpen?.(false)}
       >
         People liked your poll:
         <br />
@@ -354,7 +354,7 @@ function CommentNotificationCard({
 }: {
   commentNotifications: NotificationCommentItem[];
 }) {
-  const popover = useNotifications();
+  const popover = usePopover();
 
   return (
     <div className="flex flex-col items-start justify-start gap-0.5">
@@ -362,7 +362,7 @@ function CommentNotificationCard({
         <>
           <Link
             href={`/polls/${commentNotifications[0]!.comment.poll.id}?parentId=${commentNotifications[0]!.comment.parent.id}`}
-            onClick={() => popover.setIsNotificationsOpen(false)}
+            onClick={() => popover.setIsNotificationsOpen?.(false)}
           >
             People replied to your comment:{" "}
             <q className="text-sm font-light">
@@ -385,7 +385,7 @@ function CommentNotificationCard({
         <>
           <Link
             href={`/polls/${commentNotifications[0]!.comment.poll.id}`}
-            onClick={() => popover.setIsNotificationsOpen(false)}
+            onClick={() => popover.setIsNotificationsOpen?.(false)}
           >
             People commented on your poll:{" "}
             <q className="text-sm font-light">
@@ -416,13 +416,13 @@ function CommentLikeNotificationCard({
 }: {
   likeNotifications: NotificationCommentLikeItem[];
 }) {
-  const popover = useNotifications();
+  const popover = usePopover();
 
   return (
     <div className="flex flex-col items-start justify-start gap-0.5">
       <Link
         href={`/polls/${likeNotifications[0]!.commentLike.comment.poll.id}?parentId=${likeNotifications[0]!.commentLike.comment.id}`}
-        onClick={() => popover.setIsNotificationsOpen(false)}
+        onClick={() => popover.setIsNotificationsOpen?.(false)}
       >
         People liked your comment:
         <br />
@@ -460,7 +460,7 @@ function FollowPendingNotificationCard({
   followNotifications: NotificationFollowPendingItem[];
 }) {
   const followNotification = followNotifications[0]!;
-  const popover = useNotifications();
+  const popover = usePopover();
 
   const [isAccepting, setIsAccepting] = useState(false);
   const [isDeclining, setIsDeclining] = useState(false);
@@ -490,7 +490,7 @@ function FollowPendingNotificationCard({
       <Link
         href={`/users/${followNotification.follow.follower.username}`}
         className="flex flex-row items-center justify-center gap-1"
-        onClick={() => popover.setIsNotificationsOpen(false)}
+        onClick={() => popover.setIsNotificationsOpen?.(false)}
       >
         <ProfileImage
           src={followNotification.follow.follower.imageUrl}
@@ -538,10 +538,10 @@ function FollowAcceptedNotificationCard({
   followNotifications: NotificationFollowAcceptedItem[];
 }) {
   const followNotification = followNotifications[0]!;
-  const popover = useNotifications();
+  const popover = usePopover();
 
   async function handleLinkClick() {
-    popover.setIsNotificationsOpen(false);
+    popover.setIsNotificationsOpen?.(false);
     try {
       await removeNotifications({
         type: "FollowAcceptedNotification",
