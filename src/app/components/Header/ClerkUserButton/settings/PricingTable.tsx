@@ -1,46 +1,11 @@
 import Stripe from "stripe";
 import { cn } from "@/lib/utils";
 import { Suspense } from "react";
-
-type Subscription = {
-  title: string;
-  priceId: string | undefined | null;
-  paymentLink: string | undefined | null;
-  features: string[];
-};
+import { subscriptions } from "./utils";
+import { HideInWebView } from "@/app/components/HideInWebView";
+import type { Subscription } from "./utils";
 
 export function PricingTable({ userId }: { userId: string }) {
-  const subscriptions: Subscription[] = [
-    {
-      title: "Free",
-      priceId: null,
-      paymentLink: null,
-      features: ["Sharing", "Voting", "Commenting", "And more!"],
-    },
-    {
-      title: "Pro",
-      priceId: process.env.NEXT_PUBLIC_STRIPE_PRO_SUBSCRIPTION_PRICE_ID,
-      paymentLink: process.env.NEXT_PUBLIC_STRIPE_PRO_SUBSCRIPTION_URL,
-      features: [
-        "All Free features",
-        "No ads",
-        "Private account",
-        "Future features",
-      ],
-    },
-    // {
-    //   title: "Premium",
-    //   priceId: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_SUBSCRIPTION_PRICE_ID,
-    //   paymentLink: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_SUBSCRIPTION_URL,
-    //   features: [
-    //     "All Pro features",
-    //     "Early access",
-    //     "Priority support",
-    //     "More!",
-    //   ],
-    // },
-  ];
-
   return (
     <div className="flex h-full w-full flex-wrap items-center justify-center gap-4 rounded-lg">
       {subscriptions.map((subscription) => (
@@ -49,21 +14,19 @@ export function PricingTable({ userId }: { userId: string }) {
           fallback={
             <SubscriptionCard
               shimmer
-              title={subscription.title}
-              priceId={subscription.priceId}
-              paymentLink={subscription.paymentLink}
+              ios={false}
               userId={userId}
-              features={subscription.features}
+              {...subscription}
             />
           }
         >
-          <SubscriptionCard
-            title={subscription.title}
-            priceId={subscription.priceId}
-            paymentLink={subscription.paymentLink}
-            userId={userId}
-            features={subscription.features}
-          />
+          <HideInWebView
+            fallback={
+              <SubscriptionCard userId={userId} ios={true} {...subscription} />
+            }
+          >
+            <SubscriptionCard userId={userId} ios={false} {...subscription} />
+          </HideInWebView>
         </Suspense>
       ))}
     </div>
@@ -75,10 +38,13 @@ async function SubscriptionCard({
   title,
   priceId,
   paymentLink,
+  iosProductId,
   features,
+  ios,
   shimmer = false,
 }: {
   userId: string;
+  ios: boolean;
   shimmer?: boolean;
 } & Subscription) {
   if (priceId === undefined) throw new Error("Price id not found");
@@ -92,14 +58,16 @@ async function SubscriptionCard({
   }
 
   const url =
-    priceId && paymentLink
-      ? `${paymentLink}?client_reference_id=${userId}`
-      : undefined;
+    ios && iosProductId
+      ? `https://pollist.org/subscribe?product_id=${iosProductId}&client_reference_id=${userId}`
+      : priceId && paymentLink
+        ? `${paymentLink}?client_reference_id=${userId}`
+        : undefined;
 
   return (
     <a
       href={url}
-      target="_blank"
+      target={ios ? undefined : "_blank"}
       rel="noopener noreferrer"
       className={cn(
         "flex w-56 flex-col gap-4 rounded-lg border border-accent p-4 transition-transform hover:scale-105 hovact:border-primary hovact:text-foreground",

@@ -89,17 +89,23 @@ async function SettingsTab() {
       </div>
 
       {/* subscription */}
-      <HideInWebView>
-        <div className="flex flex-col gap-4">
-          <h2 className="font-medium">Billing</h2>
-          {user.tier === "FREE" ? (
-            <PricingTable userId={user.id} />
-          ) : (
-            <div className="flex flex-col gap-2">
-              <p className="px-4 text-sm">
-                Active Subscription:{" "}
-                <span className="font-medium">{user.tier}</span>
-              </p>
+      <div className="flex flex-col gap-4">
+        <h2 className="font-medium">Billing</h2>
+        {user.tier === "FREE" ? (
+          <PricingTable userId={user.id} />
+        ) : (
+          <div className="flex flex-col gap-2">
+            <p className="px-4 text-sm">
+              Active Subscription:{" "}
+              <span className="font-medium">{user.tier}</span>
+            </p>
+            <HideInWebView
+              fallback={
+                <div className="p-2 text-xs text-accent-foreground">
+                  Manage subscription through iPhone settings.
+                </div>
+              }
+            >
               <a
                 href={process.env.NEXT_PUBLIC_STRIPE_BILLING_URL ?? "/"}
                 target="_blank"
@@ -112,29 +118,10 @@ async function SettingsTab() {
                 </div>
                 <ArrowRight size={15} />
               </a>
-            </div>
-          )}
-        </div>
-      </HideInWebView>
-
-      <HideInWebView
-        fallback={
-          <div className="flex h-full w-full flex-col items-center justify-center px-4 py-6">
-            <div className="text-center">
-              Please visit our{" "}
-              <a
-                href="https://pollist.org?target=_blank"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline underline-offset-2 transition-all hovact:underline-offset-4"
-              >
-                website
-              </a>{" "}
-              to manage all settings
-            </div>
+            </HideInWebView>
           </div>
-        }
-      />
+        )}
+      </div>
     </div>
   );
 }
