@@ -41,7 +41,7 @@ export function NotificationsBell() {
         )}
       </Link>
       {/* desktop */}
-      <div className="hidden h-fit w-fit sm:block">
+      <div className="hidden h-fit w-fit items-center justify-center sm:flex">
         <Popover
           open={isNotificationsOpen}
           onOpenChange={setIsNotificationsOpen}
