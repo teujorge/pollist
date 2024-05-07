@@ -67,7 +67,7 @@ async function SubscriptionCard({
   return (
     <a
       href={url}
-      target={ios ? undefined : "_blank"}
+      target="_blank"
       rel="noopener noreferrer"
       className={cn(
         "flex w-56 flex-col gap-4 rounded-lg border border-accent p-4 transition-transform hover:scale-105 hovact:border-primary hovact:text-foreground",
