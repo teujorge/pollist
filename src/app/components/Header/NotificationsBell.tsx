@@ -42,7 +42,7 @@ export function NotificationsBell() {
       >
         <Bell size={26} />
         {notificationsCount > 0 && (
-          <div className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs">
+          <div className="absolute -right-0.5 -top-0.5 flex h-4 w-4 select-none items-center justify-center rounded-full bg-primary text-xs">
             {notificationsCount > 9 ? "+" : notificationsCount}
           </div>
         )}
@@ -60,7 +60,7 @@ export function NotificationsBell() {
             >
               <Bell size={22} />
               {notificationsCount > 0 && (
-                <div className="absolute -right-0.5 -top-0.5 flex h-2 w-2 items-center justify-center rounded-full bg-primary text-xs" />
+                <div className="absolute -right-0.5 -top-0.5 flex h-2 w-2 select-none items-center justify-center rounded-full bg-primary text-xs" />
               )}
             </button>
           </PopoverTrigger>
