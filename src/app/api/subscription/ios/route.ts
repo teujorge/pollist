@@ -38,8 +38,6 @@ export async function POST(req: NextRequest) {
     // Decode the signed payload from Apple
     const payload = await decodeNotificationPayload(signedPayload);
 
-    console.log("Received Notification Payload:", payload);
-
     if (payload.data && payload.data.bundleId !== APP_BUNDLE_ID) {
       console.error(
         `Received notification for incorrect bundle ID: ${payload.data.bundleId}`,
@@ -49,6 +47,17 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
+
+    const data = { ...payload.data };
+    delete data.signedTransactionInfo;
+    console.log("Received Notification Payload:", data);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+    const userId = (payload.data as any)?.applicationUsername as
+      | string
+      | undefined;
+
+    console.log(userId);
 
     // Handle the notification based on its type
     if (isDecodedNotificationDataPayload(payload)) {
