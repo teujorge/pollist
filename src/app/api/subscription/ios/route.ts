@@ -32,7 +32,12 @@ export async function POST(req: NextRequest) {
     // );
 
     // Get the body of the request, which should contain the signedPayload from Apple
-    const _body = (await req.json()) as unknown;
+    const _body = (await req.json()) as Record<string, string>;
+    console.log(Object.keys(_body));
+    for (const value of Object.values(_body)) {
+      console.log(`${value.slice(0, 50)}...`);
+    }
+
     const body = _body as { signedPayload: string };
     const { signedPayload } = body;
 
