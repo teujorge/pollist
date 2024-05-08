@@ -32,11 +32,17 @@ export async function POST(req: NextRequest) {
     // );
 
     // Get the body of the request, which should contain the signedPayload from Apple
-    const body = (await req.json()) as { signedPayload: string };
+    const _body = (await req.json()) as unknown;
+    const body = _body as { signedPayload: string };
     const { signedPayload } = body;
+
+    console.log("_body", _body);
+    console.log("body", body);
+    console.log("signedPayload", signedPayload);
 
     // Decode the signed payload from Apple
     const payload = await decodeNotificationPayload(signedPayload);
+    console.log("Decoded Notification Payload:", payload);
 
     if (payload.data && payload.data.bundleId !== APP_BUNDLE_ID) {
       console.error(
