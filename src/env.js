@@ -18,6 +18,9 @@ export const env = createEnv({
     UPSTASH_REDIS_REST_URL: z.string(),
     UPSTASH_REDIS_REST_TOKEN: z.string(),
     OPENAI_API_KEY: z.string(),
+    IAP_KEY_ID: z.string(),
+    IAP_ISSUER_ID: z.string(),
+    IAP_SUBSCRIPTION_KEY: z.string(),
     IAP_PRO_PRODUCT_ID: z.string(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
@@ -62,6 +65,9 @@ export const env = createEnv({
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    IAP_KEY_ID: process.env.IAP_KEY_ID,
+    IAP_ISSUER_ID: process.env.IAP_ISSUER_ID,
+    IAP_SUBSCRIPTION_KEY: process.env.IAP_SUBSCRIPTION_KEY,
     IAP_PRO_PRODUCT_ID: process.env.IAP_PRO_PRODUCT_ID,
     NODE_ENV: process.env.NODE_ENV,
 
