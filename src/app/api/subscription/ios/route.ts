@@ -38,6 +38,8 @@ export async function POST(req: NextRequest) {
     // Decode the signed payload from Apple
     const payload = await decodeNotificationPayload(signedPayload);
 
+    console.log("Received Notification Payload:", payload);
+
     if (payload.data && payload.data.bundleId !== APP_BUNDLE_ID) {
       console.error(
         `Received notification for incorrect bundle ID: ${payload.data.bundleId}`,
@@ -138,6 +140,7 @@ export async function POST(req: NextRequest) {
 
 // Function to activate a subscription
 async function activateSubscription(userId: string, tier: SubTier) {
+  console.log("Activating Subscription:", userId, tier);
   const user = await db.user.update({
     where: { id: userId },
     data: { tier: tier, ads: false },
@@ -148,6 +151,7 @@ async function activateSubscription(userId: string, tier: SubTier) {
 
 // Function to deactivate a subscription
 async function deactivateSubscription(userId: string) {
+  console.log("Deactivating Subscription:", userId);
   const user = await db.user.update({
     where: { id: userId },
     data: { tier: "FREE", ads: true, private: false },
