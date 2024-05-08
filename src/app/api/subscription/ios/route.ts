@@ -48,16 +48,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const data = { ...payload.data };
-    delete data.signedTransactionInfo;
-    console.log("Received Notification Payload:", data);
+    const data = { ...payload.data, signedTransactionInfo: undefined };
+    console.log("Received Notification Payload Data:", data);
+    console.log("Received Notification Payload Summary:", payload.summary);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
     const userId = (payload.data as any)?.applicationUsername as
       | string
       | undefined;
-
-    console.log(userId);
+    console.log("try userId =>", userId);
 
     // Handle the notification based on its type
     if (isDecodedNotificationDataPayload(payload)) {
