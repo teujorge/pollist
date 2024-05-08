@@ -4,6 +4,13 @@ import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { handlePrismaError } from "@/server/error";
 import { silentlyUpdateAPN } from "@/app/(with-auth)/actions";
+import {
+  notificationsCommentLikeSelect,
+  notificationsCommentSelect,
+  notificationsFollowAcceptedSelect,
+  notificationsFollowPendingSelect,
+  notificationsPollLikeSelect,
+} from "./utils";
 
 export type NotificationType =
   | "PollLikeNotification"
@@ -27,17 +34,6 @@ export type NotificationFollowPendingItem =
 export type NotificationFollowAcceptedItem =
   NotificationItems["notificationsFollowAccepted"][number];
 
-const notificationsPollLikeSelect = {
-  id: true,
-  createdAt: true,
-  pollLike: {
-    select: {
-      poll: { select: { id: true, title: true } },
-      author: { select: { id: true, username: true } },
-    },
-  },
-};
-
 export async function getNotificationsPollLikeRelation(notificationId: string) {
   try {
     return await db.notificationPollLike.findUnique({
@@ -49,19 +45,6 @@ export async function getNotificationsPollLikeRelation(notificationId: string) {
   }
 }
 
-const notificationsCommentSelect = {
-  id: true,
-  createdAt: true,
-  comment: {
-    select: {
-      id: true,
-      author: { select: { id: true, username: true } },
-      parent: { select: { id: true, text: true } },
-      poll: { select: { id: true, title: true } },
-    },
-  },
-};
-
 export async function getNotificationsCommentRelation(notificationId: string) {
   try {
     return await db.notificationComment.findUnique({
@@ -72,23 +55,6 @@ export async function getNotificationsCommentRelation(notificationId: string) {
     throw new Error(handlePrismaError(error));
   }
 }
-
-const notificationsCommentLikeSelect = {
-  id: true,
-  createdAt: true,
-  commentLike: {
-    select: {
-      author: { select: { id: true, username: true } },
-      comment: {
-        select: {
-          id: true,
-          text: true,
-          poll: { select: { id: true, title: true } },
-        },
-      },
-    },
-  },
-};
 
 export async function getNotificationsCommentLikeRelation(
   notificationId: string,
@@ -103,18 +69,6 @@ export async function getNotificationsCommentLikeRelation(
   }
 }
 
-const notificationsFollowPendingSelect = {
-  id: true,
-  createdAt: true,
-  follow: {
-    select: {
-      follower: {
-        select: { id: true, username: true, imageUrl: true },
-      },
-    },
-  },
-};
-
 export async function getNotificationsFollowPendingRelation(
   notificationId: string,
 ) {
@@ -127,18 +81,6 @@ export async function getNotificationsFollowPendingRelation(
     throw new Error(handlePrismaError(error));
   }
 }
-
-const notificationsFollowAcceptedSelect = {
-  id: true,
-  createdAt: true,
-  follow: {
-    select: {
-      followee: {
-        select: { id: true, username: true, imageUrl: true },
-      },
-    },
-  },
-};
 
 export async function getNotificationsFollowAcceptedRelation(
   notificationId: string,

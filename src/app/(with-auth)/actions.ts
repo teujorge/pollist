@@ -4,7 +4,20 @@ import apn from "apn";
 import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { handlePrismaError } from "@/server/error";
+import {
+  groupedCommentLikes,
+  groupedComments,
+  groupedFollowAccepted,
+  groupedFollowPending,
+  groupedPollLikes,
+  notificationsCommentLikeSelect,
+  notificationsCommentSelect,
+  notificationsFollowAcceptedSelect,
+  notificationsFollowPendingSelect,
+  notificationsPollLikeSelect,
+} from "../components/Header/utils";
 import type { SubTier } from "@prisma/client";
+import type { Notifications } from "./app";
 
 export async function getUserSettings() {
   const { userId: myId } = auth();
@@ -81,14 +94,20 @@ export async function sendAPN({
       select: {
         deviceToken: true,
         blockerUsers: { where: { blockeeId: myId } },
-        _count: {
-          select: {
-            notificationsComment: true,
-            notificationsCommentLike: true,
-            notificationsFollowAccepted: true,
-            notificationsFollowPending: true,
-            notificationsPollLike: true,
-          },
+        notificationsPollLike: {
+          select: notificationsPollLikeSelect,
+        },
+        notificationsComment: {
+          select: notificationsCommentSelect,
+        },
+        notificationsCommentLike: {
+          select: notificationsCommentLikeSelect,
+        },
+        notificationsFollowPending: {
+          select: notificationsFollowPendingSelect,
+        },
+        notificationsFollowAccepted: {
+          select: notificationsFollowAcceptedSelect,
         },
       },
     });
@@ -96,10 +115,20 @@ export async function sendAPN({
     if (!recipientUser?.deviceToken) return;
     if (recipientUser.blockerUsers.length > 0) return;
 
-    const notificationCount = Object.values(recipientUser._count).reduce(
-      (acc, count) => acc + count,
-      0,
-    );
+    const _notifications: Notifications = {
+      pollLikes: recipientUser.notificationsPollLike,
+      comments: recipientUser.notificationsComment,
+      commentLikes: recipientUser.notificationsCommentLike,
+      followsPending: recipientUser.notificationsFollowPending,
+      followsAccepted: recipientUser.notificationsFollowAccepted,
+    };
+
+    const notificationCount =
+      groupedPollLikes(_notifications).length +
+      groupedComments(_notifications).length +
+      groupedCommentLikes(_notifications).length +
+      groupedFollowPending(_notifications).length +
+      groupedFollowAccepted(_notifications).length;
 
     const notification = new apn.Notification();
     notification.alert = { title, body };

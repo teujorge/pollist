@@ -104,3 +104,68 @@ export function groupedFollowAccepted(notifications: Notifications): {
     data: [notification],
   }));
 }
+
+export const notificationsPollLikeSelect = {
+  id: true,
+  createdAt: true,
+  pollLike: {
+    select: {
+      poll: { select: { id: true, title: true } },
+      author: { select: { id: true, username: true } },
+    },
+  },
+};
+
+export const notificationsCommentSelect = {
+  id: true,
+  createdAt: true,
+  comment: {
+    select: {
+      id: true,
+      author: { select: { id: true, username: true } },
+      parent: { select: { id: true, text: true } },
+      poll: { select: { id: true, title: true } },
+    },
+  },
+};
+
+export const notificationsCommentLikeSelect = {
+  id: true,
+  createdAt: true,
+  commentLike: {
+    select: {
+      author: { select: { id: true, username: true } },
+      comment: {
+        select: {
+          id: true,
+          text: true,
+          poll: { select: { id: true, title: true } },
+        },
+      },
+    },
+  },
+};
+
+export const notificationsFollowPendingSelect = {
+  id: true,
+  createdAt: true,
+  follow: {
+    select: {
+      follower: {
+        select: { id: true, username: true, imageUrl: true },
+      },
+    },
+  },
+};
+
+export const notificationsFollowAcceptedSelect = {
+  id: true,
+  createdAt: true,
+  follow: {
+    select: {
+      followee: {
+        select: { id: true, username: true, imageUrl: true },
+      },
+    },
+  },
+};
