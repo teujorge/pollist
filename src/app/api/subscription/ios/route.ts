@@ -48,7 +48,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const data = { ...payload.data, signedTransactionInfo: undefined };
+    const data = {
+      ...payload.data,
+      signedRenewalInfo: undefined,
+      signedTransactionInfo: undefined,
+    };
     console.log("Received Notification Payload Data:", data);
     console.log("Received Notification Payload Summary:", payload.summary);
 
