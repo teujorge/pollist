@@ -49,7 +49,17 @@ export async function POST(req: NextRequest) {
 
     // Decode the signed payload from Apple
     const payload = await decodeNotificationPayload(signedPayload);
-    console.log("Decoded Notification Payload:", payload);
+    const _payload = payload.data
+      ? {
+          ...payload,
+          data: {
+            ...payload.data,
+            signedRenewalInfo: "signedRenewalInfo",
+            signedTransactionInfo: "signedRenewalInfo",
+          },
+        }
+      : undefined;
+    console.log("Decoded Notification Payload:", _payload);
 
     if (payload.data && payload.data.bundleId !== APP_BUNDLE_ID) {
       console.error(
@@ -205,7 +215,7 @@ function _decodeTransaction(signedTransactionInfo: string) {
   try {
     const decoded = jwt.verify(signedTransactionInfo, KEY, {
       algorithms: ["ES256"],
-      audience: "appstoreconnect-v2",
+      audience: "appstoreconnect-v1",
       issuer: ISSUER_ID,
     });
     console.log("Decoded Transaction Info:", decoded);
