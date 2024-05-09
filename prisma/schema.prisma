@@ -232,7 +232,6 @@ model NotificationCommentLike {
 model AppleTransaction {
   id                    String @id @default(uuid())
   userId                String @unique
-  appleId               String @unique
   originalTransactionId String @unique
   user                  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 

@@ -27,24 +27,22 @@ export async function POST(req: NextRequest) {
     //   Environment.Production,
     // );
 
-    const { key, userId, appleId, originalTransactionId } =
-      (await req.json()) as {
-        key?: string;
-        userId?: string;
-        appleId?: string;
-        originalTransactionId?: string;
-      };
+    const { key, userId, originalTransactionId } = (await req.json()) as {
+      key?: string;
+      userId?: string;
+      originalTransactionId?: string;
+    };
 
     if (!key || key !== process.env.IAP_SUBSCRIPTION_KEY) {
       console.error("Invalid key:", key);
       return NextResponse.json({ error: "Invalid key" }, { status: 401 });
     }
 
-    if (!userId || !originalTransactionId || !appleId) {
+    if (!userId || !originalTransactionId) {
       console.error(
         "Missing required fields:",
         userId,
-        appleId,
+
         originalTransactionId,
       );
       return NextResponse.json(
@@ -56,7 +54,6 @@ export async function POST(req: NextRequest) {
     console.log(
       "Processing subscription status for:",
       userId,
-      appleId,
       originalTransactionId,
     );
 
@@ -68,11 +65,8 @@ export async function POST(req: NextRequest) {
     // Update transaction it
     if (dbTransaction) {
       dbTransaction = await db.appleTransaction.update({
-        where: { userId: userId },
-        data: {
-          userId: userId,
-          appleId: appleId,
-        },
+        where: { originalTransactionId: originalTransactionId },
+        data: { userId: userId },
       });
       console.log("AppleTransaction Updated:", dbTransaction);
     }
@@ -82,7 +76,6 @@ export async function POST(req: NextRequest) {
       dbTransaction = await db.appleTransaction.create({
         data: {
           userId: userId,
-          appleId: appleId,
           originalTransactionId: originalTransactionId,
         },
       });
