@@ -2,13 +2,12 @@
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
 import {
-  // Environment,
+  Environment,
   NotificationType,
-  // AppStoreServerAPI,
-  // decodeRenewalInfo,
-  // decodeTransaction,
-  decodeNotificationPayload,
+  AppStoreServerAPI,
+  decodeRenewalInfo,
   decodeTransaction,
+  decodeNotificationPayload,
   isDecodedNotificationDataPayload,
   isDecodedNotificationSummaryPayload,
 } from "app-store-server-api";
@@ -17,21 +16,21 @@ import type { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    // const KEY = Buffer.from(
-    //   process.env.IAP_SUBSCRIPTION_KEY!,
-    //   "base64",
-    // ).toString("ascii");
-    // const KEY_ID = process.env.IAP_KEY_ID!;
-    // const ISSUER_ID = process.env.IAP_ISSUER_ID!;
+    const KEY = Buffer.from(
+      process.env.IAP_SUBSCRIPTION_KEY!,
+      "base64",
+    ).toString("ascii");
+    const KEY_ID = process.env.IAP_KEY_ID!;
+    const ISSUER_ID = process.env.IAP_ISSUER_ID!;
     const APP_BUNDLE_ID = process.env.APNS_BUNDLE_ID!;
 
-    // const api = new AppStoreServerAPI(
-    //   KEY,
-    //   KEY_ID,
-    //   ISSUER_ID,
-    //   APP_BUNDLE_ID,
-    //   Environment.Production,
-    // );
+    const api = new AppStoreServerAPI(
+      KEY,
+      KEY_ID,
+      ISSUER_ID,
+      APP_BUNDLE_ID,
+      Environment.Production,
+    );
 
     // Get the body of the request, which should contain the signedPayload from Apple
     const _body = (await req.json()) as Record<string, string>;
@@ -99,6 +98,28 @@ export async function POST(req: NextRequest) {
       );
       console.log("_Transaction:", _transaction);
 
+      // Example for handling subscription statuses
+      const originalTransactionId = transaction.originalTransactionId;
+      const subscriptionResponse = await api.getSubscriptionStatuses(
+        originalTransactionId,
+      );
+
+      if (subscriptionResponse.data && subscriptionResponse.data.length > 0) {
+        const item = subscriptionResponse?.data[0]?.lastTransactions.find(
+          (item) => item.originalTransactionId === originalTransactionId,
+        );
+
+        if (item) {
+          const transactionInfo = await decodeTransaction(
+            item.signedTransactionInfo,
+          );
+          const renewalInfo = await decodeRenewalInfo(item.signedRenewalInfo);
+
+          console.log("--Transaction Info:", transactionInfo);
+          console.log("--Renewal Info:", renewalInfo);
+        }
+      }
+
       switch (payload.notificationType) {
         case NotificationType.DidRenew: // Handle a successful renewal
         case NotificationType.Subscribed: // Handle a new subscription
@@ -140,29 +161,6 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
-
-    // // Example for handling subscription statuses
-    // // You would need the originalTransactionId from your application context or stored data
-    // const originalTransactionId = "transaction_id_here";
-    // const subscriptionResponse = await api.getSubscriptionStatuses(
-    //   originalTransactionId,
-    // );
-
-    // if (subscriptionResponse.data && subscriptionResponse.data.length > 0) {
-    //   const item = subscriptionResponse?.data[0]?.lastTransactions.find(
-    //     (item) => item.originalTransactionId === originalTransactionId,
-    //   );
-
-    //   if (item) {
-    //     const transactionInfo = await decodeTransaction(
-    //       item.signedTransactionInfo,
-    //     );
-    //     const renewalInfo = await decodeRenewalInfo(item.signedRenewalInfo);
-
-    //     console.log("Transaction Info:", transactionInfo);
-    //     console.log("Renewal Info:", renewalInfo);
-    //   }
-    // }
 
     // Successful handling
     return NextResponse.json(
