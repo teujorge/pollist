@@ -10,6 +10,16 @@ import {
 import type { SubTier } from "@prisma/client";
 import type { NextRequest } from "next/server";
 
+/** DOCS
+ *
+ * https://developer.apple.com/documentation/appstoreservernotifications
+ *
+ * HTTPS RESPONSES
+ * Send HTTP 200, or any HTTP code between 200 and 206, if the post was successful.
+ * Send HTTP 50x or 40x to have the App Store retry the notification, if the post didn't succeed.
+ *
+ */
+
 export async function POST(req: NextRequest) {
   try {
     const APP_BUNDLE_ID = process.env.APNS_BUNDLE_ID!;
@@ -26,7 +36,7 @@ export async function POST(req: NextRequest) {
       );
       return NextResponse.json(
         { error: "Incorrect bundle ID" },
-        { status: 400 },
+        { status: 401 },
       );
     }
 
