@@ -39,6 +39,7 @@ model User {
   notificationsFollowPending  NotificationFollowPending[]  @relation("NotifyeeRelation")
   notificationsFollowAccepted NotificationFollowAccepted[] @relation("NotifyeeRelation")
   notificationsPollLike       NotificationPollLike[]
+  appleTransaction            AppleTransaction?
 
   @@index([username])
 }
@@ -226,4 +227,12 @@ model NotificationCommentLike {
   commentLike   CommentLike @relation(fields: [commentLikeId], references: [id], onDelete: Cascade)
 
   @@index([notifyeeId])
+}
+
+model AppleTransaction {
+  userId                String @unique
+  originalTransactionId String @unique
+  user                  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([originalTransactionId])
 }
