@@ -78,7 +78,9 @@ export async function POST(req: NextRequest) {
     if (isDecodedNotificationDataPayload(payload)) {
       console.log("Handling notification as DecodedNotificationDataPayload");
 
-      const transaction = decodeTransaction(payload.data.signedTransactionInfo);
+      const transaction = await decodeTransaction(
+        payload.data.signedTransactionInfo,
+      );
       console.log("Transaction:", transaction);
 
       switch (payload.notificationType) {
