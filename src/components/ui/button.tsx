@@ -17,7 +17,7 @@ const buttonVariants = cva(
           "border border-accent bg-background shadow-sm hovact:bg-accent/35 text-foreground hovact:text-secondary",
         secondary:
           "bg-secondary text-secondary-foreground shadow-sm hovact:bg-secondary/80",
-        ghost: "hovact:bg-accent hovact:text-accent-foreground",
+        ghost: "hovact:bg-accent/25",
         link: "text-primary underline-offset-4 hovact:underline",
         popover:
           "hovact:bg-accent hovact:text-accent-foreground w-full rounded-none flex justify-start gap-2 h-8 px-3 text-xs",

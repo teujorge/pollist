@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { Loader } from "../../Loader";
@@ -5,6 +6,7 @@ import { Suspense } from "react";
 import { OptionToggle } from "./settings/OptionToggle";
 import { PricingTable } from "./settings/PricingTable";
 import { HideInWebView } from "../../HideInWebView";
+import { buttonVariants } from "@/components/ui/button";
 import { OptionToggleAds } from "./settings/OptionToggleAds";
 import { BlockedUsersList } from "./settings/BlockedUsersList";
 import { ClerkUserButtonClient } from "./ClerkUserButtonClient";
@@ -101,9 +103,19 @@ async function SettingsTab() {
             </p>
             <HideInWebView
               fallback={
-                <div className="p-2 text-xs text-accent-foreground">
-                  Manage subscription through iPhone settings.
-                </div>
+                <a
+                  href="https://pollist.org/subscription"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    "group",
+                    buttonVariants({ size: "sm", variant: "ghost" }),
+                  )}
+                >
+                  <span className="w-full text-left text-primary group-hover:text-purple-400">
+                    Manage subscription
+                  </span>
+                </a>
               }
             >
               <a
