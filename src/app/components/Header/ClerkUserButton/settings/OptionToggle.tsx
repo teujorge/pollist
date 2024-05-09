@@ -44,7 +44,7 @@ export function OptionToggle({
   return (
     <div
       className={cn(
-        "flex cursor-pointer flex-row items-center justify-between rounded-md",
+        "flex cursor-pointer flex-row items-center justify-between rounded-md transition-all",
         isChanging
           ? "pointer-events-none opacity-50"
           : "opacity-100 hovact:bg-accent/40",
