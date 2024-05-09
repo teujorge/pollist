@@ -1,4 +1,5 @@
 // import { db } from "@/server/prisma";
+import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
 import {
   // Environment,
@@ -82,6 +83,11 @@ export async function POST(req: NextRequest) {
         payload.data.signedTransactionInfo,
       );
       console.log("Transaction:", transaction);
+
+      const _transaction = _decodeTransaction(
+        payload.data.signedTransactionInfo,
+      );
+      console.log("_Transaction:", _transaction);
 
       switch (payload.notificationType) {
         case NotificationType.DidRenew: // Handle a successful renewal
@@ -188,4 +194,23 @@ async function deactivateSubscription(userId: string) {
   // });
   // console.log("Subscription Deactivated:", user.username, user.tier);
   // return user;
+}
+
+function _decodeTransaction(signedTransactionInfo: string) {
+  const KEY = Buffer.from(process.env.IAP_SUBSCRIPTION_KEY!, "base64").toString(
+    "ascii",
+  );
+  const ISSUER_ID = process.env.IAP_ISSUER_ID!;
+
+  try {
+    const decoded = jwt.verify(signedTransactionInfo, KEY, {
+      algorithms: ["ES256"],
+      audience: "appstoreconnect-v2",
+      issuer: ISSUER_ID,
+    });
+    console.log("Decoded Transaction Info:", decoded);
+    return decoded;
+  } catch (error) {
+    console.error("Failed to decode transaction info:", error);
+  }
 }

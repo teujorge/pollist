@@ -41,6 +41,7 @@
     "app-store-server-api": "^0.14.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "jsonwebtoken": "^9.0.2",
     "next": "^14.2.3",
     "openai": "^4.40.2",
     "posthog-js": "^1.130.2",
@@ -62,6 +63,7 @@
   },
   "devDependencies": {
     "@types/eslint": "^8.56.10",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20.12.8",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
