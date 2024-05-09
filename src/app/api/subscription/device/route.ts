@@ -27,19 +27,26 @@ export async function POST(req: NextRequest) {
     //   Environment.Production,
     // );
 
-    const { key, userId, originalTransactionId } = (await req.json()) as {
-      key?: string;
-      userId?: string;
-      originalTransactionId?: string;
-    };
+    const { key, userId, appleId, originalTransactionId } =
+      (await req.json()) as {
+        key?: string;
+        userId?: string;
+        appleId?: string;
+        originalTransactionId?: string;
+      };
 
     if (!key || key !== process.env.IAP_SUBSCRIPTION_KEY) {
       console.error("Invalid key:", key);
       return NextResponse.json({ error: "Invalid key" }, { status: 401 });
     }
 
-    if (!userId || !originalTransactionId) {
-      console.error("Missing required fields:", userId, originalTransactionId);
+    if (!userId || !originalTransactionId || !appleId) {
+      console.error(
+        "Missing required fields:",
+        userId,
+        appleId,
+        originalTransactionId,
+      );
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 },
@@ -49,26 +56,33 @@ export async function POST(req: NextRequest) {
     console.log(
       "Processing subscription status for:",
       userId,
+      appleId,
       originalTransactionId,
     );
 
     // Check if the transaction already exists
     let dbTransaction = await db.appleTransaction.findUnique({
-      where: { userId: userId },
+      where: { originalTransactionId: originalTransactionId },
     });
-    // update it
+
+    // Update transaction it
     if (dbTransaction) {
       dbTransaction = await db.appleTransaction.update({
         where: { userId: userId },
-        data: { originalTransactionId: originalTransactionId },
+        data: {
+          userId: userId,
+          appleId: appleId,
+        },
       });
       console.log("AppleTransaction Updated:", dbTransaction);
     }
+
     // create it
     else {
       dbTransaction = await db.appleTransaction.create({
         data: {
           userId: userId,
+          appleId: appleId,
           originalTransactionId: originalTransactionId,
         },
       });
