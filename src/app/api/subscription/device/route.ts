@@ -82,6 +82,8 @@ export async function POST(req: NextRequest) {
     // console.log("Signed Transaction Info:", signedTransactionInfo);
     // const transactionInfo = await decodeTransaction(signedTransactionInfo);
     // console.log("Decoded Transaction Info:", transactionInfo);
+
+    return NextResponse.json({ status: 200 });
   } catch (e) {
     console.error("Error processing notification:", e);
     const errorMessage = e instanceof Error ? e.message : String(e);
