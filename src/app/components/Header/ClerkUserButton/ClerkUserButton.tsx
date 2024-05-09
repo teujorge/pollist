@@ -37,6 +37,13 @@ async function SettingsTab() {
 
   const user = await db.user.findUnique({
     where: { id: userId },
+    select: {
+      id: true,
+      tier: true,
+      private: true,
+      ads: true,
+      viewSensitive: true,
+    },
   });
 
   if (!user) return null;
@@ -53,29 +60,23 @@ async function SettingsTab() {
       <div className="flex flex-col gap-4">
         <h2 className="font-medium">
           Preferences
-          <HideInWebView>
-            <span className="text-sm font-normal text-accent-foreground/80">
-              {user.tier === "FREE" && " (Upgrade to unlock all features)"}
-            </span>
-          </HideInWebView>
+          <span className="text-sm font-normal text-accent-foreground/80">
+            {user.tier === "FREE" && " (Upgrade to unlock all features)"}
+          </span>
         </h2>
         <div className="flex flex-col gap-1">
-          <HideInWebView shouldHideInWebView={user.tier === "FREE"}>
-            <OptionToggle
-              hasAccess={user.tier !== "FREE"}
-              label={"Private Account"}
-              isEnabled={user.private}
-              onToggleOption={setPrivateAccount}
-            />
-          </HideInWebView>
+          <OptionToggle
+            hasAccess={user.tier !== "FREE"}
+            label={"Private Account"}
+            isEnabled={user.private}
+            onToggleOption={setPrivateAccount}
+          />
 
-          <HideInWebView shouldHideInWebView={user.tier === "FREE"}>
-            <OptionToggleAds
-              hasAccess={user.tier !== "FREE"}
-              isEnabled={!user.ads}
-              onToggleOption={setShowAds}
-            />
-          </HideInWebView>
+          <OptionToggleAds
+            hasAccess={user.tier !== "FREE"}
+            isEnabled={!user.ads}
+            onToggleOption={setShowAds}
+          />
 
           <OptionToggleSensitive
             isEnabled={user.viewSensitive}
@@ -112,7 +113,7 @@ async function SettingsTab() {
                     buttonVariants({ size: "sm", variant: "ghost" }),
                   )}
                 >
-                  <span className="w-full text-left text-primary group-hover:text-purple-400">
+                  <span className="group-hovact:text-purple-400 w-full text-left text-primary">
                     Manage subscription
                   </span>
                 </a>
@@ -122,7 +123,7 @@ async function SettingsTab() {
                 href={process.env.NEXT_PUBLIC_STRIPE_BILLING_URL ?? "/"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-row items-center rounded-md px-3 py-2 text-xs text-primary transition-colors hovact:bg-accent/30 [&>svg]:opacity-0 [&>svg]:transition-all [&>svg]:duration-200 [&>svg]:hovact:translate-x-2 [&>svg]:hovact:opacity-100"
+                className="flex flex-row items-center rounded-md px-3 py-2 text-xs text-primary transition-colors hovact:bg-accent/30 hovact:text-purple-400 [&>svg]:opacity-0 [&>svg]:transition-all [&>svg]:duration-200 [&>svg]:hovact:translate-x-2 [&>svg]:hovact:opacity-100"
               >
                 <div className="flex flex-row items-center justify-center gap-2">
                   <ArrowSquareOut size={15} /> Manage subscription through
