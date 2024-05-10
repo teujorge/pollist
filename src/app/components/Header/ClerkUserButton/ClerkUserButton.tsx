@@ -11,7 +11,11 @@ import { OptionToggleAds } from "./settings/OptionToggleAds";
 import { BlockedUsersList } from "./settings/BlockedUsersList";
 import { ClerkUserButtonClient } from "./ClerkUserButtonClient";
 import { OptionToggleSensitive } from "./settings/OptionToggleSensitive";
-import { ArrowRight, ArrowSquareOut } from "@phosphor-icons/react/dist/ssr";
+import {
+  AppleLogo,
+  ArrowRight,
+  ArrowSquareOut,
+} from "@phosphor-icons/react/dist/ssr";
 import {
   setShowAds,
   setPrivateAccount,
@@ -43,10 +47,23 @@ async function SettingsTab() {
       private: true,
       ads: true,
       viewSensitive: true,
+      appleTransaction: true,
     },
   });
 
   if (!user) return null;
+
+  const manageSubWithAppleContent = (
+    <>
+      <AppleLogo size={15} /> Manage subscription with Apple
+    </>
+  );
+
+  const manageSubWithStripeContent = (
+    <>
+      <ArrowSquareOut size={15} /> Manage subscription with Stripe
+    </>
+  );
 
   return (
     <div className="flex flex-col gap-10">
@@ -95,8 +112,10 @@ async function SettingsTab() {
       <div className="flex flex-col gap-4">
         <h2 className="font-medium">Billing</h2>
         {user.tier === "FREE" ? (
+          // pricing table
           <PricingTable userId={user.id} />
         ) : (
+          // manage subscription
           <div className="flex flex-col gap-2">
             <p className="px-4 text-sm">
               Active Subscription:{" "}
@@ -104,37 +123,59 @@ async function SettingsTab() {
             </p>
             <HideInWebView
               fallback={
-                <a
-                  href="https://pollist.org/subscription"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cn(
-                    "group",
-                    buttonVariants({ size: "sm", variant: "ghost" }),
-                  )}
+                <ManageSubscriptionButton
+                  href={
+                    user.appleTransaction
+                      ? "https://pollist.org/subscription"
+                      : process.env.NEXT_PUBLIC_STRIPE_BILLING_URL!
+                  }
                 >
-                  <span className="group-hovact:text-purple-400 w-full text-left text-primary">
-                    Manage subscription
-                  </span>
-                </a>
+                  {user.appleTransaction
+                    ? manageSubWithAppleContent
+                    : manageSubWithStripeContent}
+                </ManageSubscriptionButton>
               }
             >
-              <a
-                href={process.env.NEXT_PUBLIC_STRIPE_BILLING_URL ?? "/"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex flex-row items-center rounded-md px-3 py-2 text-xs text-primary transition-colors hovact:bg-accent/30 hovact:text-purple-400 [&>svg]:opacity-0 [&>svg]:transition-all [&>svg]:duration-200 [&>svg]:hovact:translate-x-2 [&>svg]:hovact:opacity-100"
+              <ManageSubscriptionButton
+                href={
+                  user.appleTransaction
+                    ? "https://support.apple.com/billing"
+                    : process.env.NEXT_PUBLIC_STRIPE_BILLING_URL!
+                }
               >
-                <div className="flex flex-row items-center justify-center gap-2">
-                  <ArrowSquareOut size={15} /> Manage subscription through
-                  stripe
-                </div>
-                <ArrowRight size={15} />
-              </a>
+                {user.appleTransaction
+                  ? manageSubWithAppleContent
+                  : manageSubWithStripeContent}
+              </ManageSubscriptionButton>
             </HideInWebView>
           </div>
         )}
       </div>
     </div>
+  );
+}
+
+function ManageSubscriptionButton({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={cn(
+        buttonVariants({ size: "sm", variant: "ghost" }),
+        "flex items-center justify-start text-primary hovact:text-purple-400 [&>svg]:opacity-0 [&>svg]:transition-all [&>svg]:duration-200 [&>svg]:hovact:translate-x-2 [&>svg]:hovact:opacity-100",
+      )}
+    >
+      <div className="flex flex-row items-center justify-center gap-2">
+        {children}
+      </div>
+      <ArrowRight size={15} />
+    </a>
   );
 }
