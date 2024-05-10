@@ -235,5 +235,6 @@ model AppleTransaction {
   originalTransactionId String @unique
   user                  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@index([originalTransactionId])
 }

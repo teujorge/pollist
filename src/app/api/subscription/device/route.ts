@@ -60,19 +60,19 @@ export async function POST(req: NextRequest) {
 
     // Check if the transaction already exists
     let dbTransaction = await db.appleTransaction.findUnique({
-      where: { originalTransactionId: originalTransactionId },
+      where: { userId: userId },
     });
 
-    // Update transaction it
+    // Update transaction if it exists (originalTransactionId may change with new transactions)
     if (dbTransaction) {
       dbTransaction = await db.appleTransaction.update({
-        where: { originalTransactionId: originalTransactionId },
-        data: { userId: userId },
+        where: { userId: userId },
+        data: { originalTransactionId: originalTransactionId },
       });
       console.log("AppleTransaction Updated:", dbTransaction);
     }
 
-    // create it
+    // Create transaction if it doesn't exist
     else {
       dbTransaction = await db.appleTransaction.create({
         data: {
