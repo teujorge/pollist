@@ -1,5 +1,6 @@
 import { db } from "@/server/prisma";
 import { NextResponse } from "next/server";
+import { analyticsServerClient } from "@/server/analytics";
 // import {
 // Environment,
 // AppStoreServerAPI,
@@ -89,6 +90,15 @@ export async function POST(req: NextRequest) {
     // console.log("Signed Transaction Info:", signedTransactionInfo);
     // const transactionInfo = await decodeTransaction(signedTransactionInfo);
     // console.log("Decoded Transaction Info:", transactionInfo);
+
+    analyticsServerClient.capture({
+      distinctId: userId,
+      event: "Subscription Activated (iOS Device Action)",
+      properties: {
+        userId: userId,
+        originalTransactionId: originalTransactionId,
+      },
+    });
 
     return NextResponse.json({ status: 200 });
   } catch (e) {

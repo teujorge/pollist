@@ -1,5 +1,6 @@
 import { db } from "@/server/prisma";
 import { NextResponse } from "next/server";
+import { analyticsServerClient } from "@/server/analytics";
 import {
   NotificationType,
   decodeTransaction,
@@ -67,6 +68,16 @@ export async function POST(req: NextRequest) {
         case NotificationType.Subscribed: // Handle a new subscription
         case NotificationType.OfferRedeemed: // Handle the redemption of a special offer
           await updateActiveSubscription(dbTransaction.userId, "PRO");
+
+          analyticsServerClient.capture({
+            distinctId: dbTransaction.userId,
+            event: "Subscription Activated (iOS App Store Notification)",
+            properties: {
+              userId: dbTransaction.userId,
+              originalTransactionId: dbTransaction.originalTransactionId,
+            },
+          });
+
           break;
 
         case NotificationType.DidFailToRenew: // Handle a failed renewal attempt
@@ -74,6 +85,20 @@ export async function POST(req: NextRequest) {
         case NotificationType.Revoke: // Handle a revocation of the subscription
         case NotificationType.Refund: // Handle a user getting a refund
           await updateInactiveSubscription(dbTransaction.userId);
+
+          try {
+            analyticsServerClient.capture({
+              distinctId: dbTransaction.userId,
+              event: "Subscription Deactivated (iOS App Store Notification)",
+              properties: {
+                userId: dbTransaction.userId,
+                originalTransactionId: dbTransaction.originalTransactionId,
+              },
+            });
+          } catch (error) {
+            console.error("Error capturing analytics event:", error);
+          }
+
           break;
 
         case NotificationType.ConsumptionRequest: // Handle consumption of a consumable purchase
