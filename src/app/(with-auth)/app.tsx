@@ -15,8 +15,10 @@ import {
   useState,
   useEffect,
   useContext,
+  useCallback,
   createContext,
 } from "react";
+import type { AppleTransaction, SubTier } from "@prisma/client";
 import type {
   NotificationCommentItem,
   NotificationPollLikeItem,
@@ -37,17 +39,32 @@ type BlockedUser = NonNullable<
   Awaited<ReturnType<typeof getUserSettings>>
 >["blockerUsers"][0]["blockee"];
 
+type UserSettings = {
+  ads: boolean;
+  tier: SubTier;
+  private: boolean;
+  viewSensitive: boolean;
+  blockedUsers: BlockedUser[];
+  appleTransaction?: AppleTransaction;
+};
+
 type AppProviderValue = {
+  // re-render app
   key: string;
   setKey: React.Dispatch<React.SetStateAction<string>>;
 
-  ads: boolean;
+  // user settings
+  userSettings: UserSettings;
+  setUserSettings: React.Dispatch<React.SetStateAction<UserSettings>>;
+  // helpers
   setAds: React.Dispatch<React.SetStateAction<boolean>>;
-
-  blockedUsers: BlockedUser[];
+  setTier: React.Dispatch<React.SetStateAction<SubTier>>;
+  setPrivate: React.Dispatch<React.SetStateAction<boolean>>;
+  setViewSensitive: React.Dispatch<React.SetStateAction<boolean>>;
   setBlockedUsers: React.Dispatch<React.SetStateAction<BlockedUser[]>>;
   isUserBlocked: (userId: string) => boolean;
 
+  // notifications
   notifications: Notifications;
   setNotifications: React.Dispatch<React.SetStateAction<Notifications>>;
 };
@@ -57,13 +74,6 @@ export function App({ children }: { children: React.ReactNode }) {
 
   const [key, setKey] = useState<string>(Math.random().toString());
 
-  const [ads, setAds] = useState(true);
-
-  const [blockedUsers, setBlockedUsers] = useState<BlockedUser[]>([]);
-
-  const isUserBlocked = (userId: string) =>
-    blockedUsers.some((user) => user.id === userId);
-
   const [notifications, setNotifications] = useState<Notifications>({
     pollLikes: [],
     comments: [],
@@ -72,24 +82,85 @@ export function App({ children }: { children: React.ReactNode }) {
     followsAccepted: [],
   });
 
+  const [userSettings, setUserSettings] = useState<UserSettings>({
+    ads: true,
+    tier: "FREE",
+    private: false,
+    viewSensitive: false,
+    blockedUsers: [],
+    appleTransaction: undefined,
+  });
+
+  const setAds = (update: boolean | ((prevAds: boolean) => boolean)) =>
+    setUserSettings((prev) => ({
+      ...prev,
+      ads: typeof update === "function" ? update(prev.ads) : update,
+    }));
+
+  const setTier = (update: SubTier | ((prevTier: SubTier) => SubTier)) =>
+    setUserSettings((prev) => ({
+      ...prev,
+      tier: typeof update === "function" ? update(prev.tier) : update,
+    }));
+
+  const setPrivate = (update: boolean | ((prevPrivate: boolean) => boolean)) =>
+    setUserSettings((prev) => ({
+      ...prev,
+      private: typeof update === "function" ? update(prev.private) : update,
+    }));
+
+  const setViewSensitive = (
+    update: boolean | ((prevViewSensitive: boolean) => boolean),
+  ) =>
+    setUserSettings((prev) => ({
+      ...prev,
+      viewSensitive:
+        typeof update === "function" ? update(prev.viewSensitive) : update,
+    }));
+
+  const setBlockedUsers = (
+    update:
+      | BlockedUser[]
+      | ((prevBlockedUsers: BlockedUser[]) => BlockedUser[]),
+  ) =>
+    setUserSettings((prev) => ({
+      ...prev,
+      blockedUsers:
+        typeof update === "function" ? update(prev.blockedUsers) : update,
+    }));
+
+  const isUserBlocked = useCallback(
+    (userId: string) =>
+      userSettings.blockedUsers.some((user) => user.id === userId),
+    [userSettings.blockedUsers],
+  );
+
   useCustomScrollbar();
   useRealtimeNotifications({ setNotifications, isUserBlocked });
 
   // Init user
   useEffect(() => {
     async function init() {
-      if (!user?.id) return;
+      if (!user) return;
 
       // Get user settings
-      const userSettings = await getUserSettings();
-      if (!userSettings) {
+      const settings = await getUserSettings();
+      if (!settings) {
         toast.error("Failed to get user settings");
         return;
       }
 
-      setBlockedUsers(userSettings.blockerUsers.map((u) => u.blockee));
-      if (userSettings.tier === "FREE") setAds(true);
-      else setAds(false);
+      console.log("init3");
+
+      // Set user settings
+      setUserSettings({
+        ads: settings.ads,
+        tier: settings.tier,
+        private: settings.private,
+        viewSensitive: settings.viewSensitive,
+        blockedUsers: settings.blockerUsers.map((u) => u.blockee),
+        appleTransaction: settings.appleTransaction ?? undefined,
+      });
 
       // Get notifications
       const notifications = await getNotificationsItems();
@@ -118,7 +189,7 @@ export function App({ children }: { children: React.ReactNode }) {
       const currentDeviceToken = localStorage.getItem("deviceToken");
       if (
         currentDeviceToken !== null &&
-        currentDeviceToken !== userSettings.deviceToken
+        currentDeviceToken !== settings.deviceToken
       ) {
         updateUserDeviceToken(user.id, currentDeviceToken)
           .then((user) => {
@@ -130,8 +201,11 @@ export function App({ children }: { children: React.ReactNode }) {
       }
     }
 
-    void init();
-  }, [user, key]);
+    init().catch((e) => {
+      console.error(e);
+      toast.error("Failed to initialize app");
+    });
+  }, [user, key, isUserBlocked]);
 
   // Remove blocked users from notifications
   useEffect(() => {
@@ -174,7 +248,7 @@ export function App({ children }: { children: React.ReactNode }) {
         (notification) => !isUserBlocked(notification.follow.followee.id),
       ),
     }));
-  }, [notifications, blockedUsers]);
+  }, [notifications, userSettings.blockedUsers, isUserBlocked]);
 
   return (
     <CSPostHogProvider>
@@ -183,16 +257,21 @@ export function App({ children }: { children: React.ReactNode }) {
           value={{
             key,
             setKey,
-            ads,
+
+            userSettings,
+            setUserSettings,
             setAds,
-            blockedUsers,
+            setTier,
+            setPrivate,
+            setViewSensitive,
             setBlockedUsers,
             isUserBlocked,
+
             notifications,
             setNotifications,
           }}
         >
-          {ads && (
+          {userSettings.ads && (
             <Script
               async
               src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6132246468312218"

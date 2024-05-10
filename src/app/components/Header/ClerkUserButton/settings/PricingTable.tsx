@@ -1,11 +1,14 @@
 import Stripe from "stripe";
 import { cn } from "@/lib/utils";
+import { auth } from "@clerk/nextjs/server";
 import { Suspense } from "react";
 import { subscriptions } from "./utils";
 import { HideInWebView } from "@/app/components/HideInWebView";
 import type { Subscription } from "./utils";
 
-export function PricingTable({ userId }: { userId: string }) {
+export async function PricingTable() {
+  const { userId } = auth();
+
   return (
     <div className="flex h-full w-full flex-wrap items-center justify-center gap-4 rounded-lg">
       {subscriptions.map((subscription) => (
@@ -43,7 +46,7 @@ async function SubscriptionCard({
   ios,
   shimmer = false,
 }: {
-  userId: string;
+  userId: string | null;
   ios: boolean;
   shimmer?: boolean;
 } & Subscription) {

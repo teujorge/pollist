@@ -24,9 +24,13 @@ export async function getUserSettings() {
 
   if (!myId) {
     return {
+      ads: true,
       tier: "FREE" as SubTier,
+      private: false,
+      viewSensitive: false,
       deviceToken: null,
       blockerUsers: [],
+      appleTransaction: null,
     };
   }
 
@@ -34,7 +38,10 @@ export async function getUserSettings() {
     return await db.user.findUnique({
       where: { id: myId },
       select: {
+        ads: true,
         tier: true,
+        private: true,
+        viewSensitive: true,
         deviceToken: true,
         blockerUsers: {
           select: {
@@ -43,6 +50,7 @@ export async function getUserSettings() {
             },
           },
         },
+        appleTransaction: true,
       },
     });
   } catch (e) {

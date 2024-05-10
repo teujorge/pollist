@@ -4,10 +4,10 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Loader } from "@/app/components/Loader";
 import { Switch } from "@/components/ui/switch";
-import { useEffect, useState } from "react";
+import { useState, useTransition } from "react";
 
 export function OptionToggle({
-  isEnabled,
+  isEnabled: _isEnabled,
   label,
   onToggleOption,
   hasAccess,
@@ -19,33 +19,30 @@ export function OptionToggle({
   hasAccess: boolean;
   invert?: boolean;
 }) {
-  const [isChanging, setIsChanging] = useState(false);
-
-  useEffect(() => {
-    setIsChanging(false);
-  }, [isEnabled]);
+  const [isPending, startTransition] = useTransition();
+  const [isEnabled, setIsEnabled] = useState(_isEnabled);
 
   async function handleToggle() {
-    if (!hasAccess) {
-      toast.warning("Please subscribe to access this feature.");
-      return;
-    }
+    startTransition(async () => {
+      if (!hasAccess) {
+        toast.warning("Please subscribe to access this feature.");
+        return;
+      }
 
-    setIsChanging(true);
-
-    try {
-      await onToggleOption(invert ? !isEnabled : isEnabled);
-    } catch (error) {
-      setIsChanging(false);
-      toast.error("Failed to update account settings");
-    }
+      try {
+        await onToggleOption(invert ? !isEnabled : isEnabled);
+        setIsEnabled((prev) => !prev);
+      } catch (error) {
+        toast.error("Failed to update account settings");
+      }
+    });
   }
 
   return (
     <div
       className={cn(
         "flex cursor-pointer flex-row items-center justify-between rounded-md transition-all",
-        isChanging
+        isPending
           ? "pointer-events-none opacity-50"
           : "opacity-100 hovact:bg-accent/40",
         !hasAccess && "opacity-50",
@@ -53,7 +50,7 @@ export function OptionToggle({
       onClick={handleToggle}
     >
       <span className="cursor-pointer px-8 py-2 text-sm">{label}</span>
-      {isChanging ? (
+      {isPending ? (
         <Loader className="mr-9 h-4 w-4 border-2" />
       ) : (
         <Switch checked={isEnabled} className="mr-8" />

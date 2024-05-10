@@ -2,10 +2,10 @@
 
 import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
 import { defaultRatelimit } from "@/server/ratelimit";
 import { handlePrismaError } from "@/server/error";
 import { sendAPN, silentlyUpdateAPN } from "../actions";
-import { revalidatePath, revalidateTag } from "next/cache";
 
 export type GetUser = NonNullable<Awaited<ReturnType<typeof getUser>>>;
 
@@ -326,16 +326,13 @@ export async function setPrivateAccount(isPrivate: boolean) {
   await defaultRatelimit(userId);
 
   try {
-    const newUser = await db.user.update({
+    await db.user.update({
       where: {
         id: userId,
         tier: { not: { equals: "FREE" } },
       },
       data: { private: isPrivate },
     });
-
-    revalidateTag("user-sensitive");
-    revalidatePath(`/users/${newUser.username}`);
   } catch (error) {
     throw new Error(handlePrismaError(error));
   }
@@ -347,16 +344,13 @@ export async function setShowAds(showAds: boolean) {
   await defaultRatelimit(userId);
 
   try {
-    const newUser = await db.user.update({
+    await db.user.update({
       where: {
         id: userId,
         tier: { not: { equals: "FREE" } },
       },
       data: { ads: showAds },
     });
-
-    revalidateTag("user-sensitive");
-    revalidatePath(`/users/${newUser.username}`);
   } catch (error) {
     throw new Error(handlePrismaError(error));
   }
@@ -368,13 +362,10 @@ export async function setShowSensitiveContent(showSensitive: boolean) {
   await defaultRatelimit(userId);
 
   try {
-    const newUser = await db.user.update({
+    await db.user.update({
       where: { id: userId },
       data: { viewSensitive: showSensitive },
     });
-
-    revalidateTag("user-sensitive");
-    revalidatePath(`/users/${newUser.username}`);
   } catch (error) {
     throw new Error(handlePrismaError(error));
   }

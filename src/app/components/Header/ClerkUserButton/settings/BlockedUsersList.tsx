@@ -19,7 +19,10 @@ export function BlockedUsersList() {
   const initedRef = useRef(false);
   const animatedDivRef = useRef<HTMLDivElement>(null);
 
-  const { blockedUsers, setBlockedUsers } = useApp();
+  const {
+    userSettings: { blockedUsers },
+    setBlockedUsers,
+  } = useApp();
 
   const [isViewing, setIsViewing] = useState(false);
 
