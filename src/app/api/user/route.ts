@@ -48,7 +48,8 @@ export async function POST(req: NextRequest) {
           await db.user.create({
             data: {
               id: data.id,
-              username: data.username ?? data.first_name ?? data.last_name,
+              username:
+                data.username ?? data.first_name ?? data.last_name ?? data.id,
               imageUrl: data.image_url,
             },
           });
@@ -101,7 +102,8 @@ export async function POST(req: NextRequest) {
           await db.user.update({
             where: { id: data.id },
             data: {
-              username: data.username ?? data.first_name ?? data.last_name,
+              username:
+                data.username ?? data.first_name ?? data.last_name ?? data.id,
               imageUrl: data.image_url,
             },
           });
