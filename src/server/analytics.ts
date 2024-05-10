@@ -11,4 +11,18 @@ function serverSideAnalytics() {
   return posthogClient;
 }
 
-export const analyticsServerClient = serverSideAnalytics();
+const analyticsServerClient = serverSideAnalytics();
+
+const originalCapture = analyticsServerClient.capture.bind(
+  analyticsServerClient,
+);
+
+analyticsServerClient.capture = (e) => {
+  try {
+    originalCapture(e);
+  } catch (error) {
+    console.error("Error capturing event", error);
+  }
+};
+
+export { analyticsServerClient };
