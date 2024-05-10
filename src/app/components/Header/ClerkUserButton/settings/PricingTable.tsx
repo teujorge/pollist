@@ -72,7 +72,7 @@ async function SubscriptionCard({
       className={cn(
         "flex w-56 flex-col gap-4 rounded-lg border border-accent p-4 transition-transform hover:scale-105 hovact:border-primary hovact:text-foreground",
         shimmer && "pointer-events-none",
-        url === undefined && "pointer-events-none",
+        url === undefined && "pointer-events-none opacity-50",
       )}
     >
       <h3 className={cn("text-xl font-semibold", shimmer && "shimmer")}>
