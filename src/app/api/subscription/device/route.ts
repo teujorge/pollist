@@ -93,9 +93,10 @@ export async function POST(req: NextRequest) {
 
     analyticsServerClient.capture({
       distinctId: userId,
-      event: "Subscription Activated (iOS Device Action)",
+      event: "Subscription Enabled",
       properties: {
-        userId: userId,
+        tier: "PRO",
+        source: "iOS Device Action",
         originalTransactionId: originalTransactionId,
       },
     });

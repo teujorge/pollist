@@ -71,9 +71,10 @@ export async function POST(req: NextRequest) {
 
           analyticsServerClient.capture({
             distinctId: dbTransaction.userId,
-            event: "Subscription Activated (iOS App Store Notification)",
+            event: "Subscription Enabled",
             properties: {
-              userId: dbTransaction.userId,
+              tier: "PRO",
+              source: "App Store Notifications",
               originalTransactionId: dbTransaction.originalTransactionId,
             },
           });
@@ -89,9 +90,10 @@ export async function POST(req: NextRequest) {
           try {
             analyticsServerClient.capture({
               distinctId: dbTransaction.userId,
-              event: "Subscription Deactivated (iOS App Store Notification)",
+              event: "Subscription Disabled",
               properties: {
-                userId: dbTransaction.userId,
+                tier: "FREE",
+                source: "App Store Notifications",
                 originalTransactionId: dbTransaction.originalTransactionId,
               },
             });

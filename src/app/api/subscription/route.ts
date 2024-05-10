@@ -1,6 +1,7 @@
 import { db } from "@/server/prisma";
 import { Stripe } from "stripe";
 import { NextResponse } from "next/server";
+import { analyticsServerClient } from "@/server/analytics";
 import type { NextRequest } from "next/server";
 import type { SubTier, User } from "@prisma/client";
 
@@ -79,6 +80,15 @@ export async function POST(req: NextRequest) {
           where: { id: userId },
           data: { ...newUserData(newTier), clerkId: customerId },
         });
+
+        analyticsServerClient.capture({
+          event: "Subscription Enabled",
+          distinctId: userId,
+          properties: {
+            tier: newTier,
+            source: "Stripe",
+          },
+        });
       } catch (e) {
         let logMessage = `⚠️  Failed to update user ${userId} in subscription in checkout session completed event`;
         if (e instanceof Error) logMessage += `: ${e.message}`;
@@ -115,6 +125,15 @@ export async function POST(req: NextRequest) {
           where: { clerkId: customerId },
           data: newUserData(newTier),
         });
+
+        analyticsServerClient.capture({
+          event: "Subscription Updated",
+          distinctId: customerId,
+          properties: {
+            tier: newTier,
+            source: "Stripe",
+          },
+        });
       } catch (e) {
         let logMessage = `⚠️  Failed to update customer ${customerId} in subscription in updated event`;
         if (e instanceof Error) logMessage += `: ${e.message}`;
@@ -150,6 +169,15 @@ export async function POST(req: NextRequest) {
         await db.user.updateMany({
           where: { clerkId: customerId },
           data: newUserData(newTier),
+        });
+
+        analyticsServerClient.capture({
+          event: "Subscription Disabled",
+          distinctId: customerId,
+          properties: {
+            tier: newTier,
+            source: "Stripe",
+          },
         });
       } catch (e) {
         let logMessage = `⚠️  Failed to update customer ${customerId} in subscription in deleted event`;
