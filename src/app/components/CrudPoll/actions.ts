@@ -52,7 +52,7 @@ export async function createPoll(fields: CreatePollFields) {
 
     analyticsServerClient.capture({
       distinctId: userId,
-      event: "poll created",
+      event: "Poll Created",
       properties: {
         pollId: createdPoll.id,
       },
@@ -129,7 +129,7 @@ export async function deletePoll(poll: PollsDetails[number]) {
 
     analyticsServerClient.capture({
       distinctId: userId!,
-      event: "poll deleted",
+      event: "Poll Deleted",
       properties: {
         pollId: deletedPoll.id,
       },
