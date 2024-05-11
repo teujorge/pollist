@@ -3,7 +3,8 @@
     "details": [
       {
         "appIDs": [
-          "MBM3VV5JVW.org.pollist"
+          "MBM3VV5JVW.org.pollist",
+          "MBM3VV5JVW.com.mjorge.ipollist"
         ],
         "paths": [
           "*"
