@@ -7,6 +7,7 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
+    CRON_SECRET: z.string(),
     DATABASE_URL: z.string().url(),
     DIRECT_URL: z.string().url(),
     STRIPE_SECRET_KEY: z.string(),
@@ -15,13 +16,17 @@ export const env = createEnv({
     STRIPE_SUB_PRO_PRICE: z.string(),
     CLERK_SECRET_KEY: z.string(),
     CLERK_WEBHOOK_SECRET_KEY: z.string(),
+    OPENAI_API_KEY: z.string(),
     UPSTASH_REDIS_REST_URL: z.string(),
     UPSTASH_REDIS_REST_TOKEN: z.string(),
-    OPENAI_API_KEY: z.string(),
+    APNS_KEY: z.string(),
+    APNS_KEY_ID: z.string(),
+    APNS_TEAM_ID: z.string(),
+    APNS_BUNDLE_ID: z.string(),
     IAP_KEY_ID: z.string(),
     IAP_ISSUER_ID: z.string(),
-    IAP_SUBSCRIPTION_KEY: z.string(),
     IAP_PRO_PRODUCT_ID: z.string(),
+    IAP_SUBSCRIPTION_KEY: z.string(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -54,6 +59,7 @@ export const env = createEnv({
    */
   runtimeEnv: {
     // server
+    CRON_SECRET: process.env.CRON_SECRET,
     DATABASE_URL: process.env.DATABASE_URL,
     DIRECT_URL: process.env.DIRECT_URL,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
@@ -62,9 +68,13 @@ export const env = createEnv({
     STRIPE_SUB_PRO_PRICE: process.env.STRIPE_SUB_PRO_PRICE,
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     CLERK_WEBHOOK_SECRET_KEY: process.env.CLERK_WEBHOOK_SECRET_KEY,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
-    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    APNS_KEY: process.env.APNS_KEY,
+    APNS_KEY_ID: process.env.APNS_KEY_ID,
+    APNS_TEAM_ID: process.env.APNS_TEAM_ID,
+    APNS_BUNDLE_ID: process.env.APNS_BUNDLE_ID,
     IAP_KEY_ID: process.env.IAP_KEY_ID,
     IAP_ISSUER_ID: process.env.IAP_ISSUER_ID,
     IAP_SUBSCRIPTION_KEY: process.env.IAP_SUBSCRIPTION_KEY,
