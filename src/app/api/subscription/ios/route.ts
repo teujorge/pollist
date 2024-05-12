@@ -14,6 +14,9 @@ import type { NextRequest } from "next/server";
 /** DOCS
  *
  * https://developer.apple.com/documentation/appstoreservernotifications
+ * https://developer.apple.com/documentation/appstoreservernotifications/notificationtype
+ * https://developer.apple.com/help/app-store-connect/reference/subscription-events/
+ * https://developer.apple.com/documentation/appstoreserverapi/originaltransactionid
  *
  * HTTPS RESPONSES
  * Send HTTP 200, or any HTTP code between 200 and 206, if the post was successful.
@@ -115,6 +118,8 @@ export async function POST(req: NextRequest) {
           console.log(
             `Unhandled notification type: ${payload.notificationType}`,
           );
+          console.log(payload.subtype);
+          console.log("No action taken");
           break;
       }
     }
