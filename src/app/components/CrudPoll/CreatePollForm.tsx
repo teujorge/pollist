@@ -14,10 +14,10 @@ import { useEffect, useState } from "react";
 import { Plus, XCircle, Info, X } from "@phosphor-icons/react";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   createPoll,
   redirectToPoll,
@@ -28,10 +28,10 @@ import type { CreatePollFields } from "./validation";
 
 export function CreatePollForm({
   showBackButton,
-  tooltipBoundary,
+  popoverBoundary,
 }: {
   showBackButton?: boolean;
-  tooltipBoundary?: HTMLElement;
+  popoverBoundary?: HTMLElement;
 }) {
   const router = useRouter();
 
@@ -344,12 +344,12 @@ export function CreatePollForm({
                 )}
               />
               <label htmlFor="private-poll">Private Poll</label>
-              <Tooltip>
-                <TooltipTrigger asChild>
+              <Popover>
+                <PopoverTrigger asChild>
                   <Info size={20} />
-                </TooltipTrigger>
-                <TooltipContent align="end" collisionBoundary={tooltipBoundary}>
-                  <p>
+                </PopoverTrigger>
+                <PopoverContent align="end" collisionBoundary={popoverBoundary}>
+                  <p className="p-4">
                     <span className="font-semibold">Private Polls:</span> Only
                     visible on the creator&apos;s profile, these polls can be
                     easily shared with a select audience by distributing the
@@ -358,8 +358,8 @@ export function CreatePollForm({
                       Note: Anyone with the poll&apos;s URL can access it.
                     </span>
                   </p>
-                </TooltipContent>
-              </Tooltip>
+                </PopoverContent>
+              </Popover>
             </div>
 
             <span className="h-0.5 w-full rounded-full bg-background" />
@@ -378,18 +378,18 @@ export function CreatePollForm({
                 )}
               />
               <label htmlFor="anonymous-poll">Anonymous Poll</label>
-              <Tooltip>
-                <TooltipTrigger asChild>
+              <Popover>
+                <PopoverTrigger asChild>
                   <Info size={20} />
-                </TooltipTrigger>
-                <TooltipContent align="end" collisionBoundary={tooltipBoundary}>
-                  <p>
+                </PopoverTrigger>
+                <PopoverContent align="end" collisionBoundary={popoverBoundary}>
+                  <p className="p-4">
                     <span className="font-semibold">Anonymous Polls:</span>{" "}
                     Display without linking to any author, perfect for posting
                     questions anonymously.
                   </p>
-                </TooltipContent>
-              </Tooltip>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
         </div>

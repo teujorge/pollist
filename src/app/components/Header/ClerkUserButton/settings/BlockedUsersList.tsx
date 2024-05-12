@@ -10,10 +10,10 @@ import { unblockUser } from "@/app/(with-auth)/users/actions";
 import { ProfileImage } from "@/app/components/ProfileImage";
 import { useEffect, useRef, useState } from "react";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export function BlockedUsersList() {
   const initedRef = useRef(false);
@@ -47,19 +47,22 @@ export function BlockedUsersList() {
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2 text-sm">
         You can block users to prevent you from seeing their content.
-        <Tooltip>
-          <TooltipTrigger asChild>
+        <Popover>
+          <PopoverTrigger>
             <Info size={20} />
-          </TooltipTrigger>
-          <TooltipContent>
-            <span className="font-semibold">Blocked Users:</span> Their content
-            will be obscured and you will not receive notifications from them.{" "}
-            <span className="text-yellow-500">
-              Note: Blocked users can still see your content and interact with
-              it as usual.
-            </span>
-          </TooltipContent>
-        </Tooltip>
+          </PopoverTrigger>
+          <PopoverContent>
+            <p className="p-4">
+              <span className="font-semibold">Blocked Users:</span> Their
+              content will be obscured and you will not receive notifications
+              from them.{" "}
+              <span className="text-yellow-500">
+                Note: Blocked users can still see your content and interact with
+                it as usual.
+              </span>
+            </p>
+          </PopoverContent>
+        </Popover>
       </div>
 
       <Button

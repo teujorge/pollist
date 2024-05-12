@@ -10,10 +10,10 @@ import { BlockedUsersList } from "./settings/BlockedUsersList";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { OptionToggleSensitive } from "./settings/OptionToggleSensitive";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   setShowAds,
   setPrivateAccount,
@@ -123,19 +123,19 @@ export function ClerkUserButtonClient({
         <div className="flex flex-col gap-4">
           <span className="inline-flex gap-2">
             <h2 className="font-medium">Billing</h2>
-            <Tooltip>
-              <TooltipTrigger asChild>
+            <Popover>
+              <PopoverTrigger>
                 <Info size={20} />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="text-xs">
+              </PopoverTrigger>
+              <PopoverContent>
+                <p className="p-4">
                   Pollist uses <span className="font-medium">Stripe</span> to
                   manage payments on the web and{" "}
                   <span className="font-medium">Apple StoreKit</span> to manage
                   payments in the app.
                 </p>
-              </TooltipContent>
-            </Tooltip>
+              </PopoverContent>
+            </Popover>
           </span>
 
           {userSettings.tier === "FREE" ? (

@@ -8,10 +8,10 @@ import { buttonVariants } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
 
 export function FilterBar() {
   const params = useSearchParams();
@@ -104,8 +104,8 @@ export function FilterBar() {
         </select>
 
         {filterRef.current && (
-          <Tooltip>
-            <TooltipTrigger
+          <Popover>
+            <PopoverTrigger
               className={cn(
                 buttonVariants({ size: "sm", variant: "outline" }),
                 "invisible absolute -bottom-2 flex translate-y-full scale-50 items-center justify-center gap-1 rounded-full opacity-0 transition-all",
@@ -114,9 +114,9 @@ export function FilterBar() {
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             >
               Top <ArrowUp />
-            </TooltipTrigger>
-            <TooltipContent side="bottom">Back to top</TooltipContent>
-          </Tooltip>
+            </PopoverTrigger>
+            <PopoverContent side="bottom">Back to top</PopoverContent>
+          </Popover>
         )}
       </div>
     </div>
