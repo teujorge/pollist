@@ -42,7 +42,7 @@ export function PollCard({
   );
 
   return (
-    <div className="flex w-full flex-col gap-2 rounded-lg border border-accent bg-accent/10 p-6 shadow-md">
+    <div className="flex w-full flex-col gap-2 rounded-lg border border-accent bg-accent-dark/50 p-6 shadow-md">
       <Link
         href={`/users/${poll.author.username}`}
         className={cn(

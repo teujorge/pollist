@@ -14,7 +14,7 @@ export function Tabs({ showPrivate }: { showPrivate: boolean }) {
             <button
               key={tabName}
               className={`z-10 w-40 rounded-lg p-2 transition-colors
-                      ${tab === tabName ? "cursor-default font-bold text-foreground" : "text-accent-foreground hovact:bg-accent/40"}
+                      ${tab === tabName ? "cursor-default font-bold text-foreground" : "text-accent-foreground hovact:bg-accent-dark"}
                     `}
               onClick={() => setTab(tabName)}
             >

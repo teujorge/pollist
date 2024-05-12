@@ -68,7 +68,7 @@ export function BlockedUsersList() {
       <Button
         variant="ghost"
         className={cn(
-          "w-fit text-primary transition-all duration-300 hovact:bg-accent/25 hovact:text-purple-400",
+          "w-fit text-primary transition-all duration-300 hovact:bg-accent-dark hovact:text-purple-400",
           isViewing && "pointer-events-none h-0 py-0 opacity-0",
         )}
         onClick={() => {
@@ -134,7 +134,7 @@ export function BlockedUsersList() {
         <Button
           variant="ghost"
           className={cn(
-            "ml-auto w-fit text-primary transition-all duration-300 hovact:bg-accent/30 hovact:text-primary",
+            "ml-auto w-fit text-primary transition-all duration-300 hovact:bg-accent-dark hovact:text-primary",
             !isViewing && "pointer-events-none",
           )}
           onClick={() => setIsViewing(false)}

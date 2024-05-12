@@ -329,7 +329,7 @@ export function CreatePollForm({
 
         <div className="p-2">
           <h3 className="py-1 text-lg font-semibold">Advanced Settings</h3>
-          <div className="flex flex-col items-center rounded-lg bg-accent/30 p-2 [&>div>label]:w-full [&>div>label]:text-end [&>div]:flex [&>div]:w-full [&>div]:items-center [&>div]:space-x-2 [&>div]:p-2">
+          <div className="flex flex-col items-center rounded-lg bg-accent-dark p-2 [&>div>label]:w-full [&>div>label]:text-end [&>div]:flex [&>div]:w-full [&>div]:items-center [&>div]:space-x-2 [&>div]:p-2">
             <div>
               <Controller
                 name="private"

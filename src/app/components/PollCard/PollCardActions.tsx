@@ -342,7 +342,7 @@ export function PollCardActions({
                 key={option.id}
                 onClick={user ? () => onVote(option.id) : undefined}
                 className={cn(
-                  "flex w-full cursor-pointer flex-col items-center gap-2 rounded-xl border p-2 transition-colors hovact:bg-accent/30 sm:p-4",
+                  "flex w-full cursor-pointer flex-col items-center gap-2 rounded-xl border p-2 transition-colors hovact:bg-accent-dark sm:p-4",
                   option.id === optionIdToHighlight
                     ? "border-primary"
                     : "border-transparent",

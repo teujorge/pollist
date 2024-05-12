@@ -214,7 +214,7 @@ function NotificationCard({
 
   return (
     <div
-      className={`relative flex w-full select-none flex-row gap-2 rounded-md bg-accent/40 p-4 transition-all duration-200
+      className={`relative flex w-full select-none flex-row gap-2 rounded-md bg-accent-dark p-4 transition-all duration-200
         ${isRemoving && "translate-x-full opacity-0"}
         ${hasBeenRemoved && "hidden"}
       `}

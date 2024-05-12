@@ -34,6 +34,7 @@ const config = {
         "destructive-foreground":
           "rgb(var(--color-destructive-foreground) / <alpha-value>)",
         accent: "rgb(var(--color-accent) / <alpha-value>)",
+        "accent-dark": "rgb(var(--color-accent-dark) / <alpha-value>)",
         "accent-foreground":
           "rgb(var(--color-accent-foreground) / <alpha-value>)",
         foreground: "rgb(var(--color-foreground) / <alpha-value>)",

@@ -38,7 +38,7 @@ export function OptionToggle({
   return (
     <div
       className={cn(
-        "flex cursor-pointer flex-row items-center justify-between rounded-md opacity-100 transition-all hovact:bg-accent/40",
+        "flex cursor-pointer flex-row items-center justify-between rounded-md opacity-100 transition-all hovact:bg-accent-dark",
         !hasAccess && "opacity-50",
       )}
       onClick={handleToggle}
