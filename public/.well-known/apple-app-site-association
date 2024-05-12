@@ -7,7 +7,10 @@
           "MBM3VV5JVW.com.mjorge.ipollist"
         ],
         "paths": [
-          "*"
+          "*",
+          "!/tos",
+          "!/privacy",
+          "!/about"
         ]
       }
     ]
