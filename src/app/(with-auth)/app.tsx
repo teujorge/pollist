@@ -140,17 +140,20 @@ export function App({ children }: { children: React.ReactNode }) {
 
   // Init user
   useEffect(() => {
+    console.log("useEffect -> init user");
+
     async function init() {
+      console.log("Init user");
       if (!user) return;
+      console.log("Init user:", user);
 
       // Get user settings
       const settings = await getUserSettings();
+      console.log("Init user settings:", settings);
       if (!settings) {
         toast.error("Failed to get user settings");
         return;
       }
-
-      console.log("init3");
 
       // Set user settings
       setUserSettings({
@@ -164,6 +167,7 @@ export function App({ children }: { children: React.ReactNode }) {
 
       // Get notifications
       const notifications = await getNotificationsItems();
+      console.log("Init user notifications:", notifications);
       if (notifications) {
         setNotifications({
           pollLikes: notifications.notificationsPollLike.filter(
@@ -205,10 +209,12 @@ export function App({ children }: { children: React.ReactNode }) {
       console.error(e);
       toast.error("Failed to initialize app");
     });
-  }, [user, key, isUserBlocked]);
+  }, [user, key]);
 
   // Remove blocked users from notifications
   useEffect(() => {
+    console.log("useEffect -> blocked users from notifications");
+
     // Check if notifications exist from blocked users
     const hasBlockedNotifications = (notifications: Notifications): boolean =>
       notifications.pollLikes.some((notification) =>
@@ -227,7 +233,14 @@ export function App({ children }: { children: React.ReactNode }) {
         isUserBlocked(notification.follow.followee.id),
       );
 
-    if (!hasBlockedNotifications(notifications)) return;
+    const hasBlockedUsersInNotifications =
+      hasBlockedNotifications(notifications);
+    console.log(
+      "Init user hasBlockedUsersInNotifications",
+      hasBlockedUsersInNotifications,
+    );
+
+    if (!hasBlockedUsersInNotifications) return;
 
     // Remove blocked users from notifications
     setNotifications((prev) => ({
@@ -248,7 +261,7 @@ export function App({ children }: { children: React.ReactNode }) {
         (notification) => !isUserBlocked(notification.follow.followee.id),
       ),
     }));
-  }, [notifications, userSettings.blockedUsers, isUserBlocked]);
+  }, [notifications, userSettings.blockedUsers]);
 
   return (
     <CSPostHogProvider>
