@@ -11,7 +11,7 @@ export default function CreatePollPage() {
     <Modal ref={modalRef}>
       <CreatePollForm
         showBackButton
-        tooltipBoundary={modalRef.current ?? undefined}
+        popoverBoundary={modalRef.current ?? undefined}
       />
     </Modal>
   );
