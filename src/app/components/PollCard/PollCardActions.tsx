@@ -70,7 +70,8 @@ export function PollCardActions({
 }: PollCardActionsProps) {
   const { user } = useUser();
 
-  const { notifications, setBlockedUsers, isUserBlocked } = useApp();
+  const { notifications, setBlockedUsers, isUserBlocked, setShowUserSettings } =
+    useApp();
   const isBlockedUser = isUserBlocked(poll.authorId);
 
   const supabaseChannelRef: MutableRefObject<RealtimeChannel | undefined> =
@@ -543,24 +544,7 @@ export function PollCardActions({
               ? "This user is blocked"
               : "This poll contains sensitive content"}
           </p>
-          <Button
-            variant="secondary"
-            onClick={async () => {
-              const userButton = document.querySelector(
-                "button.cl-userButtonTrigger",
-              );
-              if (userButton) (userButton as HTMLButtonElement).click();
-
-              await new Promise((resolve) => setTimeout(resolve, 200));
-
-              const manageAccountButton = document.querySelector(
-                "button.cl-userButtonPopoverActionButton__manageAccount",
-              );
-              if (manageAccountButton) {
-                (manageAccountButton as HTMLButtonElement).click();
-              }
-            }}
-          >
+          <Button variant="secondary" onClick={() => setShowUserSettings(true)}>
             {isBlockedUser ? "Unblock user" : "Show content"}
           </Button>
         </SignedIn>

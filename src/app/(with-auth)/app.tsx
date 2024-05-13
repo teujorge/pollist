@@ -3,13 +3,16 @@
 import Script from "next/script";
 import GlobalLoading from "../loading";
 import { toast } from "sonner";
+import { Modal } from "../components/Modal";
+import { UserGear } from "@phosphor-icons/react";
+import { SettingsTab } from "../components/Header/ClerkUserButton/SettingsTab";
 import { QueryProvider } from "./_providers/QueryProvider";
 import { CSPostHogProvider } from "./_providers/PosthogProvider";
 import { useCustomScrollbar } from "../hooks/useCustomScrollbar";
 import { getNotificationsItems } from "../components/Header/actions";
 import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
-import { ClerkLoaded, ClerkLoading, useUser } from "@clerk/nextjs";
 import { getUserSettings, updateUserDeviceToken } from "./actions";
+import { ClerkLoaded, ClerkLoading, UserProfile, useUser } from "@clerk/nextjs";
 import {
   Suspense,
   useState,
@@ -64,12 +67,22 @@ type AppProviderValue = {
   setBlockedUsers: React.Dispatch<React.SetStateAction<BlockedUser[]>>;
   isUserBlocked: (userId: string) => boolean;
 
+  // show user settings
+  showUserSettings: boolean;
+  setShowUserSettings: React.Dispatch<React.SetStateAction<boolean>>;
+
   // notifications
   notifications: Notifications;
   setNotifications: React.Dispatch<React.SetStateAction<Notifications>>;
 };
 
-export function App({ children }: { children: React.ReactNode }) {
+export function App({
+  children,
+  pricingTable,
+}: {
+  children: React.ReactNode;
+  pricingTable: React.ReactNode;
+}) {
   const { user } = useUser();
 
   const [key, setKey] = useState<string>(Math.random().toString());
@@ -90,6 +103,8 @@ export function App({ children }: { children: React.ReactNode }) {
     blockedUsers: [],
     appleTransaction: undefined,
   });
+
+  const [showUserSettings, setShowUserSettings] = useState(false);
 
   const setAds = (update: boolean | ((prevAds: boolean) => boolean)) =>
     setUserSettings((prev) => ({
@@ -263,6 +278,15 @@ export function App({ children }: { children: React.ReactNode }) {
     }));
   }, [notifications, userSettings.blockedUsers]);
 
+  // Lock / Unlock body scroll
+  useEffect(() => {
+    if (showUserSettings) {
+      document.body.style.overflowY = "hidden";
+    } else {
+      document.body.style.overflowY = "auto";
+    }
+  }, [showUserSettings]);
+
   return (
     <CSPostHogProvider>
       <QueryProvider>
@@ -280,6 +304,9 @@ export function App({ children }: { children: React.ReactNode }) {
             setBlockedUsers,
             isUserBlocked,
 
+            showUserSettings,
+            setShowUserSettings,
+
             notifications,
             setNotifications,
           }}
@@ -296,7 +323,28 @@ export function App({ children }: { children: React.ReactNode }) {
             <ClerkLoading>
               <GlobalLoading />
             </ClerkLoading>
-            <ClerkLoaded>{children}</ClerkLoaded>
+            <ClerkLoaded>
+              {children}
+              {showUserSettings && (
+                <Modal
+                  className="!max-h-[100dvh] !max-w-[100dvw] rounded-none border-none bg-transparent p-0"
+                  wrapperClassName="p-0"
+                  onClickOutside={() => setShowUserSettings(false)}
+                >
+                  <UserProfile routing="virtual">
+                    <UserProfile.Page
+                      label="Settings"
+                      labelIcon={<UserGear size={16} />}
+                      url="settings"
+                    >
+                      <SettingsTab pricingTable={pricingTable} />
+                    </UserProfile.Page>
+                    <UserProfile.Page label="account" />
+                    <UserProfile.Page label="security" />
+                  </UserProfile>
+                </Modal>
+              )}
+            </ClerkLoaded>
           </Suspense>
         </AppProvider>
       </QueryProvider>

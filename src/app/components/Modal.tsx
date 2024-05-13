@@ -10,9 +10,13 @@ const Modal = forwardRef(function _Modal(
   {
     children,
     className,
+    wrapperClassName,
+    onClickOutside,
   }: {
     children: React.ReactNode;
     className?: string;
+    wrapperClassName?: string;
+    onClickOutside?: () => void;
   },
   ref: React.ForwardedRef<HTMLElement>,
 ) {
@@ -29,14 +33,19 @@ const Modal = forwardRef(function _Modal(
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-40 flex h-dvh w-dvw items-center justify-center overflow-y-auto bg-background bg-opacity-65 p-4 backdrop-blur-sm scrollbar-gutter"
+      className={cn(
+        "fixed inset-0 z-40 flex h-dvh w-dvw items-center justify-center overflow-y-auto bg-background bg-opacity-65 p-4 backdrop-blur-sm scrollbar-gutter",
+        wrapperClassName,
+      )}
       onMouseDown={() => {
         bgMouseUp = false;
         bgMouseDown = true;
       }}
       onMouseUp={() => {
         bgMouseUp = true;
-        if (bgMouseDown && bgMouseUp) router.back();
+        if (bgMouseDown && bgMouseUp) {
+          onClickOutside ? onClickOutside() : router.back();
+        }
         bgMouseDown = false;
       }}
     >

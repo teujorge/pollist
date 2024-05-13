@@ -2,12 +2,12 @@
 
 import { cn } from "@/lib/utils";
 import { useApp } from "@/app/(with-auth)/app";
+import { useUser } from "@clerk/nextjs";
 import { OptionToggle } from "./settings/OptionToggle";
 import { HideInWebView } from "../../HideInWebView";
 import { buttonVariants } from "@/components/ui/button";
 import { OptionToggleAds } from "./settings/OptionToggleAds";
 import { BlockedUsersList } from "./settings/BlockedUsersList";
-import { UserButton, UserProfile, useUser } from "@clerk/nextjs";
 import { OptionToggleSensitive } from "./settings/OptionToggleSensitive";
 import {
   Popover,
@@ -21,39 +21,10 @@ import {
 } from "@/app/(with-auth)/users/actions";
 import {
   Info,
-  UserGear,
-  UserList,
   AppleLogo,
   ArrowRight,
   ArrowSquareOut,
 } from "@phosphor-icons/react";
-
-export function ClerkUserButtonClient({
-  pricingTable,
-}: {
-  pricingTable: React.ReactNode;
-}) {
-  const user = useUser();
-
-  return (
-    <UserButton>
-      <UserButton.UserProfilePage
-        label="Settings"
-        labelIcon={<UserGear size={16} />}
-        url="settings"
-      >
-        <SettingsTab pricingTable={pricingTable} />
-      </UserButton.UserProfilePage>
-      <UserButton.UserProfilePage label="account" />
-      <UserButton.UserProfilePage label="security" />
-      <UserButton.UserProfileLink
-        label="Visit Profile"
-        labelIcon={<UserList size={16} />}
-        url={"/users/" + user.user?.username}
-      />
-    </UserButton>
-  );
-}
 
 export function SettingsTab({
   pricingTable,

@@ -2,11 +2,13 @@ import GlobalLoading from "../loading";
 import { cn } from "@/lib/utils";
 import { App } from "./app";
 import { dark } from "@clerk/themes";
+import { Loader } from "../components/Loader";
 import { Header } from "../components/Header/Header";
 import { Toaster } from "sonner";
 import { Suspense } from "react";
 import { ClerkProvider } from "@clerk/nextjs";
 import { clerkElements } from "@/styles/clerk";
+import { PricingTable } from "../components/Header/ClerkUserButton/settings/PricingTable";
 
 export default function RootLayout({
   children,
@@ -47,7 +49,13 @@ export default function RootLayout({
           elements: clerkElements,
         }}
       >
-        <App>
+        <App
+          pricingTable={
+            <Suspense fallback={<Loader />}>
+              <PricingTable />
+            </Suspense>
+          }
+        >
           <div
             className={cn(
               "left-0 right-0 z-40 flex h-fit w-full items-center justify-center",
