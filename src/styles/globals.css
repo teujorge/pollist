@@ -13,7 +13,8 @@
     --color-destructive: 239 68 68;
     --color-destructive-foreground: 255 255 255;
     --color-accent: 50 50 50;
-    --color-accent-dark: 20 20 20;
+    --color-accent-dark: 30 30 30;
+    --color-accent-dark2: 10 10 10;
     --color-accent-foreground: 180 180 180;
   }
 
@@ -27,7 +28,9 @@
       --color-secondary-foreground: 0 0 0;
       --color-destructive: 239 68 68;
       --color-destructive-foreground: 255 255 255;
-      --color-accent: 220 220 220;
+      --color-accent: 200 200 200;
+      --color-accent-dark: 225 225 225;
+      --color-accent-dark2: 239 238 239;
       --color-accent-foreground: 50 50 50;
     }
   } */

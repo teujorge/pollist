@@ -41,7 +41,7 @@ export function ClerkUserButton() {
 
       <DropdownMenuContent align="end" className="w-56 bg-accent-dark sm:w-96">
         {/* user info */}
-        <div className="flex w-full flex-row items-center justify-start gap-4 border-b border-accent bg-background p-4">
+        <div className="flex w-full flex-row items-center justify-start gap-4 border-b border-accent bg-accent-dark2 p-4">
           <Image
             className="rounded-full"
             src={user.imageUrl}
@@ -108,6 +108,7 @@ export function ClerkUserButton() {
           )}
           Sign out
         </DropdownMenuItem>
+
         {/* menu footer */}
         <div className="flex w-full flex-row items-center justify-end gap-3 px-6 py-3 text-xs sm:gap-4">
           <a

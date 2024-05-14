@@ -1,17 +1,12 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { ArrowUp } from "@phosphor-icons/react";
 import { useFilter } from "../hooks/useFilter";
 import { CATEGORIES } from "@/constants";
-import { buttonVariants } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover";
 
 export function FilterBar() {
   const params = useSearchParams();
@@ -104,19 +99,17 @@ export function FilterBar() {
         </select>
 
         {filterRef.current && (
-          <Popover>
-            <PopoverTrigger
-              className={cn(
-                buttonVariants({ size: "sm", variant: "outline" }),
-                "invisible absolute -bottom-2 flex translate-y-full scale-50 items-center justify-center gap-1 rounded-full opacity-0 transition-all",
-                showUpButton && "visible scale-100 opacity-100",
-              )}
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            >
-              Top <ArrowUp />
-            </PopoverTrigger>
-            <PopoverContent side="bottom">Back to top</PopoverContent>
-          </Popover>
+          <Button
+            size="sm"
+            variant="outline"
+            className={cn(
+              "invisible absolute -bottom-2 flex translate-y-full scale-50 items-center justify-center gap-1 rounded-full opacity-0 transition-all",
+              showUpButton && "visible scale-100 opacity-100",
+            )}
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          >
+            Top <ArrowUp />
+          </Button>
         )}
       </div>
     </div>

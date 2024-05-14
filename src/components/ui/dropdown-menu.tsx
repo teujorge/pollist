@@ -86,7 +86,7 @@ const DropdownMenuItem = React.forwardRef<
     ref={ref}
     className={cn(
       buttonVariants({ variant: "ghost" }),
-      "relative flex cursor-pointer select-none flex-row items-center justify-start gap-7 rounded-none border-b border-accent bg-background px-7 py-6 font-normal text-accent-foreground outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 hovact:fill-foreground hovact:text-foreground",
+      "relative flex cursor-pointer select-none flex-row items-center justify-start gap-7 rounded-none border-b border-accent bg-accent-dark2 px-7 py-6 font-normal text-accent-foreground outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 hovact:bg-accent hovact:fill-foreground hovact:text-foreground",
       inset && "pl-8",
       className,
     )}
