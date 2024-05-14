@@ -52,22 +52,19 @@ export function SettingsTab({
   );
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-4 divide-y divide-accent-dark">
       {/* heading */}
-      <div className="flex flex-col gap-1">
-        <h1 className="text-[2rem] font-semibold">Settings</h1>
-        <p>Manage your preferences</p>
-      </div>
+      <h1 className="text-[1.0625rem] font-bold">Settings</h1>
 
       {/* user toggles */}
-      <div className="flex flex-col gap-4">
-        <h2 className="font-medium">
+      <div className="flex flex-col gap-4 pt-4">
+        <p className="text-[0.8125rem] font-medium">
           Preferences
-          <span className="text-sm font-normal text-accent-foreground/80">
+          <span className="text-xs font-normal text-accent-foreground/80">
             {userSettings.tier === "FREE" &&
               " (Upgrade to unlock all features)"}
           </span>
-        </h2>
+        </p>
         <div className="flex flex-col gap-1">
           <OptionToggle
             hasAccess={userSettings.tier !== "FREE"}
@@ -90,20 +87,40 @@ export function SettingsTab({
       </div>
 
       {/* blocked users */}
-      <div className="flex flex-col gap-4">
-        <h2 className="font-medium">Blocked Users</h2>
-        <BlockedUsersList />
+      <div className="flex flex-col gap-4 pt-4">
+        <span className="inline-flex gap-2">
+          <h2 className="text-[0.8125rem] font-medium">Blocked Users</h2>
+          <Popover>
+            <PopoverTrigger>
+              <Info size={16} />
+            </PopoverTrigger>
+            <PopoverContent align="start">
+              <p className="p-4">
+                <span className="font-semibold">Blocked Users:</span> Their
+                content will be obscured and you will not receive notifications
+                from them.{" "}
+                <span className="text-yellow-500">
+                  Note: Blocked users can still see your content and interact
+                  with it as usual.
+                </span>
+              </p>
+            </PopoverContent>
+          </Popover>
+        </span>
+        <div className="px-2">
+          <BlockedUsersList />
+        </div>
       </div>
 
       {/* subscription */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 pt-4">
         <span className="inline-flex gap-2">
-          <h2 className="font-medium">Billing</h2>
+          <h2 className="text-[0.8125rem] font-medium">Billing</h2>
           <Popover>
             <PopoverTrigger>
-              <Info size={20} />
+              <Info size={16} />
             </PopoverTrigger>
-            <PopoverContent>
+            <PopoverContent align="start">
               <p className="p-4">
                 Pollist uses <span className="font-medium">Stripe</span> to
                 manage payments on the web and{" "}
@@ -118,8 +135,8 @@ export function SettingsTab({
           pricingTable
         ) : (
           // manage subscription
-          <div className="flex flex-col gap-2">
-            <p className="px-4 text-sm">
+          <div className="flex flex-col gap-2 px-2">
+            <p className="text-[0.8125rem]">
               Active Subscription:{" "}
               <span className="font-medium">{userSettings.tier}</span>
             </p>
@@ -171,7 +188,7 @@ function ManageSubscriptionButton({
       rel="noopener noreferrer"
       className={cn(
         buttonVariants({ size: "sm", variant: "ghost" }),
-        "flex items-center justify-start text-primary hovact:text-purple-400 [&>svg]:opacity-0 [&>svg]:transition-all [&>svg]:duration-200 [&>svg]:hovact:translate-x-2 [&>svg]:hovact:opacity-100",
+        "flex items-center justify-start text-primary hovact:bg-accent-dark/50 hovact:text-purple-400 [&>svg]:opacity-0 [&>svg]:transition-all [&>svg]:duration-200 [&>svg]:hovact:translate-x-2 [&>svg]:hovact:opacity-100",
       )}
     >
       <div className="flex flex-row items-center justify-center gap-2">

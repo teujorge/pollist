@@ -2,18 +2,12 @@
 
 import styles from "@/styles/clerk.module.css";
 import { cn } from "@/lib/utils";
-import { Info } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { useApp } from "@/app/(with-auth)/app";
 import { Button } from "@/components/ui/button";
 import { unblockUser } from "@/app/(with-auth)/users/actions";
 import { ProfileImage } from "@/app/components/ProfileImage";
 import { useEffect, useRef, useState } from "react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
 export function BlockedUsersList() {
   const initedRef = useRef(false);
@@ -45,27 +39,12 @@ export function BlockedUsersList() {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-2 text-sm">
+      <div className="flex items-center gap-2 text-[0.8125rem]">
         You can block users to prevent you from seeing their content.
-        <Popover>
-          <PopoverTrigger>
-            <Info size={20} />
-          </PopoverTrigger>
-          <PopoverContent>
-            <p className="p-4">
-              <span className="font-semibold">Blocked Users:</span> Their
-              content will be obscured and you will not receive notifications
-              from them.{" "}
-              <span className="text-yellow-500">
-                Note: Blocked users can still see your content and interact with
-                it as usual.
-              </span>
-            </p>
-          </PopoverContent>
-        </Popover>
       </div>
 
       <Button
+        size="sm"
         variant="ghost"
         className={cn(
           "w-fit text-primary transition-all duration-300 hovact:bg-accent-dark hovact:text-purple-400",
@@ -132,6 +111,7 @@ export function BlockedUsersList() {
         </div>
 
         <Button
+          size="sm"
           variant="ghost"
           className={cn(
             "ml-auto w-fit text-primary transition-all duration-300 hovact:bg-accent-dark hovact:text-primary",

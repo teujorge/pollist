@@ -38,13 +38,13 @@ export function OptionToggle({
   return (
     <div
       className={cn(
-        "flex cursor-pointer flex-row items-center justify-between rounded-md opacity-100 transition-all hovact:bg-accent-dark",
+        "flex cursor-pointer flex-row items-center justify-between rounded-md px-3 py-2 text-[0.8125rem] opacity-100 transition-all hovact:bg-accent-dark/50",
         !hasAccess && "opacity-50",
       )}
       onClick={handleToggle}
     >
-      <span className="cursor-pointer px-8 py-2 text-sm">{label}</span>
-      <Switch checked={isEnabled} className="mr-8" />
+      {label}
+      <Switch checked={isEnabled} />
     </div>
   );
 }
