@@ -311,6 +311,19 @@ export function App({
             setNotifications,
           }}
         >
+          <Script id="speculationrules-script" type="speculationrules">
+            {`
+              {
+                "prerender": [{
+                  "source": "document",
+                  "where": {
+                    "href_matches": "/*"
+                  },
+                  "eagerness": "moderate"
+                }]
+              }
+            `}
+          </Script>
           {userSettings.ads && (
             <Script
               async
