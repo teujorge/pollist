@@ -39,7 +39,7 @@ export function ClerkUserButton() {
         </button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-56 bg-accent-dark sm:w-96">
+      <DropdownMenuContent align="end" className="w-dvw bg-accent-dark sm:w-96">
         {/* user info */}
         <div className="flex w-full flex-row items-center justify-start gap-4 border-b border-accent bg-accent-dark2 p-4">
           <Image
