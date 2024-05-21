@@ -1,14 +1,13 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import { useApp } from "@/app/(with-auth)/app";
 import { useUser } from "@clerk/nextjs";
 import { OptionToggle } from "./settings/OptionToggle";
 import { HideInWebView } from "../../HideInWebView";
 import { buttonVariants } from "@/components/ui/button";
-import { OptionToggleAds } from "./settings/OptionToggleAds";
 import { BlockedUsersList } from "./settings/BlockedUsersList";
-import { OptionToggleSensitive } from "./settings/OptionToggleSensitive";
 import {
   Popover,
   PopoverContent,
@@ -31,9 +30,7 @@ export function SettingsTab({
 }: {
   pricingTable: React.ReactNode;
 }) {
-  const { userSettings } = useApp();
-
-  console.log("bttn-userSettings", userSettings);
+  const { userSettings, setAds, setPrivate, setViewSensitive } = useApp();
 
   const { user } = useUser();
 
@@ -51,6 +48,8 @@ export function SettingsTab({
     </>
   );
 
+  const isFreeUser = userSettings.tier === "FREE";
+
   return (
     <div className="flex flex-col gap-4 divide-y divide-accent-dark">
       {/* heading */}
@@ -61,27 +60,68 @@ export function SettingsTab({
         <p className="text-[0.8125rem] font-medium">
           Preferences
           <span className="text-xs font-normal text-accent-foreground/80">
-            {userSettings.tier === "FREE" &&
-              " (Upgrade to unlock all features)"}
+            {isFreeUser && " (Upgrade to unlock all features)"}
           </span>
         </p>
         <div className="flex flex-col gap-1">
           <OptionToggle
-            hasAccess={userSettings.tier !== "FREE"}
+            className={isFreeUser ? "opacity-50" : undefined}
             label={"Private Account"}
             isEnabled={userSettings.private}
-            onToggleOption={setPrivateAccount}
+            onToggleOption={async () => {
+              if (isFreeUser) {
+                toast.warning("Upgrade to unlock this feature");
+                return;
+              }
+
+              setPrivate((prev) => !prev);
+
+              try {
+                await setPrivateAccount(!userSettings.private);
+              } catch (error) {
+                console.error("Error setting private account", error);
+                toast.error("Error setting private account");
+                setPrivate((prev) => !prev);
+              }
+            }}
           />
 
-          <OptionToggleAds
-            hasAccess={userSettings.tier !== "FREE"}
+          <OptionToggle
+            className={isFreeUser ? "opacity-50" : undefined}
+            label={"Hide Ads"}
             isEnabled={!userSettings.ads}
-            onToggleOption={setShowAds}
+            onToggleOption={async () => {
+              if (isFreeUser) {
+                toast.warning("Upgrade to unlock this feature");
+                return;
+              }
+
+              setAds((prev) => !prev);
+
+              try {
+                await setShowAds(!userSettings.ads);
+              } catch (error) {
+                console.error("Error setting ads", error);
+                toast.error("Error setting ads");
+                setAds((prev) => !prev);
+              }
+            }}
           />
 
-          <OptionToggleSensitive
+          <OptionToggle
+            label={"Sensitive Content"}
             isEnabled={userSettings.viewSensitive}
-            onToggleOption={setShowSensitiveContent}
+            onToggleOption={async () => {
+              setViewSensitive((prev) => !prev);
+
+              try {
+                await setShowSensitiveContent(!userSettings.viewSensitive);
+              } catch (error) {
+                console.error("Error setting sensitive content", error);
+                toast.error("Error setting sensitive content");
+                setViewSensitive((prev) => !prev);
+              }
+            }}
           />
         </div>
       </div>
@@ -131,7 +171,7 @@ export function SettingsTab({
           </Popover>
         </span>
 
-        {userSettings.tier === "FREE" ? (
+        {isFreeUser ? (
           pricingTable
         ) : (
           // manage subscription

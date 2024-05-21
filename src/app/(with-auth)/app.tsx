@@ -52,10 +52,6 @@ type UserSettings = {
 };
 
 type AppProviderValue = {
-  // re-render app
-  key: string;
-  setKey: React.Dispatch<React.SetStateAction<string>>;
-
   // user settings
   userSettings: UserSettings;
   setUserSettings: React.Dispatch<React.SetStateAction<UserSettings>>;
@@ -84,8 +80,6 @@ export function App({
   pricingTable: React.ReactNode;
 }) {
   const { user } = useUser();
-
-  const [key, setKey] = useState<string>(Math.random().toString());
 
   const [notifications, setNotifications] = useState<Notifications>({
     pollLikes: [],
@@ -224,7 +218,7 @@ export function App({
       console.error(e);
       toast.error("Failed to initialize app");
     });
-  }, [user, key]);
+  }, [user]);
 
   // Remove blocked users from notifications
   useEffect(() => {
@@ -292,9 +286,6 @@ export function App({
       <QueryProvider>
         <AppProvider
           value={{
-            key,
-            setKey,
-
             userSettings,
             setUserSettings,
             setAds,

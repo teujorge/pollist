@@ -32,12 +32,12 @@ export default async function PollPage({ params, searchParams }: Props) {
 
   const user = await getUser(undefined, userId ?? undefined);
 
-  const showContent = shouldShowSensitiveContent(
-    userId,
-    poll.authorId,
-    poll.sensitive,
-    user?.viewSensitive,
-  );
+  const showContent = shouldShowSensitiveContent({
+    userId: userId,
+    contentCreatorId: poll.authorId,
+    isContentSensitive: poll.sensitive,
+    userViewsSensitiveContent: user?.viewSensitive,
+  });
 
   return (
     <main className="relative flex min-h-[calc(100dvh-64px)] w-full flex-col gap-1">

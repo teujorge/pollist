@@ -11,6 +11,7 @@ import { SharePopover } from "../SharePopover";
 import { PopoverClose } from "@radix-ui/react-popover";
 import { DeletePollForm } from "../CrudPoll/DeletePollForm";
 import { CircularProgress } from "../CircularProgress";
+import { usePathname, useRouter } from "next/navigation";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import { SignedIn, SignedOut, SignInButton, useUser } from "@clerk/nextjs";
@@ -68,6 +69,9 @@ export function PollCardActions({
   showChart,
   showCommentsButton,
 }: PollCardActionsProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+
   const { user } = useUser();
 
   const { notifications, setBlockedUsers, isUserBlocked, setShowUserSettings } =
@@ -482,6 +486,11 @@ export function PollCardActions({
                         variant="popover"
                         className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
                         onClick={async () => {
+                          // Redirect to home if on a poll page
+                          if (pathname.includes("/polls/")) {
+                            router.push("/");
+                            console.log("-------redirecting to home");
+                          }
                           setBlockedUsers((prev) => [
                             ...prev,
                             {

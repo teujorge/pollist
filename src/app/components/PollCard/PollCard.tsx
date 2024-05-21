@@ -3,8 +3,6 @@
 import Link from "next/link";
 import AnonProfileImage from "~/public/default-profile-icon.webp";
 import { useApp } from "@/app/(with-auth)/app";
-import { getUser } from "@/app/(with-auth)/users/actions";
-import { useQuery } from "@tanstack/react-query";
 import { ProfileImage } from "../ProfileImage";
 import { PollCardActions } from "@/app/components/PollCard/PollCardActions";
 import {
@@ -27,19 +25,14 @@ export function PollCard({
   highlightedUserId,
   showCommentsButton = true,
 }: PollCardProps) {
-  const { key, isUserBlocked } = useApp();
+  const { userSettings, isUserBlocked } = useApp();
 
-  const { data: user } = useQuery({
-    queryKey: ["user", userId, key],
-    queryFn: async () => await getUser(undefined, userId ?? undefined),
+  const showContent = shouldShowSensitiveContent({
+    userId: userId,
+    contentCreatorId: poll.authorId,
+    isContentSensitive: poll.sensitive,
+    userViewsSensitiveContent: userSettings.viewSensitive,
   });
-
-  const showContent = shouldShowSensitiveContent(
-    userId,
-    poll.authorId,
-    poll.sensitive,
-    user?.viewSensitive,
-  );
 
   return (
     <div className="flex w-full flex-col gap-2 rounded-lg border border-accent bg-accent-dark2 p-6 shadow-md">
