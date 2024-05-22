@@ -28,23 +28,24 @@ export async function POST(req: NextRequest) {
     //   Environment.Production,
     // );
 
-    const { key, userId, originalTransactionId } = (await req.json()) as {
+    const event = (await req.json()) as {
       key?: string;
       userId?: string;
+      eventType?: string;
       originalTransactionId?: string;
     };
 
-    if (!key || key !== process.env.IAP_SUBSCRIPTION_KEY) {
-      console.error("Invalid key:", key);
+    if (!event.key || event.key !== process.env.IAP_SUBSCRIPTION_KEY) {
+      console.error("Invalid key:", event.key);
       return NextResponse.json({ error: "Invalid key" }, { status: 401 });
     }
 
-    if (!userId || !originalTransactionId) {
+    if (!event.userId || !event.eventType || !event.originalTransactionId) {
       console.error(
         "Missing required fields:",
-        userId,
-
-        originalTransactionId,
+        event.userId,
+        event.eventType,
+        event.originalTransactionId,
       );
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -54,20 +55,21 @@ export async function POST(req: NextRequest) {
 
     console.log(
       "Processing subscription status for:",
-      userId,
-      originalTransactionId,
+      event.userId,
+      event.eventType,
+      event.originalTransactionId,
     );
 
     // Check if the transaction already exists
     let dbTransaction = await db.appleTransaction.findUnique({
-      where: { userId: userId },
+      where: { userId: event.userId },
     });
 
     // Update transaction if it exists (originalTransactionId may change with new transactions)
     if (dbTransaction) {
       dbTransaction = await db.appleTransaction.update({
-        where: { userId: userId },
-        data: { originalTransactionId: originalTransactionId },
+        where: { userId: event.userId },
+        data: { originalTransactionId: event.originalTransactionId },
       });
       console.log("AppleTransaction Updated:", dbTransaction);
     }
@@ -76,14 +78,15 @@ export async function POST(req: NextRequest) {
     else {
       dbTransaction = await db.appleTransaction.create({
         data: {
-          userId: userId,
-          originalTransactionId: originalTransactionId,
+          userId: event.userId,
+          originalTransactionId: event.originalTransactionId,
         },
       });
       console.log("AppleTransaction Created:", dbTransaction);
     }
 
-    await activateSubscription(userId, "PRO");
+    await activateSubscription(event.userId, "PRO");
+
     // const { signedTransactionInfo } = await api.getTransactionInfo(
     //   originalTransactionId,
     // );
@@ -92,12 +95,12 @@ export async function POST(req: NextRequest) {
     // console.log("Decoded Transaction Info:", transactionInfo);
 
     analyticsServerClient.capture({
-      distinctId: userId,
+      distinctId: event.userId,
       event: "Subscription Enabled",
       properties: {
         tier: "PRO",
         source: "iOS Device Action",
-        originalTransactionId: originalTransactionId,
+        originalTransactionId: event.originalTransactionId,
       },
     });
 
