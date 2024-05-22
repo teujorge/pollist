@@ -4,7 +4,8 @@
       {
         "appIDs": [
           "MBM3VV5JVW.org.pollist",
-          "MBM3VV5JVW.com.mjorge.ipollist"
+          "MBM3VV5JVW.com.mjorge.ipollist",
+          "MBM3VV5JVW.me.mjorge.pollist"
         ],
         "paths": [
           "*",
