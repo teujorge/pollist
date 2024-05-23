@@ -3,7 +3,7 @@ declare global {
   interface Window {
     webkit?: {
       messageHandlers?: {
-        iosListener?: {
+        userListener?: {
           postMessage?: (msg: string) => void;
         };
       };
