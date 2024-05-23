@@ -1,6 +1,7 @@
 import { db } from "@/server/prisma";
 import { NextResponse } from "next/server";
 import { analyticsServerClient } from "@/server/analytics";
+import { updateActiveSubscription, updateInactiveSubscription } from "../utils";
 import {
   NotificationType,
   decodeTransaction,
@@ -8,7 +9,6 @@ import {
   isDecodedNotificationDataPayload,
   isDecodedNotificationSummaryPayload,
 } from "app-store-server-api";
-import type { SubTier } from "@prisma/client";
 import type { NextRequest } from "next/server";
 
 /** DOCS
@@ -72,15 +72,19 @@ export async function POST(req: NextRequest) {
         case NotificationType.OfferRedeemed: // Handle the redemption of a special offer
           await updateActiveSubscription(dbTransaction.userId, "PRO");
 
-          analyticsServerClient.capture({
-            distinctId: dbTransaction.userId,
-            event: "Subscription Enabled",
-            properties: {
-              tier: "PRO",
-              source: "App Store Notifications",
-              originalTransactionId: dbTransaction.originalTransactionId,
-            },
-          });
+          try {
+            analyticsServerClient.capture({
+              distinctId: dbTransaction.userId,
+              event: "Subscription Enabled",
+              properties: {
+                tier: "PRO",
+                source: "App Store Notifications",
+                originalTransactionId: dbTransaction.originalTransactionId,
+              },
+            });
+          } catch (error) {
+            console.error("Error capturing analytics event:", error);
+          }
 
           break;
 
@@ -154,28 +158,4 @@ export async function POST(req: NextRequest) {
       { status: 500 },
     );
   }
-}
-
-// Function to activate a subscription
-async function updateActiveSubscription(userId: string, tier: SubTier) {
-  console.log("Activating Subscription:", userId, tier);
-  const user = await db.user.update({
-    where: { id: userId },
-    data: { tier: tier, ads: false },
-  });
-
-  console.log("Subscription Activated:", user.username, user.tier);
-  return user;
-}
-
-// Function to deactivate a subscription
-async function updateInactiveSubscription(userId: string) {
-  console.log("Deactivating Subscription:", userId);
-  const user = await db.user.update({
-    where: { id: userId },
-    data: { tier: "FREE", ads: true, private: false },
-  });
-
-  console.log("Subscription Deactivated:", user.username, user.tier);
-  return user;
 }
