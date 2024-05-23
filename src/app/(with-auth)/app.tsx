@@ -7,7 +7,7 @@ import { Modal } from "../components/Modal";
 import { UserGear } from "@phosphor-icons/react";
 import { SettingsTab } from "../components/Header/ClerkUserButton/SettingsTab";
 import { QueryProvider } from "./_providers/QueryProvider";
-import { WebViewLauncher } from "../components/WebViewLauncher";
+import { WebViewMessenger } from "../components/WebViewMessenger";
 import { CSPostHogProvider } from "./_providers/PosthogProvider";
 import { useCustomScrollbar } from "../hooks/useCustomScrollbar";
 import { getNotificationsItems } from "../components/Header/actions";
@@ -329,7 +329,7 @@ export function App({
               <GlobalLoading />
             </ClerkLoading>
             <ClerkLoaded>
-              <WebViewLauncher />
+              <WebViewMessenger />
               {children}
               {showUserSettings && (
                 <Modal

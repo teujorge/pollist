@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { HideInWebView } from "./HideInWebView";
 
-function _WebViewLauncher() {
+function _WebViewMessenger() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -25,12 +25,18 @@ function _WebViewLauncher() {
     console.log("----------------Redirecting to");
     console.log(newUrl);
     console.log("----------------Redirecting to");
-    router.push(newUrl);
+    // router.push(newUrl);
+
+    if (window?.webkit?.messageHandlers?.iosListener?.postMessage) {
+      window.webkit?.messageHandlers?.iosListener?.postMessage?.(user.id);
+    } else {
+      router.push("/webkit-bridge-not-found");
+    }
   }, [user]);
 
   return null;
 }
 
-export function WebViewLauncher() {
-  return <HideInWebView fallback={<_WebViewLauncher />} />;
+export function WebViewMessenger() {
+  return <HideInWebView fallback={<_WebViewMessenger />} />;
 }
