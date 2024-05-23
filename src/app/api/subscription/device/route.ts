@@ -48,8 +48,8 @@ export async function POST(req: NextRequest) {
       event.originalTransactionId,
     );
 
-    // Handle if subscribe event
-    if (event.eventType === "subscribe") {
+    // Handle if subscribed event
+    if (event.eventType === "subscribed") {
       // Check if the transaction already exists
       let dbTransaction = await db.appleTransaction.findUnique({
         where: { userId: event.userId },
