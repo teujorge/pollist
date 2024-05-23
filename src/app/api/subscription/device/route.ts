@@ -24,7 +24,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid key" }, { status: 401 });
     }
 
-    if (!event.userId || !event.eventType || !event.originalTransactionId) {
+    if (
+      event.userId === undefined ||
+      event.eventType === undefined ||
+      event.originalTransactionId === undefined
+    ) {
       console.error(
         "Missing required fields:",
         event.userId,
