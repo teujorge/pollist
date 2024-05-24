@@ -38,7 +38,7 @@ export function BoostPollFormClient({
         {submitting ? (
           <Loader className="h-5 w-5 border-2" />
         ) : (
-          <Button variant="secondary" onClick={handleBoostPoll}>
+          <Button variant="secondary" onMouseDown={handleBoostPoll}>
             Boost This Poll
           </Button>
         )}

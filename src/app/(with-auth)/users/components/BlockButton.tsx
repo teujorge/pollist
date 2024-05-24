@@ -66,7 +66,7 @@ export function BlockButton({
       size="sm"
       variant="outline"
       className="h-7 px-2 py-1"
-      onClick={handleClick}
+      onMouseDown={handleClick}
     >
       {isUserBlocked(user.id) ? "unblock" : "block"}
     </Button>

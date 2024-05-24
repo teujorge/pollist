@@ -16,7 +16,7 @@ export function Tabs({ showPrivate }: { showPrivate: boolean }) {
               className={`z-10 w-40 rounded-lg p-2 transition-colors
                       ${tab === tabName ? "cursor-default font-bold text-foreground" : "text-accent-foreground hovact:bg-accent-dark"}
                     `}
-              onClick={() => setTab(tabName)}
+              onMouseDown={() => setTab(tabName)}
             >
               {uppercaseFirstLetter(tabName)}
             </button>
