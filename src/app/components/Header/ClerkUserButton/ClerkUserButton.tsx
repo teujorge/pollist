@@ -58,7 +58,7 @@ export function ClerkUserButton() {
 
         <DropdownMenuItem
           id="clerk-user-button-manage-account"
-          onClick={() => setShowUserSettings(true)}
+          onMouseDown={() => setShowUserSettings(true)}
         >
           <GearSix
             size={15}

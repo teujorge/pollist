@@ -50,7 +50,7 @@ export function BlockedUsersList() {
           "w-fit text-primary transition-all duration-300 hovact:bg-accent-dark hovact:text-purple-400",
           isViewing && "pointer-events-none h-0 py-0 opacity-0",
         )}
-        onClick={() => {
+        onMouseDown={() => {
           initedRef.current = true;
           setIsViewing(true);
         }}
@@ -89,7 +89,7 @@ export function BlockedUsersList() {
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={async () => {
+                    onMouseDown={async () => {
                       setBlockedUsers((prev) =>
                         prev.filter((u) => u !== blockedUser),
                       );
@@ -117,7 +117,7 @@ export function BlockedUsersList() {
             "ml-auto w-fit text-primary transition-all duration-300 hovact:bg-accent-dark hovact:text-primary",
             !isViewing && "pointer-events-none",
           )}
-          onClick={() => setIsViewing(false)}
+          onMouseDown={() => setIsViewing(false)}
         >
           Hide
         </Button>

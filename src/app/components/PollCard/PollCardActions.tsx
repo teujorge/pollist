@@ -329,7 +329,7 @@ export function PollCardActions({
           (isBlockedUser || isSensitiveContent) && "redacted",
         )}
       >
-        <ul onClick={user ? undefined : handleSignInModal}>
+        <ul onMouseDown={user ? undefined : handleSignInModal}>
           {optimisticPoll.options.map((option) => {
             const votePercentage =
               optimisticPoll.votes.length === 0
@@ -345,7 +345,7 @@ export function PollCardActions({
             return (
               <li
                 key={option.id}
-                onClick={user ? () => onVote(option.id) : undefined}
+                onMouseDown={user ? () => onVote(option.id) : undefined}
                 className={cn(
                   "flex w-full cursor-pointer flex-col items-center gap-2 rounded-xl border p-2 transition-colors hovact:bg-accent-dark sm:p-4",
                   option.id === optionIdToHighlight
@@ -422,7 +422,7 @@ export function PollCardActions({
                 (optimisticPoll.likes?.length ?? 0) > 0 &&
                   "[&>*]:text-primary [&>*]:hovact:text-purple-400",
               )}
-              onClick={user ? handleLike : handleSignInModal}
+              onMouseDown={user ? handleLike : handleSignInModal}
             >
               <ArrowFatUp size={20} />
               <span className="transition-colors">
@@ -485,7 +485,7 @@ export function PollCardActions({
                       <Button
                         variant="popover"
                         className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
-                        onClick={async () => {
+                        onMouseDown={async () => {
                           // Redirect to home if on a poll page
                           if (pathname.includes("/polls/")) {
                             router.push("/");
@@ -553,7 +553,10 @@ export function PollCardActions({
               ? "This user is blocked"
               : "This poll contains sensitive content"}
           </p>
-          <Button variant="secondary" onClick={() => setShowUserSettings(true)}>
+          <Button
+            variant="secondary"
+            onMouseDown={() => setShowUserSettings(true)}
+          >
             {isBlockedUser ? "Unblock user" : "Show content"}
           </Button>
         </SignedIn>

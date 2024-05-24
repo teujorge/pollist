@@ -38,7 +38,7 @@ export function SharePopover({
         {copy && (
           <Button
             variant="popover"
-            onClick={async () => {
+            onMouseDown={async () => {
               await navigator.clipboard.writeText(url);
               toast.success("URL copied to clipboard");
             }}

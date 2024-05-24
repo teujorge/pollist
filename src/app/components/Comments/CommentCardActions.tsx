@@ -192,7 +192,7 @@ export function CommentCardActions() {
           ? "[&>*]:text-primary [&>*]:hovact:text-purple-400"
           : "[&>*]:text-accent-foreground [&>*]:hovact:text-foreground",
       )}
-      onClick={user ? handleLike : undefined}
+      onMouseDown={user ? handleLike : undefined}
     >
       <ArrowFatUp className="transition-colors" />
       <span className="transition-colors">{comment._count.likes}</span>
@@ -200,7 +200,7 @@ export function CommentCardActions() {
   );
 
   const replyButtonComponent = (
-    <button onClick={user ? () => setIsReplying(!isReplying) : undefined}>
+    <button onMouseDown={user ? () => setIsReplying(!isReplying) : undefined}>
       <span
         className={cn(
           buttonVariants({ variant: "ghost", size: "sm" }),
@@ -234,7 +234,7 @@ export function CommentCardActions() {
             </Button>
           </PopoverTrigger>
           <PopoverContent align="end" className="py-2">
-            <Button variant="popover" onClick={handleCopyThreadLink}>
+            <Button variant="popover" onMouseDown={handleCopyThreadLink}>
               <Copy size={15} /> Copy
             </Button>
 
@@ -244,7 +244,7 @@ export function CommentCardActions() {
                   <Button
                     variant="popover"
                     className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
-                    onClick={async () => {
+                    onMouseDown={async () => {
                       setBlockedUsers((prev) => [
                         ...prev,
                         {
@@ -303,7 +303,7 @@ export function CommentCardActions() {
             comment.parentId && "hidden",
             comment._count.replies === 0 && "hidden",
           )}
-          onClick={() => setIsViewingReplies(!isViewingReplies)}
+          onMouseDown={() => setIsViewingReplies(!isViewingReplies)}
         >
           <CaretDown size={15} /> {comment._count.replies} Replies
         </Button>
@@ -393,7 +393,7 @@ function CommentReplies({
           <Button
             variant="ghost"
             className="w-fit items-center justify-center gap-1 [&>svg]:transition-transform [&>svg]:hovact:rotate-90"
-            onClick={handleLoadMore}
+            onMouseDown={handleLoadMore}
           >
             <CaretDoubleRight /> Show More Replies
           </Button>

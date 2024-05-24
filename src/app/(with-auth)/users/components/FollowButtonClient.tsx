@@ -45,7 +45,7 @@ export function FollowButtonClient({
       size="sm"
       variant="outline"
       className="h-7 px-2 py-1"
-      onClick={handleClick}
+      onMouseDown={handleClick}
     >
       {isFollowing ? "unfollow" : "follow"}
     </Button>

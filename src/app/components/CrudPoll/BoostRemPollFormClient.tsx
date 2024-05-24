@@ -45,7 +45,7 @@ export function BoostRemPollFormClient({
         {submitting ? (
           <Loader className="h-5 w-5 border-2" />
         ) : (
-          <Button variant="outline" onClick={handleUnBoostPoll}>
+          <Button variant="outline" onMouseDown={handleUnBoostPoll}>
             Unboost This Poll
           </Button>
         )}

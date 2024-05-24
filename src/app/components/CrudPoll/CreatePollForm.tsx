@@ -322,7 +322,7 @@ export function CreatePollForm({
           type="button"
           variant="ghost"
           size="sm"
-          onClick={addOption}
+          onMouseDown={addOption}
         >
           <Plus size={15} /> Add Option
         </Button>
