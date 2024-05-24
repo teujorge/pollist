@@ -50,54 +50,104 @@ export async function POST(req: NextRequest) {
 
     // Handle if subscribed event
     if (event.eventType === "subscribed") {
-      // Check if the transaction already exists
-      let dbTransaction = await db.appleTransaction.findUnique({
+      // Fetch transactions by userId and originalTransactionId in parallel
+      const dbTransactionByUserP = db.appleTransaction.findUnique({
         where: { userId: event.userId },
+        include: { user: true },
+      });
+      const dbTransactionByTransactionIdP = db.appleTransaction.findUnique({
+        where: { originalTransactionId: event.originalTransactionId },
+        include: { user: true },
       });
 
-      // Update transaction if it exists (originalTransactionId may change with new transactions)
-      if (dbTransaction) {
+      const [dbTransactionByUser, dbTransactionByTransactionId] =
+        await Promise.all([
+          dbTransactionByUserP,
+          dbTransactionByTransactionIdP,
+        ]);
+
+      let dbTransaction: typeof dbTransactionByUser = null;
+
+      // If both transactions exist
+      if (dbTransactionByUser && dbTransactionByTransactionId) {
+        if (
+          dbTransactionByUser.userId === dbTransactionByTransactionId.userId &&
+          dbTransactionByUser.originalTransactionId ===
+            dbTransactionByTransactionId.originalTransactionId
+        ) {
+          // If both userId and originalTransactionId match, use either transaction
+          dbTransaction = dbTransactionByUser;
+        } else {
+          // If the userId and originalTransactionId do not match, ignore this request
+          console.log(
+            "User has a transaction, but userId or transactionId is different. Ignoring request.",
+          );
+          return NextResponse.json({ status: 200 });
+        }
+      }
+      // Only transaction by user id exists
+      else if (dbTransactionByUser) {
+        // originalTransactionId may change with new transactions
         dbTransaction = await db.appleTransaction.update({
           where: { userId: event.userId },
           data: { originalTransactionId: event.originalTransactionId },
+          include: { user: true },
         });
         console.log("AppleTransaction Updated:", dbTransaction);
       }
-
-      // Create transaction if it doesn't exist
+      // Only transaction by transaction id exists
+      else if (dbTransactionByTransactionId) {
+        console.log(
+          "Transaction by transaction id exists, but not by user id. Ignoring request.",
+        );
+        // In this case we ignore this request the user has a transaction, but the userId is different. The user may have subscribed from a device, then signed into another account
+      }
+      // No transaction exists
       else {
+        // Create transaction
         dbTransaction = await db.appleTransaction.create({
           data: {
             userId: event.userId,
             originalTransactionId: event.originalTransactionId,
           },
+          include: { user: true },
         });
         console.log("AppleTransaction Created:", dbTransaction);
       }
 
-      await updateActiveSubscription(event.userId, "PRO");
+      // If a transaction is found or created, update the user subscription status
+      if (dbTransaction) {
+        // User already has a PRO subscription
+        if (dbTransaction.user.tier === "PRO") {
+          console.log("User already has a PRO subscription");
+          return NextResponse.json({ status: 200 });
+        }
 
-      try {
-        analyticsServerClient.capture({
-          distinctId: dbTransaction.userId,
-          event: "Subscription Enabled",
-          properties: {
-            tier: "PRO",
-            source: "SwiftUI API",
-            originalTransactionId: dbTransaction.originalTransactionId,
-          },
-        });
-      } catch (error) {
-        console.error("Error capturing analytics event:", error);
+        await updateActiveSubscription(event.userId, "PRO");
+
+        try {
+          analyticsServerClient.capture({
+            distinctId: dbTransaction.userId,
+            event: "Subscription Enabled",
+            properties: {
+              tier: "PRO",
+              source: "SwiftUI API",
+              originalTransactionId: dbTransaction.originalTransactionId,
+            },
+          });
+        } catch (error) {
+          console.error("Error capturing analytics event:", error);
+        }
       }
     }
-    // Handle if revoke, expire, etc events
+    // Handle revocation, expiration, etc.
     else {
-      const dbTransaction = await db.appleTransaction.findUnique({
-        where: { userId: event.userId },
+      const dbDeletedTransaction = await db.appleTransaction.delete({
+        where: { originalTransactionId: event.originalTransactionId },
+        include: { user: true },
       });
 
-      if (!dbTransaction) {
+      if (!dbDeletedTransaction) {
         console.error("Transaction not found in database");
         return NextResponse.json(
           { error: "Transaction not found" },
@@ -105,16 +155,22 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      await updateInactiveSubscription(event.userId);
+      // User already has a FREE subscription
+      if (dbDeletedTransaction.user.tier === "FREE") {
+        console.log("User already has a FREE subscription");
+        return NextResponse.json({ status: 200 });
+      }
+
+      await updateInactiveSubscription(dbDeletedTransaction.userId);
 
       try {
         analyticsServerClient.capture({
-          distinctId: dbTransaction.userId,
+          distinctId: dbDeletedTransaction.userId,
           event: "Subscription Disabled",
           properties: {
             tier: "FREE",
             source: "SwiftUI API",
-            originalTransactionId: dbTransaction.originalTransactionId,
+            originalTransactionId: dbDeletedTransaction.originalTransactionId,
           },
         });
       } catch (error) {

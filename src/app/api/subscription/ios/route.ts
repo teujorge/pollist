@@ -56,20 +56,26 @@ export async function POST(req: NextRequest) {
 
       const dbTransaction = await db.appleTransaction.findUnique({
         where: { originalTransactionId: transaction.originalTransactionId },
+        include: { user: true },
       });
-
-      if (!dbTransaction) {
-        console.error("Transaction not found in database");
-        return NextResponse.json(
-          { error: "Transaction not found" },
-          { status: 404 },
-        );
-      }
 
       switch (payload.notificationType) {
         case NotificationType.DidRenew: // Handle a successful renewal
         case NotificationType.Subscribed: // Handle a new subscription
         case NotificationType.OfferRedeemed: // Handle the redemption of a special offer
+          if (!dbTransaction) {
+            console.error("Transaction not found in database");
+            return NextResponse.json(
+              { error: "Transaction not found" },
+              { status: 404 },
+            );
+          }
+
+          if (dbTransaction.user.tier === "PRO") {
+            console.log("User already has a PRO subscription");
+            return NextResponse.json({ status: 200 });
+          }
+
           await updateActiveSubscription(dbTransaction.userId, "PRO");
 
           try {
@@ -92,6 +98,24 @@ export async function POST(req: NextRequest) {
         case NotificationType.Expired: // Handle subscription expiration
         case NotificationType.Revoke: // Handle a revocation of the subscription
         case NotificationType.Refund: // Handle a user getting a refund
+          if (!dbTransaction) {
+            console.error(
+              "Transaction not found in database, probably already deleted",
+            );
+            return NextResponse.json({ status: 200 });
+          }
+
+          await db.appleTransaction.delete({
+            where: {
+              originalTransactionId: dbTransaction.originalTransactionId,
+            },
+          });
+
+          if (dbTransaction.user.tier === "FREE") {
+            console.log("User already has a FREE subscription");
+            return NextResponse.json({ status: 200 });
+          }
+
           await updateInactiveSubscription(dbTransaction.userId);
 
           try {
