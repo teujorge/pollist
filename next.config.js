@@ -9,7 +9,6 @@ import { withSentryConfig } from "@sentry/nextjs";
 /** @type {import("next").NextConfig} */
 const baseConfig = {
   experimental: {
-    ppr: true,
     reactCompiler: true,
   },
   images: {
