@@ -479,9 +479,7 @@ export function PollCardActions({
                     </Link>
                   </PopoverClose>
                   {user?.id === poll.authorId ? (
-                    <PopoverClose>
-                      <DeletePollForm poll={poll} />
-                    </PopoverClose>
+                    <DeletePollForm poll={poll} />
                   ) : (
                     <PopoverClose asChild>
                       <Button
