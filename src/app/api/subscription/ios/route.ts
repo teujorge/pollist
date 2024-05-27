@@ -1,4 +1,4 @@
-import { db } from "@/server/prisma";
+import { dbAdmin } from "@/server/prisma";
 import { NextResponse } from "next/server";
 import { analyticsServerClient } from "@/server/analytics";
 import { updateActiveSubscription, updateInactiveSubscription } from "../utils";
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
       );
       console.log("Transaction:", transaction);
 
-      const dbTransaction = await db.appleTransaction.findUnique({
+      const dbTransaction = await dbAdmin.appleTransaction.findUnique({
         where: { originalTransactionId: transaction.originalTransactionId },
         include: { user: true },
       });
@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ status: 200 });
           }
 
-          await db.appleTransaction.delete({
+          await dbAdmin.appleTransaction.delete({
             where: {
               originalTransactionId: dbTransaction.originalTransactionId,
             },

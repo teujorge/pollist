@@ -1,4 +1,4 @@
-import { db } from "@/server/prisma";
+import { dbAdmin } from "@/server/prisma";
 import { Stripe } from "stripe";
 import { NextResponse } from "next/server";
 import { analyticsServerClient } from "@/server/analytics";
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
         });
 
         const newTier = getTier(productPriceId);
-        await db.user.update({
+        await dbAdmin.user.update({
           where: { id: userId },
           data: { ...newUserData(newTier), clerkId: customerId },
         });
@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
         });
 
         const newTier = getTier(productPriceId);
-        await db.user.updateMany({
+        await dbAdmin.user.updateMany({
           where: { clerkId: customerId },
           data: newUserData(newTier),
         });
@@ -166,7 +166,7 @@ export async function POST(req: NextRequest) {
         });
 
         const newTier = getTier(productPriceId);
-        await db.user.updateMany({
+        await dbAdmin.user.updateMany({
           where: { clerkId: customerId },
           data: newUserData(newTier),
         });

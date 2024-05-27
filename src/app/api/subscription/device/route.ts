@@ -1,4 +1,4 @@
-import { db } from "@/server/prisma";
+import { dbAdmin } from "@/server/prisma";
 import { NextResponse } from "next/server";
 import { analyticsServerClient } from "@/server/analytics";
 import { updateActiveSubscription, updateInactiveSubscription } from "../utils";
@@ -51,14 +51,16 @@ export async function POST(req: NextRequest) {
     // Handle if subscribed event
     if (event.eventType === "subscribed") {
       // Fetch transactions by userId and originalTransactionId in parallel
-      const dbTransactionByUserP = db.appleTransaction.findUnique({
+      const dbTransactionByUserP = dbAdmin.appleTransaction.findUnique({
         where: { userId: event.userId },
         include: { user: true },
       });
-      const dbTransactionByTransactionIdP = db.appleTransaction.findUnique({
-        where: { originalTransactionId: event.originalTransactionId },
-        include: { user: true },
-      });
+      const dbTransactionByTransactionIdP = dbAdmin.appleTransaction.findUnique(
+        {
+          where: { originalTransactionId: event.originalTransactionId },
+          include: { user: true },
+        },
+      );
 
       const [dbTransactionByUser, dbTransactionByTransactionId] =
         await Promise.all([
@@ -88,7 +90,7 @@ export async function POST(req: NextRequest) {
       // Only transaction by user id exists
       else if (dbTransactionByUser) {
         // originalTransactionId may change with new transactions
-        dbTransaction = await db.appleTransaction.update({
+        dbTransaction = await dbAdmin.appleTransaction.update({
           where: { userId: event.userId },
           data: { originalTransactionId: event.originalTransactionId },
           include: { user: true },
@@ -105,7 +107,7 @@ export async function POST(req: NextRequest) {
       // No transaction exists
       else {
         // Create transaction
-        dbTransaction = await db.appleTransaction.create({
+        dbTransaction = await dbAdmin.appleTransaction.create({
           data: {
             userId: event.userId,
             originalTransactionId: event.originalTransactionId,
@@ -142,7 +144,7 @@ export async function POST(req: NextRequest) {
     }
     // Handle revocation, expiration, etc.
     else {
-      const dbDeletedTransaction = await db.appleTransaction.delete({
+      const dbDeletedTransaction = await dbAdmin.appleTransaction.delete({
         where: { originalTransactionId: event.originalTransactionId },
         include: { user: true },
       });

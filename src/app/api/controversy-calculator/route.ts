@@ -1,4 +1,4 @@
-import { db } from "@/server/prisma";
+import { dbAdmin } from "@/server/prisma";
 import { NextResponse } from "next/server";
 import type { Vote } from "@prisma/client";
 import type { NextRequest } from "next/server";
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ status: 401, message: "Unauthorized" });
   }
 
-  const polls = await db.poll.findMany({
+  const polls = await dbAdmin.poll.findMany({
     select: {
       id: true,
       title: true,
@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
     if (poll.controversial === newIsControversial) continue;
 
     console.log(`CRON: Recalculating poll ${poll.id} => ${newIsControversial}`);
-    await db.poll.update({
+    await dbAdmin.poll.update({
       where: { id: poll.id },
       data: {
         controversial: newIsControversial,

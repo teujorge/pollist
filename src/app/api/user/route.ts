@@ -1,6 +1,6 @@
 import Stripe from "stripe";
-import { db } from "@/server/prisma";
 import { Webhook } from "svix";
+import { dbAdmin } from "@/server/prisma";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import type { UserWebhookEvent } from "@clerk/clerk-sdk-node";
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
         const data = event.data;
 
         try {
-          await db.user.create({
+          await dbAdmin.user.create({
             data: {
               id: data.id,
               username:
@@ -71,7 +71,9 @@ export async function POST(req: NextRequest) {
 
         try {
           if (data.deleted) {
-            const user = await db.user.findUnique({ where: { id: data.id } });
+            const user = await dbAdmin.user.findUnique({
+              where: { id: data.id },
+            });
 
             // Cancel user subscription (stripe)
             if (user?.clerkId) {
@@ -80,7 +82,7 @@ export async function POST(req: NextRequest) {
             }
 
             // Delete the user from the database
-            await db.user.delete({ where: { id: data.id } });
+            await dbAdmin.user.delete({ where: { id: data.id } });
           }
         } catch (e) {
           let logMessage = "⚠️  Error deleting user: ";
@@ -99,7 +101,7 @@ export async function POST(req: NextRequest) {
         const data = event.data;
 
         try {
-          await db.user.update({
+          await dbAdmin.user.update({
             where: { id: data.id },
             data: {
               username:
