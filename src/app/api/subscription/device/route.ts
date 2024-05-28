@@ -21,7 +21,14 @@ export async function POST(req: NextRequest) {
 
     if (!event.key || event.key !== process.env.IAP_SUBSCRIPTION_KEY) {
       console.error("Invalid key:", event.key);
-      return NextResponse.json({ error: "Invalid key" }, { status: 401 });
+      return NextResponse.json(
+        {
+          error: "Invalid key",
+        },
+        {
+          status: 401,
+        },
+      );
     }
 
     if (
@@ -36,8 +43,12 @@ export async function POST(req: NextRequest) {
         event.originalTransactionId,
       );
       return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 },
+        {
+          error: "Missing required fields",
+        },
+        {
+          status: 400,
+        },
       );
     }
 
@@ -84,7 +95,16 @@ export async function POST(req: NextRequest) {
           console.log(
             "User has a transaction, but userId or transactionId is different. Ignoring request.",
           );
-          return NextResponse.json({ status: 200 });
+          return NextResponse.json(
+            {
+              state: "subscribed",
+              userId: dbTransactionByTransactionId.userId,
+              username: dbTransactionByTransactionId.user.username,
+            },
+            {
+              status: 200,
+            },
+          );
         }
       }
       // Only transaction by user id exists
@@ -103,6 +123,16 @@ export async function POST(req: NextRequest) {
           "Transaction by transaction id exists, but not by user id. Ignoring request.",
         );
         // In this case we ignore this request the user has a transaction, but the userId is different. The user may have subscribed from a device, then signed into another account
+        return NextResponse.json(
+          {
+            state: "subscribed",
+            userId: dbTransactionByTransactionId.userId,
+            username: dbTransactionByTransactionId.user.username,
+          },
+          {
+            status: 200,
+          },
+        );
       }
       // No transaction exists
       else {
@@ -122,7 +152,16 @@ export async function POST(req: NextRequest) {
         // User already has a PRO subscription
         if (dbTransaction.user.tier === "PRO") {
           console.log("User already has a PRO subscription");
-          return NextResponse.json({ status: 200 });
+          return NextResponse.json(
+            {
+              state: "subscribed",
+              userId: dbTransaction.userId,
+              username: dbTransaction.user.username,
+            },
+            {
+              status: 200,
+            },
+          );
         }
 
         await updateActiveSubscription(event.userId, "PRO");
@@ -140,6 +179,27 @@ export async function POST(req: NextRequest) {
         } catch (error) {
           console.error("Error capturing analytics event:", error);
         }
+
+        return NextResponse.json(
+          {
+            state: "subscribed",
+            userId: dbTransaction.userId,
+            username: dbTransaction.user.username,
+          },
+          {
+            status: 200,
+          },
+        );
+      } else {
+        console.error("Transaction not found in database");
+        return NextResponse.json(
+          {
+            error: "Transaction not found",
+          },
+          {
+            status: 404,
+          },
+        );
       }
     }
     // Handle revocation, expiration, etc.
@@ -152,15 +212,28 @@ export async function POST(req: NextRequest) {
       if (!dbDeletedTransaction) {
         console.error("Transaction not found in database");
         return NextResponse.json(
-          { error: "Transaction not found" },
-          { status: 404 },
+          {
+            error: "Transaction not found",
+          },
+          {
+            status: 404,
+          },
         );
       }
 
       // User already has a FREE subscription
       if (dbDeletedTransaction.user.tier === "FREE") {
         console.log("User already has a FREE subscription");
-        return NextResponse.json({ status: 200 });
+        return NextResponse.json(
+          {
+            state: "unsubscribed",
+            userId: dbDeletedTransaction.userId,
+            username: dbDeletedTransaction.user.username,
+          },
+          {
+            status: 200,
+          },
+        );
       }
 
       await updateInactiveSubscription(dbDeletedTransaction.userId);
@@ -178,15 +251,28 @@ export async function POST(req: NextRequest) {
       } catch (error) {
         console.error("Error capturing analytics event:", error);
       }
-    }
 
-    return NextResponse.json({ status: 200 });
+      return NextResponse.json(
+        {
+          state: "unsubscribed",
+          userId: dbDeletedTransaction.userId,
+          username: dbDeletedTransaction.user.username,
+        },
+        {
+          status: 200,
+        },
+      );
+    }
   } catch (e) {
     console.error("Error processing notification:", e);
     const errorMessage = e instanceof Error ? e.message : String(e);
     return NextResponse.json(
-      { error: `Failed to process the notification: ${errorMessage}` },
-      { status: 500 },
+      {
+        error: `Failed to process the notification: ${errorMessage}`,
+      },
+      {
+        status: 500,
+      },
     );
   }
 }
