@@ -12,7 +12,7 @@ export const subscriptions: Subscription[] = [
     priceId: null,
     paymentLink: null,
     iosProductId: null,
-    features: ["Sharing", "Voting", "Commenting", "And more!"],
+    features: ["Core features", "Sharing", "Voting", "Commenting"],
   },
   {
     title: "Pro",
@@ -20,10 +20,10 @@ export const subscriptions: Subscription[] = [
     paymentLink: process.env.NEXT_PUBLIC_STRIPE_PRO_SUBSCRIPTION_URL,
     iosProductId: process.env.IAP_PRO_PRODUCT_ID,
     features: [
-      "All Free features",
       "No ads",
       "Private account",
-      "Future features",
+      "Image uploads",
+      "And more to come!",
     ],
   },
   // {
