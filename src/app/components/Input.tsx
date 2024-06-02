@@ -1,6 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { useApp } from "../(with-auth)/app";
 import { useState } from "react";
 import { UploadSimple } from "@phosphor-icons/react";
 import { buttonVariants } from "@/components/ui/button";
@@ -61,6 +63,8 @@ export function InputFile({
   error?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
+  const { userSettings } = useApp();
+
   // State to store the selected file name
   const [fileName, setFileName] = useState<string>();
 
@@ -76,7 +80,16 @@ export function InputFile({
       {...wrapperProps}
       className={cn("flex flex-col items-start p-1", wrapperProps?.className)}
     >
-      <div className="flex w-full items-center justify-center">
+      <div
+        className="flex w-full items-center justify-center"
+        onClick={(e) => {
+          if (userSettings.tier === "FREE") {
+            e.preventDefault();
+            e.stopPropagation();
+            toast.info("You need to upgrade to a paid plan to upload images.");
+          }
+        }}
+      >
         <input
           id={inputProps?.name}
           {...inputProps}

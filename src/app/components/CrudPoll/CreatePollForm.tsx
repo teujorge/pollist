@@ -3,11 +3,13 @@
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Loader } from "../Loader";
+import { useApp } from "@/app/(with-auth)/app";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/server/supabase";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { moderateImage } from "@/app/(with-auth)/admin/moderation";
 import { Input, InputFile } from "../Input";
 import { createPollSchema } from "./validation";
 import { useEffect, useState } from "react";
@@ -34,6 +36,7 @@ export function CreatePollForm({
   popoverBoundary?: HTMLElement;
 }) {
   const router = useRouter();
+  const { userSettings } = useApp();
 
   const [createPollSuccess, setCreatePollSuccess] = useState<
     boolean | undefined
@@ -157,6 +160,21 @@ export function CreatePollForm({
   ) {
     if (!supabase) {
       throw new Error("Supabase client not found");
+    }
+
+    if (userSettings.tier === "FREE") {
+      toast.error("You must be on a paid plan to upload images");
+      return;
+    }
+
+    // check moderator
+    const base64Image = await encodeImageToBase64(file);
+    const isSensitive = await moderateImage(base64Image);
+    console.log("isSensitive:", isSensitive);
+
+    if (isSensitive) {
+      toast.warning(`The image ${file.name} is inappropriate.`);
+      return;
     }
 
     const extension = file.name.split(".").pop();
@@ -414,6 +432,29 @@ function OptionWrapper({ children }: { children: React.ReactNode }) {
       {children}
     </div>
   );
+}
+
+function encodeImageToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+      // The result attribute contains the data as a Base64-encoded string
+      const base64String = event.target!.result as string;
+      resolve(base64String);
+    };
+
+    reader.onerror = function (error) {
+      reject(
+        new Error(
+          `Failed to read file: ${error instanceof Error ? error.message : "Unknown error"}`,
+        ),
+      );
+    };
+
+    // Read the file as a data URL
+    reader.readAsDataURL(file);
+  });
 }
 
 export const metadata: Metadata = {
