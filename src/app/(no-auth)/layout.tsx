@@ -18,8 +18,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           <div className="relative flex flex-row items-center gap-4 [&>a]:font-semibold">
             <Link href="/about">About</Link>
-            <Link href="privacy">Privacy</Link>
+            <Link href="/privacy">Privacy</Link>
             <Link href="/tos">Terms</Link>
+            <Link href="/support">Support</Link>
             <Link href="/">Home</Link>
           </div>
         </header>

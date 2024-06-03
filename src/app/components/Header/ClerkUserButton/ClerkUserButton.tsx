@@ -125,6 +125,13 @@ export function ClerkUserButton() {
           >
             Terms
           </a>
+          <a
+            href="https://pollist.org/support"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Support
+          </a>
         </div>
       </DropdownMenuContent>
     </DropdownMenu>

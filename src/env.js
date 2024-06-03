@@ -27,6 +27,7 @@ export const env = createEnv({
     IAP_ISSUER_ID: z.string(),
     IAP_PRO_PRODUCT_ID: z.string(),
     IAP_SUBSCRIPTION_KEY: z.string(),
+    CONTACT_FORM_ACCESS_KEY: z.string(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -79,6 +80,7 @@ export const env = createEnv({
     IAP_ISSUER_ID: process.env.IAP_ISSUER_ID,
     IAP_SUBSCRIPTION_KEY: process.env.IAP_SUBSCRIPTION_KEY,
     IAP_PRO_PRODUCT_ID: process.env.IAP_PRO_PRODUCT_ID,
+    CONTACT_FORM_ACCESS_KEY: process.env.CONTACT_FORM_ACCESS_KEY,
     NODE_ENV: process.env.NODE_ENV,
 
     // client
