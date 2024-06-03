@@ -324,34 +324,33 @@ export function App({
               strategy="lazyOnload"
             />
           )}
-          <Suspense fallback={<GlobalLoading />}>
-            <ClerkLoading>
-              <GlobalLoading />
-            </ClerkLoading>
-            <ClerkLoaded>
-              <WebViewMessenger />
-              {children}
-              {showUserSettings && (
-                <Modal
-                  className="!max-h-[100dvh] !max-w-[100dvw] rounded-none border-none bg-transparent p-0"
-                  wrapperClassName="p-0"
-                  onClickOutside={() => setShowUserSettings(false)}
-                >
-                  <UserProfile routing="virtual">
-                    <UserProfile.Page
-                      label="Settings"
-                      labelIcon={<UserGear size={16} />}
-                      url="settings"
-                    >
-                      <SettingsTab pricingTable={pricingTable} />
-                    </UserProfile.Page>
-                    <UserProfile.Page label="account" />
-                    <UserProfile.Page label="security" />
-                  </UserProfile>
-                </Modal>
-              )}
-            </ClerkLoaded>
-          </Suspense>
+
+          <ClerkLoading>
+            <GlobalLoading />
+          </ClerkLoading>
+          <ClerkLoaded>
+            <WebViewMessenger />
+            {children}
+            {showUserSettings && (
+              <Modal
+                className="!max-h-[100dvh] !max-w-[100dvw] rounded-none border-none bg-transparent p-0"
+                wrapperClassName="p-0"
+                onClickOutside={() => setShowUserSettings(false)}
+              >
+                <UserProfile routing="virtual">
+                  <UserProfile.Page
+                    label="Settings"
+                    labelIcon={<UserGear size={16} />}
+                    url="settings"
+                  >
+                    <SettingsTab pricingTable={pricingTable} />
+                  </UserProfile.Page>
+                  <UserProfile.Page label="account" />
+                  <UserProfile.Page label="security" />
+                </UserProfile>
+              </Modal>
+            )}
+          </ClerkLoaded>
         </AppProvider>
       </QueryProvider>
     </CSPostHogProvider>
