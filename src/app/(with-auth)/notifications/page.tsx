@@ -8,6 +8,7 @@ export const dynamic = "force-static";
 export default function NotificationsPage() {
   return (
     <main className="w-full">
+      <h1 className="p-1 text-2xl font-semibold">Notifications</h1>
       <PopoverProvider
         value={{
           isNotificationsOpen: true,
