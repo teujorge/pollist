@@ -137,5 +137,5 @@ export default function TermsOfServicePage() {
 
 export const metadata: Metadata = {
   title: "Terms of Service",
-  description: "Read our terms and conditions for using Pollist.",
+  description: "Terms of Service for Pollist",
 };
