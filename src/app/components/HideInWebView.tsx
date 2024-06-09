@@ -14,7 +14,8 @@ export function HideInWebView({
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
-    const isWebView = localStorage.getItem("source") === "iosWebView";
+    const source = localStorage.getItem("source");
+    const isWebView = source === "iosWebView" || source === "androidWebView";
     if (isWebView && shouldHideInWebView) {
       setShowContent(false);
     } else {
