@@ -15,7 +15,7 @@ export function HideInWebView({
   forceHideInAndroid?: boolean;
   forceHideInWebView?: boolean;
 }) {
-  const [showContent, setShowContent] = useState(true);
+  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
     const source = localStorage.getItem("source");
