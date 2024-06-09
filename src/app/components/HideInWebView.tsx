@@ -5,15 +5,15 @@ import { useEffect, useState } from "react";
 export function HideInWebView({
   children,
   fallback,
-  showOnIOS = true,
-  showOnAndroid = true,
-  shouldHideInWebView = true,
+  forceHideInIOS = true,
+  forceHideInAndroid = true,
+  forceHideInWebView = true,
 }: {
   children?: React.ReactNode;
   fallback?: React.ReactNode;
-  showOnIOS?: boolean;
-  showOnAndroid?: boolean;
-  shouldHideInWebView?: boolean;
+  forceHideInIOS?: boolean;
+  forceHideInAndroid?: boolean;
+  forceHideInWebView?: boolean;
 }) {
   const [showContent, setShowContent] = useState(true);
 
@@ -24,29 +24,39 @@ export function HideInWebView({
     const isWebView = isIOSWebView || isAndroidWebView;
 
     // If the component should be hidden in webview
-    if (isWebView && shouldHideInWebView) {
+    if (isWebView && forceHideInWebView) {
       // If the component should be hidden in iOS WebView
-      if (isIOSWebView && !showOnIOS) {
-        setShowContent(false);
-        return;
+      if (isIOSWebView) {
+        if (forceHideInIOS) {
+          setShowContent(false);
+          return;
+        } else {
+          setShowContent(true);
+          return;
+        }
       }
       // If the component should be hidden in Android WebView
-      else if (isAndroidWebView && !showOnAndroid) {
-        setShowContent(false);
-        return;
+      else if (isAndroidWebView) {
+        if (forceHideInAndroid) {
+          setShowContent(false);
+          return;
+        } else {
+          setShowContent(true);
+          return;
+        }
       }
-      // If the component should be shown in WebView (iOS or Android)
+      // If the component should be hidden in any WebView
       else {
         setShowContent(false);
         return;
       }
     }
-    // If the component should be shown in webview
+    // If the component should be shown in web
     else {
       setShowContent(true);
       return;
     }
-  }, [shouldHideInWebView, showOnIOS, showOnAndroid]);
+  }, [forceHideInWebView, forceHideInIOS, forceHideInAndroid]);
 
   return showContent ? children : fallback;
 }

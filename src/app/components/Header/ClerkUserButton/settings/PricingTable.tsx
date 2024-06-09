@@ -27,7 +27,7 @@ export async function PricingTable() {
             fallback={
               <SubscriptionCard userId={userId} ios={true} {...subscription} />
             }
-            showOnIOS={false}
+            forceHideInAndroid={false}
           >
             <SubscriptionCard userId={userId} ios={false} {...subscription} />
           </HideInWebView>
