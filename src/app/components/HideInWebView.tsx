@@ -28,19 +28,23 @@ export function HideInWebView({
       // If the component should be hidden in iOS WebView
       if (isIOSWebView && !showOnIOS) {
         setShowContent(false);
+        return;
       }
       // If the component should be hidden in Android WebView
       else if (isAndroidWebView && !showOnAndroid) {
         setShowContent(false);
+        return;
       }
       // If the component should be shown in WebView (iOS or Android)
       else {
-        setShowContent(true);
+        setShowContent(false);
+        return;
       }
     }
     // If the component should be shown in webview
     else {
       setShowContent(true);
+      return;
     }
   }, [shouldHideInWebView, showOnIOS, showOnAndroid]);
 
