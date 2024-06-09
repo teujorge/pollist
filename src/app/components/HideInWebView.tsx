@@ -5,23 +5,44 @@ import { useEffect, useState } from "react";
 export function HideInWebView({
   children,
   fallback,
+  showOnIOS = true,
+  showOnAndroid = true,
   shouldHideInWebView = true,
 }: {
   children?: React.ReactNode;
   fallback?: React.ReactNode;
+  showOnIOS?: boolean;
+  showOnAndroid?: boolean;
   shouldHideInWebView?: boolean;
 }) {
-  const [showContent, setShowContent] = useState(false);
+  const [showContent, setShowContent] = useState(true);
 
   useEffect(() => {
     const source = localStorage.getItem("source");
-    const isWebView = source === "iosWebView" || source === "androidWebView";
+    const isIOSWebView = source === "iosWebView";
+    const isAndroidWebView = source === "androidWebView";
+    const isWebView = isIOSWebView || isAndroidWebView;
+
+    // If the component should be hidden in webview
     if (isWebView && shouldHideInWebView) {
-      setShowContent(false);
-    } else {
+      // If the component should be hidden in iOS WebView
+      if (isIOSWebView && !showOnIOS) {
+        setShowContent(false);
+      }
+      // If the component should be hidden in Android WebView
+      else if (isAndroidWebView && !showOnAndroid) {
+        setShowContent(false);
+      }
+      // If the component should be shown in WebView (iOS or Android)
+      else {
+        setShowContent(true);
+      }
+    }
+    // If the component should be shown in webview
+    else {
       setShowContent(true);
     }
-  }, [shouldHideInWebView]);
+  }, [shouldHideInWebView, showOnIOS, showOnAndroid]);
 
   return showContent ? children : fallback;
 }
