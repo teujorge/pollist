@@ -218,3 +218,11 @@ a:active {
 .cl-userButton-popover {
   border: rgb(var(--color-accent)) 2px solid;
 }
+.cl-socialButtonsBlockButton {
+  background-color: rgb(var(--color-accent-dark));
+  border: rgb(var(--color-accent)) 1px solid !important;
+  box-shadow: none !important;
+}
+.cl-socialButtonsBlockButton:hover {
+  background-color: rgb(var(--color-accent));
+}
