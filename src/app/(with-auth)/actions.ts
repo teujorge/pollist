@@ -84,68 +84,85 @@ export async function sendNotification({
   title: string;
   body: string;
 }) {
-  const { userId: myId } = auth();
-  if (!myId) throw new Error("Unauthorized");
+  try {
+    const { userId: myId } = auth();
+    if (!myId) throw new Error("Unauthorized");
 
-  const recipientUser = await db.user.findUnique({
-    where: { id: userId },
-    select: {
-      deviceToken: true,
-      blockerUsers: { where: { blockeeId: myId } },
-      notificationsPollLike: {
-        select: notificationsPollLikeSelect,
+    const recipientUser = await db.user.findUnique({
+      where: { id: userId },
+      select: {
+        deviceToken: true,
+        blockerUsers: { where: { blockeeId: myId } },
+        notificationsPollLike: {
+          select: notificationsPollLikeSelect,
+        },
+        notificationsComment: {
+          select: notificationsCommentSelect,
+        },
+        notificationsCommentLike: {
+          select: notificationsCommentLikeSelect,
+        },
+        notificationsFollowPending: {
+          select: notificationsFollowPendingSelect,
+        },
+        notificationsFollowAccepted: {
+          select: notificationsFollowAcceptedSelect,
+        },
       },
-      notificationsComment: {
-        select: notificationsCommentSelect,
-      },
-      notificationsCommentLike: {
-        select: notificationsCommentLikeSelect,
-      },
-      notificationsFollowPending: {
-        select: notificationsFollowPendingSelect,
-      },
-      notificationsFollowAccepted: {
-        select: notificationsFollowAcceptedSelect,
-      },
-    },
-  });
-
-  if (!recipientUser?.deviceToken) return;
-  if (recipientUser.blockerUsers.length > 0) return;
-
-  const _notifications: Notifications = {
-    pollLikes: recipientUser.notificationsPollLike,
-    comments: recipientUser.notificationsComment,
-    commentLikes: recipientUser.notificationsCommentLike,
-    followsPending: recipientUser.notificationsFollowPending,
-    followsAccepted: recipientUser.notificationsFollowAccepted,
-  };
-
-  // Basic check based on typical token length and character set
-  if (
-    recipientUser.deviceToken.length === 64 &&
-    /^[0-9a-fA-F]+$/.test(recipientUser.deviceToken)
-  ) {
-    // APNs token
-    await sendAPN({
-      title: title,
-      body: body,
-      notifications: _notifications,
-      deviceToken: recipientUser.deviceToken,
     });
-  } else if (
-    recipientUser.deviceToken.length > 64 &&
-    /^[0-9a-zA-Z\-_]+$/.test(recipientUser.deviceToken)
-  ) {
-    // FCM token
-    await sendFCM({
-      title: title,
-      body: body,
-      deviceToken: recipientUser.deviceToken,
-    });
-  } else {
-    // Invalid token ??
-    console.log("Invalid device token", recipientUser.deviceToken);
+
+    if (!recipientUser?.deviceToken) return;
+    if (recipientUser.blockerUsers.length > 0) return;
+
+    const _notifications: Notifications = {
+      pollLikes: recipientUser.notificationsPollLike,
+      comments: recipientUser.notificationsComment,
+      commentLikes: recipientUser.notificationsCommentLike,
+      followsPending: recipientUser.notificationsFollowPending,
+      followsAccepted: recipientUser.notificationsFollowAccepted,
+    };
+
+    // Basic check based on typical token length and character set
+    if (
+      recipientUser.deviceToken.length === 64 &&
+      /^[0-9a-fA-F]+$/.test(recipientUser.deviceToken)
+    ) {
+      // APNs token
+      await sendAPN({
+        title: title,
+        body: body,
+        notifications: _notifications,
+        deviceToken: recipientUser.deviceToken,
+      });
+    } else if (
+      recipientUser.deviceToken.length > 64 &&
+      /^[0-9a-zA-Z\-_]+$/.test(recipientUser.deviceToken)
+    ) {
+      // FCM token
+      await sendFCM({
+        title: title,
+        body: body,
+        deviceToken: recipientUser.deviceToken,
+      });
+    } else {
+      // Invalid token ??
+      console.log("Invalid device token", recipientUser.deviceToken);
+
+      // send to both...
+      await sendAPN({
+        title: title,
+        body: body,
+        notifications: _notifications,
+        deviceToken: recipientUser.deviceToken,
+      });
+      await sendFCM({
+        title: title,
+        body: body,
+        deviceToken: recipientUser.deviceToken,
+      });
+    }
+  } catch (e) {
+    console.error("Error sending notification:", e);
   }
 }
 
@@ -169,20 +186,20 @@ async function sendAPN({
     production: process.env.NODE_ENV === "production",
   });
 
+  const notificationCount =
+    groupedPollLikes(notifications).length +
+    groupedComments(notifications).length +
+    groupedCommentLikes(notifications).length +
+    groupedFollowPending(notifications).length +
+    groupedFollowAccepted(notifications).length;
+
+  const notification = new apn.Notification();
+  notification.alert = { title, body };
+  notification.sound = "default";
+  notification.badge = notificationCount;
+  notification.topic = process.env.APNS_BUNDLE_ID!;
+
   try {
-    const notificationCount =
-      groupedPollLikes(notifications).length +
-      groupedComments(notifications).length +
-      groupedCommentLikes(notifications).length +
-      groupedFollowPending(notifications).length +
-      groupedFollowAccepted(notifications).length;
-
-    const notification = new apn.Notification();
-    notification.alert = { title, body };
-    notification.sound = "default";
-    notification.badge = notificationCount;
-    notification.topic = process.env.APNS_BUNDLE_ID!;
-
     await apnProvider.send(notification, deviceToken);
   } catch (e) {
     console.error("Error sending APN notification:", e);
