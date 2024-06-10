@@ -6,7 +6,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { commentSelect } from "../InfiniteComments/commentSelect";
 import { defaultRatelimit } from "@/server/ratelimit";
 import { handlePrismaError } from "@/server/error";
-import { sendAPN, silentlyUpdateAPN } from "@/app/(with-auth)/actions";
+import { sendNotification, silentlyUpdateAPN } from "@/app/(with-auth)/actions";
 
 export async function createComment({
   pollId,
@@ -101,7 +101,7 @@ export async function createComment({
         },
       })
       .then(async () => {
-        await sendAPN({
+        await sendNotification({
           userId: notifyeeId,
           title: "New Comment on Your Poll 📝",
           body: `${user.username} left a comment on your poll.`,
@@ -217,7 +217,7 @@ export async function likeComment({
           },
         })
         .then(async () => {
-          await sendAPN({
+          await sendNotification({
             userId: like.comment.authorId,
             title: "Your Comment was Liked! ❤️",
             body: `${like.author.username} liked your comment.`,

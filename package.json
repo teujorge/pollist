@@ -44,6 +44,7 @@
     "babel-plugin-react-compiler": "0.0.0-experimental-592953e-20240517",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "firebase-admin": "^12.1.1",
     "next": "15.0.0-rc.0",
     "openai": "^4.47.1",
     "posthog-js": "^1.135.2",

@@ -5,7 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { defaultRatelimit } from "@/server/ratelimit";
 import { handlePrismaError } from "@/server/error";
-import { sendAPN, silentlyUpdateAPN } from "../actions";
+import { sendNotification, silentlyUpdateAPN } from "../actions";
 
 export type GetUser = NonNullable<Awaited<ReturnType<typeof getUser>>>;
 
@@ -84,7 +84,7 @@ export async function follow(userId: string) {
           },
         })
         .then(async () => {
-          await sendAPN({
+          await sendNotification({
             userId: userId,
             title: "New Follow Request 🌟",
             body: `${newFollow.follower.username} wants to connect with you!`,
@@ -249,7 +249,7 @@ export async function acceptFollow(followerId: string) {
             },
           })
           .then(async () => {
-            await sendAPN({
+            await sendNotification({
               userId: followerId,
               title: "Follow Request Accepted! 🎉",
               body: `${updatedFollow.followee.username} accepted your follow request.`,

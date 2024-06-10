@@ -75,7 +75,7 @@ export async function updateUserDeviceToken(
   }
 }
 
-export async function sendAPN({
+export async function sendNotification({
   userId,
   title,
   body,
@@ -87,6 +87,79 @@ export async function sendAPN({
   const { userId: myId } = auth();
   if (!myId) throw new Error("Unauthorized");
 
+  const recipientUser = await db.user.findUnique({
+    where: { id: userId },
+    select: {
+      deviceToken: true,
+      blockerUsers: { where: { blockeeId: myId } },
+      notificationsPollLike: {
+        select: notificationsPollLikeSelect,
+      },
+      notificationsComment: {
+        select: notificationsCommentSelect,
+      },
+      notificationsCommentLike: {
+        select: notificationsCommentLikeSelect,
+      },
+      notificationsFollowPending: {
+        select: notificationsFollowPendingSelect,
+      },
+      notificationsFollowAccepted: {
+        select: notificationsFollowAcceptedSelect,
+      },
+    },
+  });
+
+  if (!recipientUser?.deviceToken) return;
+  if (recipientUser.blockerUsers.length > 0) return;
+
+  const _notifications: Notifications = {
+    pollLikes: recipientUser.notificationsPollLike,
+    comments: recipientUser.notificationsComment,
+    commentLikes: recipientUser.notificationsCommentLike,
+    followsPending: recipientUser.notificationsFollowPending,
+    followsAccepted: recipientUser.notificationsFollowAccepted,
+  };
+
+  // Basic check based on typical token length and character set
+  if (
+    recipientUser.deviceToken.length === 64 &&
+    /^[0-9a-fA-F]+$/.test(recipientUser.deviceToken)
+  ) {
+    // APNs token
+    await sendAPN({
+      title: title,
+      body: body,
+      notifications: _notifications,
+      deviceToken: recipientUser.deviceToken,
+    });
+  } else if (
+    recipientUser.deviceToken.length > 64 &&
+    /^[0-9a-zA-Z\-_]+$/.test(recipientUser.deviceToken)
+  ) {
+    // FCM token
+    await sendFCM({
+      title: title,
+      body: body,
+      deviceToken: recipientUser.deviceToken,
+    });
+  } else {
+    // Invalid token ??
+    console.log("Invalid device token", recipientUser.deviceToken);
+  }
+}
+
+async function sendAPN({
+  title,
+  body,
+  notifications,
+  deviceToken,
+}: {
+  title: string;
+  body: string;
+  notifications: Notifications;
+  deviceToken: string;
+}) {
   const apnProvider = new apn.Provider({
     token: {
       key: Buffer.from(process.env.APNS_KEY!, "base64").toString("ascii"),
@@ -97,46 +170,12 @@ export async function sendAPN({
   });
 
   try {
-    const recipientUser = await db.user.findUnique({
-      where: { id: userId },
-      select: {
-        deviceToken: true,
-        blockerUsers: { where: { blockeeId: myId } },
-        notificationsPollLike: {
-          select: notificationsPollLikeSelect,
-        },
-        notificationsComment: {
-          select: notificationsCommentSelect,
-        },
-        notificationsCommentLike: {
-          select: notificationsCommentLikeSelect,
-        },
-        notificationsFollowPending: {
-          select: notificationsFollowPendingSelect,
-        },
-        notificationsFollowAccepted: {
-          select: notificationsFollowAcceptedSelect,
-        },
-      },
-    });
-
-    if (!recipientUser?.deviceToken) return;
-    if (recipientUser.blockerUsers.length > 0) return;
-
-    const _notifications: Notifications = {
-      pollLikes: recipientUser.notificationsPollLike,
-      comments: recipientUser.notificationsComment,
-      commentLikes: recipientUser.notificationsCommentLike,
-      followsPending: recipientUser.notificationsFollowPending,
-      followsAccepted: recipientUser.notificationsFollowAccepted,
-    };
-
     const notificationCount =
-      groupedPollLikes(_notifications).length +
-      groupedComments(_notifications).length +
-      groupedCommentLikes(_notifications).length +
-      groupedFollowPending(_notifications).length +
-      groupedFollowAccepted(_notifications).length;
+      groupedPollLikes(notifications).length +
+      groupedComments(notifications).length +
+      groupedCommentLikes(notifications).length +
+      groupedFollowPending(notifications).length +
+      groupedFollowAccepted(notifications).length;
 
     const notification = new apn.Notification();
     notification.alert = { title, body };
@@ -144,7 +183,7 @@ export async function sendAPN({
     notification.badge = notificationCount;
     notification.topic = process.env.APNS_BUNDLE_ID!;
 
-    await apnProvider.send(notification, recipientUser.deviceToken);
+    await apnProvider.send(notification, deviceToken);
   } catch (e) {
     console.error("Error sending APN notification:", e);
   }
@@ -194,4 +233,45 @@ export async function silentlyUpdateAPN() {
   // } catch (e) {
   //   console.error("Error sending silent APN notification:", e);
   // }
+}
+
+import admin from "firebase-admin";
+import type { ServiceAccount } from "firebase-admin";
+
+const serviceAccount = JSON.parse(
+  process.env.FIREBASE_SERVICE_ACCOUNT_KEY!,
+) as ServiceAccount;
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
+async function sendFCM({
+  title,
+  body,
+  deviceToken,
+}: {
+  title: string;
+  body: string;
+  deviceToken: string;
+}) {
+  const message = {
+    token: deviceToken,
+    notification: {
+      title,
+      body,
+    },
+    android: {
+      notification: {
+        sound: "default",
+      },
+    },
+  };
+
+  console.log("message", message);
+
+  try {
+    await admin.messaging().send(message);
+  } catch (e) {
+    console.error("Error sending FCM notification:", e);
+  }
 }

@@ -4,7 +4,7 @@ import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { defaultRatelimit } from "@/server/ratelimit";
 import { handlePrismaError } from "@/server/error";
-import { sendAPN, silentlyUpdateAPN } from "@/app/(with-auth)/actions";
+import { sendNotification, silentlyUpdateAPN } from "@/app/(with-auth)/actions";
 
 export async function handleVote({
   userId,
@@ -128,7 +128,7 @@ export async function handleLikePoll({
           },
         })
         .then(async () => {
-          await sendAPN({
+          await sendNotification({
             userId: pollAuthorId,
             title: "Your Poll Got a Like! 👍",
             body: `${pollLike.author.username} liked your poll.`,
