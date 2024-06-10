@@ -11,7 +11,8 @@
           "*",
           "!/tos",
           "!/privacy",
-          "!/about"
+          "!/about",
+          "!/support"
         ]
       }
     ]
