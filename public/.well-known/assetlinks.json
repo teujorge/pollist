@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "me.mjorge.pollist_android",
+      "sha256_cert_fingerprints": [
+        "6B:44:DA:2A:70:82:E7:61:B5:20:19:3A:BA:0D:28:7E:11:71:47:BE:B5:8B:57:C8:06:07:4C:50:75:18:25:63"
+      ]
+    }
+  }
+]
