@@ -26,6 +26,7 @@ export default function RootLayout({
           layout: {
             termsPageUrl: "/tos",
             privacyPageUrl: "/privacy",
+            helpPageUrl: "/support",
             logoPlacement: "none",
             socialButtonsVariant: "blockButton",
             socialButtonsPlacement: "top",
@@ -36,7 +37,7 @@ export default function RootLayout({
             colorSuccess: "#22c55e", // green
             colorWarning: "#F59e0b", // amber
 
-            colorNeutral: "#f0f0f0",
+            colorNeutral: "#ffffff",
             colorBackground: "#0f0f0f",
 
             colorText: "#f1f1f1",
