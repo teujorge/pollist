@@ -218,11 +218,26 @@ a:active {
 .cl-userButton-popover {
   border: rgb(var(--color-accent)) 2px solid;
 }
+.cl-socialButtons {
+  display: flex;
+  flex-wrap: wrap;
+}
 .cl-socialButtonsBlockButton {
+  width: 9.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
   background-color: rgb(var(--color-accent-dark));
   border: rgb(var(--color-accent)) 1px solid !important;
   box-shadow: none !important;
 }
 .cl-socialButtonsBlockButton:hover {
   background-color: rgb(var(--color-accent));
+}
+
+@media (max-width: 640px) {
+  .cl-socialButtonsBlockButton {
+    width: 100%;
+  }
 }
