@@ -1,6 +1,11 @@
 export const PAGE_SIZE = 10;
 
-export const CATEGORIES = ["New", "Trending", "Controversial"];
+export const CATEGORIES: string[] = [
+  "New",
+  "Trending",
+  "Controversial",
+  "People",
+] as const;
 
 export type Category = (typeof CATEGORIES)[number];
 
@@ -9,8 +14,8 @@ export type PollQuery = {
   category?: Category;
   authorId?: string;
   voterId?: string;
-  private?: boolean | "both";
-  anonymous?: boolean | "both";
+  private?: boolean | "both"; // show only private, hide any private, show both
+  anonymous?: boolean | "both"; // show only anonymous, hide any anonymous, show both
 };
 
 // Max file size 5mb

@@ -1,5 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { AllPolls } from "./components/AllPolls";
+import { AllUsers } from "./components/AllUsers";
+import { CATEGORIES } from "@/constants";
 import {
   dehydrate,
   QueryClient,
@@ -18,20 +20,51 @@ export default async function HomePage({
 
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: ["posts"],
-    queryFn: () =>
-      fetch(`/api/polls?search=${search}category=${category}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }),
-  });
+  let infiniteContent: React.ReactNode;
+
+  // Infinite users
+  if (category.toLocaleLowerCase() === CATEGORIES[3]?.toLocaleLowerCase()) {
+    await queryClient.prefetchQuery({
+      queryKey: ["all-users"],
+      queryFn: () =>
+        fetch(`/api/users?search=${search}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }),
+    });
+
+    infiniteContent = <AllUsers query={{ username: search }} userId={userId} />;
+  }
+
+  // Infinite polls
+  else {
+    await queryClient.prefetchQuery({
+      queryKey: ["all-posts"],
+      queryFn: () =>
+        fetch(`/api/polls?search=${search}category=${category}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }),
+    });
+
+    infiniteContent = (
+      <AllPolls
+        query={{
+          search,
+          category: category,
+        }}
+        userId={userId}
+      />
+    );
+  }
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <AllPolls query={{ search, category }} userId={userId} />
+      {infiniteContent}
     </HydrationBoundary>
   );
 }

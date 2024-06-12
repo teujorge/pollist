@@ -1,52 +1,42 @@
 "use client";
 
 import { Loader } from "@/app/components/Loader";
-import { PollCard } from "@/app/components/PollCard/PollCard";
+import { UserCard } from "@/app/components/InfiniteUsers/UserCard";
 import { PAGE_SIZE } from "@/constants";
-import { useBoostedPoll } from "../hooks/useBoostedPoll";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
-import type { PollQuery } from "@/constants";
-import type { PollsDetails } from "@/app/components/InfinitePolls/actions";
+import type { UsersDetails } from "@/app/components/InfiniteUsers/actions";
 
-export function AllPolls({
+export function AllUsers({
   userId,
   query,
 }: {
   userId: string | null;
-  query: PollQuery;
+  query: { username: string };
 }) {
-  const { boostedPoll } = useBoostedPoll();
-
   async function _queryFn({ cursor }: { cursor: string }) {
     const cursorQuery = cursor === "" ? undefined : `cursor=${cursor}`;
-    const searchQuery = query.search ? `search=${query.search}` : undefined;
-    const categoryQuery = query.category
-      ? `category=${query.category}`
-      : undefined;
+    const searchQuery = `search=${query.username}`;
 
-    const response = await fetch(
-      `/api/polls?${cursorQuery}&${searchQuery}&${categoryQuery}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+    const response = await fetch(`/api/users?${cursorQuery}&${searchQuery}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+    });
 
     const res = (await response.json()) as
-      | { status: number; data: PollsDetails; error: undefined }
+      | { status: number; data: UsersDetails; error: undefined }
       | { status: number; data: undefined; error: string };
     if (res.data === undefined) throw new Error(res.error);
 
-    const polls = res.data;
+    const users = res.data;
     hasInitedRef.current = true;
-    return polls;
+    return users;
   }
 
   const { fetchNextPage, hasNextPage, data, status } = useInfiniteQuery({
-    queryKey: ["all-polls", query],
+    queryKey: ["all-users", query],
     queryFn: (ctx) => _queryFn({ cursor: ctx.pageParam }),
     initialPageParam: "",
     getNextPageParam: (lastPage, allPages, lastPageParam, allPageParams) => {
@@ -84,13 +74,11 @@ export function AllPolls({
   }, [fetchNextPage, hasNextPage, data]);
 
   return (
-    <div className="flex w-full flex-col gap-4">
+    <div className="flex w-full flex-wrap justify-center gap-4">
       {data?.pages.map((pages, i) =>
-        pages.map((poll) =>
-          poll.id === boostedPoll?.id ? null : (
-            <PollCard key={keyGen(i, poll.id)} poll={poll} userId={userId} />
-          ),
-        ),
+        pages.map((user) => (
+          <UserCard key={keyGen(i, user.id)} user={user} userId={userId} />
+        )),
       )}
 
       <div
@@ -112,6 +100,6 @@ export function AllPolls({
 }
 
 function keyGen(index: number, id: string) {
-  const key = `home-page-${index}-poll-${id}`;
+  const key = `home-page-${index}-user-${id}`;
   return key;
 }
