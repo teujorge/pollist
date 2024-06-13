@@ -13,7 +13,7 @@ export function UserCard({
 }) {
   // followees & followers are undefined or an empty array or an array of "me" (myId)
   const iFollowUser = user.followees?.length > 0; // Checking if the current user is following the user
-  const userFollowsMe = user.followers?.length > 0; // Checking if the user follows the current user
+  const userFollowsMeAndAccepted = user.followers?.[0]?.accepted; // Checking if the user follows the current user and has accepted the follow request
 
   return (
     <div className="relative flex w-64 flex-col items-center gap-4 rounded-lg border border-accent bg-accent-dark2 p-6">
@@ -69,7 +69,7 @@ export function UserCard({
           )}
 
           {/* Caption at bottom corner saying if this user follows you */}
-          {userFollowsMe && (
+          {userFollowsMeAndAccepted && user.followers[0]?.accepted && (
             <div className="absolute bottom-2 left-2 text-xs text-accent">
               Follows you
             </div>

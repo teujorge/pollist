@@ -8,7 +8,7 @@ import { follow, unfollow } from "@/app/(with-auth)/users/actions";
 
 export function FollowButtonClient({
   userId,
-  isFollowing,
+  isFollowing: _isFollowing,
   loadForever = true,
 }: {
   userId: string;
@@ -16,6 +16,7 @@ export function FollowButtonClient({
   loadForever?: boolean;
 }) {
   const [isClicked, setIsClicked] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(_isFollowing);
 
   async function handleClick() {
     setIsClicked(true);
@@ -34,7 +35,10 @@ export function FollowButtonClient({
       }
     }
 
-    if (!loadForever) setIsClicked(false);
+    if (!loadForever) {
+      setIsClicked(false);
+      setIsFollowing(!isFollowing);
+    }
   }
 
   if (isClicked)
