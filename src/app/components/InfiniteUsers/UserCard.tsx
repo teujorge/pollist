@@ -69,7 +69,7 @@ export function UserCard({
           )}
 
           {/* Caption at bottom corner saying if this user follows you */}
-          {userFollowsMeAndAccepted && user.followers[0]?.accepted && (
+          {userFollowsMeAndAccepted && (
             <div className="absolute bottom-2 left-2 text-xs text-accent">
               Follows you
             </div>

@@ -36,20 +36,20 @@ export async function getInfiniteUsers({
       username: true,
       imageUrl: true,
       private: true,
-      // myId is following this user
+
       followers: myId
-        ? {
-            where: { followerId: myId },
-            select: { followerId: true, accepted: true },
-          }
-        : undefined,
-      // this user if following myId
-      followees: myId
         ? {
             where: { followeeId: myId },
             select: { followeeId: true, accepted: true },
           }
         : undefined,
+      followees: myId
+        ? {
+            where: { followerId: myId },
+            select: { followerId: true, accepted: true },
+          }
+        : undefined,
+
       _count: {
         select: {
           polls: true,
