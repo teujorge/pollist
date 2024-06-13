@@ -4,33 +4,46 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Loader } from "@/app/components/Loader";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { follow, unfollow } from "@/app/(with-auth)/users/actions";
 
-export function FollowButtonClient({
+export function UserCardFollowButton({
   userId,
-  isFollowing,
+  isFollowing: _isFollowing,
 }: {
   userId: string;
   isFollowing: boolean;
 }) {
+  const queryClient = useQueryClient();
+
   const [isClicked, setIsClicked] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(_isFollowing);
 
   async function handleClick() {
     setIsClicked(true);
 
     if (isFollowing) {
       try {
-        await unfollow(userId);
+        await unfollow(userId, false);
+        queryClient
+          .invalidateQueries({ queryKey: ["all-users"] })
+          .catch((error) => console.error(error));
       } catch (error) {
         toast.error("Failed to unfollow");
       }
     } else {
       try {
-        await follow(userId);
+        await follow(userId, false);
+        queryClient
+          .invalidateQueries({ queryKey: ["all-users"] })
+          .catch((error) => console.error(error));
       } catch (error) {
         toast.error("Failed to follow");
       }
     }
+
+    setIsClicked(false);
+    setIsFollowing(!isFollowing);
   }
 
   if (isClicked)

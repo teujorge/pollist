@@ -56,7 +56,7 @@ export async function getUser(username?: string, id?: string) {
 }
 
 // myId asks to follow userId
-export async function follow(userId: string) {
+export async function follow(userId: string, revalidateUserPath = true) {
   const { userId: myId } = auth();
   await defaultRatelimit(myId);
 
@@ -95,7 +95,10 @@ export async function follow(userId: string) {
         });
     }
 
-    revalidatePath(`/users/${newFollow.follower.username}`);
+    if (revalidateUserPath) {
+      revalidatePath(`/users/${newFollow.follower.username}`);
+    }
+
     return newFollow;
   } catch (error) {
     throw new Error(handlePrismaError(error));
@@ -103,7 +106,7 @@ export async function follow(userId: string) {
 }
 
 // myId unfollows userId
-export async function unfollow(userId: string) {
+export async function unfollow(userId: string, revalidateUserPath = true) {
   const { userId: myId } = auth();
   await defaultRatelimit(myId);
 
@@ -123,7 +126,9 @@ export async function unfollow(userId: string) {
       },
     });
 
-    revalidatePath(`/users/${deletedFollow.follower.username}`);
+    if (revalidateUserPath) {
+      revalidatePath(`/users/${deletedFollow.follower.username}`);
+    }
 
     return deletedFollow;
   } catch (error) {

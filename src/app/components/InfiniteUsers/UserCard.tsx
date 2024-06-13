@@ -1,7 +1,7 @@
 import Link from "next/link";
 import DefaultImage from "~/public/default-profile-icon.webp";
 import { ProfileImage } from "../ProfileImage";
-import { FollowButtonClient } from "@/app/(with-auth)/users/components/FollowButtonClient";
+import { UserCardFollowButton } from "./UserCardFollowButton";
 import type { UsersDetails } from "./actions";
 
 export function UserCard({
@@ -61,11 +61,7 @@ export function UserCard({
         <>
           {/* Actions (show only if signed in and user is not private) */}
           {userId && (
-            <FollowButtonClient
-              userId={user.id}
-              isFollowing={iFollowUser}
-              loadForever={false}
-            />
+            <UserCardFollowButton userId={user.id} isFollowing={iFollowUser} />
           )}
 
           {/* Caption at bottom corner saying if this user follows you */}
