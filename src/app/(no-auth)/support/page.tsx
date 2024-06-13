@@ -107,7 +107,7 @@ export default function SupportPage() {
             <Accordion type="single" collapsible className="w-full p-4">
               {faqData.map((faq, index) => (
                 <AccordionItem key={index} value={`faq-${index}`}>
-                  <AccordionTrigger>{faq.question}</AccordionTrigger>
+                  <AccordionTrigger asChild>{faq.question}</AccordionTrigger>
                   <AccordionContent>{faq.answer}</AccordionContent>
                 </AccordionItem>
               ))}
