@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Loader } from "@/app/components/Loader";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { follow, unfollow } from "@/app/(with-auth)/users/actions";
 
 export function FollowButtonClient({
@@ -15,6 +16,8 @@ export function FollowButtonClient({
   isFollowing: boolean;
   loadForever?: boolean;
 }) {
+  const queryClient = useQueryClient();
+
   const [isClicked, setIsClicked] = useState(false);
   const [isFollowing, setIsFollowing] = useState(_isFollowing);
 
@@ -24,12 +27,18 @@ export function FollowButtonClient({
     if (isFollowing) {
       try {
         await unfollow(userId);
+        queryClient
+          .invalidateQueries({ queryKey: ["all-users"] })
+          .catch((error) => console.error(error));
       } catch (error) {
         toast.error("Failed to unfollow");
       }
     } else {
       try {
         await follow(userId);
+        queryClient
+          .invalidateQueries({ queryKey: ["all-users"] })
+          .catch((error) => console.error(error));
       } catch (error) {
         toast.error("Failed to follow");
       }
