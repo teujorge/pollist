@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import DefaultImage from "~/public/default-profile-icon.webp";
-import { UserCardFollowButton } from "./UserCardFollowButton";
+import { ProfileImage } from "../ProfileImage";
+import { FollowButtonClient } from "@/app/(with-auth)/users/components/FollowButtonClient";
 import type { UsersDetails } from "./actions";
 
 export function UserCard({
@@ -11,41 +11,49 @@ export function UserCard({
   userId: string | null;
   user: UsersDetails[number];
 }) {
-  const iFollowUser = user.followers?.length > 0;
-  const userFollowsMe = user.followees?.length > 0;
+  // followees & followers are undefined or an empty array or an array of "me" (myId)
+  const iFollowUser = user.followees?.length > 0; // Checking if the current user is following the user
+  const userFollowsMe = user.followers?.length > 0; // Checking if the user follows the current user
 
   return (
-    <div className="relative flex w-64 flex-col items-center gap-4 rounded-lg border border-accent bg-accent-dark2 p-8">
+    <div className="relative flex w-64 flex-col items-center gap-4 rounded-lg border border-accent bg-accent-dark2 p-6">
       <Link
         href={`/users/${user.username}`}
         className="flex flex-col items-center gap-2"
       >
-        {/* User image and details */}
-        <Image
+        {/* User image and username */}
+        <ProfileImage
           src={user.imageUrl ?? DefaultImage}
-          alt="User Avatar"
-          width={96}
-          height={96}
-          className="rounded-full object-cover"
+          username={undefined}
+          size={96}
+          className=""
         />
         <h3 className="text-lg font-bold">{user.username}</h3>
       </Link>
-      <div>
-        <div className="text-center text-sm font-light text-accent-foreground">
-          <span>{user._count.polls} polls</span>
-          <strong> · </strong>
-          <span>{user._count.votes} votes</span>
-          <br />
-          <span>{user._count.followers} followers</span>
-          <strong> · </strong>
-          <span>{user._count.followees} following</span>
-        </div>
+
+      {/* User stats */}
+      <div className="text-center text-sm font-light text-accent-foreground">
+        <span>{user._count.polls} polls</span>
+        <strong> · </strong>
+        <span>
+          {user._count.votes} {user._count.votes === 1 ? "vote" : "votes"}
+        </span>
+        <br />
+        {/* followers -> the followers of this user */}
+        <span>{user._count.followers} following</span>
+        <strong> · </strong>
+        {/* followees -> the followees of this user */}
+        <span>
+          {user._count.followees}{" "}
+          {user._count.followees === 1 ? "follower" : "followers"}
+        </span>
       </div>
 
+      {/* User actions */}
       {userId === user.id ? (
         <>
-          {/* Caption at bottom corner saying this is you */}
-          <div className="absolute bottom-2 left-2 text-xs text-accent">
+          {/* Caption at bottom corner saying this user is you */}
+          <div className="absolute bottom-2 left-2 text-xs text-accent-foreground">
             You
           </div>
         </>
@@ -53,9 +61,10 @@ export function UserCard({
         <>
           {/* Actions (show only if signed in and user is not private) */}
           {userId && (
-            <UserCardFollowButton
+            <FollowButtonClient
               userId={user.id}
-              currentFollower={iFollowUser}
+              isFollowing={iFollowUser}
+              loadForever={false}
             />
           )}
 

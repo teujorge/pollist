@@ -52,8 +52,8 @@ export default async function UserPage({ params }: Props) {
     return true;
   }
 
-  const followersCount = user._count?.followees ?? 0;
-  const followingCount = user._count?.followers ?? 0;
+  const followersCount = user._count?.followees ?? 0; // followees -> the followees of this user
+  const followingCount = user._count?.followers ?? 0; // followers -> the followers of this user
 
   const isContentPrivate = calcIsContentPrivate();
 
@@ -73,14 +73,18 @@ export default async function UserPage({ params }: Props) {
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-            <Stat label="polls" count={user._count.polls} />
-            <Stat label="votes" count={user._count.votes} />
+            <Stat
+              label={user._count.polls === 1 ? "poll" : "polls"}
+              count={user._count.polls}
+            />
+            <Stat
+              label={user._count.votes === 1 ? "vote" : "votes"}
+              count={user._count.votes}
+            />
 
             <Dialog>
-              <DialogTrigger asChild>
-                <button>
-                  <Stat label="following" count={followingCount} />
-                </button>
+              <DialogTrigger>
+                <Stat label="following" count={followingCount} />
               </DialogTrigger>
               <DialogContent className="flex w-72 flex-col">
                 <DialogHeader>
@@ -91,10 +95,11 @@ export default async function UserPage({ params }: Props) {
             </Dialog>
 
             <Dialog>
-              <DialogTrigger asChild>
-                <button>
-                  <Stat label="followers" count={followersCount} />
-                </button>
+              <DialogTrigger>
+                <Stat
+                  label={followersCount === 1 ? "follower" : "followers"}
+                  count={followersCount}
+                />
               </DialogTrigger>
               <DialogContent className="flex w-72 flex-col">
                 <DialogHeader>

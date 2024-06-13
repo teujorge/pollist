@@ -9,9 +9,11 @@ import { follow, unfollow } from "@/app/(with-auth)/users/actions";
 export function FollowButtonClient({
   userId,
   isFollowing,
+  loadForever = true,
 }: {
   userId: string;
   isFollowing: boolean;
+  loadForever?: boolean;
 }) {
   const [isClicked, setIsClicked] = useState(false);
 
@@ -31,6 +33,8 @@ export function FollowButtonClient({
         toast.error("Failed to follow");
       }
     }
+
+    if (!loadForever) setIsClicked(false);
   }
 
   if (isClicked)
