@@ -16,7 +16,7 @@ export function UserCard({
   const userFollowsMeAndAccepted = user.followers?.[0]?.accepted; // Checking if the user follows the current user and has accepted the follow request
 
   return (
-    <div className="relative flex w-64 flex-col items-center gap-4 rounded-lg border border-accent bg-accent-dark2 p-6">
+    <div className="relative flex w-full flex-col items-center gap-4 rounded-lg border border-accent bg-accent-dark2 p-6 sm:w-64">
       <Link
         href={`/users/${user.username}`}
         className="flex flex-col items-center gap-2"
