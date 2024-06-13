@@ -117,6 +117,7 @@ model Poll {
 
   @@index([title])
   @@index([authorId])
+  @@index([boostedById])
 }
 
 model PollLike {

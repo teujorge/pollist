@@ -18,6 +18,7 @@ export async function getInfinitePolls({
   voterId,
   private: __private,
   anonymous,
+  boostedId,
 }: PollQuery & { cursor: string | undefined }) {
   const { userId } = auth();
 
@@ -30,26 +31,32 @@ export async function getInfinitePolls({
   // const currentDate = new Date();
   // const recentDate = new Date(currentDate.setDate(currentDate.getDate() - 7)); // last 7 days
 
+  // Determine if we should fetch a random boosted poll
+  let boostedPoll = null;
+  if (!cursor && !boostedId) {
+    // only on the first page
+    const boostedPollCount = await db.poll.count({
+      where: { boostedById: { not: null } },
+    });
+
+    if (boostedPollCount > 0) {
+      const randomIndex = Math.floor(Math.random() * boostedPollCount);
+      boostedPoll = await db.poll.findFirst({
+        where: { boostedById: { not: null } },
+        skip: randomIndex,
+        include: pollInclude(userId),
+      });
+    }
+  }
+
   const polls = await db.poll.findMany({
     where: {
       title: search ? { contains: search, mode: "insensitive" } : undefined,
-
       authorId: authorId ? { contains: authorId } : undefined,
-
       ...(_private !== "both" ? { private: { equals: _private } } : {}),
-
       ...(_anonymous !== "both" ? { anonymous: { equals: _anonymous } } : {}),
-
       votes: {
-        // Filter by voterId
-        ...(voterId
-          ? {
-              some: {
-                voterId: { contains: voterId },
-              },
-            }
-          : {}),
-
+        ...(voterId ? { some: { voterId: { contains: voterId } } } : {}),
         // // Filter by date -> temp disabled
         // ...(isTrending
         //   ? {
@@ -61,23 +68,18 @@ export async function getInfinitePolls({
         //     }
         //   : {}),
       },
-
       ...(isControversial ? { controversial: true } : {}),
+      ...(boostedId ? { id: { not: boostedId } } : {}),
+      ...(boostedPoll ? { id: { not: boostedPoll.id } } : {}),
     },
-
-    orderBy: isTrending
-      ? {
-          votes: {
-            _count: "desc",
-          },
-        }
-      : { createdAt: "desc" },
-
+    orderBy: isTrending ? { votes: { _count: "desc" } } : { createdAt: "desc" },
     cursor: cursor ? { id: cursor } : undefined,
-    skip: cursor ? 1 : undefined,
-    take: PAGE_SIZE,
+    skip: cursor ? 1 : 0,
+    take: boostedPoll ? PAGE_SIZE - 1 : PAGE_SIZE,
     include: pollInclude(userId),
   });
+
+  if (boostedPoll) polls.unshift(boostedPoll);
 
   for (const poll of polls) {
     poll.likes ??= [];

@@ -1,11 +1,11 @@
 "use client";
 
+import { Star } from "@phosphor-icons/react";
 import { Loader } from "@/app/components/Loader";
 import { PollCard } from "@/app/components/PollCard/PollCard";
 import { PAGE_SIZE } from "@/constants";
-import { useBoostedPoll } from "../hooks/useBoostedPoll";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { PollQuery } from "@/constants";
 import type { PollsDetails } from "@/app/components/InfinitePolls/actions";
 
@@ -16,24 +16,27 @@ export function AllPolls({
   userId: string | null;
   query: PollQuery;
 }) {
-  const { boostedPoll } = useBoostedPoll();
+  const [boostedPoll, setBoostedPoll] = useState<
+    PollsDetails[number] | undefined
+  >(undefined);
 
   async function _queryFn({ cursor }: { cursor: string }) {
-    const cursorQuery = cursor === "" ? undefined : `cursor=${cursor}`;
-    const searchQuery = query.search ? `search=${query.search}` : undefined;
-    const categoryQuery = query.category
-      ? `category=${query.category}`
-      : undefined;
+    const queries = [];
 
-    const response = await fetch(
-      `/api/polls?${cursorQuery}&${searchQuery}&${categoryQuery}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
+    if (cursor) queries.push(`cursor=${encodeURIComponent(cursor)}`);
+    if (query.search)
+      queries.push(`search=${encodeURIComponent(query.search)}`);
+    if (query.category)
+      queries.push(`category=${encodeURIComponent(query.category)}`);
+    if (boostedPoll?.id)
+      queries.push(`boostedId=${encodeURIComponent(boostedPoll.id)}`);
+
+    const queryString = queries.join("&");
+
+    const response = await fetch(`/api/polls?${queryString}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
 
     const res = (await response.json()) as
       | { status: number; data: PollsDetails; error: undefined }
@@ -42,6 +45,11 @@ export function AllPolls({
 
     const polls = res.data;
     hasInitedRef.current = true;
+
+    if (cursor === "" && polls[0]?.boostedById !== null) {
+      setBoostedPoll(polls[0]);
+    }
+
     return polls;
   }
 
@@ -85,10 +93,31 @@ export function AllPolls({
 
   return (
     <div className="flex w-full flex-col gap-4">
-      {data?.pages.map((pages, i) =>
-        pages.map((poll) =>
-          poll.id === boostedPoll?.id ? null : (
-            <PollCard key={keyGen(i, poll.id)} poll={poll} userId={userId} />
+      {data?.pages.map((pages, pageIndex) =>
+        pages.map((poll, itemIndex) =>
+          poll.boostedById === null ? (
+            <PollCard
+              key={keyGen(pageIndex, itemIndex, poll.id)}
+              poll={poll}
+              userId={userId}
+            />
+          ) : (
+            <div
+              key={keyGen(pageIndex, itemIndex, poll.id)}
+              className="relative h-fit w-full"
+            >
+              <PollCard
+                key={keyGen(pageIndex, itemIndex, poll.id)}
+                poll={poll}
+                userId={userId}
+                className={
+                  poll.boostedById !== null ? "border-primary" : undefined
+                }
+              />
+              <div className="absolute right-0 top-0 flex flex-row items-center justify-center gap-1 rounded-bl-lg rounded-tr-lg bg-primary px-2 py-1 text-xs font-light text-primary-foreground">
+                <Star /> BOOSTED
+              </div>
+            </div>
           ),
         ),
       )}
@@ -111,7 +140,7 @@ export function AllPolls({
   );
 }
 
-function keyGen(index: number, id: string) {
-  const key = `home-page-${index}-poll-${id}`;
+function keyGen(index1: number, index2: number, id: string) {
+  const key = `home-page-${index1}-${index2}-poll-${id}`;
   return key;
 }

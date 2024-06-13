@@ -17,6 +17,7 @@ export type PollCardProps = {
   poll: PollsDetails[number];
   highlightedUserId?: string;
   showCommentsButton?: boolean;
+  className?: string;
 };
 
 export function PollCard({
@@ -24,6 +25,7 @@ export function PollCard({
   poll,
   highlightedUserId,
   showCommentsButton = true,
+  className,
 }: PollCardProps) {
   const { userSettings, isUserBlocked } = useApp();
 
@@ -35,7 +37,12 @@ export function PollCard({
   });
 
   return (
-    <div className="flex w-full flex-col gap-2 rounded-lg border border-accent bg-accent-dark2 p-6 shadow-md">
+    <div
+      className={cn(
+        "flex w-full flex-col gap-2 rounded-lg border border-accent bg-accent-dark2 p-6 shadow-md",
+        className,
+      )}
+    >
       <Link
         href={`/users/${poll.author.username}`}
         className={cn(

@@ -8,12 +8,14 @@ export async function GET(req: NextRequest) {
   const cursor = searchParams.get("cursor") ?? undefined;
   const search = searchParams.get("search") ?? undefined;
   const category = searchParams.get("category") ?? undefined;
+  const boostedId = searchParams.get("boostedId") ?? undefined;
 
   const polls = await getInfinitePolls({
     cursor,
     search,
     category,
     anonymous: "both",
+    boostedId,
   });
 
   return NextResponse.json({

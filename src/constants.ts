@@ -16,6 +16,7 @@ export type PollQuery = {
   voterId?: string;
   private?: boolean | "both"; // show only private, hide any private, show both
   anonymous?: boolean | "both"; // show only anonymous, hide any anonymous, show both
+  boostedId?: string;
 };
 
 // Max file size 5mb

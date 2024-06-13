@@ -1,6 +1,9 @@
+import GlobalLoading from "../loading";
 import { auth } from "@clerk/nextjs/server";
+import { Suspense } from "react";
 import { AllPolls } from "./components/AllPolls";
 import { AllUsers } from "./components/AllUsers";
+import { FilterBar } from "./components/FilterBar";
 import { CATEGORIES } from "@/constants";
 import {
   dehydrate,
@@ -63,8 +66,15 @@ export default async function HomePage({
   }
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      {infiniteContent}
-    </HydrationBoundary>
+    <main className="flex w-full flex-col items-center gap-2">
+      <h1 className="pt-6 text-5xl font-bold">Polls</h1>
+      <FilterBar />
+      <div className="h-2" />
+      <Suspense fallback={<GlobalLoading />}>
+        <HydrationBoundary state={dehydrate(queryClient)}>
+          {infiniteContent}
+        </HydrationBoundary>
+      </Suspense>
+    </main>
   );
 }
