@@ -6,7 +6,11 @@ import type { PollQuery } from "@/constants";
 
 export const dynamic = "force-dynamic";
 
-export async function InfinitePolls(props: {
+export async function InfinitePolls({
+  query,
+  highlightedUserId,
+  idPrefix,
+}: {
   query: PollQuery;
   highlightedUserId?: string;
   idPrefix: string;
@@ -15,25 +19,26 @@ export async function InfinitePolls(props: {
 
   const firstPolls = await getInfinitePolls({
     cursor: undefined,
-    ...props.query,
+    ...query,
+    boostedId: "None", // force no boosted poll
   });
 
   return (
     <div className="flex w-full flex-col items-center gap-4">
       {firstPolls.map((poll) => (
         <PollCard
-          key={`${props.idPrefix}-poll-card-${poll.id}`}
+          key={`${idPrefix}-poll-card-${poll.id}`}
           poll={poll}
           userId={userId}
-          highlightedUserId={props.highlightedUserId}
+          highlightedUserId={highlightedUserId}
         />
       ))}
       <InfinitelyMorePolls
-        idPrefix={props.idPrefix}
+        idPrefix={idPrefix}
         userId={userId}
-        query={props.query}
+        query={query}
         initialCursor={firstPolls[firstPolls.length - 1]?.id}
-        highlightedUserId={props.highlightedUserId}
+        highlightedUserId={highlightedUserId}
       />
     </div>
   );
