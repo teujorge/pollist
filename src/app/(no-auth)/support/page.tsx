@@ -12,7 +12,7 @@ import type { Metadata } from "next";
 
 const faqData = [
   {
-    question: "How do I create a poll?",
+    question: <>How do I create a poll?</>,
     answer: (
       <>
         Creating a poll on Pollist is a breeze! Simply log into your account and
@@ -25,7 +25,7 @@ const faqData = [
     ),
   },
   {
-    question: "Can I edit a poll after publishing?",
+    question: <>Can I edit a poll after publishing?</>,
     answer: (
       <>
         No, you can&quot;t edit a poll after publishing. Once a poll is
@@ -36,7 +36,7 @@ const faqData = [
     ),
   },
   {
-    question: "How do I delete my account?",
+    question: <>How do I delete my account?</>,
     answer: (
       <>
         We&quot;re sorry to see you go! If you wish to delete your account,
@@ -48,7 +48,7 @@ const faqData = [
     ),
   },
   {
-    question: "Can I share my polls on social media?",
+    question: <>Can I share my polls on social media?</>,
     answer: (
       <>
         Yes, you can share your polls on social media directly from Pollist.
@@ -60,7 +60,7 @@ const faqData = [
     ),
   },
   {
-    question: "How do I participate in a poll?",
+    question: <>How do I participate in a poll?</>,
     answer: (
       <>
         Participating in a poll is simple! Browse through the list of available
@@ -71,7 +71,7 @@ const faqData = [
     ),
   },
   {
-    question: "What do I get with the Pro tier?",
+    question: <>What do I get with the Pro tier?</>,
     answer: (
       <>
         The Pro tier offers additional benefits to enhance your Pollist
@@ -104,10 +104,10 @@ export default function SupportPage() {
             <h3 className="mb-4 text-2xl font-bold">
               Frequently Asked Questions
             </h3>
-            <Accordion type="single" collapsible className="w-full p-4">
+            <Accordion type="multiple" className="w-full p-4">
               {faqData.map((faq, index) => (
                 <AccordionItem key={index} value={`faq-${index}`}>
-                  <AccordionTrigger asChild>{faq.question}</AccordionTrigger>
+                  <AccordionTrigger>{faq.question}</AccordionTrigger>
                   <AccordionContent>{faq.answer}</AccordionContent>
                 </AccordionItem>
               ))}
