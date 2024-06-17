@@ -105,7 +105,7 @@ export function CommentCard({
             </span>
           </p>
 
-          <CommentCardActions />
+          {!comment.deleted && <CommentCardActions />}
 
           {showPurpleForUnreadComment && (
             <TriggerNotificationSeen
