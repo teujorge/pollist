@@ -8,6 +8,7 @@ import { CommentForm } from "./CommentForm";
 import { CommentCard } from "./CommentCard";
 import { SignInButton } from "@clerk/nextjs";
 import { commentSelect } from "../InfiniteComments/commentSelect";
+import { PaperPlaneTilt } from "@phosphor-icons/react/dist/ssr";
 import { ScrollToComments } from "./ScrollToComments";
 import { InfiniteComments } from "@/app/components/InfiniteComments/InfiniteComments";
 import { NewCommentsProvider } from "./NewCommentsProvider";
@@ -84,17 +85,17 @@ export function AllCommentsFallback() {
 
       <div className="sticky bottom-0 bg-gradient-to-t from-background from-80%">
         <form className="pointer-events-none flex w-full flex-col gap-2 p-4 opacity-50">
-          <div className="flex flex-row items-end gap-2">
+          <div className="flex w-full flex-row items-center justify-center gap-2">
             <textarea
               required
               disabled
               name="comment"
               placeholder="Loading..."
-              className="h-9 flex-grow"
+              className="h-9 w-full"
             />
-            <div className="flex w-20 items-center justify-center">
-              <Button variant="outline" className="ml-auto">
-                Submit
+            <div className="flex w-10 min-w-10 items-center justify-center">
+              <Button variant="outline">
+                <PaperPlaneTilt />
               </Button>
             </div>
           </div>

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
 import { createComment } from "@/app/components/Comments/actions";
 import { useNewComments } from "./NewCommentsProvider";
+import { PaperPlaneTilt } from "@phosphor-icons/react";
 import { useRef, useState } from "react";
 
 export function CommentForm({
@@ -124,25 +125,25 @@ export function CommentForm({
       onSubmit={handleSubmit}
     >
       {label && <label>{label}</label>}
-      <div className="flex w-full flex-row items-end gap-2">
+      <div className="flex w-full flex-row items-center justify-center gap-2">
         <textarea
           ref={commentTextareaRef}
           required
           disabled={isLoading}
           name="comment"
           placeholder={placeholder}
-          className="h-9 max-h-[50svh] min-h-9 flex-grow resize-none transition-colors"
+          className="h-9 max-h-[50svh] min-h-9 w-full resize-none transition-colors"
           onChange={(e) => {
             e.currentTarget.style.height = "36px";
             e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
           }}
         />
-        <div className="flex w-20 items-center justify-center">
+        <div className="flex w-12 min-w-12 items-center justify-center">
           {isLoading ? (
-            <Loader />
+            <Loader className="h-6 w-6 border-2" />
           ) : (
-            <Button variant="outline" className="ml-auto">
-              Submit
+            <Button variant="outline">
+              <PaperPlaneTilt />
             </Button>
           )}
         </div>
