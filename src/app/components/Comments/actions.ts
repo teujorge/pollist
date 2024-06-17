@@ -2,6 +2,7 @@
 
 import { db } from "@/server/prisma";
 import { auth } from "@clerk/nextjs/server";
+import { moderate } from "@/app/(with-auth)/admin/moderation";
 import { currentUser } from "@clerk/nextjs/server";
 import { commentSelect } from "../InfiniteComments/commentSelect";
 import { defaultRatelimit } from "@/server/ratelimit";
@@ -27,6 +28,8 @@ export async function createComment({
 
   await defaultRatelimit(user.id);
 
+  const isSensitiveContent = await moderate(text);
+
   try {
     const newComment = await db.comment.create({
       data: {
@@ -35,6 +38,7 @@ export async function createComment({
         text,
         at: atUsername,
         authorId: user.id,
+        sensitive: isSensitiveContent,
       },
       select: commentSelect(user.id ?? undefined),
     });
@@ -280,10 +284,16 @@ export async function deleteComment({ commentId }: { commentId: string }) {
   await defaultRatelimit(userId);
 
   try {
-    const deletedComment = await db.comment.delete({
+    // don't actually delete comment set flag 'deleted' to true
+    const deletedComment = await db.comment.update({
       where: {
         id: commentId,
         authorId: userId,
+      },
+      data: {
+        text: "[deleted]",
+        deleted: true,
+        sensitive: false,
       },
     });
 

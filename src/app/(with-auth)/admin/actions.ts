@@ -161,7 +161,12 @@ export async function runModerator() {
   console.log();
   console.log("Running moderator...");
 
+  // MODERATE ALL POLLS
+  console.log();
+  console.log("Moderating all polls...");
+
   const polls = await db.poll.findMany({
+    where: { sensitive: false },
     select: {
       id: true,
       title: true,
@@ -189,6 +194,35 @@ export async function runModerator() {
         data: { sensitive: modFlagged },
       });
       console.log("Poll updated!");
+    }
+
+    console.log();
+  }
+
+  // MODERATE ALL COMMENTS
+  console.log();
+  console.log("Moderating all comments...");
+
+  const comments = await db.comment.findMany({
+    where: { sensitive: false },
+    select: {
+      id: true,
+      text: true,
+      sensitive: true,
+    },
+  });
+
+  for (const comment of comments) {
+    const modFlagged = await moderate(comment.text);
+
+    console.log(`Comment: ${comment.text}`);
+    console.log(`Moderation: ${modFlagged}`);
+    if (comment.sensitive !== modFlagged) {
+      await db.comment.update({
+        where: { id: comment.id },
+        data: { sensitive: modFlagged },
+      });
+      console.log("Comment updated!");
     }
 
     console.log();
