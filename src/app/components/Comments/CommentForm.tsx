@@ -58,6 +58,8 @@ export function CommentForm({
         text,
         at: atUsername ?? null,
         authorId: user?.id ?? "optimistic",
+        sensitive: false,
+        deleted: false,
         author: {
           id: user?.id ?? "optimistic",
           username: user?.username ?? "optimistic",

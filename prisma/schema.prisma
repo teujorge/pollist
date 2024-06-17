@@ -181,6 +181,8 @@ model Comment {
   pollId              String
   parentId            String?
   at                  String?
+  sensitive           Boolean               @default(false)
+  deleted             Boolean               @default(false)
   author              User                  @relation(fields: [authorId], references: [id], onDelete: Cascade)
   poll                Poll                  @relation(fields: [pollId], references: [id], onDelete: Cascade)
   parent              Comment?              @relation(name: "CommentToComment", fields: [parentId], references: [id])
