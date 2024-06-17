@@ -3,8 +3,6 @@
 import { toast } from "sonner";
 import { useApp } from "../../app";
 import { Button } from "@/components/ui/button";
-import { Loader } from "@/app/components/Loader";
-import { useState } from "react";
 import { blockUser, unblockUser } from "@/app/(with-auth)/users/actions";
 
 export function BlockButton({
@@ -14,11 +12,7 @@ export function BlockButton({
 }) {
   const { isUserBlocked, setBlockedUsers } = useApp();
 
-  const [isClicked, setIsClicked] = useState(false);
-
   async function handleClick() {
-    setIsClicked(true);
-
     if (isUserBlocked(user.id)) {
       setBlockedUsers((prev) =>
         prev.filter((blockedUser) => blockedUser.id !== user.id),
@@ -53,13 +47,6 @@ export function BlockButton({
       }
     }
   }
-
-  if (isClicked)
-    return (
-      <div className="flex h-7 items-center justify-center pl-2">
-        <Loader className="h-4 w-4 border-2" />
-      </div>
-    );
 
   return (
     <Button

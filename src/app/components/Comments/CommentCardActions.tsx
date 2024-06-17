@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { Loader } from "../Loader";
 import { useApp } from "@/app/(with-auth)/app";
 import { PAGE_SIZE } from "@/constants";
-import { blockUser } from "@/app/(with-auth)/users/actions";
 import { NewComments } from "./NewComments";
 import { CommentForm } from "./CommentForm";
 import { PopoverClose } from "@radix-ui/react-popover";
@@ -13,6 +12,7 @@ import { DeleteAlertDialog } from "../DeleteAlertDialog";
 import { useEffect, useState } from "react";
 import { getInfiniteComments } from "../InfiniteComments/actions";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { blockUser, unblockUser } from "@/app/(with-auth)/users/actions";
 import { CommentCard, useCommentCard } from "./CommentCard";
 import { deleteComment, likeComment, unlikeComment } from "./actions";
 import { SignInButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
@@ -32,7 +32,7 @@ import {
 import type { Comment } from "../InfiniteComments/actions";
 
 export function CommentCardActions() {
-  const { setBlockedUsers } = useApp();
+  const { isUserBlocked, setBlockedUsers } = useApp();
 
   const { user } = useUser();
 
@@ -43,7 +43,6 @@ export function CommentCardActions() {
     setIsReplying,
     isViewingReplies,
     setIsViewingReplies,
-    setIsCommentDeleted,
     isChangeProcessing,
     setIsChangeProcessing,
   } = useCommentCard();
@@ -161,14 +160,14 @@ export function CommentCardActions() {
     setIsChangeProcessing(true);
 
     // optimistic update
-    setIsCommentDeleted(true);
+    setComment((prev) => ({ ...prev, deleted: true }));
 
     try {
       // db request
       await deleteComment({ commentId: comment.id });
     } catch (error) {
       // put back original if the request fails
-      setIsCommentDeleted(false);
+      setComment((prev) => ({ ...prev, deleted: false }));
       toast.error("Failed to delete comment");
     }
 
@@ -241,31 +240,63 @@ export function CommentCardActions() {
             <SignedIn>
               {user?.id !== comment.author.id && (
                 <PopoverClose asChild>
-                  <Button
-                    variant="popover"
-                    className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
-                    onMouseDown={async () => {
-                      setBlockedUsers((prev) => [
-                        ...prev,
-                        {
-                          id: comment.author.id,
-                          username: comment.author.username,
-                          imageUrl: comment.author.imageUrl,
-                        },
-                      ]);
-                      try {
-                        await blockUser(comment.author.id);
-                      } catch (error) {
-                        toast.error("Failed to block user");
+                  {/* if user is not blocked we can block them */}
+
+                  {isUserBlocked(comment.author.id) ? (
+                    <Button
+                      variant="popover"
+                      className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
+                      onMouseDown={async () => {
                         setBlockedUsers((prev) =>
                           prev.filter((user) => user.id !== comment.author.id),
                         );
-                      }
-                    }}
-                  >
-                    <Warning size={15} />
-                    Block user
-                  </Button>
+                        try {
+                          await unblockUser(comment.author.id);
+                        } catch (error) {
+                          toast.error("Failed to unblock user");
+                          setBlockedUsers((prev) => [
+                            ...prev,
+                            {
+                              id: comment.author.id,
+                              username: comment.author.username,
+                              imageUrl: comment.author.imageUrl,
+                            },
+                          ]);
+                        }
+                      }}
+                    >
+                      <Warning size={15} />
+                      Unblock user
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="popover"
+                      className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
+                      onMouseDown={async () => {
+                        setBlockedUsers((prev) => [
+                          ...prev,
+                          {
+                            id: comment.author.id,
+                            username: comment.author.username,
+                            imageUrl: comment.author.imageUrl,
+                          },
+                        ]);
+                        try {
+                          await blockUser(comment.author.id);
+                        } catch (error) {
+                          toast.error("Failed to block user");
+                          setBlockedUsers((prev) =>
+                            prev.filter(
+                              (user) => user.id !== comment.author.id,
+                            ),
+                          );
+                        }
+                      }}
+                    >
+                      <Warning size={15} />
+                      Block user
+                    </Button>
+                  )}
                 </PopoverClose>
               )}
             </SignedIn>

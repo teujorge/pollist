@@ -393,7 +393,6 @@ export async function blockUser(userId: string) {
       },
     });
 
-    revalidatePath(`/users/${blockedUser.blockee.username}`);
     return blockedUser;
   } catch (error) {
     throw new Error(handlePrismaError(error));
@@ -419,7 +418,6 @@ export async function unblockUser(userId: string) {
       },
     });
 
-    revalidatePath(`/users/${unblockedUser.blockee.username}`);
     return unblockedUser;
   } catch (error) {
     throw new Error(handlePrismaError(error));
