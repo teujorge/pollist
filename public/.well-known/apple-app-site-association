@@ -8,11 +8,11 @@
           "MBM3VV5JVW.me.mjorge.pollist"
         ],
         "paths": [
-          "*",
-          "!/tos",
-          "!/privacy",
-          "!/about",
-          "!/support"
+          "NOT /tos",
+          "NOT /privacy",
+          "NOT /about",
+          "NOT /support",
+          "*"
         ]
       }
     ]
