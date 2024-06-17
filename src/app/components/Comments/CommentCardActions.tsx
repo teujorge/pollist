@@ -377,7 +377,7 @@ function CommentReplies({
   }
 
   return (
-    <div className={"flex w-full flex-col gap-2"}>
+    <div className="flex w-full flex-col">
       {data.replies.map((reply) => (
         <CommentCard
           key={`${pollId}-${parentId}-reply-${reply.id}`}
@@ -387,7 +387,9 @@ function CommentReplies({
       <NewComments parentId={parentId} />
 
       {data.isLoading ? (
-        <Loader className="ml-8 h-5 w-5 border-2" />
+        <div className="ml-8 flex h-9 w-9 items-center justify-center">
+          <Loader className="h-5 w-5 border-2" />
+        </div>
       ) : (
         data.hasMore && (
           <Button
