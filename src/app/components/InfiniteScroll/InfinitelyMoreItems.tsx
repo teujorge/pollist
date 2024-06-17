@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { useRef } from "react";
 import { Loader } from "../Loader";
 import { useInfiniteScroll } from "./useInfiniteScroll";
@@ -37,7 +38,7 @@ export function InfinitelyMoreItems<
         className="flex min-h-12 w-full items-center justify-center"
       >
         {data.hasMore ? (
-          <Loader className={props.loaderClassName} />
+          <Loader className={cn("h-8 w-8", props.loaderClassName)} />
         ) : (
           <p className="text-sm text-accent-foreground underline decoration-accent-foreground underline-offset-4">
             Nothing more to show...

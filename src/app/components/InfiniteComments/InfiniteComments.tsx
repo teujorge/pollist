@@ -16,7 +16,7 @@ export async function InfiniteComments(props: {
   });
 
   return (
-    <div className="flex w-full max-w-full flex-col items-center gap-2 overflow-x-hidden">
+    <div className="flex min-h-fit w-full max-w-full flex-col items-center gap-2 overflow-x-hidden">
       <NewComments parentId={undefined} />
       {firstComments.map((comment) => (
         <CommentCard
