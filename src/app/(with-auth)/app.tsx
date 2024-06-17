@@ -4,7 +4,7 @@ import Script from "next/script";
 import GlobalLoading from "../loading";
 import { toast } from "sonner";
 import { Modal } from "../components/Modal";
-import { UserGear } from "@phosphor-icons/react";
+import { UserGear, X } from "@phosphor-icons/react";
 import { SettingsTab } from "../components/Header/ClerkUserButton/SettingsTab";
 import { QueryProvider } from "./_providers/QueryProvider";
 import { WebViewMessenger } from "../components/WebViewMessenger";
@@ -15,7 +15,6 @@ import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
 import { getUserSettings, updateUserDeviceToken } from "./actions";
 import { ClerkLoaded, ClerkLoading, UserProfile, useUser } from "@clerk/nextjs";
 import {
-  Suspense,
   useState,
   useEffect,
   useContext,
@@ -333,7 +332,7 @@ export function App({
             {children}
             {showUserSettings && (
               <Modal
-                className="!max-h-[100dvh] !max-w-[100dvw] rounded-none border-none bg-transparent p-0"
+                className="relative !max-h-[100dvh] !max-w-[100dvw] rounded-none border-none bg-transparent p-0"
                 wrapperClassName="p-0"
                 onClickOutside={() => setShowUserSettings(false)}
               >
@@ -348,6 +347,13 @@ export function App({
                   <UserProfile.Page label="account" />
                   <UserProfile.Page label="security" />
                 </UserProfile>
+
+                <div
+                  className="absolute right-0 top-0 m-1 cursor-pointer rounded-full p-2 transition-colors hovact:bg-accent-dark"
+                  onClick={() => setShowUserSettings(false)}
+                >
+                  <X />
+                </div>
               </Modal>
             )}
           </ClerkLoaded>
