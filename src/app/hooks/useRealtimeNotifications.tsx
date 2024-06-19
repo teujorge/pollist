@@ -94,8 +94,6 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
-            console.log("INSERT payload", payload);
-
             const newPayload = payload.new;
 
             if (typeof newPayload.id !== "string") return;
@@ -131,7 +129,6 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
-            console.log("UPDATE payload", payload);
             const newPayload = payload.new;
 
             if (typeof newPayload.id !== "string") return;
@@ -167,7 +164,6 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
-            console.log("DELETE payload", payload);
             handleOnNotificationDelete({
               type: "pollCreated",
               payload: payload.old,
