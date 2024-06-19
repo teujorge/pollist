@@ -54,11 +54,11 @@ export async function createPoll(fields: CreatePollFields) {
     });
 
     // Send a notification to the author's followers
-    sendPollCreatedNotification({
+    await sendPollCreatedNotification({
       authorId: userId,
       authorUsername: createdPoll.author.username,
       createdPollId: createdPoll.id,
-    }).catch(console.error);
+    });
 
     // Capture analytics event
     analyticsServerClient.capture({
@@ -88,7 +88,7 @@ async function sendPollCreatedNotification({
     // Find the followers of the poll author
     const followers = await db.follow.findMany({
       where: { followeeId: authorId },
-      select: { followerId: true },
+      select: { followerId: true, follower: { select: { username: true } } },
     });
 
     // Create a notification for each follower
@@ -102,6 +102,10 @@ async function sendPollCreatedNotification({
 
     // Send a notifications to the followers
     followers.forEach((follower) => {
+      console.log(
+        "Sending poll created notification to",
+        follower.follower.username,
+      );
       sendNotification({
         userId: follower.followerId,
         title: "New Poll Created",

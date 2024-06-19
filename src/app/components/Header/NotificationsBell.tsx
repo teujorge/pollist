@@ -12,6 +12,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
+  groupedPollCreated,
   groupedPollLikes,
   groupedComments,
   groupedCommentLikes,
@@ -23,6 +24,7 @@ export function NotificationsBell() {
   const { notifications } = useApp();
 
   const notificationsCount =
+    groupedPollCreated(notifications).length +
     groupedPollLikes(notifications).length +
     groupedComments(notifications).length +
     groupedCommentLikes(notifications).length +

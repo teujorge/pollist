@@ -94,12 +94,15 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
+            console.log("INSERT payload", payload);
+
             const newPayload = payload.new;
 
             if (typeof newPayload.id !== "string") return;
 
             getNotificationsPollCreatedRelation(newPayload.id)
               .then((payloadRelations) => {
+                console.log("INSERT payloadRelations", payloadRelations);
                 if (isUserBlocked(payloadRelations?.poll?.author?.id ?? ""))
                   return;
 
@@ -128,12 +131,14 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
+            console.log("UPDATE payload", payload);
             const newPayload = payload.new;
 
             if (typeof newPayload.id !== "string") return;
 
             getNotificationsPollCreatedRelation(newPayload.id)
               .then((payloadRelations) => {
+                console.log("UPDATE payloadRelations", payloadRelations);
                 if (isUserBlocked(payloadRelations?.poll?.author?.id ?? ""))
                   return;
 
@@ -162,6 +167,7 @@ export function useRealtimeNotifications({
             filter: `notifyeeId=eq.${user.id}`,
           },
           (payload) => {
+            console.log("DELETE payload", payload);
             handleOnNotificationDelete({
               type: "pollCreated",
               payload: payload.old,
