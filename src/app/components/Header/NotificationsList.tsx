@@ -279,7 +279,7 @@ function PollCreatedNotificationCard({
         href={`/polls/${pollCreatedNotifications[0]!.poll.id}`}
         onClick={handleLinkClick}
       >
-        New poll:
+        New poll:{" "}
         <q className="text-sm font-light">
           {pollCreatedNotifications[0]!.poll.title}
         </q>
