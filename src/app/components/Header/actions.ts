@@ -5,14 +5,16 @@ import { auth } from "@clerk/nextjs/server";
 import { handlePrismaError } from "@/server/error";
 import { silentlyUpdateAPN } from "@/app/(with-auth)/actions";
 import {
-  notificationsCommentLikeSelect,
+  notificationsPollCreatedSelect,
+  notificationsPollLikeSelect,
   notificationsCommentSelect,
+  notificationsCommentLikeSelect,
   notificationsFollowAcceptedSelect,
   notificationsFollowPendingSelect,
-  notificationsPollLikeSelect,
 } from "./utils";
 
 export type NotificationType =
+  | "PollCreatedNotification"
   | "PollLikeNotification"
   | "CommentNotification"
   | "CommentLikeNotification"
@@ -23,6 +25,8 @@ type NotificationItems = NonNullable<
   Awaited<ReturnType<typeof getNotificationsItems>>
 >;
 
+export type NotificationPollCreatedItem =
+  NotificationItems["notificationsPollCreated"][number];
 export type NotificationPollLikeItem =
   NotificationItems["notificationsPollLike"][number];
 export type NotificationCommentItem =
@@ -33,6 +37,19 @@ export type NotificationFollowPendingItem =
   NotificationItems["notificationsFollowPending"][number];
 export type NotificationFollowAcceptedItem =
   NotificationItems["notificationsFollowAccepted"][number];
+
+export async function getNotificationsPollCreatedRelation(
+  notificationId: string,
+) {
+  try {
+    return await db.notificationPollCreated.findUnique({
+      where: { id: notificationId },
+      select: notificationsPollCreatedSelect,
+    });
+  } catch (error) {
+    throw new Error(handlePrismaError(error));
+  }
+}
 
 export async function getNotificationsPollLikeRelation(notificationId: string) {
   try {
@@ -103,6 +120,9 @@ export async function getNotificationsItems() {
     const userNotifications = await db.user.findUnique({
       where: { id: userId },
       select: {
+        notificationsPollCreated: {
+          select: notificationsPollCreatedSelect,
+        },
         notificationsPollLike: {
           select: notificationsPollLikeSelect,
         },
@@ -140,6 +160,12 @@ export async function removeNotifications({
     let batch;
 
     switch (type) {
+      case "PollCreatedNotification":
+        batch = await db.notificationPollCreated.deleteMany({
+          where: { id: { in: ids } },
+        });
+        break;
+
       case "PollLikeNotification":
         batch = await db.notificationPollLike.deleteMany({
           where: { id: { in: ids } },

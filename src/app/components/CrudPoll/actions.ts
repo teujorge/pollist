@@ -7,6 +7,7 @@ import { supabase } from "@/server/supabase";
 import { moderate } from "@/app/(with-auth)/admin/moderation";
 import { pollToString } from "@/lib/utils";
 import { defaultRatelimit } from "@/server/ratelimit";
+import { sendNotification } from "@/app/(with-auth)/actions";
 import { handlePrismaError } from "@/server/error";
 import { analyticsServerClient } from "@/server/analytics";
 import type { PollsDetails } from "@/app/components/InfinitePolls/actions";
@@ -29,6 +30,7 @@ export async function createPoll(fields: CreatePollFields) {
   const modFlagged = await moderate(pollContent);
 
   try {
+    // Create the poll
     const createdPoll = await db.poll.create({
       data: {
         authorId: userId,
@@ -47,9 +49,18 @@ export async function createPoll(fields: CreatePollFields) {
       },
       include: {
         options: true,
+        author: { select: { username: true } },
       },
     });
 
+    // Send a notification to the author's followers
+    sendPollCreatedNotification({
+      authorId: userId,
+      authorUsername: createdPoll.author.username,
+      createdPollId: createdPoll.id,
+    }).catch(console.error);
+
+    // Capture analytics event
     analyticsServerClient.capture({
       distinctId: userId,
       event: "Poll Created",
@@ -61,6 +72,45 @@ export async function createPoll(fields: CreatePollFields) {
     return createdPoll;
   } catch (error) {
     throw new Error(handlePrismaError(error));
+  }
+}
+
+async function sendPollCreatedNotification({
+  authorId,
+  authorUsername,
+  createdPollId,
+}: {
+  authorId: string;
+  authorUsername: string;
+  createdPollId: string;
+}) {
+  try {
+    // Find the followers of the poll author
+    const followers = await db.follow.findMany({
+      where: { followeeId: authorId },
+      select: { followerId: true },
+    });
+
+    // Create a notification for each follower
+    const notifications = followers.map((follower) => ({
+      pollId: createdPollId,
+      notifyeeId: follower.followerId,
+    }));
+    await db.notificationPollCreated.createMany({
+      data: notifications,
+    });
+
+    // Send a notifications to the followers
+    followers.forEach((follower) => {
+      sendNotification({
+        userId: follower.followerId,
+        title: "New Poll Created",
+        body: `Check out the latest poll from ${authorUsername}`,
+        payload: { url: `/polls/${createdPollId}` },
+      }).catch(console.error);
+    });
+  } catch (error) {
+    console.error("Error sending poll created notification", error);
   }
 }
 

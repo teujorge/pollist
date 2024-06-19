@@ -2,8 +2,9 @@ import { useUser } from "@clerk/nextjs";
 import { supabase } from "@/server/supabase";
 import { useEffect, useRef } from "react";
 import {
-  getNotificationsCommentRelation,
+  getNotificationsPollCreatedRelation,
   getNotificationsPollLikeRelation,
+  getNotificationsCommentRelation,
   getNotificationsCommentLikeRelation,
   getNotificationsFollowPendingRelation,
   getNotificationsFollowAcceptedRelation,
@@ -83,6 +84,91 @@ export function useRealtimeNotifications({
       // notification subscription for subsequent changes
       notificationsSubscriptionRef.current = supabase
         ?.channel(`${user.id}-notifications`)
+        // === NotificationPollCreated ===
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "NotificationPollCreated",
+            filter: `notifyeeId=eq.${user.id}`,
+          },
+          (payload) => {
+            const newPayload = payload.new;
+
+            if (typeof newPayload.id !== "string") return;
+
+            getNotificationsPollCreatedRelation(newPayload.id)
+              .then((payloadRelations) => {
+                if (isUserBlocked(payloadRelations?.poll?.author?.id ?? ""))
+                  return;
+
+                handleOnNotificationInsert({
+                  type: "pollCreated",
+                  payload: {
+                    ...newPayload,
+                    ...payloadRelations,
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting NotificationPollCreated relations:",
+                  error,
+                );
+              });
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "NotificationPollCreated",
+            filter: `notifyeeId=eq.${user.id}`,
+          },
+          (payload) => {
+            const newPayload = payload.new;
+
+            if (typeof newPayload.id !== "string") return;
+
+            getNotificationsPollCreatedRelation(newPayload.id)
+              .then((payloadRelations) => {
+                if (isUserBlocked(payloadRelations?.poll?.author?.id ?? ""))
+                  return;
+
+                handleOnNotificationUpdate({
+                  type: "pollCreated",
+                  payload: {
+                    ...newPayload,
+                    ...payloadRelations,
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting NotificationPollCreated relations:",
+                  error,
+                );
+              });
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "NotificationPollCreated",
+            filter: `notifyeeId=eq.${user.id}`,
+          },
+          (payload) => {
+            handleOnNotificationDelete({
+              type: "pollCreated",
+              payload: payload.old,
+            });
+          },
+        )
+
         // === NotificationPollLike ===
         .on(
           "postgres_changes",
@@ -517,6 +603,7 @@ export function useRealtimeNotifications({
 
     setNotifications({
       pollLikes: [],
+      pollCreated: [],
       comments: [],
       commentLikes: [],
       followsPending: [],

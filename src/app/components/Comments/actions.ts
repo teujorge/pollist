@@ -109,6 +109,9 @@ export async function createComment({
           userId: notifyeeId,
           title: "New Comment on Your Poll 📝",
           body: `${user.username} left a comment on your poll.`,
+          payload: {
+            url: `/poll/${pollId}?comments=true&parentId=${newComment.id}`,
+          },
         });
       })
       .catch((error) => {
@@ -205,7 +208,10 @@ export async function likeComment({
         createdAt: true,
         commentId: true,
         comment: {
-          select: { authorId: true },
+          select: {
+            pollId: true,
+            authorId: true,
+          },
         },
         authorId: true,
         author: { select: { username: true } },
@@ -225,6 +231,9 @@ export async function likeComment({
             userId: like.comment.authorId,
             title: "Your Comment was Liked! ❤️",
             body: `${like.author.username} liked your comment.`,
+            payload: {
+              url: `/poll/${like.comment.pollId}?comments=true&parentId${like.commentId}`,
+            },
           });
         })
         .catch((error) => {

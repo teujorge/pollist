@@ -132,6 +132,7 @@ export async function handleLikePoll({
             userId: pollAuthorId,
             title: "Your Poll Got a Like! 👍",
             body: `${pollLike.author.username} liked your poll.`,
+            payload: { url: `/poll/${pollId}` },
           });
         });
     }

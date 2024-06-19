@@ -38,6 +38,7 @@ model User {
   notificationsCommentLike    NotificationCommentLike[]
   notificationsFollowPending  NotificationFollowPending[]  @relation("NotifyeeRelation")
   notificationsFollowAccepted NotificationFollowAccepted[] @relation("NotifyeeRelation")
+  notificationsPollCreated    NotificationPollCreated[]
   notificationsPollLike       NotificationPollLike[]
   appleTransaction            AppleTransaction?
 
@@ -97,27 +98,40 @@ model NotificationFollowPending {
 }
 
 model Poll {
-  id            String     @id @default(uuid())
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  authorId      String
-  title         String     @db.VarChar(200)
-  description   String?    @db.VarChar(200)
-  private       Boolean
-  anonymous     Boolean
-  boostedById   String?    @unique
-  boostedBy     User?      @relation("Boosted", fields: [boostedById], references: [id])
-  controversial Boolean    @default(false)
-  sensitive     Boolean    @default(false)
-  author        User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  votes         Vote[]
-  options       Option[]
-  comments      Comment[]
-  likes         PollLike[]
+  id                      String                   @id @default(uuid())
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  authorId                String
+  title                   String                   @db.VarChar(200)
+  description             String?                  @db.VarChar(200)
+  private                 Boolean
+  anonymous               Boolean
+  boostedById             String?                  @unique
+  boostedBy               User?                    @relation("Boosted", fields: [boostedById], references: [id])
+  controversial           Boolean                  @default(false)
+  sensitive               Boolean                  @default(false)
+  author                  User                     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  votes                   Vote[]
+  options                 Option[]
+  comments                Comment[]
+  likes                   PollLike[]
+  notificationPollCreated NotificationPollCreated?
 
   @@index([title])
   @@index([authorId])
   @@index([boostedById])
+}
+
+model NotificationPollCreated {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  notifyeeId String
+  pollId     String   @unique
+  notifyee   User     @relation(fields: [notifyeeId], references: [id], onDelete: Cascade)
+  poll       Poll     @relation(fields: [pollId], references: [id], onDelete: Cascade)
+
+  @@index([notifyeeId])
 }
 
 model PollLike {

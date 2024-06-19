@@ -12,6 +12,7 @@ import { removeNotifications } from "./actions";
 import { useEffect, useState } from "react";
 import { acceptFollow, declineFollow } from "@/app/(with-auth)/users/actions";
 import {
+  groupedPollCreated,
   groupedPollLikes,
   groupedComments,
   groupedCommentLikes,
@@ -20,6 +21,7 @@ import {
 } from "./utils";
 import type {
   NotificationType,
+  NotificationPollCreatedItem,
   NotificationPollLikeItem,
   NotificationCommentItem,
   NotificationCommentLikeItem,
@@ -28,6 +30,7 @@ import type {
 } from "./actions";
 
 type NotificationData =
+  | NotificationPollCreatedItem
   | NotificationPollLikeItem
   | NotificationCommentItem
   | NotificationCommentLikeItem
@@ -38,6 +41,10 @@ export function NotificationList() {
   const { notifications } = useApp();
 
   const notificationList: (
+    | {
+        type: "PollCreatedNotification";
+        data: NotificationPollCreatedItem[];
+      }
     | {
         type: "PollLikeNotification";
         data: NotificationPollLikeItem[];
@@ -59,6 +66,7 @@ export function NotificationList() {
         data: NotificationFollowAcceptedItem[];
       }
   )[] = [
+    ...groupedPollCreated(notifications),
     ...groupedPollLikes(notifications),
     ...groupedComments(notifications),
     ...groupedCommentLikes(notifications),
@@ -179,6 +187,14 @@ function NotificationCard({
 
   const card = (() => {
     switch (item.type) {
+      case "PollCreatedNotification":
+        return (
+          <PollCreatedNotificationCard
+            pollCreatedNotifications={
+              item.data as NotificationPollCreatedItem[]
+            }
+          />
+        );
       case "PollLikeNotification":
         return (
           <PollLikeNotificationCard
@@ -234,6 +250,48 @@ function NotificationCard({
       >
         <X size={15} />
       </button>
+    </div>
+  );
+}
+
+function PollCreatedNotificationCard({
+  pollCreatedNotifications,
+}: {
+  pollCreatedNotifications: NotificationPollCreatedItem[];
+}) {
+  const popover = usePopover();
+
+  async function handleLinkClick() {
+    popover.setIsNotificationsOpen?.(false);
+    try {
+      await removeNotifications({
+        type: "PollCreatedNotification",
+        ids: [pollCreatedNotifications[0]!.id],
+      });
+    } catch (e) {
+      toast.error("Failed to remove notification");
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-start justify-start gap-0.5">
+      <Link
+        href={`/polls/${pollCreatedNotifications[0]!.poll.id}`}
+        onClick={handleLinkClick}
+      >
+        New poll:
+        <q className="text-sm font-light">
+          {pollCreatedNotifications[0]!.poll.title}
+        </q>
+      </Link>
+
+      <NotificationInfo className="pt-1">
+        Created By: {pollCreatedNotifications[0]!.poll.author.username}
+      </NotificationInfo>
+
+      <NotificationInfo>
+        {timeElapsed(pollCreatedNotifications[0]!.createdAt)} ago
+      </NotificationInfo>
     </div>
   );
 }

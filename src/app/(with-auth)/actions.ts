@@ -14,6 +14,7 @@ import {
   notificationsCommentSelect,
   notificationsFollowAcceptedSelect,
   notificationsFollowPendingSelect,
+  notificationsPollCreatedSelect,
   notificationsPollLikeSelect,
 } from "../components/Header/utils";
 import type { SubTier } from "@prisma/client";
@@ -79,10 +80,12 @@ export async function sendNotification({
   userId,
   title,
   body,
+  payload,
 }: {
   userId: string;
   title: string;
   body: string;
+  payload: Record<string, string> | undefined;
 }) {
   try {
     const { userId: myId } = auth();
@@ -95,6 +98,9 @@ export async function sendNotification({
         blockerUsers: { where: { blockeeId: myId } },
         notificationsPollLike: {
           select: notificationsPollLikeSelect,
+        },
+        notificationsPollCreated: {
+          select: notificationsPollCreatedSelect,
         },
         notificationsComment: {
           select: notificationsCommentSelect,
@@ -116,6 +122,7 @@ export async function sendNotification({
 
     const _notifications: Notifications = {
       pollLikes: recipientUser.notificationsPollLike,
+      pollCreated: recipientUser.notificationsPollCreated,
       comments: recipientUser.notificationsComment,
       commentLikes: recipientUser.notificationsCommentLike,
       followsPending: recipientUser.notificationsFollowPending,
@@ -133,6 +140,7 @@ export async function sendNotification({
         body: body,
         notifications: _notifications,
         deviceToken: recipientUser.deviceToken,
+        payload: payload,
       });
     } else if (
       recipientUser.deviceToken.length > 64 &&
@@ -140,24 +148,27 @@ export async function sendNotification({
     ) {
       // FCM token
       await sendFCM({
-        title: title,
-        body: body,
+        title,
+        body,
+        payload,
         deviceToken: recipientUser.deviceToken,
       });
     } else {
       // Invalid token ??
       console.log("Invalid device token", recipientUser.deviceToken);
 
-      // send to both...
+      // try to send to both...
       await sendAPN({
-        title: title,
-        body: body,
+        title,
+        body,
+        payload,
         notifications: _notifications,
         deviceToken: recipientUser.deviceToken,
       });
       await sendFCM({
-        title: title,
-        body: body,
+        title,
+        body,
+        payload,
         deviceToken: recipientUser.deviceToken,
       });
     }
@@ -171,11 +182,13 @@ async function sendAPN({
   body,
   notifications,
   deviceToken,
+  payload,
 }: {
   title: string;
   body: string;
   notifications: Notifications;
   deviceToken: string;
+  payload: Record<string, string> | undefined;
 }) {
   const apnProvider = new apn.Provider({
     token: {
@@ -198,6 +211,7 @@ async function sendAPN({
   notification.sound = "default";
   notification.badge = notificationCount;
   notification.topic = process.env.APNS_BUNDLE_ID!;
+  notification.payload = payload;
 
   try {
     await apnProvider.send(notification, deviceToken);
@@ -269,10 +283,12 @@ async function sendFCM({
   title,
   body,
   deviceToken,
+  payload,
 }: {
   title: string;
   body: string;
   deviceToken: string;
+  payload: Record<string, string> | undefined;
 }) {
   const message = {
     token: deviceToken,
@@ -280,10 +296,9 @@ async function sendFCM({
       title,
       body,
     },
+    data: payload,
     android: {
-      notification: {
-        sound: "default",
-      },
+      notification: { sound: "default" },
     },
   };
 

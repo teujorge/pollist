@@ -23,14 +23,16 @@ import {
 } from "react";
 import type { AppleTransaction, SubTier } from "@prisma/client";
 import type {
-  NotificationCommentItem,
+  NotificationPollCreatedItem,
   NotificationPollLikeItem,
+  NotificationCommentItem,
   NotificationCommentLikeItem,
   NotificationFollowPendingItem,
   NotificationFollowAcceptedItem,
 } from "../components/Header/actions";
 
 export type Notifications = {
+  pollCreated: NotificationPollCreatedItem[];
   pollLikes: NotificationPollLikeItem[];
   comments: NotificationCommentItem[];
   commentLikes: NotificationCommentLikeItem[];
@@ -82,6 +84,7 @@ export function App({
   const { user } = useUser();
 
   const [notifications, setNotifications] = useState<Notifications>({
+    pollCreated: [],
     pollLikes: [],
     comments: [],
     commentLikes: [],
@@ -179,6 +182,9 @@ export function App({
       console.log("Init user notifications:", notifications);
       if (notifications) {
         setNotifications({
+          pollCreated: notifications.notificationsPollCreated.filter(
+            (notification) => !isUserBlocked(notification.poll.author.id),
+          ),
           pollLikes: notifications.notificationsPollLike.filter(
             (notification) => !isUserBlocked(notification.pollLike.author.id),
           ),
@@ -226,6 +232,9 @@ export function App({
 
     // Check if notifications exist from blocked users
     const hasBlockedNotifications = (notifications: Notifications): boolean =>
+      notifications.pollCreated.some((notification) =>
+        isUserBlocked(notification.poll.author.id),
+      ) ||
       notifications.pollLikes.some((notification) =>
         isUserBlocked(notification.pollLike.author.id),
       ) ||
@@ -254,6 +263,9 @@ export function App({
     // Remove blocked users from notifications
     setNotifications((prev) => ({
       ...prev,
+      pollCreated: prev.pollCreated.filter(
+        (notification) => !isUserBlocked(notification.poll.author.id),
+      ),
       pollLikes: prev.pollLikes.filter(
         (notification) => !isUserBlocked(notification.pollLike.author.id),
       ),

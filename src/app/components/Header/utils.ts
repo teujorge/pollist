@@ -1,11 +1,22 @@
 import type { Notifications } from "@/app/(with-auth)/app";
 import type {
+  NotificationPollCreatedItem,
   NotificationPollLikeItem,
   NotificationCommentItem,
   NotificationCommentLikeItem,
   NotificationFollowPendingItem,
   NotificationFollowAcceptedItem,
 } from "./actions";
+
+export function groupedPollCreated(notifications: Notifications): {
+  type: "PollCreatedNotification";
+  data: NotificationPollCreatedItem[];
+}[] {
+  return notifications.pollCreated.map((notification) => ({
+    type: "PollCreatedNotification" as const,
+    data: [notification],
+  }));
+}
 
 export function groupedPollLikes(notifications: Notifications): {
   type: "PollLikeNotification";
@@ -111,6 +122,18 @@ export const notificationsPollLikeSelect = {
   pollLike: {
     select: {
       poll: { select: { id: true, title: true } },
+      author: { select: { id: true, username: true } },
+    },
+  },
+};
+
+export const notificationsPollCreatedSelect = {
+  id: true,
+  createdAt: true,
+  poll: {
+    select: {
+      id: true,
+      title: true,
       author: { select: { id: true, username: true } },
     },
   },

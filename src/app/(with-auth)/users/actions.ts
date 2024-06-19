@@ -88,6 +88,7 @@ export async function follow(userId: string, revalidateUserPath = true) {
             userId: userId,
             title: "New Follow Request 🌟",
             body: `${newFollow.follower.username} wants to connect with you!`,
+            payload: { url: `/users/${newFollow.follower.username}` },
           });
         })
         .catch((error) => {
@@ -258,6 +259,7 @@ export async function acceptFollow(followerId: string) {
               userId: followerId,
               title: "Follow Request Accepted! 🎉",
               body: `${updatedFollow.followee.username} accepted your follow request.`,
+              payload: { url: `/users/${updatedFollow.followee.username}` },
             });
           })
           .catch((error) => {
