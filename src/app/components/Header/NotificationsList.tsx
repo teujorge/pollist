@@ -5,11 +5,11 @@ import { X } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Loader } from "../Loader";
 import { useApp } from "@/app/(with-auth)/app";
-import { usePopover } from "@/app/hooks/usePopover";
+import { useState } from "react";
+import { useDialog } from "@/app/hooks/useDialog";
 import { ProfileImage } from "../ProfileImage";
 import { cn, timeElapsed } from "@/lib/utils";
 import { removeNotifications } from "./actions";
-import { useEffect, useState } from "react";
 import { acceptFollow, declineFollow } from "@/app/(with-auth)/users/actions";
 import {
   groupedPollCreated,
@@ -80,16 +80,18 @@ export function NotificationList() {
 
   return (
     <div
-      className="flex min-w-fit flex-col items-center gap-2 overflow-y-auto overflow-x-hidden overscroll-y-contain p-2"
+      className="flex min-w-fit flex-col items-center gap-2 overflow-y-auto overflow-x-hidden overscroll-y-contain px-6 pb-6 pt-3"
       style={{ maxHeight: "calc(100dvh - 100px)" }}
     >
       {notificationList.length > 0 ? (
-        notificationList.map((group) => (
-          <NotificationCard
-            key={`${group.type}-${group.data[0]?.id}`}
-            item={group}
-          />
-        ))
+        [...notificationList, ...notificationList, ...notificationList].map(
+          (group) => (
+            <NotificationCard
+              key={`${group.type}-${group.data[0]?.id}`}
+              item={group}
+            />
+          ),
+        )
       ) : (
         <div className="w-full px-3 py-2 text-left text-sm text-accent-foreground">
           No new notifications
@@ -107,26 +109,7 @@ function NotificationCard({
     data: NotificationData[];
   };
 }) {
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [currentX, setCurrentX] = useState(0);
-  const [isRemoving, setIsRemoving] = useState(false);
-  const [hasBeenRemoved, setHasBeenRemoved] = useState(false);
-
-  useEffect(() => {
-    if (isRemoving) {
-      // Wait for animation to finish before hiding the component
-      const timer = setTimeout(() => {
-        setHasBeenRemoved(true);
-      }, 200); // Match the CSS animation duration
-
-      return () => clearTimeout(timer);
-    }
-  }, [isRemoving]);
-
   async function handleRemove() {
-    setIsRemoving(true);
-
     try {
       await removeNotifications({
         type: item.type,
@@ -134,56 +117,8 @@ function NotificationCard({
       });
     } catch (error) {
       toast.error("Failed to remove notification");
-
-      setIsDragging(false);
-      setStartX(0);
-      setCurrentX(0);
-      setIsRemoving(false);
-      setHasBeenRemoved(false);
     }
   }
-
-  const startDrag = (x: number) => {
-    setStartX(x);
-    setCurrentX(x);
-    setIsDragging(true);
-  };
-
-  const onDrag = (x: number) => {
-    if (!isDragging) return;
-    setCurrentX(x);
-  };
-
-  const endDrag = () => {
-    setIsDragging(false);
-
-    // Determine if the notification has been dragged enough to be considered as "removed"
-    const dragThreshold = 100; // Pixels; adjust as needed
-    if (Math.abs(currentX - startX) > dragThreshold) {
-      void handleRemove();
-    } else {
-      setCurrentX(startX); // Reset position if not dragged enough
-    }
-  };
-
-  // Mouse Events
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) =>
-    startDrag(e.clientX);
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) =>
-    onDrag(e.clientX);
-  const handleMouseUp = () => endDrag();
-
-  // Touch Events
-  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) =>
-    startDrag(e.touches[0]?.clientX ?? 0);
-  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) =>
-    onDrag(e.touches[0]?.clientX ?? 0);
-  const handleTouchEnd = () => endDrag();
-
-  // Apply the dragging effect
-  const draggingStyle = isDragging
-    ? { transform: `translateX(${currentX - startX}px)`, transition: "none" }
-    : {};
 
   const card = (() => {
     switch (item.type) {
@@ -229,20 +164,7 @@ function NotificationCard({
   })();
 
   return (
-    <div
-      className={`relative flex w-full select-none flex-row gap-2 rounded-md border border-accent p-4 transition-all duration-200 sm:border-accent-dark
-        ${isRemoving && "translate-x-full opacity-0"}
-        ${hasBeenRemoved && "hidden"}
-      `}
-      style={draggingStyle}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={isDragging ? handleMouseUp : undefined} // Cancel drag if mouse leaves the component
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-    >
+    <div className="relative flex w-full select-none flex-row gap-2 rounded-md border border-accent bg-accent-dark2 p-4 transition-all duration-200 sm:border-accent-dark">
       {card}
       <button
         className="absolute right-0 top-0 rounded-full p-1 text-foreground outline-none transition-colors hovact:text-destructive"
@@ -259,10 +181,10 @@ function PollCreatedNotificationCard({
 }: {
   pollCreatedNotifications: NotificationPollCreatedItem[];
 }) {
-  const popover = usePopover();
+  const dialog = useDialog();
 
   async function handleLinkClick() {
-    popover.setIsNotificationsOpen?.(false);
+    dialog.setIsNotificationsOpen?.(false);
     try {
       await removeNotifications({
         type: "PollCreatedNotification",
@@ -301,13 +223,13 @@ function PollLikeNotificationCard({
 }: {
   pollLikeNotifications: NotificationPollLikeItem[];
 }) {
-  const popover = usePopover();
+  const dialog = useDialog();
 
   return (
     <div className="flex flex-col items-start justify-start gap-0.5">
       <Link
         href={`/polls/${pollLikeNotifications[0]!.pollLike.poll.id}`}
-        onClick={() => popover.setIsNotificationsOpen?.(false)}
+        onClick={() => dialog.setIsNotificationsOpen?.(false)}
       >
         People liked your poll:
         <br />
@@ -335,7 +257,7 @@ function CommentNotificationCard({
 }: {
   commentNotifications: NotificationCommentItem[];
 }) {
-  const popover = usePopover();
+  const dialog = useDialog();
 
   return (
     <div className="flex flex-col items-start justify-start gap-0.5">
@@ -343,7 +265,7 @@ function CommentNotificationCard({
         <>
           <Link
             href={`/polls/${commentNotifications[0]!.comment.poll.id}?parentId=${commentNotifications[0]!.comment.parent.id}`}
-            onClick={() => popover.setIsNotificationsOpen?.(false)}
+            onClick={() => dialog.setIsNotificationsOpen?.(false)}
           >
             People replied to your comment:{" "}
             <q className="text-sm font-light">
@@ -366,7 +288,7 @@ function CommentNotificationCard({
         <>
           <Link
             href={`/polls/${commentNotifications[0]!.comment.poll.id}`}
-            onClick={() => popover.setIsNotificationsOpen?.(false)}
+            onClick={() => dialog.setIsNotificationsOpen?.(false)}
           >
             People commented on your poll:{" "}
             <q className="text-sm font-light">
@@ -397,13 +319,13 @@ function CommentLikeNotificationCard({
 }: {
   likeNotifications: NotificationCommentLikeItem[];
 }) {
-  const popover = usePopover();
+  const dialog = useDialog();
 
   return (
     <div className="flex flex-col items-start justify-start gap-0.5">
       <Link
         href={`/polls/${likeNotifications[0]!.commentLike.comment.poll.id}?parentId=${likeNotifications[0]!.commentLike.comment.id}`}
-        onClick={() => popover.setIsNotificationsOpen?.(false)}
+        onClick={() => dialog.setIsNotificationsOpen?.(false)}
       >
         People liked your comment:
         <br />
@@ -441,7 +363,7 @@ function FollowPendingNotificationCard({
   followNotifications: NotificationFollowPendingItem[];
 }) {
   const followNotification = followNotifications[0]!;
-  const popover = usePopover();
+  const dialog = useDialog();
 
   const [isAccepting, setIsAccepting] = useState(false);
   const [isDeclining, setIsDeclining] = useState(false);
@@ -471,7 +393,7 @@ function FollowPendingNotificationCard({
       <Link
         href={`/users/${followNotification.follow.follower.username}`}
         className="flex flex-row items-center justify-center gap-1"
-        onClick={() => popover.setIsNotificationsOpen?.(false)}
+        onClick={() => dialog.setIsNotificationsOpen?.(false)}
       >
         <ProfileImage
           src={followNotification.follow.follower.imageUrl}
@@ -519,10 +441,10 @@ function FollowAcceptedNotificationCard({
   followNotifications: NotificationFollowAcceptedItem[];
 }) {
   const followNotification = followNotifications[0]!;
-  const popover = usePopover();
+  const dialog = useDialog();
 
   async function handleLinkClick() {
-    popover.setIsNotificationsOpen?.(false);
+    dialog.setIsNotificationsOpen?.(false);
     try {
       await removeNotifications({
         type: "FollowAcceptedNotification",

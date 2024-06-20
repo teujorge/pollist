@@ -31,9 +31,11 @@ import type { CreatePollFields } from "./validation";
 export function CreatePollForm({
   showBackButton,
   popoverBoundary,
+  className,
 }: {
   showBackButton?: boolean;
   popoverBoundary?: HTMLElement;
+  className?: string;
 }) {
   const router = useRouter();
   const { userSettings } = useApp();
@@ -205,14 +207,13 @@ export function CreatePollForm({
       )}
       <form
         className={cn(
-          "flex w-[769px] max-w-full flex-col gap-4 p-2 transition-opacity",
+          "flex max-h-full w-full max-w-[769px] flex-col gap-4 overflow-y-auto p-2 transition-opacity",
           (form.formState.isSubmitting || createPollSuccess) &&
             "pointer-events-none opacity-50",
+          className,
         )}
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        <h1 className="text-2xl font-bold">Create A Poll</h1>
-
         <div className="flex w-full flex-col gap-4">
           <Input
             labelProps={{ text: "Title" }}

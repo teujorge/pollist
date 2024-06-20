@@ -1,5 +1,4 @@
 import GlobalLoading from "../loading";
-import { cn } from "@/lib/utils";
 import { App } from "./app";
 import { dark } from "@clerk/themes";
 import { Loader } from "../components/Loader";
@@ -57,15 +56,7 @@ export default function RootLayout({
             </Suspense>
           }
         >
-          <div
-            className={cn(
-              "left-0 right-0 z-40 flex h-fit w-full items-center justify-center",
-              "fixed bottom-0 border-t border-accent bg-black",
-              "sm:sticky sm:top-0 sm:border-0 sm:bg-transparent sm:bg-gradient-to-b sm:from-background sm:from-60%",
-            )}
-          >
-            <Header />
-          </div>
+          <Header />
           {children}
           {crudPoll}
           <div className="block h-[60px] sm:hidden" />

@@ -45,7 +45,7 @@ export function DialogContent({
         {...props}
       >
         {children}
-        <DialogPrimitive.Close className="data-[state=open]:text-muted-foreground absolute right-4 top-4 rounded-full border border-transparent opacity-70 outline-none transition-opacity disabled:pointer-events-none data-[state=open]:bg-accent hovact:border-accent hovact:opacity-100">
+        <DialogPrimitive.Close className="data-[state=open]:text-muted-foreground absolute right-2 top-2 rounded-full border border-transparent p-1 opacity-70 outline-none transition-opacity disabled:pointer-events-none data-[state=open]:bg-accent hovact:border-accent hovact:opacity-100">
           <X />
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>

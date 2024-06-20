@@ -1,16 +1,12 @@
 "use client";
 
-import Link from "next/link";
+import { cn } from "@/lib/utils";
 import { Bell } from "@phosphor-icons/react";
 import { useApp } from "@/app/(with-auth)/app";
-import { PopoverProvider } from "@/app/hooks/usePopover";
+import { useState } from "react";
+import { DialogProvider } from "@/app/hooks/useDialog";
 import { NotificationList } from "./NotificationsList";
-import { useMemo, useState } from "react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import {
   groupedPollCreated,
   groupedPollLikes,
@@ -23,6 +19,8 @@ import {
 export function NotificationsBell() {
   const { notifications } = useApp();
 
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const notificationsCount =
     groupedPollCreated(notifications).length +
     groupedPollLikes(notifications).length +
@@ -31,46 +29,35 @@ export function NotificationsBell() {
     groupedFollowPending(notifications).length +
     groupedFollowAccepted(notifications).length;
 
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-
-  const memoizedNotificationsList = useMemo(() => <NotificationList />, []);
-
   return (
-    <PopoverProvider value={{ isNotificationsOpen, setIsNotificationsOpen }}>
-      {/* mobile */}
-      <Link
-        href="/notifications"
-        className="relative block h-fit w-fit sm:hidden"
-      >
-        <Bell size={26} />
-        {notificationsCount > 0 && (
-          <div className="absolute -right-0.5 -top-0.5 flex h-4 w-4 select-none items-center justify-center rounded-full bg-primary text-xs">
-            {notificationsCount > 9 ? "+" : notificationsCount}
-          </div>
-        )}
-      </Link>
-      {/* desktop */}
-      <div className="hidden h-fit w-fit items-center justify-center sm:flex">
-        <Popover
-          open={isNotificationsOpen}
-          onOpenChange={setIsNotificationsOpen}
+    <DialogProvider
+      value={{
+        isNotificationsOpen: isDialogOpen,
+        setIsNotificationsOpen: setIsDialogOpen,
+      }}
+    >
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogTrigger
+          className={cn(
+            "relative h-fit w-fit transition-colors hovact:text-primary",
+            isDialogOpen && "text-primary",
+          )}
         >
-          <PopoverTrigger asChild>
-            <button
-              className="relative select-none outline-none
-            [&>svg]:hovact:text-primary"
-            >
-              <Bell size={22} />
-              {notificationsCount > 0 && (
-                <div className="absolute -right-0.5 -top-0.5 flex h-2 w-2 select-none items-center justify-center rounded-full bg-primary text-xs" />
-              )}
-            </button>
-          </PopoverTrigger>
-          <PopoverContent align="end">
-            {memoizedNotificationsList}
-          </PopoverContent>
-        </Popover>
-      </div>
-    </PopoverProvider>
+          <Bell className="hidden sm:block" size={24} />
+          <Bell className="block sm:hidden" size={26} />
+          {notificationsCount > 0 && (
+            <div className="absolute -right-0.5 -top-0.5 flex h-4 w-4 select-none items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+              {notificationsCount > 9 ? "+" : notificationsCount}
+            </div>
+          )}
+        </DialogTrigger>
+        <DialogContent className="flex flex-col gap-0 p-0">
+          <h3 className="border-b border-b-accent-dark px-6 pb-3 pt-6 text-xl font-semibold">
+            Notifications
+          </h3>
+          <NotificationList />
+        </DialogContent>
+      </Dialog>
+    </DialogProvider>
   );
 }
