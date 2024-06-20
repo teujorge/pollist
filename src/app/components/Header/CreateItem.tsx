@@ -29,7 +29,7 @@ export function CreateItem({ userId }: { userId: string | null }) {
       >
         {CreateButtonContent}
       </DialogTrigger>
-      <DialogContent className="flex flex-col gap-0 p-0">
+      <DialogContent className="flex flex-col gap-0 p-0 transition-none">
         <h3 className="border-b border-b-accent-dark px-6 pb-3 pt-6 text-xl font-semibold">
           Create A Poll
         </h3>
