@@ -223,7 +223,7 @@ export function CreatePollForm({
   return (
     <div
       className={cn(
-        "relative flex w-full flex-col items-center overflow-y-auto",
+        "flex w-full flex-col items-center overflow-y-auto",
         wrapperClassName,
       )}
     >
