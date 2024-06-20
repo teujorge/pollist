@@ -5,10 +5,10 @@ import { useState } from "react";
 import { StackPlus } from "@phosphor-icons/react";
 import { SignInButton } from "@clerk/nextjs";
 import { CreatePollForm } from "../CrudPoll/CreatePollForm";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 
 export function CreateItem({ userId }: { userId: string | null }) {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDrawerOpen, setIsDialogOpen] = useState(false);
 
   const CreateButtonContent = (
     <>
@@ -20,27 +20,25 @@ export function CreateItem({ userId }: { userId: string | null }) {
   );
 
   return userId ? (
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-      <DialogTrigger
+    <Drawer open={isDrawerOpen} onOpenChange={setIsDialogOpen}>
+      <DrawerTrigger
         className={cn(
           "h-fit w-fit underline decoration-transparent underline-offset-4 transition-colors hovact:text-primary",
-          isDialogOpen && "text-primary decoration-primary",
+          isDrawerOpen && "text-primary decoration-primary",
         )}
       >
         {CreateButtonContent}
-      </DialogTrigger>
-      <DialogContent
-        className="flex transform-gpu flex-col gap-0 p-0"
-        style={{
-          willChange: "height",
-        }}
-      >
+      </DrawerTrigger>
+      <DrawerContent className="flex transform-gpu flex-col gap-0 p-0 delay-300">
         <h3 className="border-b border-b-accent-dark px-6 pb-3 pt-6 text-xl font-semibold">
           Create A Poll
         </h3>
-        <CreatePollForm className="px-6 pb-6 pt-3" />
-      </DialogContent>
-    </Dialog>
+        <CreatePollForm
+          className="px-6 pb-6 pt-3"
+          onCreatePollStart={() => setIsDialogOpen(false)}
+        />
+      </DrawerContent>
+    </Drawer>
   ) : (
     <SignInButton mode="modal">
       <button className="transition-colors hovact:text-purple-500">

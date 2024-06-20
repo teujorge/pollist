@@ -45,12 +45,12 @@ export function DrawerContent({
       <DrawerOverlay />
       <DrawerPrimitive.Content
         className={cn(
-          "fixed inset-x-0 bottom-0 z-50 flex h-auto flex-col rounded-t-[10px] border border-accent bg-background outline-none ring-0 backdrop-blur-xl",
+          "fixed inset-x-0 bottom-0 z-50 flex h-auto max-h-[90dvh] flex-col rounded-t-[10px] border border-accent bg-background outline-none ring-0 backdrop-blur-xl",
           className,
         )}
         {...props}
       >
-        <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-background" />
+        <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-accent" />
         {children}
       </DrawerPrimitive.Content>
     </DrawerPortal>

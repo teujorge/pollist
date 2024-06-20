@@ -1,10 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Loader } from "../Loader";
 import { useApp } from "@/app/(with-auth)/app";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/server/supabase";
 import { useRouter } from "next/navigation";
@@ -14,17 +14,14 @@ import { Input, InputFile } from "../Input";
 import { createPollSchema } from "./validation";
 import { useEffect, useState } from "react";
 import { Plus, XCircle, Info, X } from "@phosphor-icons/react";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
+import { createPoll, addImagePathToPollOption } from "./actions";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  createPoll,
-  redirectToPoll,
-  addImagePathToPollOption,
-} from "./actions";
 import type { Metadata } from "next";
 import type { CreatePollFields } from "./validation";
 
@@ -32,10 +29,16 @@ export function CreatePollForm({
   showBackButton,
   popoverBoundary,
   className,
+  wrapperClassName,
+  onCreatePollStart,
+  onCreatePollEnd,
 }: {
   showBackButton?: boolean;
   popoverBoundary?: HTMLElement;
   className?: string;
+  wrapperClassName?: string;
+  onCreatePollStart?: () => void;
+  onCreatePollEnd?: (success: boolean) => void;
 }) {
   const router = useRouter();
   const { userSettings } = useApp();
@@ -97,6 +100,31 @@ export function CreatePollForm({
   }, [fields]);
 
   async function onSubmit(data: CreatePollFields) {
+    toast.promise(createPollWithImages(data), {
+      loading: "Creating poll...",
+      error: "Failed to create poll",
+      success: (pollId) => {
+        return (
+          <div className="flex w-full flex-row items-center justify-between">
+            Poll created!
+            <Link
+              href={`/polls/${pollId}`}
+              className={cn(
+                "cursor-pointer",
+                buttonVariants({ size: "sm", variant: "outline" }),
+              )}
+            >
+              View
+            </Link>
+          </div>
+        );
+      },
+    });
+  }
+
+  async function createPollWithImages(data: CreatePollFields): Promise<string> {
+    onCreatePollStart?.();
+
     // remove all files before sending to the server
     const dataToSend = { ...data };
     delete dataToSend.option1file;
@@ -114,7 +142,7 @@ export function CreatePollForm({
 
       if (!newPoll) {
         toast.error("Failed to create poll");
-        return;
+        throw new Error("Failed to create poll");
       }
 
       setCreatePollSuccess(true);
@@ -133,22 +161,19 @@ export function CreatePollForm({
         }
 
         const file = (optionData.file as FileList)[0];
-        if (!file) {
-          continue;
-        }
+        if (!file) continue;
 
         await uploadPollOptionFile(newPoll.id, option.id, file);
       }
 
-      try {
-        await redirectToPoll(newPoll.id);
-      } catch (error) {
-        toast.error("Failed to redirect to created poll");
-      }
+      onCreatePollEnd?.(true);
+      return newPoll.id;
     } catch (error) {
       setCreatePollSuccess(false);
-      toast.error("Failed to create poll");
     }
+
+    onCreatePollEnd?.(false);
+    throw new Error("Failed to create poll");
   }
 
   function addOption() {
@@ -196,7 +221,12 @@ export function CreatePollForm({
   }
 
   return (
-    <>
+    <div
+      className={cn(
+        "relative flex w-full flex-col items-center overflow-y-auto",
+        wrapperClassName,
+      )}
+    >
       {showBackButton && (
         <button
           className="absolute right-4 top-4"
@@ -207,7 +237,7 @@ export function CreatePollForm({
       )}
       <form
         className={cn(
-          "flex max-h-full w-full max-w-[769px] flex-col gap-4 overflow-y-auto p-2 transition-opacity",
+          "flex max-h-full w-full max-w-[769px] flex-col gap-4 p-2 transition-opacity",
           (form.formState.isSubmitting || createPollSuccess) &&
             "pointer-events-none opacity-50",
           className,
@@ -423,7 +453,7 @@ export function CreatePollForm({
           )}
         </div>
       </form>
-    </>
+    </div>
   );
 }
 

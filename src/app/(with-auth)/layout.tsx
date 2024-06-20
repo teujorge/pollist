@@ -5,9 +5,9 @@ import { Loader } from "../components/Loader";
 import { Header } from "../components/Header/Header";
 import { Toaster } from "sonner";
 import { Suspense } from "react";
+import { PricingTable } from "../components/Header/ClerkUserButton/settings/PricingTable";
 import { ClerkProvider } from "@clerk/nextjs";
 import { clerkElements } from "@/styles/clerk";
-import { PricingTable } from "../components/Header/ClerkUserButton/settings/PricingTable";
 
 export default function RootLayout({
   children,
@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <Suspense fallback={<GlobalLoading />}>
-      <Toaster richColors />
+      <Toaster richColors position="top-left" />
       <ClerkProvider
         appearance={{
           baseTheme: dark,
