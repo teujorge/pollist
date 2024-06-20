@@ -84,14 +84,12 @@ export function NotificationList() {
       style={{ maxHeight: "calc(100dvh - 100px)" }}
     >
       {notificationList.length > 0 ? (
-        [...notificationList, ...notificationList, ...notificationList].map(
-          (group) => (
-            <NotificationCard
-              key={`${group.type}-${group.data[0]?.id}`}
-              item={group}
-            />
-          ),
-        )
+        notificationList.map((group) => (
+          <NotificationCard
+            key={`${group.type}-${group.data[0]?.id}`}
+            item={group}
+          />
+        ))
       ) : (
         <div className="w-full px-3 py-2 text-left text-sm text-accent-foreground">
           No new notifications
