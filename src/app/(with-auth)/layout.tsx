@@ -1,4 +1,3 @@
-import GlobalLoading from "../loading";
 import { App } from "./app";
 import { dark } from "@clerk/themes";
 import { Loader } from "../components/Loader";
@@ -17,7 +16,7 @@ export default function RootLayout({
   crudPoll: React.ReactNode;
 }) {
   return (
-    <Suspense fallback={<GlobalLoading />}>
+    <>
       <Toaster richColors position="top-left" />
       <ClerkProvider
         appearance={{
@@ -62,6 +61,6 @@ export default function RootLayout({
           <div className="block h-[60px] sm:hidden" />
         </App>
       </ClerkProvider>
-    </Suspense>
+    </>
   );
 }

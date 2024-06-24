@@ -1,13 +1,13 @@
 import "@/styles/globals.css";
-import { Nunito_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import { JsonLd, metadata, viewport } from "./seo";
 
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
-const nunito = Nunito_Sans({
-  subsets: ["latin"],
-  variable: "--font-sans",
+const nunito = localFont({
+  src: "../fonts/Nunito-VariableFont_wght.ttf",
+  display: "swap",
 });
 
 export default function RootLayout({
@@ -20,7 +20,7 @@ export default function RootLayout({
       <JsonLd />
       <Analytics />
       <SpeedInsights />
-      <body className={`font-sans ${nunito.variable}`}>{children}</body>
+      <body className={nunito.className}>{children}</body>
     </html>
   );
 }
