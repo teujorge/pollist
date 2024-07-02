@@ -11,6 +11,7 @@ export default function CreatePollPage() {
     <Modal ref={modalRef} className="w-full max-w-[762px]">
       <h1 className="w-full text-center text-2xl font-bold">Create A Poll</h1>
       <CreatePollForm
+        autoPopRoute
         showBackButton
         popoverBoundary={modalRef.current ?? undefined}
       />

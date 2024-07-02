@@ -26,6 +26,7 @@ import type { Metadata } from "next";
 import type { CreatePollFields } from "./validation";
 
 export function CreatePollForm({
+  autoPopRoute,
   showBackButton,
   popoverBoundary,
   className,
@@ -33,6 +34,7 @@ export function CreatePollForm({
   onCreatePollStart,
   onCreatePollEnd,
 }: {
+  autoPopRoute?: boolean;
   showBackButton?: boolean;
   popoverBoundary?: HTMLElement;
   className?: string;
@@ -100,8 +102,13 @@ export function CreatePollForm({
   }, [fields]);
 
   async function onSubmit(data: CreatePollFields) {
-    toast.promise(createPollWithImages(data), {
-      loading: "Creating poll...",
+    const toastId = toast.promise(createPollWithImages(data), {
+      loading: (
+        <div className="flex w-full flex-row items-center justify-between">
+          Creating poll...
+          <Loader className="h-5 w-5 border-2 border-background" />
+        </div>
+      ),
       error: "Failed to create poll",
       success: (pollId) => {
         return (
@@ -109,9 +116,10 @@ export function CreatePollForm({
             Poll created!
             <Link
               href={`/polls/${pollId}`}
+              onClick={() => toast.dismiss(toastId)}
               className={cn(
-                "cursor-pointer",
                 buttonVariants({ size: "sm", variant: "outline" }),
+                "h-6 cursor-pointer hovact:text-foreground",
               )}
             >
               View
@@ -120,6 +128,8 @@ export function CreatePollForm({
         );
       },
     });
+
+    if (autoPopRoute) router.back();
   }
 
   async function createPollWithImages(data: CreatePollFields): Promise<string> {
