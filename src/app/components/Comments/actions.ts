@@ -110,7 +110,7 @@ export async function createComment({
           title: "New Comment on Your Poll 📝",
           body: `${user.username} left a comment on your poll.`,
           payload: {
-            url: `/poll/${pollId}?comments=true&parentId=${newComment.id}`,
+            url: `/polls/${pollId}?comments=true&parentId=${newComment.id}`,
           },
         });
       })
@@ -232,7 +232,7 @@ export async function likeComment({
             title: "Your Comment was Liked! ❤️",
             body: `${like.author.username} liked your comment.`,
             payload: {
-              url: `/poll/${like.comment.pollId}?comments=true&parentId${like.commentId}`,
+              url: `/polls/${like.comment.pollId}?comments=true&parentId${like.commentId}`,
             },
           });
         })
