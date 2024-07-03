@@ -60,7 +60,7 @@ export async function AllComments({
             parentId={undefined}
             atUsername={undefined}
             label={undefined}
-            placeholder="Write your comment here..."
+            placeholder="Comment here..."
           />
         ) : (
           <SignInButton mode="modal">

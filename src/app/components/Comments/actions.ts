@@ -43,80 +43,83 @@ export async function createComment({
       select: commentSelect(user.id ?? undefined),
     });
 
-    // Only a reply to a reply has an atUsername
-    // Ignore if the user is replying to their own reply
+    // Ignore if the user is replying to their own comment
     if (user.username === newComment.at) {
-      console.log("User is replying to their own reply");
+      console.log("User is replying to their own comment");
       return newComment;
     }
-    // Comment on a poll or a reply to a comment
-    else {
-      // Ignore if the user is commenting on their own poll
-      if (
-        newComment.parentId === null &&
-        user.id === newComment.poll.authorId
-      ) {
-        console.log("User is commenting to their own poll");
-        return newComment;
-      }
-
-      // Ignore if the user is replying to their own comment
-      if (newComment.at === null && user.id === newComment.parent?.authorId) {
-        console.log("User is replying to their own comment");
-        return newComment;
-      }
+    // Ignore if the user is commenting on their own poll
+    else if (
+      newComment.parentId === null &&
+      user.id === newComment.poll.authorId
+    ) {
+      console.log("User is commenting to their own poll");
+      return newComment;
     }
 
-    let notifyeeId: string | undefined = undefined;
-
-    // Reply to a reply
+    // Comment is a reply
     if (newComment.at) {
       const replyingToUser = await db.user.findUnique({
-        where: {
-          username: newComment.at,
-        },
+        where: { username: newComment.at },
         select: { id: true },
       });
 
-      notifyeeId = replyingToUser?.id;
-    }
-    // Poll comment or reply to a comment
-    else {
-      // Comment on a poll
-      if (newComment.parentId === null) {
-        notifyeeId = newComment.poll.authorId;
-      }
-      // Reply to a comment
-      else {
-        notifyeeId = newComment.parent?.authorId;
-      }
-    }
+      const notifyeeId = replyingToUser?.id;
 
-    if (!notifyeeId) {
-      console.error("Error finding user to notify", newComment.at);
-      return newComment;
-    }
+      if (!notifyeeId) {
+        console.error(
+          "User not found during comment reply notification",
+          newComment.at,
+        );
+        return newComment;
+      }
 
-    await db.notificationComment
-      .create({
-        data: {
-          notifyeeId: notifyeeId,
-          commentId: newComment.id,
-        },
-      })
-      .then(async () => {
-        await sendNotification({
-          userId: notifyeeId,
-          title: "New Comment on Your Poll 📝",
-          body: `${user.username} left a comment on your poll.`,
-          payload: {
-            url: `/polls/${pollId}?comments=true&parentId=${newComment.id}`,
+      await db.notificationComment
+        .create({
+          data: {
+            notifyeeId: notifyeeId,
+            commentId: newComment.id,
           },
+        })
+        .then(async () => {
+          await sendNotification({
+            userId: notifyeeId,
+            title: "New Comment 📝",
+            body: `${user.username} replied to your a comment.`,
+            payload: {
+              url: `/polls/${pollId}?comments=true&parentId=${newComment.parentId}`,
+            },
+          });
+        })
+        .catch((error) => {
+          console.error("Error creating notification", error);
         });
-      })
-      .catch((error) => {
-        console.error("Error creating notification", error);
-      });
+    }
+    // Comment on a poll
+    else if (newComment.parentId === null) {
+      const notifyeeId = newComment.poll.authorId;
+
+      await db.notificationComment
+        .create({
+          data: {
+            notifyeeId: notifyeeId,
+            commentId: newComment.id,
+          },
+        })
+        .then(async () => {
+          await sendNotification({
+            userId: notifyeeId,
+            title: "New Comment on Your Poll 📝",
+            body: `${user.username} left a comment on your poll.`,
+            payload: {
+              url: `/polls/${pollId}?comments=true&parentId=${newComment.id}`,
+            },
+          });
+        })
+        .catch((error) => {
+          console.error("Error creating notification", error);
+        });
+    }
 
     return newComment;
   } catch (error) {

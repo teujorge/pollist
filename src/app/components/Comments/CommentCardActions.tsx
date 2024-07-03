@@ -315,9 +315,9 @@ export function CommentCardActions() {
         <CommentForm
           pollId={comment.pollId}
           parentId={comment.parentId ?? comment.id}
-          atUsername={comment.parentId ? comment.author.username : undefined}
+          atUsername={comment.author.username}
           label={undefined}
-          placeholder="Write your reply here..."
+          placeholder="Reply here..."
           beforeSubmit={() => setIsReplying(false)}
         />
       )}
