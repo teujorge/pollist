@@ -45,6 +45,7 @@ export async function POST(req: NextRequest) {
         const data = event.data;
 
         try {
+          // create the new user
           await dbAdmin.user.create({
             data: {
               id: data.id,
@@ -53,6 +54,25 @@ export async function POST(req: NextRequest) {
               imageUrl: data.image_url,
             },
           });
+
+          // new user will auto follow 'admin' user
+          try {
+            await dbAdmin.follow.create({
+              data: {
+                accepted: true,
+                followerId: data.id,
+                followeeId: process.env.ADMIN_ID!,
+              },
+            });
+          } catch (e) {
+            let logMessage = "⚠️  Error auto following admin: ";
+            if (e instanceof Error) {
+              logMessage += `${e.message}`;
+            } else {
+              logMessage += "Internal Server Error";
+            }
+            console.error(logMessage);
+          }
         } catch (e) {
           let logMessage = "⚠️  Error creating user: ";
           if (e instanceof Error) {
