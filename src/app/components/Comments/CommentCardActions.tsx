@@ -213,8 +213,8 @@ export function CommentCardActions() {
 
   return (
     <>
-      <div className="flex-warp flex items-center justify-between gap-2">
-        {!comment.deleted && (
+      {!comment.deleted && (
+        <div className="flex-warp flex items-center justify-between gap-2">
           <div className="flex-warp flex items-center">
             <SignedIn>{likeButtonComponent}</SignedIn>
             <SignedOut>
@@ -226,36 +226,56 @@ export function CommentCardActions() {
               <SignInButton mode="modal">{replyButtonComponent}</SignInButton>
             </SignedOut>
           </div>
-        )}
 
-        <Popover>
-          <PopoverTrigger>
-            <Button size="sm" variant="ghost">
-              <DotsThree size={20} />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent align="end" className="py-2">
-            <Button variant="popover" onMouseDown={handleCopyThreadLink}>
-              <Copy size={15} /> Copy
-            </Button>
+          <Popover>
+            <PopoverTrigger>
+              <Button size="sm" variant="ghost">
+                <DotsThree size={20} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="py-2">
+              <Button variant="popover" onMouseDown={handleCopyThreadLink}>
+                <Copy size={15} /> Copy
+              </Button>
 
-            <SignedIn>
-              {user?.id !== comment.author.id && (
-                <PopoverClose asChild>
-                  {/* if user is not blocked we can block them */}
+              <SignedIn>
+                {user?.id !== comment.author.id && (
+                  <PopoverClose asChild>
+                    {/* if user is not blocked we can block them */}
 
-                  {isUserBlocked(comment.author.id) ? (
-                    <Button
-                      variant="popover"
-                      className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
-                      onMouseDown={async () => {
-                        setBlockedUsers((prev) =>
-                          prev.filter((user) => user.id !== comment.author.id),
-                        );
-                        try {
-                          await unblockUser(comment.author.id);
-                        } catch (error) {
-                          toast.error("Failed to unblock user");
+                    {isUserBlocked(comment.author.id) ? (
+                      <Button
+                        variant="popover"
+                        className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
+                        onMouseDown={async () => {
+                          setBlockedUsers((prev) =>
+                            prev.filter(
+                              (user) => user.id !== comment.author.id,
+                            ),
+                          );
+                          try {
+                            await unblockUser(comment.author.id);
+                          } catch (error) {
+                            toast.error("Failed to unblock user");
+                            setBlockedUsers((prev) => [
+                              ...prev,
+                              {
+                                id: comment.author.id,
+                                username: comment.author.username,
+                                imageUrl: comment.author.imageUrl,
+                              },
+                            ]);
+                          }
+                        }}
+                      >
+                        <Warning size={15} />
+                        Unblock user
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="popover"
+                        className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
+                        onMouseDown={async () => {
                           setBlockedUsers((prev) => [
                             ...prev,
                             {
@@ -264,54 +284,36 @@ export function CommentCardActions() {
                               imageUrl: comment.author.imageUrl,
                             },
                           ]);
-                        }
-                      }}
-                    >
-                      <Warning size={15} />
-                      Unblock user
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="popover"
-                      className="hovact:bg-yellow-500/20 hovact:text-yellow-500"
-                      onMouseDown={async () => {
-                        setBlockedUsers((prev) => [
-                          ...prev,
-                          {
-                            id: comment.author.id,
-                            username: comment.author.username,
-                            imageUrl: comment.author.imageUrl,
-                          },
-                        ]);
-                        try {
-                          await blockUser(comment.author.id);
-                        } catch (error) {
-                          toast.error("Failed to block user");
-                          setBlockedUsers((prev) =>
-                            prev.filter(
-                              (user) => user.id !== comment.author.id,
-                            ),
-                          );
-                        }
-                      }}
-                    >
-                      <Warning size={15} />
-                      Block user
-                    </Button>
-                  )}
-                </PopoverClose>
-              )}
-            </SignedIn>
+                          try {
+                            await blockUser(comment.author.id);
+                          } catch (error) {
+                            toast.error("Failed to block user");
+                            setBlockedUsers((prev) =>
+                              prev.filter(
+                                (user) => user.id !== comment.author.id,
+                              ),
+                            );
+                          }
+                        }}
+                      >
+                        <Warning size={15} />
+                        Block user
+                      </Button>
+                    )}
+                  </PopoverClose>
+                )}
+              </SignedIn>
 
-            {user?.id === comment.author.id && !comment.deleted && (
-              <DeleteAlertDialog
-                awaitType="promise"
-                onDelete={handleDeleteComment}
-              />
-            )}
-          </PopoverContent>
-        </Popover>
-      </div>
+              {user?.id === comment.author.id && !comment.deleted && (
+                <DeleteAlertDialog
+                  awaitType="promise"
+                  onDelete={handleDeleteComment}
+                />
+              )}
+            </PopoverContent>
+          </Popover>
+        </div>
+      )}
 
       {isReplying && !comment.deleted && (
         <CommentForm
