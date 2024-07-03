@@ -196,7 +196,7 @@ async function sendAPN({
       keyId: process.env.APNS_KEY_ID!,
       teamId: process.env.APNS_TEAM_ID!,
     },
-    production: process.env.NODE_ENV === "production",
+    production: false, // process.env.NODE_ENV === "production",
   });
 
   const notificationCount =
