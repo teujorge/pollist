@@ -214,17 +214,19 @@ export function CommentCardActions() {
   return (
     <>
       <div className="flex-warp flex items-center justify-between gap-2">
-        <div className="flex-warp flex items-center">
-          <SignedIn>{likeButtonComponent}</SignedIn>
-          <SignedOut>
-            <SignInButton mode="modal">{likeButtonComponent}</SignInButton>
-          </SignedOut>
+        {!comment.deleted && (
+          <div className="flex-warp flex items-center">
+            <SignedIn>{likeButtonComponent}</SignedIn>
+            <SignedOut>
+              <SignInButton mode="modal">{likeButtonComponent}</SignInButton>
+            </SignedOut>
 
-          <SignedIn>{replyButtonComponent}</SignedIn>
-          <SignedOut>
-            <SignInButton mode="modal">{replyButtonComponent}</SignInButton>
-          </SignedOut>
-        </div>
+            <SignedIn>{replyButtonComponent}</SignedIn>
+            <SignedOut>
+              <SignInButton mode="modal">{replyButtonComponent}</SignInButton>
+            </SignedOut>
+          </div>
+        )}
 
         <Popover>
           <PopoverTrigger>
@@ -301,7 +303,7 @@ export function CommentCardActions() {
               )}
             </SignedIn>
 
-            {user?.id === comment.author.id && (
+            {user?.id === comment.author.id && !comment.deleted && (
               <DeleteAlertDialog
                 awaitType="promise"
                 onDelete={handleDeleteComment}
@@ -311,7 +313,7 @@ export function CommentCardActions() {
         </Popover>
       </div>
 
-      {isReplying && (
+      {isReplying && !comment.deleted && (
         <CommentForm
           pollId={comment.pollId}
           parentId={comment.parentId ?? comment.id}
