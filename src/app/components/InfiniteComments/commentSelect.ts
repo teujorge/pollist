@@ -25,7 +25,10 @@ export const commentSelect = (userId: string | undefined) => {
       where: { authorId: userId ?? undefined },
     },
     _count: {
-      select: { likes: true, replies: true },
+      select: {
+        likes: true,
+        replies: { where: { deleted: false } },
+      },
     },
   };
 };
