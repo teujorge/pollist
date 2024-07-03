@@ -29,9 +29,12 @@ export function Modal({
     <div
       ref={ref}
       className={cn(
-        "fixed inset-0 z-40 flex h-dvh w-dvw items-center justify-center overflow-y-auto bg-background bg-opacity-65 p-4 backdrop-blur-sm scrollbar-gutter",
+        "fixed inset-0 z-40 flex h-dvh w-dvw items-center justify-center overflow-y-auto bg-background bg-opacity-75 p-4 scrollbar-gutter",
         wrapperClassName,
       )}
+      style={{
+        willChange: "height, transform",
+      }}
       onMouseDown={() => {
         bgMouseUp = false;
         bgMouseDown = true;
@@ -46,7 +49,7 @@ export function Modal({
     >
       <div
         className={cn(
-          `m-auto h-fit w-fit overflow-y-auto overflow-x-hidden rounded-xl border border-accent bg-background p-4 ${styles["modal-in"]}`,
+          `m-auto h-[calc(100%)] w-fit overflow-y-auto overflow-x-hidden rounded-xl border border-accent bg-background p-4 sm:h-fit ${styles["modal-in"]}`,
           className,
         )}
         onMouseDown={(e) => {
@@ -62,6 +65,7 @@ export function Modal({
         style={{
           maxWidth: "90dvw",
           maxHeight: "90dvh",
+          willChange: "height, transform",
         }}
       >
         {children}
