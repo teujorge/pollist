@@ -149,6 +149,7 @@ export default async function UserPage({ params }: Props) {
                 query={{
                   authorId: user.id,
                   anonymous: myId === user.id ? "both" : false,
+                  boostedId: "None", // force no boosted poll
                 }}
                 highlightedUserId={undefined}
               />
@@ -166,7 +167,11 @@ export default async function UserPage({ params }: Props) {
               >
                 <InfinitePolls
                   idPrefix="my-private-polls"
-                  query={{ authorId: user.id, private: true }}
+                  query={{
+                    authorId: user.id,
+                    private: true,
+                    boostedId: "None", // force no boosted poll
+                  }}
                   highlightedUserId={undefined}
                 />
               </Suspense>
