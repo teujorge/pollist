@@ -14,12 +14,12 @@ export function Header() {
   return (
     <div
       className={cn(
-        "left-0 right-0 z-40 flex h-fit w-full transform-gpu items-center justify-center transition-all delay-200",
-        "fixed bottom-0 border-t border-accent bg-background/70 backdrop-blur-lg",
-        "sm:sticky sm:top-0 sm:border-0 sm:bg-transparent sm:bg-gradient-to-b sm:from-background sm:from-60% sm:backdrop-blur-none",
+        "left-0 right-0 top-0 z-40 flex h-fit w-full transform-gpu items-center justify-center transition-transform duration-75",
+        "fixed translate-y-[calc(100dvh-68px)] border-t border-accent bg-background/70 backdrop-blur-lg",
+        "sm:sticky sm:translate-y-0 sm:border-0 sm:bg-transparent sm:bg-gradient-to-b sm:from-background sm:from-60% sm:backdrop-blur-none ",
       )}
     >
-      <header className="flex w-full flex-row items-center justify-between px-5 py-4">
+      <header className="flex h-svh w-full flex-row items-start justify-between px-5 py-4 sm:h-fit sm:items-center">
         <Link
           href="/"
           scroll={false}
