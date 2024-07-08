@@ -19,17 +19,17 @@ export async function POST(req: NextRequest) {
       originalTransactionId?: string;
     };
 
-    // if (!event.key || event.key !== process.env.IAP_SUBSCRIPTION_KEY) {
-    //   console.error("Invalid key:", event.key);
-    //   return NextResponse.json(
-    //     {
-    //       error: "Invalid key",
-    //     },
-    //     {
-    //       status: 401,
-    //     },
-    //   );
-    // }
+    if (!event.key || event.key !== process.env.IAP_SUBSCRIPTION_KEY) {
+      console.error("Invalid key:", event.key);
+      return NextResponse.json(
+        {
+          error: "Invalid key",
+        },
+        {
+          status: 401,
+        },
+      );
+    }
 
     if (
       event.userId === undefined ||
